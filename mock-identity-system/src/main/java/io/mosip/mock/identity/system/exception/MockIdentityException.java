@@ -2,16 +2,16 @@ package io.mosip.mock.identity.system.exception;
 
 import io.mosip.mock.identity.system.util.ErrorConstants;
 
-public class MockAuthenticationException extends RuntimeException {
+public class MockIdentityException extends RuntimeException {
 
 	private String errorCode;
 
-	public MockAuthenticationException() {
+	public MockIdentityException() {
         super(ErrorConstants.UNKNOWN_ERROR);
         this.errorCode = ErrorConstants.UNKNOWN_ERROR;
     }
 
-	public MockAuthenticationException(String errorCode) {
+	public MockIdentityException(String errorCode) {
         super(errorCode);
         this.errorCode = errorCode;
     }

@@ -15,38 +15,38 @@ import io.mosip.mock.identity.system.dto.MockAuthData;
 import io.mosip.mock.identity.system.dto.MockAuthDataResponse;
 import io.mosip.mock.identity.system.dto.RequestWrapper;
 import io.mosip.mock.identity.system.dto.ResponseWrapper;
-import io.mosip.mock.identity.system.exception.MockAuthenticationException;
-import io.mosip.mock.identity.system.service.MockAuthenticationService;
-import io.mosip.mock.identity.system.util.MockAuthenticationUtil;
+import io.mosip.mock.identity.system.exception.MockIdentityException;
+import io.mosip.mock.identity.system.service.MockIdentityService;
+import io.mosip.mock.identity.system.util.MockIdentityUtil;
 
 
 @RestController
 @RequestMapping("/")
-public class MockAuthenticationController {
+public class MockIdentityController {
 
 	@Autowired
-	private MockAuthenticationService mockAuthDataService;
+	private MockIdentityService mockIdentityService;
 
 	@PostMapping(value = "mock-identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<MockAuthDataResponse> createMockIdentity
-	(@Valid @RequestBody RequestWrapper<MockAuthData> requestWrapper) throws MockAuthenticationException {
+	(@Valid @RequestBody RequestWrapper<MockAuthData> requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<MockAuthDataResponse>();
 		MockAuthDataResponse mockAuthDataResponse = new MockAuthDataResponse();
-		mockAuthDataService.saveIdentity(requestWrapper.getRequest());
+		mockIdentityService.saveIdentity(requestWrapper.getRequest());
 		mockAuthDataResponse.setStatus("mock auth data created successfully");
 		response.setResponse(mockAuthDataResponse);
-		response.setResponseTime(MockAuthenticationUtil.getUTCDateTime());
+		response.setResponseTime(MockIdentityUtil.getUTCDateTime());
 		return response;
 	}
 	
 	@GetMapping(value = "mock-identity/{virtual-id}")
 	public ResponseWrapper<MockAuthData> getMockIdentity(@PathVariable(value = "virtual-id") String virtualId)
-			throws MockAuthenticationException {
+			throws MockIdentityException {
 		ResponseWrapper<MockAuthData> response = new ResponseWrapper<>();
-		response.setResponse(mockAuthDataService.getIdentity(virtualId));
-		response.setResponseTime(MockAuthenticationUtil.getUTCDateTime());
+		response.setResponse(mockIdentityService.getIdentity(virtualId));
+		response.setResponseTime(MockIdentityUtil.getUTCDateTime());
 		return response;	
 	}
 }
