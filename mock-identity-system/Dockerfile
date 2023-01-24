@@ -37,7 +37,7 @@ RUN mkdir -p ${loader_path}
 
 ENV loader_path_env=${loader_path}
 
-COPY ./target/mock-identity-system.jar  mock-identity-system.jar
+COPY ./target/mock-identity-system-*.jar  mock-identity-system.jar
 
 RUN echo "Build application"
 
@@ -48,4 +48,13 @@ RUN chown -R ${container_user}:${container_user} /home/${container_user}
 USER ${container_user_uid}:${container_user_gid}
 
 EXPOSE 8081
-CMD java -jar -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}"  -Dspring.cloud.config.uri="${spring_config_url_env}" mock-identity-system.jar;
+
+CMD if [ "$is_glowroot_env" = "present" ]; then \
+    wget -q --show-progress "${artifactory_url_env}"/artifactory/libs-release-local/io/mosip/testing/glowroot.zip ; \
+    unzip glowroot.zip ; \
+    rm -rf glowroot.zip ; \
+    sed -i 's/<service_name>/mock-identity-system/g' glowroot/glowroot.properties ; \
+    java -jar -javaagent:glowroot/glowroot.jar -Dloader.path="${loader_path_env}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" mock-identity-system.jar ; \
+    else \
+    java -jar -Dloader.path="${loader_path_env}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" mock-identity-system.jar ; \
+    fi

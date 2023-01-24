@@ -2,14 +2,14 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.mosip.mock.identity</groupId>
+  <groupId>io.mosip.esignet.mock</groupId>
   <artifactId>mock-identity-system</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>mock-identity-system</name>
-  <description>Proxy mock identity system project</description>
-  <url>https://github.com/mosip/mosip-ref-impl</url>
+  <description>Mockup of a ID system that is used to showcase the integration with e-Signet</description>
+  <url>https://github.com/mosip/esignet-mock-services</url>
   <parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -23,20 +23,11 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>scm:git:git://github.com/mosip/mosip-ref-impl.git</connection>
-		<developerConnection>scm:git:ssh://github.com:mosip/mosip-ref-impl.git</developerConnection>
-		<url>https://github.com/mosip/mosip-ref-impl</url>
+		<connection>scm:git:git://github.com/mosip/esignet-mock-services.git</connection>
+		<developerConnection>scm:git:ssh://github.com:mosip/esignet-mock-services.git</developerConnection>
+		<url>https://github.com/mosip/esignet-mock-services</url>
 		<tag>HEAD</tag>
 	</scm>
-
-	<developers>
-		<developer>
-			<name>Mosip</name>
-			<email>mosip.emailnotifier@gmail.com</email>
-			<organization>io.mosip</organization>
-			<organizationUrl>https://github.com/mosip/mosip-ref-impl</organizationUrl>
-		</developer>
-	</developers>
 
 	<repositories>
 		<repository>
@@ -222,12 +213,6 @@
 					<finalName>mock-authdata-service</finalName>
 				</configuration>
 			</plugin>
-
-
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
-				<version>3.2.0</version> <executions> <execution> <id>attach-javadocs</id> 
-				<goals> <goal>jar</goal> </goals> </execution> </executions> <configuration> 
-				<doclint>none</doclint> </configuration> </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
