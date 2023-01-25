@@ -25,14 +25,17 @@ public class IdentityServiceImpl implements IdentityService {
 	IdentityRepository identityRepository;
 
 	@Override
-	public void addIdentity(IdentityData mockAuthDataRequest) throws MockIdentityException {
+	public void addIdentity(IdentityData identityData) throws MockIdentityException {
+		if (identityRepository.findById(identityData.getIndividualId()).isPresent()) {
+			throw new MockIdentityException(ErrorConstants.DUPLICATE_INDIVIDUAL_ID);
+		}
 		MockIdentity mockIdentity = new MockIdentity();
 		try {
-			mockIdentity.setIdentityJson(objectmapper.writeValueAsString(mockAuthDataRequest));
+			mockIdentity.setIdentityJson(objectmapper.writeValueAsString(identityData));
 		} catch (JsonProcessingException e) {
 			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
 		}
-		mockIdentity.setIndividualId(mockAuthDataRequest.getIndividualId());
+		mockIdentity.setIndividualId(identityData.getIndividualId());
 		identityRepository.save(mockIdentity);
 	}
 

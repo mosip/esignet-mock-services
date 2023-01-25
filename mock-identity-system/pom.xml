@@ -1,20 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+        <groupId>io.mosip.esignet.mock</groupId>
+        <artifactId>esignet-mock-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+   </parent>
 
-  <groupId>io.mosip.esignet.mock</groupId>
   <artifactId>mock-identity-system</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>mock-identity-system</name>
   <description>Mockup of a ID system that is used to showcase the integration with e-Signet</description>
   <url>https://github.com/mosip/esignet-mock-services</url>
-  <parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.2.RELEASE</version>
-	</parent>
   
 	<licenses>
 		<license>
@@ -27,31 +26,7 @@
 		<developerConnection>scm:git:ssh://github.com:mosip/esignet-mock-services.git</developerConnection>
 		<url>https://github.com/mosip/esignet-mock-services</url>
 		<tag>HEAD</tag>
-	</scm>
-
-	<repositories>
-		<repository>
-			<id>ossrh</id>
-			<name>Central Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
-  
+	</scm> 
 
  <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -93,7 +68,6 @@
     <dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.8</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -120,8 +94,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>${postgresql.version}</version>
-		</dependency>
+			</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -166,7 +139,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>${maven-source-plugin}</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -179,7 +151,6 @@
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
-				<version>3.0.1</version>
 				<executions>
 					<execution>
 						<id>get-the-git-infos</id>
@@ -204,8 +175,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${maven-surefire-plugin.version}</version>
-			</plugin>
+				</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -236,7 +206,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<source>${maven-compiler-plugin.source}</source>
 					<target>${maven-compiler-plugin.target}</target>
