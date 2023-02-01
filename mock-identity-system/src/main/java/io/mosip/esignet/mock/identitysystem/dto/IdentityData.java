@@ -16,7 +16,7 @@ public class IdentityData {
 	@NotBlank(message = ErrorConstants.INVALID_INDIVIDUAL_ID)
 	String individualId;
 
-	@NotBlank(message = ErrorConstants.INVALID_INDIVIDUAL_ID)
+	@NotBlank(message = ErrorConstants.INVALID_PIN)
 	String pin;
 
 	@NotNull(message = ErrorConstants.INVALID_FULLNAME)

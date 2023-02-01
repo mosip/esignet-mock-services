@@ -1,4 +1,4 @@
-package io.mosip.mock.identity.system;
+package io.mosip.esignet.mock.identitysystem;
 
 /**
  * Unit test for simple App.

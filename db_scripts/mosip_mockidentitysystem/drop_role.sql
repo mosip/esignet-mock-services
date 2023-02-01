@@ -1,1 +1,1 @@
-drop role if exists idpuser;
+drop role if exists mockidsystemuser;

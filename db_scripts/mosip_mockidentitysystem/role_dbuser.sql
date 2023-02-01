@@ -1,4 +1,4 @@
-CREATE ROLE idpuser WITH
+CREATE ROLE mockidsystemuser WITH
 	INHERIT
 	LOGIN
 	PASSWORD :dbuserpwd;
