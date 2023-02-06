@@ -1,0 +1,18 @@
+{
+  "short_name": "MOSIP - Mock Relying Party Health Portal",
+  "name": "MOSIP - Mock Relying Party Health Portal",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
