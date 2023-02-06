@@ -23,6 +23,7 @@ export default function UserProfile({
   const [userInfo, setUserInfo] = useState(null);
   const [status, setStatus] = useState(states.LOADING);
   const [showRawUserInfo, setShowRawUserInfo] = useState(false);
+  const [address, setAddress] = useState(null);
 
   const navigate = useNavigate();
 
@@ -78,6 +79,8 @@ export default function UserProfile({
         redirect_uri,
         grant_type);
 
+      let address = getAddress(userInfo?.address);
+      setAddress(address);
       setUserInfo(userInfo);
       setStatus(states.LOADED);
     } catch (errormsg) {
@@ -85,6 +88,57 @@ export default function UserProfile({
       setStatus(states.ERROR);
     }
   };
+
+  const getAddress = (userAddress) => {
+    let address = "";
+
+    if (userAddress?.formatted) {
+      address += userAddress?.formatted + ", "
+    }
+
+    if (userAddress?.street_address) {
+      address += userAddress?.street_address + ", "
+    }
+
+    if (userAddress?.addressLine1) {
+      address += userAddress?.addressLine1 + ", "
+    }
+
+    if (userAddress?.addressLine2) {
+      address += userAddress?.addressLine2 + ", "
+    }
+
+    if (userAddress?.addressLine3) {
+      address += userAddress?.addressLine3 + ", "
+    }
+
+    if (userAddress?.locality) {
+      address += userAddress?.locality + ", "
+    }
+
+    if (userAddress?.city) {
+      address += userAddress?.city + ", "
+    }
+
+    if (userAddress?.province) {
+      address += userAddress?.province + ", "
+    }
+
+    if (userAddress?.region) {
+      address += userAddress?.region + ", "
+    }
+
+    if (userAddress?.postalCode) {
+      address += "(" + userAddress?.postalCode + "), "
+    }
+
+    if (userAddress?.country) {
+      address += userAddress?.country + ", "
+    }
+
+    //returning after removing last ", " characters
+    return address.substring(0, address.length - 2);;
+  }
 
   let el = (
     <div className="w-full pt-5 px-20">
@@ -140,7 +194,7 @@ export default function UserProfile({
                 </div>
                 <div className="px-4 py-3 grid grid-cols-2">
                   <div className="flex justify-start">{t("address")}</div>
-                  <div className="flex justify-end">{userInfo?.address}</div>
+                  <div className="flex justify-end">{address}</div>
                 </div>
               </div>
               <div className="px-4">
