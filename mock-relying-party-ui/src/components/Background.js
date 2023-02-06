@@ -16,7 +16,7 @@ export default function Background({
         <NavHeader langOptions={langOptions} />
         <div className="container flex flex-grow md:flex-row flex-col h-fit">
           <div className="flex flex-col shadow-lg rounded-tr-[64px] bg-[#FAFAFC] md:w-1/2">
-            <div className="h-3/5 mt-5 flex justify-center">
+            <div className="h-3/5 mt-5 flex justify-center h-96">
               <img alt="util" className="rtl:scale-x-[-1]" src="images/illustartion.png" />
             </div>
             <div className="flex w-full justify-center mt-8">
