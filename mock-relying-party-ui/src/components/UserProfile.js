@@ -24,6 +24,7 @@ export default function UserProfile({
   const [status, setStatus] = useState(states.LOADING);
   const [showRawUserInfo, setShowRawUserInfo] = useState(false);
   const [address, setAddress] = useState(null);
+  const [emailAddress, setEmailAddress] = useState(null);
 
   const navigate = useNavigate();
 
@@ -82,6 +83,7 @@ export default function UserProfile({
       let address = getAddress(userInfo?.address);
       setAddress(address);
       setUserInfo(userInfo);
+      setEmailAddress(userInfo?.email_verified ?? userInfo?.email);
       setStatus(states.LOADED);
     } catch (errormsg) {
       setError({ errorCode: "", errorMsg: errormsg.message });
@@ -172,8 +174,14 @@ export default function UserProfile({
               <div className="divide-slate-300 gap-2">
                 <div className="px-4 py-3 grid grid-cols-2">
                   <div className="flex justify-start">{t("email_address")}</div>
-                  <div className="flex justify-end">
-                    {userInfo?.email_verified ?? userInfo?.email}
+                  <div className="flex justify-end" title={emailAddress}>
+                    <span className="truncate">
+                      {emailAddress?.split("@")[0]}
+                    </span>
+                    @
+                    <span className="truncate">
+                      {emailAddress?.split("@")[1]}
+                    </span>
                   </div>
                 </div>
                 <div className="px-4 py-3 bg-white grid grid-cols-2">
