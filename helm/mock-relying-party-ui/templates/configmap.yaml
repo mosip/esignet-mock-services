@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: oidc-server
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  nginx.conf: |-
+    worker_processes  1;
+    events {
+      worker_connections  1024;
+    }
+    http {
+      access_log /var/log/nginx/access.log;
+      error_log /var/log/nginx/error.log;
+      server {
+        listen 5000 default;
+        server_name _;
+
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        include /etc/nginx/mime.types;
+        gzip on;
+        gzip_min_length 1000;
+        gzip_proxied expired no-cache no-store private auth;
+        gzip_types text/plain text/css application/json application/javascript application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+        location /oidc-server/fetchUserInfo {
+          proxy_pass         {{ .Values.mock_relying_party_ui.MOCK_RELYING_PARTY_SERVICE_INTERNAL_URL }}/fetchUserInfo;
+          proxy_redirect     off;
+          proxy_set_header   Host $host;
+          proxy_set_header   X-Real-IP $remote_addr;
+          proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header   X-Forwarded-Host $server_name;
+          proxy_http_version 1.1;
+        }
+        location / {
+          try_files $uri $uri/ /index.html;
+        }
+      }
+    }
