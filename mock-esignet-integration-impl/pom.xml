@@ -1,21 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>io.mosip.esignet.mock</groupId>
 		<artifactId>esignet-mock-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-
+	
 	<artifactId>mock-esignet-integration-impl</artifactId>
 	<packaging>jar</packaging>
-
+	
 	<name>mock-esignet-integration-impl</name>
 	<description>Mockup of a wrapper implementation that is used to showcase the integration with e-Signet</description>
 	<url>https://github.com/mosip/esignet-mock-services</url>
-
+	
 	<licenses>
 		<license>
 			<name>MPL 2.0</name>
