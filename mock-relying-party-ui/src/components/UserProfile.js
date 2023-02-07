@@ -137,7 +137,7 @@ export default function UserProfile({
     }
 
     //returning after removing last ", " characters
-    return address.substring(0, address.length - 2);;
+    return address.substring(0, address.length - 2);
   }
 
   let el = (
