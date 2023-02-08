@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
@@ -11,11 +12,15 @@ const Error = ({ errorCode, errorMsg, i18nKeyPrefix = "errors", showToast = fals
   const { t } = useTranslation("translation", { keyPrefix: i18nKeyPrefix });
   const toastTimeout = process.env.REACT_APP_TOAST_TIMEOUT_IN_SEC;
 
-  if (showToast) {
-    toast.error(t(errorCode, errorMsg), { autoClose: toastTimeout * 1000 })
-    return <></>
-  }
+  useEffect(() => {
+    if (showToast) {
+      toast.error(t(errorCode, errorMsg), { autoClose: toastTimeout * 1000 });
+    }
+  }, []);
 
+  if (showToast) {
+    return <></>;
+  }
   return (
     <div
       className="p-4 w-full mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
