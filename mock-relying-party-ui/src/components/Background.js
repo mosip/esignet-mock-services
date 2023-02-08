@@ -4,7 +4,7 @@ import NavHeader from "./NavHeader";
 export default function Background({
   component,
   i18nKeyPrefix = "background",
-  langOptions
+  langOptions,
 }) {
   const { t } = useTranslation("translation", {
     keyPrefix: i18nKeyPrefix,
@@ -14,10 +14,14 @@ export default function Background({
     <>
       <section className="flex flex-col h-screen">
         <NavHeader langOptions={langOptions} />
-        <div className="container flex flex-grow md:flex-row flex-col h-fit">
+        <div className="flex flex-grow md:flex-row flex-col h-fit">
           <div className="flex flex-col shadow-lg rounded-tr-[64px] bg-[#FAFAFC] md:w-1/2">
             <div className="h-3/5 mt-5 flex justify-center h-96">
-              <img alt="util" className="rtl:scale-x-[-1]" src="images/illustartion.png" />
+              <img
+                alt="util"
+                className="rtl:scale-x-[-1]"
+                src="images/illustartion.png"
+              />
             </div>
             <div className="flex w-full justify-center mt-8">
               <div className="flex grid grid-cols-3 gap-8">
@@ -46,7 +50,7 @@ export default function Background({
               </div>
             </div>
           </div>
-          <div className="lg:flex-grow md:w-1/2 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left">
+          <div className="lg:flex-grow md:w-1/2 lg:px-24 md:px-16 flex flex-col md:items-start md:text-left">
             {component}
           </div>
         </div>

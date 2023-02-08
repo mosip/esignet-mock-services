@@ -78,7 +78,8 @@ export default function UserProfile({
         authCode,
         client_id,
         redirect_uri,
-        grant_type);
+        grant_type
+      );
 
       let address = getAddress(userInfo?.address);
       setAddress(address);
@@ -95,134 +96,137 @@ export default function UserProfile({
     let address = "";
 
     if (userAddress?.formatted) {
-      address += userAddress?.formatted + ", "
+      address += userAddress?.formatted + ", ";
     }
 
     if (userAddress?.street_address) {
-      address += userAddress?.street_address + ", "
+      address += userAddress?.street_address + ", ";
     }
 
     if (userAddress?.addressLine1) {
-      address += userAddress?.addressLine1 + ", "
+      address += userAddress?.addressLine1 + ", ";
     }
 
     if (userAddress?.addressLine2) {
-      address += userAddress?.addressLine2 + ", "
+      address += userAddress?.addressLine2 + ", ";
     }
 
     if (userAddress?.addressLine3) {
-      address += userAddress?.addressLine3 + ", "
+      address += userAddress?.addressLine3 + ", ";
     }
 
     if (userAddress?.locality) {
-      address += userAddress?.locality + ", "
+      address += userAddress?.locality + ", ";
     }
 
     if (userAddress?.city) {
-      address += userAddress?.city + ", "
+      address += userAddress?.city + ", ";
     }
 
     if (userAddress?.province) {
-      address += userAddress?.province + ", "
+      address += userAddress?.province + ", ";
     }
 
     if (userAddress?.region) {
-      address += userAddress?.region + ", "
+      address += userAddress?.region + ", ";
     }
 
     if (userAddress?.postalCode) {
-      address += "(" + userAddress?.postalCode + "), "
+      address += "(" + userAddress?.postalCode + "), ";
     }
 
     if (userAddress?.country) {
-      address += userAddress?.country + ", "
+      address += userAddress?.country + ", ";
     }
 
     //returning after removing last ", " characters
     return address.substring(0, address.length - 2);
-  }
+  };
 
   let el = (
-    <div className="w-full pt-5 px-20">
-      <div className="flex-grow bg-[#F2F4F4] mt-8 mb-6 shadow-lg rounded">
-        <div className="py-10">
-          {status === states.LOADING && (
-            <LoadingIndicator size="medium" message={t("loading_msg")} />
-          )}
-          {status === states.LOADED && (
-            <>
-              <div className="px-4">
-                <div className="font-bold flex justify-center">
-                  {userInfo?.given_name ?? userInfo?.name}
-                </div>
-                <div className="font-bold flex justify-center">
-                  {t("welcome_msg")}
-                </div>
+    <div className="w-full flex-grow bg-[#F2F4F4] mt-8 mb-6 shadow-lg rounded">
+      <div className="py-10">
+        {status === states.LOADING && (
+          <LoadingIndicator size="medium" message={t("loading_msg")} />
+        )}
+        {status === states.LOADED && (
+          <>
+            <div className="px-4">
+              <div className="font-bold flex justify-center">
+                {userInfo?.given_name ?? userInfo?.name}
               </div>
-              <div className=" px-3 py-6 flex justify-center">
-                <img
-                  alt={t("profile_picture")}
-                  className="h-20 w-20"
-                  src={
-                    userInfo?.picture
-                      ? userInfo.picture
-                      : "User-Profile-Icon.png"
-                  }
-                />
+              <div className="font-bold flex justify-center">
+                {t("welcome_msg")}
               </div>
+            </div>
+            <div className=" px-3 py-6 flex justify-center">
+              <img
+                alt={t("profile_picture")}
+                className="h-20 w-20"
+                src={
+                  userInfo?.picture ? userInfo.picture : "User-Profile-Icon.png"
+                }
+              />
+            </div>
 
-              <div className="divide-slate-300 gap-2">
-                <div className="px-4 py-3 grid grid-cols-2">
-                  <div className="flex justify-start">{t("email_address")}</div>
-                  <div className="flex justify-end" title={emailAddress}>
-                    <span className="truncate">
-                      {emailAddress?.split("@")[0]}
-                    </span>
-                    @
-                    <span className="truncate">
-                      {emailAddress?.split("@")[1]}
-                    </span>
-                  </div>
-                </div>
-                <div className="px-4 py-3 bg-white grid grid-cols-2">
-                  <div className="flex justify-start">{t("gender")}</div>
-                  <div className="flex justify-end">{userInfo?.gender}</div>
-                </div>
-                <div className="px-4 py-3 grid grid-cols-2">
-                  <div className="flex justify-start">{t("phone_number")}</div>
-                  <div className="flex justify-end">
-                    {userInfo?.phone_number_verified ??
-                      userInfo?.phone ??
-                      userInfo?.phone_number}
-                  </div>
-                </div>
-                <div className="px-4 py-3 bg-white grid grid-cols-2">
-                  <div className="flex justify-start">{t("birth_date")}</div>
-                  <div className="flex justify-end">{userInfo?.birthdate}</div>
-                </div>
-                <div className="px-4 py-3 grid grid-cols-2">
-                  <div className="flex justify-start">{t("address")}</div>
-                  <div className="flex justify-end">{address}</div>
+            <div className="divide-slate-300 gap-2">
+              <div className="px-4 py-3 grid grid-cols-2">
+                <div className="flex justify-start">{t("email_address")}</div>
+                <div className="flex justify-end" title={emailAddress}>
+                  <span className="truncate">
+                    {emailAddress?.split("@")[0]}
+                  </span>
+                  @
+                  <span className="truncate">
+                    {emailAddress?.split("@")[1]}
+                  </span>
                 </div>
               </div>
-              <div className="px-4">
-                <button
-                  type="button"
-                  className="font-medium text-cyan-700 hover:underline"
-                  onClick={(e) => { e.preventDefault(); setShowRawUserInfo(!showRawUserInfo) }}
-                >
-                  {showRawUserInfo ? t("hide_raw_user_info") : t("show_raw_user_info")}
-                </button>
-                {showRawUserInfo && (
-                  <p dir="ltr" className="break-words">{JSON.stringify(userInfo)}</p>
-                )}
+              <div className="px-4 py-3 bg-white grid grid-cols-2">
+                <div className="flex justify-start">{t("gender")}</div>
+                <div className="flex justify-end">{userInfo?.gender}</div>
               </div>
-            </>
-          )}
-          {status === states.ERROR && (
-            <Error errorCode={error.errorCode} errorMsg={error.errorMsg} />
-          )}
-        </div>
+              <div className="px-4 py-3 grid grid-cols-2">
+                <div className="flex justify-start">{t("phone_number")}</div>
+                <div className="flex justify-end">
+                  {userInfo?.phone_number_verified ??
+                    userInfo?.phone ??
+                    userInfo?.phone_number}
+                </div>
+              </div>
+              <div className="px-4 py-3 bg-white grid grid-cols-2">
+                <div className="flex justify-start">{t("birth_date")}</div>
+                <div className="flex justify-end">{userInfo?.birthdate}</div>
+              </div>
+              <div className="px-4 py-3 grid grid-cols-2">
+                <div className="flex justify-start">{t("address")}</div>
+                <div className="flex justify-end">{address}</div>
+              </div>
+            </div>
+            <div className="px-4">
+              <button
+                type="button"
+                className="font-medium text-cyan-700 hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowRawUserInfo(!showRawUserInfo);
+                }}
+              >
+                {showRawUserInfo
+                  ? t("hide_raw_user_info")
+                  : t("show_raw_user_info")}
+              </button>
+              {showRawUserInfo && (
+                <p dir="ltr" className="break-words">
+                  {JSON.stringify(userInfo)}
+                </p>
+              )}
+            </div>
+          </>
+        )}
+        {status === states.ERROR && (
+          <Error errorCode={error.errorCode} errorMsg={error.errorMsg} />
+        )}
       </div>
     </div>
   );
