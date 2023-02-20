@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 @Repository
-public interface AuthRepo extends JpaRepository<KycAuth,String> {
+public interface AuthRepository extends JpaRepository<KycAuth,String> {
     Optional<KycAuth> findByKycTokenAndValidityAndTransactionIdAndIndividualId(String kycToken, Valid validity, String transactionId, String individualId);
 }
