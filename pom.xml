@@ -100,7 +100,7 @@
 	</properties>
 
 	<modules>
-		<module>mosip-identity-system</module>
+		<module>mock-identity-system</module>
 		<module>mock-esignet-integration-impl</module>
 	</modules>
 

@@ -90,7 +90,6 @@ public class IdentityControllerTest {
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
 		identityRequest.setIndividualId(null);
 		requestWrapper.setRequest(identityRequest);
-
 		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
 
 		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
