@@ -57,7 +57,10 @@
     "fetch_details": "Fetch details from e-Signet",
     "register": "Register",
     "loading_msg": "Loading! Please wait...",
-    "phone_number": "Phone number"
+    "phone_number": "Phone number",
+    "email_address": "Email Address",
+    "show_raw_user_info": "Show raw user info",
+    "hide_raw_user_info": "Hide raw user info"
   },
   "errors": {
     "sign_in_failed": "Authentication failed! Try sign in with e-Signet",
