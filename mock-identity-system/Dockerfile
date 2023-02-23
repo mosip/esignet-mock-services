@@ -37,7 +37,7 @@ RUN mkdir -p ${loader_path}
 
 ENV loader_path_env=${loader_path}
 
-ADD target/mock-identity-system-0.0.1-SNAPSHOT-sources.jar  mock-identity-system.jar
+ADD target/mock-identity-system-*.jar  mock-identity-system.jar
 
 RUN echo "Build application"
 
