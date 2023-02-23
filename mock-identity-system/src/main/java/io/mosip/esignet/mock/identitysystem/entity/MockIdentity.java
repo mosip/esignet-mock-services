@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 @Entity(name = "MockIdentity")
-@Table(name = "mock_identity", schema = "mockidentitysystem")
+@Table(name = "mock_identity", schema = "public")
 public class MockIdentity {
 
 	@Id
