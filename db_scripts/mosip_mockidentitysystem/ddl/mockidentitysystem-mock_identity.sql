@@ -15,3 +15,11 @@ CREATE TABLE mock_identity(
 	identity_json varying(2048) NOT NULL,
     CONSTRAINT pk_mock_id_code PRIMARY KEY (individual_id)
 );
+CREATE TABLE kyc_auth(
+    kyc_token VARCHAR(255),
+    individual_id VARCHAR(255),
+    partner_specific_user_token VARCHAR(255),
+    response_time TIMESTAMP,
+    transaction_id VARCHAR(255),
+    validity INTEGER
+);

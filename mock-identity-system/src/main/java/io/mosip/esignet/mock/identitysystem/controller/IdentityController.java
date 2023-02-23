@@ -31,7 +31,6 @@ public class IdentityController {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> createIdentity
 	(@Valid @RequestBody RequestWrapper<IdentityData> requestWrapper) throws MockIdentityException {
-
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();
 		identityService.addIdentity(requestWrapper.getRequest());
