@@ -255,7 +255,7 @@ jobs:
         id: getPomVersion
         uses: mavrosxristoforos/get-xml-info@1.0
         with:
-          xml-file: ./${{ env.SERVICE_LOCATION }}/pom.xml 
+          xml-file: ${{ env.SERVICE_LOCATION }}/pom.xml 
           xpath: /*[local-name()="project"]/*[local-name()="version"] 
 
       - name: Unzip and extract the mock-identity-system
