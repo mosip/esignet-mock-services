@@ -75,7 +75,7 @@ API_HOST=$(kubectl get cm global -o jsonpath={.data.mosip-api-host})
 ESIGNET_HOST=$(kubectl get cm global -o jsonpath={.data.mosip-esignet-host})
 
 echo Installing Mock Relying Party Service
-#helm -n $NS install mock-relying-party-service ./mock-relying-party-service \
+helm -n $NS install mock-relying-party-service ./mock-relying-party-service \
     --set mock_relying_party_service.ESIGNET_SERVICE_URL="https://$API_HOST"/v1/esignet"" \
     --set mock_relying_party_service.ESIGNET_AUD_URL="https://$API_HOST"/v1/esignet/oauth/token""
 
@@ -87,8 +87,8 @@ helm -n $NS install mock-relying-party-ui ./mock-relying-party-ui \
     --set mock_relying_party_ui.REDIRECT_URI="https://$MOCK_UI_HOST/userprofile" \
     --set istio.hosts\[0\]="$MOCK_UI_HOST"
 
-echo Installing ida internal
-#helm -n $NS install mock-identity-system /d/esignet-mock-services/helm/mock-identity-system --version $CHART_VERSION
+echo Installing mock-identity-system
+helm -n $NS install mock-identity-system mosip/mock-identity-system --version $CHART_VERSION
 
 kubectl -n $NS get deploy mock-relying-party-ui mock-relying-party-service -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
