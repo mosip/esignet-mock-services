@@ -2,4 +2,4 @@
 
 \ir ddl/mockidentitysystem-mock_identity.sql
 
-\ar ddl/authentication.sql
+\ar ddl/mockidentitysystem-kyc_auth.sql
