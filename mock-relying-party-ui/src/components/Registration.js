@@ -28,6 +28,9 @@ export default function Registration({
   const [searchParams, setSearchParams] = useSearchParams();
   const [userInfo, setUserInfo] = useState(null);
   const [status, setStatus] = useState(states.LOADING);
+  const [showRawUserInfo, setShowRawUserInfo] = useState(false);
+  const [address, setAddress] = useState(null);
+  const [emailAddress, setEmailAddress] = useState(null);
   const uri_UI = getURIforRegistration();
 
   const handleLogin = (e) => {
@@ -77,7 +80,10 @@ export default function Registration({
         redirect_uri,
         grant_type
       );
+      let address = getAddress(userInfo?.address);
+      setAddress(address);
       setUserInfo(userInfo);
+      setEmailAddress(userInfo?.email_verified ?? userInfo?.email);
       setStatus(states.LOADED);
     } catch (errormsg) {
       setError({ errorCode: "", errorMsg: errormsg.message });
@@ -85,61 +91,129 @@ export default function Registration({
     }
   };
 
+  const getAddress = (userAddress) => {
+    let address = "";
+
+    if (userAddress?.formatted) {
+      address += userAddress?.formatted + ", ";
+    }
+
+    if (userAddress?.street_address) {
+      address += userAddress?.street_address + ", ";
+    }
+
+    if (userAddress?.addressLine1) {
+      address += userAddress?.addressLine1 + ", ";
+    }
+
+    if (userAddress?.addressLine2) {
+      address += userAddress?.addressLine2 + ", ";
+    }
+
+    if (userAddress?.addressLine3) {
+      address += userAddress?.addressLine3 + ", ";
+    }
+
+    if (userAddress?.locality) {
+      address += userAddress?.locality + ", ";
+    }
+
+    if (userAddress?.city) {
+      address += userAddress?.city + ", ";
+    }
+
+    if (userAddress?.province) {
+      address += userAddress?.province + ", ";
+    }
+
+    if (userAddress?.region) {
+      address += userAddress?.region + ", ";
+    }
+
+    if (userAddress?.postalCode) {
+      address += "(" + userAddress?.postalCode + "), ";
+    }
+
+    if (userAddress?.country) {
+      address += userAddress?.country + ", ";
+    }
+
+    //returning after removing last ", " characters
+    return address.substring(0, address.length - 2);
+  };
+
   return (
     <>
-      <div className="w-full px-16">
-        <h1 className="w-full text-center title-font sm:text-3xl text-3xl mt-8 mb-8 font-medium text-gray-900">
+      <div className="w-full">
+        <h1 className="w-full text-center title-font sm:text-3xl text-3xl my-4 font-medium text-gray-900">
           {t("child_registration")}
         </h1>
 
+        <div className="px-3 flex justify-center">
+          <img
+            alt={t("profile_picture")}
+            className="h-20 w-20"
+            src={userInfo?.picture ? userInfo.picture : "User-Profile-Icon.png"}
+          />
+        </div>
         <div className="flex grid grid-cols-2 gap-2 w-full">
-          <div className="w-full flex flex-col mb-6 text-slate-500">
+          <div className="w-full flex flex-col mb-2 text-slate-500">
             <label className="flex">{t("full_name")}</label>
             <input
               type="text"
               value={userInfo?.given_name ?? userInfo?.name}
-              className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2.5"
+              className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2"
             />
           </div>
-          <div className="w-full flex flex-col mb-6 text-slate-500">
+          <div className="w-full flex flex-col mb-2 text-slate-500">
             <label className="flex">{t("gender")}</label>
             <input
               type="text"
               value={userInfo?.gender}
-              className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2.5"
+              className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2"
             />
           </div>
         </div>
         <div className="flex grid grid-cols-2 gap-2 w-full">
-          <div className="w-full flex flex-col mb-6 text-slate-500">
+          <div className="w-full flex flex-col mb-2 text-slate-500">
             <label className="flex">{t("date_of_birth")}</label>
             <input
               type="text"
               value={userInfo?.birthdate}
-              className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2.5"
+              className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2"
             />
           </div>
-          <div className="w-full flex flex-col mb-6 text-slate-500">
+          <div className="w-full flex flex-col mb-2 text-slate-500">
             <label className="flex">{t("phone_number")}</label>
             <input
               type="text"
-              className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2.5"
-              value={userInfo?.phone_number_verified ??
+              className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2"
+              value={
+                userInfo?.phone_number_verified ??
                 userInfo?.phone ??
-                userInfo?.phone_number}
+                userInfo?.phone_number
+              }
             />
           </div>
         </div>
-        <div className="w-full flex flex-col mb-6 text-slate-500">
-          <label className="flex">{t("address")}</label>
-          <input
-            type="text"
-            value={userInfo?.address}
-            className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2.5"
-          />
+        <div className="flex grid grid-cols-2 gap-2 w-full">
+          <div className="w-full flex flex-col mb-2 text-slate-500">
+            <label className="flex">{t("email_address")}</label>
+            <input
+              type="text"
+              value={emailAddress}
+              className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2"
+            />
+          </div>
+          <div className="w-full flex flex-col mb-2 text-slate-500">
+            <label className="flex">{t("address")}</label>
+            <input
+              type="text"
+              className="rounded bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 text-sm border-gray-300 p-2"
+              value={address}
+            />
+          </div>
         </div>
-
-
         <div className="">
           <button
             type="button"
@@ -153,6 +227,26 @@ export default function Registration({
             text={t("fetch_details")}
             logoPath="esignet_logo.png"
           />
+        </div>
+
+        <div className="px-4">
+          <button
+            type="button"
+            className="font-medium text-cyan-700 hover:underline"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowRawUserInfo(!showRawUserInfo);
+            }}
+          >
+            {showRawUserInfo
+              ? t("hide_raw_user_info")
+              : t("show_raw_user_info")}
+          </button>
+          {showRawUserInfo && (
+            <p dir="ltr" className="break-words">
+              {JSON.stringify(userInfo ?? {})}
+            </p>
+          )}
         </div>
 
         {status === states.LOADING && (
