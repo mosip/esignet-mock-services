@@ -134,9 +134,3 @@ spec:
         {{- if .Values.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.sidecars "context" $) | nindent 8 }}
         {{- end }}
-      volumes:
-        - name: mock-auth-data
-          projected:
-            sources:
-              - configMap:
-                  name: mock-auth-data
