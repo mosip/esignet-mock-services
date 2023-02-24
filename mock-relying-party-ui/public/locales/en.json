@@ -48,7 +48,7 @@
     "hide_raw_user_info": "Hide raw user info"
   },
   "registration": {
-    "child_registration": "Child Registration",
+    "child_registration": "User Registration",
     "full_name": "Full Name",
     "gender": "Gender",
     "date_of_birth": "Date of birth",
