@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-export default function AppointmentConfirmation({ isOpen,username, onClose }) {
+export default function AppointmentConfirmation({ isOpen, username, onClose }) {
 
     return (
         <div
@@ -10,30 +10,25 @@ export default function AppointmentConfirmation({ isOpen,username, onClose }) {
             <div className="fixed inset-0 flex items-center justify-center">
                 <div className="bg-white rounded-lg p-8">
                     <div className="flex items-center">
-                        {/* <img className="h-60 w-full " src='images/BookingConfirmation.jpeg'></img> */}
-
-
-
                         <div
                             className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
                         >
                             <div className="relative w-auto my-6 mx-auto max-w-3xl">
-                                
+
                                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col  bg-white">
-                                    
+
                                     <div className="flex items-start text-white justify-between bg-blue-400 p-2 border-b border-solid border-slate-200 rounded-t">
                                         <h3 className="text-2xl font-semibold">
                                             Appointment Booked Successfully !
                                         </h3>
 
                                     </div>
-                                    
+
                                     <div className="relative p-2 flex-auto border-b border-solid border-slate-200 ">
                                         <ul className="whitespace-pre-wrap">
                                             <li>
-                                                <p className="font-semibold text-sm text-blue-300">
-                                                    Name: {username}
-                                                </p>
+                                                <span className="font-semibold text-sm text-blue-300">
+                                                    Name: </span> <span className="text-sm">{username}</span>
                                             </li>
                                             <li>
                                                 <p className="font-semibold text-sm text-blue-300">Appointment Details:</p>
@@ -44,7 +39,7 @@ export default function AppointmentConfirmation({ isOpen,username, onClose }) {
                                             </li>
                                         </ul>
                                     </div>
-                                
+
                                     <div className="flex items-center justify-start p-2 ">
                                         <Link to="/userprofile">
                                             <button className="bg-blue-500 hover:bg-blue-700 text-white left-0 p-2 m-2 font-bold rounded">
@@ -55,10 +50,6 @@ export default function AppointmentConfirmation({ isOpen,username, onClose }) {
                                 </div>
                             </div>
                         </div>
-
-
-
-
                     </div>
 
                 </div>
