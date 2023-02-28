@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import clientDetails from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
+import { Buffer } from "buffer";
 
 export default function ProfileUI({
   relyingPartyService,
@@ -43,6 +44,15 @@ export default function ProfileUI({
     params = params + "error=" + errorCode;
 
     navigate("/" + params, { replace: true });
+  };
+
+  const buildRedirectParams = (userInfo) => {
+    if (!userInfo) {
+      return "";
+    }
+    let responseStr = JSON.stringify(userInfo);
+    let responseB64 = Buffer.from(responseStr).toString("base64");
+    return "#" + responseB64;
   };
 
   useEffect(() => {
@@ -306,7 +316,7 @@ export default function ProfileUI({
             </li>
             <li>
               <Link 
-                to="/bookappointment"
+                to={"/bookappointment" + buildRedirectParams(userInfo)}
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg

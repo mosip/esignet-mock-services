@@ -1,8 +1,8 @@
 import axios from "axios";
 const baseUrl =
   process.env.NODE_ENV === "development"
-  ? process.env.REACT_APP_MOCK_RELYING_PARTY_SERVER_URL
-  : window._env_.MOCK_RELYING_PARTY_SERVER_URL;
+    ? process.env.REACT_APP_MOCK_RELYING_PARTY_SERVER_URL
+    : window._env_.MOCK_RELYING_PARTY_SERVER_URL;
 const fetchUserInfoEndPoint = "/fetchUserInfo";
 /**
  * Triggers /fetchUserInfo API on relying party server
