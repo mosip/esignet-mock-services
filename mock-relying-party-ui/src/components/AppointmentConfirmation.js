@@ -13,11 +13,12 @@ export default function AppointmentConfirmation({ isOpen, username, onClose }) {
                         <div
                             className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
                         >
-                            <div className="relative w-auto my-6 mx-auto max-w-3xl">
+                            <div className="relative max-w-md  my-6 mx-auto ">
 
                                 <div className="border-0 rounded-lg shadow-lg relative flex flex-col  bg-white">
 
-                                    <div className="flex items-start text-white justify-between bg-blue-400 p-2 border-b border-solid border-slate-200 rounded-t">
+                                    <div className="flex items-start text-white justify-between bg-blue-500 p-2 border-b border-solid border-slate-200 rounded-t">
+                                        <img src="images/successIcon.png" className="h-10 w-10"></img>
                                         <h3 className="text-2xl font-semibold">
                                             Appointment Booked Successfully !
                                         </h3>
@@ -25,20 +26,22 @@ export default function AppointmentConfirmation({ isOpen, username, onClose }) {
                                     </div>
 
                                     <div className="relative p-2 flex-auto border-b border-solid border-slate-200 ">
-                                        <ul className="whitespace-pre-wrap">
-                                            <li>
-                                                <span className="font-semibold text-sm text-blue-300">
+                                        <div className="whitespace-pre-wrap">
+                                            <div>
+                                                <span className="font-semibold text-sm text-blue-600">
                                                     Name: </span> <span className="text-sm">{username}</span>
-                                            </li>
-                                            <li>
-                                                <p className="font-semibold text-sm text-blue-300">Appointment Details:</p>
-                                                <span className="text-sm">4th March 2023, 9:00-10:00 AM</span>
-                                            </li>
-                                            <li>
+                                                <span className="float-right font-semibold text-sm text-blue-600">Application Number
+                                                    <p className="text-black ml-5">7658933782</p><img src="images/qr-code.png" className="h-10 w-10 ml-10"></img></span>
+                                                <p className="font-semibold text-sm text-blue-600">Appointment Details:</p>
+                                                <span className="text-sm">4th March 2023, 9:00-10:00 AM</span><br></br>
                                                 <span className="whitespace-pre-wrap text-sm"># 45/2, Colombia Asia, Marathahalli - Sarjapur Rd, Opposite Iblur, Bellandur, Bengaluru, Karnataka-560102</span>
-                                            </li>
-                                        </ul>
+                                            </div>
+                                            <div>
+
+                                            </div>
+                                        </div>
                                     </div>
+
 
                                     <div className="flex items-center justify-start p-2 ">
                                         <Link to="/userprofile">

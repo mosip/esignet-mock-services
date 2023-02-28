@@ -3,12 +3,12 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import clientDetails from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
-import { Buffer } from "buffer";
 
 export default function ProfileUI({
   relyingPartyService,
   i18nKeyPrefix = "profileui",
 }) {
+  const userInfo_keyname = "user_info";
   const post_fetchUserInfo = relyingPartyService.post_fetchUserInfo;
   const get_claimProvider = relyingPartyService.get_claimProvider;
   const get_currentMedications = relyingPartyService.get_currentMedications;
@@ -46,39 +46,20 @@ export default function ProfileUI({
     navigate("/" + params, { replace: true });
   };
 
-  const buildRedirectParams = (userInfo) => {
-    if (!userInfo) {
-      return "";
-    }
-    let responseStr = JSON.stringify(userInfo);
-    let responseB64 = Buffer.from(responseStr).toString("base64");
-    return "#" + responseB64;
-  };
-
   useEffect(() => {
     const getSearchParams = async () => {
       let authCode = searchParams.get("code");
       let errorCode = searchParams.get("error");
       let error_desc = searchParams.get("error_description");
-
       if (errorCode) {
         navigateToLogin(errorCode, error_desc);
         return;
       }
-
-      if (authCode) {
-        getUserDetails(authCode);
-        getClaimProvider();
-        getCurrentMedication();
-        getMessages();
-        getAppointment();
-      } else {
-        setError({
-          errorCode: "authCode_missing",
-        });
-        setStatus(states.ERROR);
-        return;
-      }
+      getClaimProvider();
+      getCurrentMedication();
+      getMessages();
+      getAppointment();
+      getUserDetails(authCode);
     };
     getSearchParams();
   }, []);
@@ -86,12 +67,10 @@ export default function ProfileUI({
   const getUserDetails = async (authCode) => {
     setError(null);
     setUserInfo(null);
-
     try {
       let client_id = clientDetails.clientId;
       let redirect_uri = clientDetails.redirect_uri_userprofile;
       let grant_type = clientDetails.grant_type;
-
       var userInfo = await post_fetchUserInfo(
         authCode,
         client_id,
@@ -99,12 +78,19 @@ export default function ProfileUI({
         grant_type
       );
       setUserInfo(userInfo);
+      localStorage.setItem(userInfo_keyname, JSON.stringify(userInfo));
       setStatus(states.LOADED);
     } catch (errormsg) {
-      setError({ errorCode: "", errorMsg: errormsg.message });
-      setStatus(states.ERROR);
+      //Load from local storage
+      if (localStorage.getItem(userInfo_keyname)) {
+        let userInf = JSON.parse(localStorage.getItem(userInfo_keyname));
+        setUserInfo(userInf);
+      } else {
+        navigateToLogin("session_expired", "Session Expired");
+      }
     }
   };
+
   //claimproviders details
   const getClaimProvider = async () => {
     setError(null);
@@ -316,7 +302,7 @@ export default function ProfileUI({
             </li>
             <li>
               <Link 
-                to={"/bookappointment" + buildRedirectParams(userInfo)}
+                to="/bookappointment"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg
@@ -488,12 +474,15 @@ export default function ProfileUI({
                     <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
                       Address: {userInfo?.address}
                     </a>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    <button
+                      className="w-full text-left block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      onClick={(e) => {
+                        localStorage.removeItem(userInfo_keyname);
+                        navigateToLogin("logged_out", "User Logout");
+                      }}
                     >
                       Sign Out
-                    </a>
+                    </button>
                   </div>
                 </div>
               )}

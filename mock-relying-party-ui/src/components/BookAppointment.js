@@ -8,6 +8,7 @@ export default function BookAppointment({
   relyingPartyService,
   i18nKeyPrefix = "bookappointment",
 }) {
+  const userInfo_keyname = "user_info";
   const get_claimProvider = relyingPartyService.get_claimProvider;
   const get_messages = relyingPartyService.get_messages;
   const { t, i18n } = useTranslation("translation", {
@@ -405,12 +406,15 @@ export default function BookAppointment({
                     <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
                       Address: {userInfo?.address}
                     </a>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    <button
+                      className="w-full text-left block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      onClick={(e) => {
+                        localStorage.removeItem(userInfo_keyname);
+                        navigateToLogin("logged_out", "User Logout");
+                      }}
                     >
                       Sign Out
-                    </a>
+                    </button>
                   </div>
                 </div>
               )}
@@ -424,7 +428,7 @@ export default function BookAppointment({
               <div>
                 <img src="images/Schedule for Vaccination.jpeg"></img>
               </div>
-              <div className="right-10 p-2 m-2">
+              <div className="p-2 m-2">
                 <Link to="/userprofile">
                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Cancel
@@ -529,7 +533,7 @@ export default function BookAppointment({
                         </p>
 
                         <p className="text-sm text-gray-500 truncate whitespace-pre-wrap">
-                          Hi {userInfo["name"]} , {message["message"]}
+                          Hi {userInfo?.name} , {message["message"]}
                         </p>
                       </div>
                       <button
