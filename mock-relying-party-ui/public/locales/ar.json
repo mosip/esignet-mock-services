@@ -48,7 +48,7 @@
     "hide_raw_user_info": "إخفاء معلومات المستخدم الأولية"
   },
   "registration": {
-    "child_registration": "تسجيل الطفل",
+    "child_registration": "تسجيل المستخدم",
     "full_name": "الاسم الكامل",
     "gender": "جنس تذكير أو تأنيث",
     "date_of_birth": "تاريخ الولادة",
