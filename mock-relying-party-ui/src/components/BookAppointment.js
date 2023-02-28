@@ -484,7 +484,7 @@ export default function BookAppointment({
                                 <button onClick={() => setIsDialogOpen(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 rounded">
                                     Book Appointment
                                 </button>
-                                <AppointmentConfirmation isOpen={isDialogOpen} onClose={handleDialogClose} />
+                                <AppointmentConfirmation username={userInfo?.name} isOpen={isDialogOpen} onClose={handleDialogClose} />
                             </div>
                             <div className="w-full p-2 grid grid-cols-3 rounded bg-white border border-gray-200  shadow sm:p-2 m-1 dark:bg-gray-800 dark:border-gray-700">
                                 <div>
