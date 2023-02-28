@@ -7,7 +7,6 @@ import { LoadingStates as states } from "../constants/states";
 export default function ProfileUI({
   relyingPartyService,
   i18nKeyPrefix = "profileui",
-  langOptions,
 }) {
   const post_fetchUserInfo = relyingPartyService.post_fetchUserInfo;
   const get_claimProvider = relyingPartyService.get_claimProvider;
@@ -24,26 +23,14 @@ export default function ProfileUI({
   //Date with 10 days ahead from current date
   const futureDate = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000);
 
-  const options = { weekday: "long" };
-  const futureWeekday = new Intl.DateTimeFormat("en-US", options).format(
-    futureDate
-  );
-
-  //Date with 10 days before from current date
-  const pastDate = new Date(currentDate.getTime() - 10 * 24 * 60 * 60 * 1000);
-
-  //Getting JSON data of claim Providers
-  const [claimProvider, fetchClaimProviders] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [error, setError] = useState({ errorCode: "", errorMsg: "" });
   const [userInfo, setUserInfo] = useState(null);
   const [status, setStatus] = useState(states.LOADING);
-  const [showRawUserInfo, setShowRawUserInfo] = useState(false);
   const [claimInfo, setClaimInfo] = useState([]);
   const [medicationInfo, setMedicationInfo] = useState([]);
   const [messagesInfo, setMessagesInfo] = useState([]);
   const [appointmentInfo, setappointmentInfo] = useState([]);
-const [length,lengthInfo]= useState();
   const navigate = useNavigate();
 
   const navigateToLogin = (errorCode, errorDescription) => {
@@ -127,7 +114,7 @@ const [length,lengthInfo]= useState();
     setError(null);
     setClaimInfo(null);
     try {
-      var medicationInfo = await get_currentMedications();        
+      var medicationInfo = await get_currentMedications();
       setMedicationInfo(medicationInfo);
       setStatus(states.LOADED);
     } catch (errormsg) {
@@ -183,7 +170,7 @@ const [length,lengthInfo]= useState();
             <li>
               <a
                 href="#"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg
                   className="h-5 w-5 text-black"
@@ -208,7 +195,7 @@ const [length,lengthInfo]= useState();
             <li>
               <a
                 href="#"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg
                   className="h-5 w-5 text-black"
@@ -229,7 +216,7 @@ const [length,lengthInfo]= useState();
             <li>
               <a
                 href="#"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg
                   className="h-5 w-5 text-black"
@@ -249,7 +236,7 @@ const [length,lengthInfo]= useState();
             <li>
               <a
                 href="#"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg
                   className="h-5 w-5 text-black"
@@ -273,7 +260,7 @@ const [length,lengthInfo]= useState();
             <li>
               <a
                 href="#"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg
                   className="h-5 w-5 text-black"
@@ -294,7 +281,7 @@ const [length,lengthInfo]= useState();
             <li>
               <a
                 href="#"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg
                   className="h-5 w-5 text-black"
@@ -320,7 +307,7 @@ const [length,lengthInfo]= useState();
             <li>
               <a
                 href="#"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg
                   className="h-5 w-5 text-black"
@@ -349,7 +336,7 @@ const [length,lengthInfo]= useState();
             <li>
               <a
                 href="#"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg
                   className="h-5 w-5 text-black"
@@ -372,7 +359,7 @@ const [length,lengthInfo]= useState();
               <li>
                 <a
                   href="#"
-                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
                 >
                   <svg
                     className="h-5 w-5 text-black"
@@ -395,7 +382,7 @@ const [length,lengthInfo]= useState();
               <li>
                 <a
                   href="#"
-                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
                 >
                   <svg
                     className="h-5 w-5 text-black"
@@ -424,13 +411,13 @@ const [length,lengthInfo]= useState();
         </div>
       </aside>
 
-      <div className="p-4 sm:ml-64 overflow-auto  bg-gray-50 dark:bg-gray-800 font-sans bg-none">
+      <div className="p-4 sm:ml-64 overflow-auto  bg-gray-50 font-sans bg-none">
         <div className="flex flex-wrap  justify-between items-center mx-auto max-w-screen-xl px-4 md:px-6 py-2.5">
           <a className="flex-1 items-center">
-            <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+            <span className="self-center text-2xl font-semibold whitespace-nowrap">
               Welcome, {userInfo?.name}
             </span>
-            <p className="text-sm text-gray-500 truncate dark:text-gray-400 bg-gray-50 font-sans">
+            <p className="text-sm text-gray-500 truncate bg-gray-50 font-sans">
               You have {4} new messages that needs your attention
             </p>
           </a>
@@ -441,10 +428,14 @@ const [length,lengthInfo]= useState();
                 <img
                   alt={"profile_picture"}
                   className="h-12 w-12 "
-                  src={userInfo?.picture}
+                  src={
+                    userInfo?.picture
+                      ? userInfo.picture
+                      : "User-Profile-Icon.png"
+                  }
                 />
                 <div className="flex ml-3 my-3">
-                  <p className="text-gray-500 truncate dark:text-gray-400 bg-gray-50">
+                  <p className="text-gray-500 truncate bg-gray-50">
                     {userInfo?.name}
                   </p>
                 </div>
@@ -505,17 +496,14 @@ const [length,lengthInfo]= useState();
               <div className="w-full sm:w-1/2 md:w-30 p-1 ">
                 <p className="text-lg font-medium mb-4">Current Medication</p>
 
-                <div className="bg-white border border-gray-200 rounded   shadow sm:p-4 dark:bg-gray-800 dark:border-gray-700">
+                <div className="bg-white border border-gray-200 rounded   shadow sm:p-4">
                   <div className="flow-root">
-                    <ul
-                      role="list"
-                      className="divide-y divide-gray-200 dark:divide-gray-700"
-                    >
+                    <ul role="list" className="divide-y divide-gray-200">
                       {medicationInfo?.medications?.map((data, index) => (
                         <li className="py-3 sm:py-1" key={index}>
                           <div className="flex items-center space-x-4">
                             <div className="flex-1 min-w-0 ">
-                              <p className="text-xs font-medium text-gray-900 truncate dark:text-white whitespace-pre-wrap inline-flex">
+                              <p className="text-xs font-medium text-gray-900 truncate whitespace-pre-wrap inline-flex">
                                 <svg
                                   className="h-5 w-5 text-gray-500"
                                   width="24"
@@ -534,7 +522,7 @@ const [length,lengthInfo]= useState();
                                 </svg>
                                 {data["tabletName"]}
                               </p>
-                              <p className="text-xs text-gray-500 truncate dark:text-gray-400">
+                              <p className="text-xs text-gray-500 truncate">
                                 {data["dailyDosage"]}
                               </p>
                             </div>
@@ -546,13 +534,13 @@ const [length,lengthInfo]= useState();
                         <div className="flex items-center justify-between my-1 ">
                           <a
                             href="#"
-                            className="text-sm text-gray-500 truncate hover:underline dark:text-gray-400 "
+                            className="text-sm text-gray-500 truncate hover:underline "
                           >
                             See all interactions
                           </a>
                           <a
                             href="#"
-                            className="text-sm text-gray-500 truncate hover:underline dark:text-gray-400 inline-flex"
+                            className="text-sm text-gray-500 truncate hover:underline inline-flex"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -578,20 +566,17 @@ const [length,lengthInfo]= useState();
 
               <div className="w-full sm:w-1/2 md:w-30 p-1">
                 <p className="text-lg font-medium mb-4">Next Appointment</p>
-                <div className="bg-white border border-gray-200 rounded shadow sm:p-4 dark:bg-gray-800 dark:border-gray-700">
+                <div className="bg-white border border-gray-200 rounded shadow sm:p-4">
                   <div className="flow-root">
-                    <ul
-                      role="list"
-                      className="divide-y divide-gray-200 dark:divide-gray-700"
-                    >
+                    <ul role="list" className="divide-y divide-gray-200">
                       {appointmentInfo?.appointment?.map((data, index) => (
                         <li className="py-3 sm:py-1" key={index}>
                           <div className="flex items-center space-x-4">
                             <div className="flex-1 min-w-0 my-1">
-                              <p className=" font-medium text-lg text-gray-900 truncate dark:text-white whitespace-pre-wrap">
+                              <p className=" font-medium text-lg text-gray-900 truncate whitespace-pre-wrap">
                                 {futureDate.toDateString()}
                               </p>
-                              <p className="text-xs text-gray-500 truncate dark:text-gray-400 inline-flex whitespace-pre-wrap">
+                              <p className="text-xs text-gray-500 truncate inline-flex whitespace-pre-wrap">
                                 <svg
                                   className="h-4 w-4 text-gray-500"
                                   viewBox="0 0 24 24"
@@ -608,7 +593,7 @@ const [length,lengthInfo]= useState();
                                 {data["time"]}
                               </p>
 
-                              <div className="text-xs text-gray-500 truncate dark:text-gray-400 whitespace-pre-wrap inline-flex">
+                              <div className="text-xs text-gray-500 truncate whitespace-pre-wrap inline-flex">
                                 <svg
                                   className="h-4 w-4 text-gray-500"
                                   viewBox="0 0 24 24"
@@ -633,10 +618,10 @@ const [length,lengthInfo]= useState();
                                     alt="Jese Leos image"
                                   />
                                   <div className="ml-3">
-                                    <p className="text-sm font-medium text-gray-900 truncate dark:text-white whitespace-pre-wrap">
+                                    <p className="text-sm font-medium text-gray-900 truncate whitespace-pre-wrap">
                                       {data["doctorName"]}
                                     </p>
-                                    <p className="text-xs text-gray-500 truncate dark:text-gray-400">
+                                    <p className="text-xs text-gray-500 truncate">
                                       {data["department"]}
                                     </p>
                                   </div>
@@ -650,7 +635,7 @@ const [length,lengthInfo]= useState();
                         <div className="flex items-center justify-center  border-t border-gray-300">
                           <a
                             href="#"
-                            className="text-sm text-blue-600 hover:underline truncate dark:text-gray-400 my-0.5"
+                            className="text-sm text-blue-600 hover:underline truncate my-0.5"
                           >
                             Manage Appointment
                           </a>
@@ -661,24 +646,22 @@ const [length,lengthInfo]= useState();
                 </div>
               </div>
 
-              <div className="w-full p-2 grid grid-cols-3 rounded bg-white border border-gray-200  shadow sm:p-2 m-1 dark:bg-gray-800 dark:border-gray-700">
+              <div className="w-full p-2 grid grid-cols-3 rounded bg-white border border-gray-200  shadow sm:p-2 m-1">
                 <div>
-                  <p className=" text-lg font-medium  dark:text-gray-400">
-                    Vaccinations
-                  </p>
+                  <p className=" text-lg font-medium ">Vaccinations</p>
                 </div>
                 <div className="col-end-5">
                   <a
                     href="#"
-                    className=" text-sm text-gray-500 truncate dark:text-gray-400 hover:underline"
+                    className=" text-sm text-gray-500 truncate hover:underline"
                   >
                     Vaccinations history
                   </a>
                 </div>
               </div>
-              <div className="flex overflow-x-scroll">
-                <table className="p-4 mx-1 mb-4 text-sm table-auto whitespace-no-wrap   shadow-lg text-sm text-left text-gray-500 dark:text-gray-400 shadow-md ">
-                  <thead className="text-xs text-gray-700 uppercase bg-white dark:bg-gray-700 dark:text-gray-400">
+              <div className="w-full flex overflow-x-scroll">
+                <table className="w-full p-4 mx-1 mb-4 text-sm table-auto whitespace-no-wrap   shadow-lg text-sm text-left text-gray-500 shadow-md ">
+                  <thead className="text-xs text-gray-700 uppercase bg-white">
                     <tr>
                       <th scope="col" className="px-6 py-3">
                         <p>Vaccination Details</p>
@@ -689,7 +672,7 @@ const [length,lengthInfo]= useState();
                       <th scope="col" className="px-6 py-3">
                         Vaccination Center
                       </th>
-                     
+
                       <th scope="col" className="px-6 py-3">
                         Total Cost
                       </th>
@@ -702,13 +685,10 @@ const [length,lengthInfo]= useState();
                           item["days"] * 24 * 60 * 60 * 1000
                       );
                       return (
-                        <tr
-                          className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                          key={idx}
-                        >
+                        <tr className="bg-white border-b" key={idx}>
                           <th
                             scope="row"
-                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           >
                             <p className="text-xs">{item["vaccinationName"]}</p>
                           </th>
@@ -738,7 +718,7 @@ const [length,lengthInfo]= useState();
                 );
                 return (
                   <div
-                    className=" bg-white overflow-auto border rounded border-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 shadow sm:p-4 dark:bg-gray-800 dark:border-gray-700 "
+                    className=" bg-white overflow-auto border rounded border-gray-200 hover:bg-gray-100 shadow sm:p-4 "
                     key={index}
                   >
                     <div className="flex ">
@@ -749,20 +729,20 @@ const [length,lengthInfo]= useState();
                       />
 
                       <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                        <p className="text-sm font-medium text-gray-900 truncate">
                           {message["doctorName"]}
                         </p>
-                        <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                        <p className="text-sm text-gray-500 truncate">
                           {pastDate.toDateString()}
                         </p>
 
-                        <p className="text-sm text-gray-500 truncate dark:text-gray-400 whitespace-pre-wrap">
-                          Hi {userInfo["name"]} , {message["message"]}
+                        <p className="text-sm text-gray-500 truncate whitespace-pre-wrap">
+                          Hi {userInfo?.name} , {message["message"]}
                         </p>
                       </div>
                       <button
                         type="button"
-                        className="ml-auto -mx-1.5 -my-1.5  text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+                        className="ml-auto -mx-1.5 -my-1.5  text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
                         data-dismiss-target="#toast-message-cta"
                         aria-label="Close"
                       >
