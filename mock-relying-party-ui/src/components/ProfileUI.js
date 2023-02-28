@@ -305,9 +305,9 @@ export default function ProfileUI({
               </a>
             </li>
             <li>
-            <Link
+              <Link 
                 to="/bookappointment"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
                 <svg
                   className="h-5 w-5 text-black"
@@ -328,9 +328,9 @@ export default function ProfileUI({
                   <line x1="4" y1="11" x2="20" y2="11" />{" "}
                   <rect x="8" y="15" width="2" height="2" />
                 </svg>{" "}
-                <button className="flex-1 ml-3 whitespace-nowrap">
-                  Schedule for Vaccination
-                </button>
+                <span className="flex-1 ml-3 whitespace-nowrap">
+                  Vaccination
+                </span>
               </Link>
             </li>
             <li>
