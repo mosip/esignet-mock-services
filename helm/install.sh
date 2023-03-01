@@ -87,6 +87,9 @@ helm -n $NS install mock-relying-party-ui ./mock-relying-party-ui \
     --set mock_relying_party_ui.REDIRECT_URI="https://$MOCK_UI_HOST/userprofile" \
     --set istio.hosts\[0\]="$MOCK_UI_HOST"
 
+echo Installing mock-identity-system
+helm -n $NS install mock-identity-system ./mock-identity-system --version $CHART_VERSION
+
 kubectl -n $NS get deploy mock-relying-party-ui mock-relying-party-service -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
 echo "Installed Mock Relying Party Service & Mock Relying Party UI"
