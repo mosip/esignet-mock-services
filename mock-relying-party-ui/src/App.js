@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import langConfigService from "./services/langConfigService";
+import BookAppointmentPage from "./pages/BookAppointment";
+
 
 function App() {
   const { i18n } = useTranslation();
@@ -57,6 +59,7 @@ function App() {
           <Route path="/signup" element={<SignUpPage langOptions={langOptions} />} />
           <Route path="/userprofile" element={<UserProfilePage langOptions={langOptions} />} />
           <Route path="/registration" element={<RegistrationPage langOptions={langOptions} />} />
+          <Route path="/bookappointment" element={<BookAppointmentPage/>}></Route>
         </Routes>
       </BrowserRouter>
       <ToastContainer position="top-center" hideProgressBar={true} pauseOnHover={false} draggable={false} />
