@@ -4,6 +4,8 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { LoadingStates as states } from "../constants/states";
 import AppointmentConfirmation from "./AppointmentConfirmation";
 export default function BookAppointment({
+  address,
+  emailAddress,
   userInfo,
   relyingPartyService,
   i18nKeyPrefix = "bookappointment",
@@ -351,7 +353,7 @@ export default function BookAppointment({
           </a>
 
           <div className="flex items-center">
-            <div className="relative ">
+            <div className="relative">
               <div className="flex">
                 <img
                   alt={"profile_picture"}
@@ -389,10 +391,20 @@ export default function BookAppointment({
                 </button>
               </div>
               {isOpen && (
-                <div className="origin-top-left absolute left-0 mt-2 w-25 flow-root  shadow-lg">
+                <div className="origin-top-left absolute left-0 mt-2 w-25 flow-root shadow-lg">
                   <div className="px-1 py-1 rounded-md bg-white shadow-xs overflow-clip truncate  w-29 ">
-                    <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                      Email: {userInfo?.email}
+                    <a
+                      className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      title={emailAddress}
+                    >
+                      Email:
+                      <span className="truncate">
+                        {" " + emailAddress?.split("@")[0]}
+                      </span>
+                      @
+                      <span className="truncate">
+                        {emailAddress?.split("@")[1]}
+                      </span>
                     </a>
                     <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
                       DOB: {userInfo?.birthdate}
@@ -404,7 +416,7 @@ export default function BookAppointment({
                       Mobile No: {userInfo?.phone_number}
                     </a>
                     <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                      Address: {userInfo?.address}
+                      Address: {address}
                     </a>
                     <button
                       className="w-full text-left block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
@@ -440,7 +452,11 @@ export default function BookAppointment({
                 >
                   Book Appointment
                 </button>
-                <AppointmentConfirmation username={userInfo?.name} isOpen={isDialogOpen} onClose={handleDialogClose} />
+                <AppointmentConfirmation
+                  username={userInfo?.name}
+                  isOpen={isDialogOpen}
+                  onClose={handleDialogClose}
+                />
               </div>
               <div className="w-full p-2 grid grid-cols-3 rounded bg-white border border-gray-200  shadow sm:p-2 m-1">
                 <div>
@@ -478,7 +494,7 @@ export default function BookAppointment({
                     {claimInfo?.claimproviders?.map((item, idx) => {
                       const pastDate = new Date(
                         currentDate.getTime() -
-                        item["days"] * 24 * 60 * 60 * 1000
+                          item["days"] * 24 * 60 * 60 * 1000
                       );
                       return (
                         <tr className="bg-white border-b" key={idx}>

@@ -522,7 +522,7 @@ export default function ProfileUI({
                     <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"  title={emailAddress}>
                       Email:
                       <span className="truncate">
-                        {emailAddress?.split("@")[0]}
+                        {" " + emailAddress?.split("@")[0]}
                       </span>
                       @
                       <span className="truncate">
