@@ -48,7 +48,7 @@
     "hide_raw_user_info": "إخفاء معلومات المستخدم الأولية"
   },
   "registration": {
-    "child_registration": "تسجيل الطفل",
+    "child_registration": "تسجيل المستخدم",
     "full_name": "الاسم الكامل",
     "gender": "جنس تذكير أو تأنيث",
     "date_of_birth": "تاريخ الولادة",
@@ -57,7 +57,10 @@
     "fetch_details": "إحضار التفاصيل من e-Signet",
     "register": "يسجل",
     "loading_msg": "تحميل! يرجى الانتظار...",
-    "phone_number": "رقم التليفون"
+    "phone_number": "رقم التليفون",
+    "email_address": "عنوان البريد الإلكتروني",
+    "show_raw_user_info": "إظهار معلومات المستخدم الأولية",
+    "hide_raw_user_info": "إخفاء معلومات المستخدم الأولية"
   },
   "error": {
     "sign_in_failed": "المصادقة فشلت! حاول تسجيل الدخول باستخدام e-Signet",

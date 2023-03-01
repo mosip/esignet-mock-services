@@ -483,7 +483,7 @@ public class MockAuthenticationService implements Authenticator {
 
     private List<String> resolveAuthMethods(String relyingPartyId) {
         //TODO - Need to check the policy to resolve supported auth methods
-        return Arrays.asList("PIN", "OTP", "BIO");
+        return Arrays.asList("PIN", "OTP", "BIO", "WLA");
     }
     
     private static String generateB64EncodedHash(String algorithm, String value) throws NoSuchAlgorithmException {

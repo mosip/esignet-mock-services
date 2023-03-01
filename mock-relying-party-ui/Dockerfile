@@ -3,12 +3,14 @@ FROM node:12.18.4-alpine as build
 ARG esignet_ui_base_url
 ARG mock_relying_party_server_url
 ARG redirect_uri
+ARG redirect_uri_registration
 ARG client_id
 ARG acrs
 
 ENV ESIGNET_UI_BASE_URL=$esignet_ui_base_url
 ENV MOCK_RELYING_PARTY_SERVER_URL=$mock_relying_party_server_url
 ENV REDIRECT_URI=$redirect_uri
+ENV REDIRECT_URI_REGISTRATION=$redirect_uri_registration
 ENV CLIENT_ID=$client_id
 ENV ACRS=$acrs
 
@@ -83,7 +85,7 @@ COPY ./env.sh ${work_dir}/env.sh
 # Make our shell script executable
 RUN chmod +x ${work_dir}/env.sh
 
-RUN echo "ESIGNET_UI_BASE_URL=$ESIGNET_UI_BASE_URL" > ${work_dir}/.env && echo "MOCK_RELYING_PARTY_SERVER_URL=$MOCK_RELYING_PARTY_SERVER_URL" >> ${work_dir}/.env && echo "REDIRECT_URI=$REDIRECT_URI" >> ${work_dir}/.env && echo "CLIENT_ID=$CLIENT_ID" >> ${work_dir}/.env && echo "ACRS=$ACRS" >> ${work_dir}/.env
+RUN echo "ESIGNET_UI_BASE_URL=$ESIGNET_UI_BASE_URL" > ${work_dir}/.env && echo "MOCK_RELYING_PARTY_SERVER_URL=$MOCK_RELYING_PARTY_SERVER_URL" >> ${work_dir}/.env && echo "REDIRECT_URI=$REDIRECT_URI" >> ${work_dir}/.env && echo "REDIRECT_URI_REGISTRATION=$REDIRECT_URI_REGISTRATION" >> ${work_dir}/.env && echo "CLIENT_ID=$CLIENT_ID" >> ${work_dir}/.env && echo "ACRS=$ACRS" >> ${work_dir}/.env
 
 # change permissions of file inside working dir
 RUN chown -R ${container_user}:${container_user} ${work_dir}

@@ -41,7 +41,7 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
   const navList = [
     { label: "home", url: "#" },
     { label: "polices", url: "#" },
-    { label: "registration", url: "#" },
+    { label: "registration", url: "/registration" },
     { label: "gov_circulars", url: "#" },
     { label: "recruitment", url: "#" },
     { label: "about_us", url: "#" },
