@@ -88,7 +88,7 @@ helm -n $NS install mock-relying-party-ui ./mock-relying-party-ui \
     --set istio.hosts\[0\]="$MOCK_UI_HOST"
 
 echo Installing mock-identity-system
-helm -n $NS install mock-identity-system ./mock-identity-system --version $CHART_VERSION
+helm -n $NS install mock-identity-system mosip/mock-identity-system --version $CHART_VERSION
 
 kubectl -n $NS get deploy mock-relying-party-ui mock-relying-party-service -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
