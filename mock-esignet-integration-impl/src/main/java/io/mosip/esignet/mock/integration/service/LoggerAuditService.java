@@ -17,10 +17,31 @@ import javax.validation.constraints.NotNull;
 @Slf4j
 public class LoggerAuditService implements AuditPlugin {
 
-    @Async
+	@Async
     @Override
     public void logAudit(@NotNull Action action, @NotNull ActionStatus status, @NotNull AuditDTO auditDTO, Throwable t) {
-        addAuditDetailsToMDC(auditDTO);
+        audit(null, action, status, auditDTO, t);
+    }
+    
+    @Async
+    @Override
+	public void logAudit(String username, Action action, ActionStatus status, AuditDTO auditDTO, Throwable t) {
+    	audit(username, action, status, auditDTO, t);
+	}
+
+    private void addAuditDetailsToMDC(AuditDTO auditDTO) {
+        if(auditDTO != null) {
+            MDC.put("transactionId", auditDTO.getTransactionId());
+            MDC.put("clientId", auditDTO.getClientId());
+            MDC.put("relyingPartyId", auditDTO.getRelyingPartyId());
+            MDC.put("state", auditDTO.getState());
+            MDC.put("authCodeHash", auditDTO.getCodeHash());
+            MDC.put("accessTokenHash", auditDTO.getAccessTokenHash());
+        }
+    }
+    
+    public void audit(String username, Action action, ActionStatus status, AuditDTO auditDTO, Throwable t) {
+    	addAuditDetailsToMDC(auditDTO);
         try {
             if(t != null) {
                 log.error(action.name(), t);
@@ -32,21 +53,10 @@ public class LoggerAuditService implements AuditPlugin {
                     log.error(action.name());
                     break;
                 default:
-                    log.info(action.name());
+                    log.info(username != null ? "Sessionuser: " +username+ "with action: " +action.name() : action.name());
             }
         } finally {
             MDC.clear();
-        }
-    }
-
-    private void addAuditDetailsToMDC(AuditDTO auditDTO) {
-        if(auditDTO != null) {
-            MDC.put("transactionId", auditDTO.getTransactionId());
-            MDC.put("clientId", auditDTO.getClientId());
-            MDC.put("relyingPartyId", auditDTO.getRelyingPartyId());
-            MDC.put("state", auditDTO.getState());
-            MDC.put("authCodeHash", auditDTO.getCodeHash());
-            MDC.put("accessTokenHash", auditDTO.getAccessTokenHash());
         }
     }
 }
