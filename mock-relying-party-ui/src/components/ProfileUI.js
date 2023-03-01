@@ -32,6 +32,9 @@ export default function ProfileUI({
   const [medicationInfo, setMedicationInfo] = useState([]);
   const [messagesInfo, setMessagesInfo] = useState([]);
   const [appointmentInfo, setappointmentInfo] = useState([]);
+  const [address, setAddress] = useState(null);
+  const [emailAddress, setEmailAddress] = useState(null);
+
   const navigate = useNavigate();
 
   const navigateToLogin = (errorCode, errorDescription) => {
@@ -77,18 +80,75 @@ export default function ProfileUI({
         redirect_uri,
         grant_type
       );
+      let address = getAddress(userInfo?.address);
+      setAddress(address);
       setUserInfo(userInfo);
+      setEmailAddress(userInfo?.email_verified ?? userInfo?.email);
       localStorage.setItem(userInfo_keyname, JSON.stringify(userInfo));
       setStatus(states.LOADED);
     } catch (errormsg) {
       //Load from local storage
       if (localStorage.getItem(userInfo_keyname)) {
         let userInf = JSON.parse(localStorage.getItem(userInfo_keyname));
+        let address = getAddress(userInf?.address);
+        setAddress(address);
+        setEmailAddress(userInf?.email_verified ?? userInf?.email);
         setUserInfo(userInf);
       } else {
         navigateToLogin("session_expired", "Session Expired");
       }
     }
+  };
+
+  const getAddress = (userAddress) => {
+    let address = "";
+
+    if (userAddress?.formatted) {
+      address += userAddress?.formatted + ", ";
+    }
+
+    if (userAddress?.street_address) {
+      address += userAddress?.street_address + ", ";
+    }
+
+    if (userAddress?.addressLine1) {
+      address += userAddress?.addressLine1 + ", ";
+    }
+
+    if (userAddress?.addressLine2) {
+      address += userAddress?.addressLine2 + ", ";
+    }
+
+    if (userAddress?.addressLine3) {
+      address += userAddress?.addressLine3 + ", ";
+    }
+
+    if (userAddress?.locality) {
+      address += userAddress?.locality + ", ";
+    }
+
+    if (userAddress?.city) {
+      address += userAddress?.city + ", ";
+    }
+
+    if (userAddress?.province) {
+      address += userAddress?.province + ", ";
+    }
+
+    if (userAddress?.region) {
+      address += userAddress?.region + ", ";
+    }
+
+    if (userAddress?.postalCode) {
+      address += "(" + userAddress?.postalCode + "), ";
+    }
+
+    if (userAddress?.country) {
+      address += userAddress?.country + ", ";
+    }
+
+    //returning after removing last ", " characters
+    return address.substring(0, address.length - 2);
   };
 
   //claimproviders details
@@ -301,7 +361,7 @@ export default function ProfileUI({
               </a>
             </li>
             <li>
-              <Link 
+              <Link
                 to="/bookappointment"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
@@ -459,8 +519,15 @@ export default function ProfileUI({
               {isOpen && (
                 <div className="origin-top-left absolute left-0 mt-2 w-25 flow-root  shadow-lg">
                   <div className="px-1 py-1 rounded-md bg-white shadow-xs overflow-clip truncate  w-29 ">
-                    <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                      Email: {userInfo?.email}
+                    <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"  title={emailAddress}>
+                      Email:
+                      <span className="truncate">
+                        {emailAddress?.split("@")[0]}
+                      </span>
+                      @
+                      <span className="truncate">
+                        {emailAddress?.split("@")[1]}
+                      </span>
                     </a>
                     <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
                       DOB: {userInfo?.birthdate}
@@ -471,8 +538,8 @@ export default function ProfileUI({
                     <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
                       Mobile No: {userInfo?.phone_number}
                     </a>
-                    <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                      Address: {userInfo?.address}
+                    <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" title={address}>
+                      Address: {address}
                     </a>
                     <button
                       className="w-full text-left block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
