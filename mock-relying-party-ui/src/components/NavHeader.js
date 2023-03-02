@@ -22,21 +22,22 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
   };
 
   useEffect(() => {
+    if (!langOptions || langOptions.length === 0) {
+      return;
+    }
+
     let lang = langOptions.find((option) => {
       return option.value === i18n.language;
     });
     setSelectedLang(lang);
-  }, [langOptions]);
-
-  //Gets fired when changeLanguage got called.
-  i18n.on('languageChanged', function (lng) {
-    let lang = langOptions.find((option) => {
-      return option.value === lng;
+    //Gets fired when changeLanguage got called.
+    i18n.on("languageChanged", function (lng) {
+      let lang = langOptions.find((option) => {
+        return option.value === lng;
+      });
+      setSelectedLang(lang);
     });
-
-    setSelectedLang(lang);
-  })
-
+  }, [langOptions]);
 
   const navList = [
     { label: "home", url: "#" },

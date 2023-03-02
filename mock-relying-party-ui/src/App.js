@@ -4,18 +4,15 @@ import LoginPage from "./pages/Login";
 import UserProfilePage from "./pages/UserProfile";
 import SignUpPage from "./pages/SignUp";
 import RegistrationPage from "./pages/Registration";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import langConfigService from "./services/langConfigService";
 import BookAppointmentPage from "./pages/BookAppointment";
 
-
 function App() {
   const { i18n } = useTranslation();
-
-  const [rtlLangs, setRtlLangs] = useState([]);
   const [langOptions, setLangOptions] = useState([]);
   const [dir, setDir] = useState("ltr");
 
@@ -37,19 +34,17 @@ function App() {
           }
         }
         setLangOptions(langData);
-        setRtlLangs(response.rtlLanguages);
-        setDir(response.rtlLanguages.includes(i18n.language) ? "rtl" : "ltr")
+        setDir(response.rtlLanguages.includes(i18n.language) ? "rtl" : "ltr");
+
+        //Gets fired when changeLanguage got called.
+        i18n.on("languageChanged", function (lng) {
+          setDir(response.rtlLanguages.includes(lng) ? "rtl" : "ltr");
+        });
       });
     } catch (error) {
       console.error("Failed to load rtl languages!");
     }
   }, []);
-
-  //Gets fired when changeLanguage got called.
-  i18n.on('languageChanged', function (lng) {
-    setDir(rtlLangs.includes(lng) ? "rtl" : "ltr")
-  })
-
 
   return (
     <div dir={dir} className="h-screen">
