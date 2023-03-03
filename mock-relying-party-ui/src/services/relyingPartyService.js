@@ -18,22 +18,21 @@ const post_fetchUserInfo = async (
   redirect_uri,
   grant_type
 ) => {
-  // let request = {
-  //   code: code,
-  //   client_id: client_id,
-  //   redirect_uri: redirect_uri,
-  //   grant_type: grant_type,
-  // };
-  // const endpoint = baseUrl + fetchUserInfoEndPoint;
-  // const response = await axios.post(endpoint, request, {
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  // });
-  // return response.data;
-  return {sub:"63EBC25D699305A26EE740A955852EAB2E6527BFF2F5E9E5562B502DACECD020",birthdate:"1992/04/15",address:{street_address:"#991, 47 Street, 6 bloc #477, 30 Street, 4 block #570, 53 Street, 4 block",country:"KTA",locality:"KNT",region:"RSK",postal_code:"14022"},gender:"Male",name:"eng",phone_number:"9663395667",email:"mohd.taheer@gmail.com"}
+  let request = {
+    code: code,
+    client_id: client_id,
+    redirect_uri: redirect_uri,
+    grant_type: grant_type,
+  };
+  const endpoint = baseUrl + fetchUserInfoEndPoint;
+  const response = await axios.post(endpoint, request, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
 };
-const get_claimProvider = async () => {
+const get_claimProvider = () => {
   return {
     claimproviders: [
       {
@@ -63,7 +62,7 @@ const get_claimProvider = async () => {
     ],
   };
 };
-const get_currentMedications = async () => {
+const get_currentMedications =  () => {
   return {
     medications: [
       {
@@ -81,7 +80,7 @@ const get_currentMedications = async () => {
     ],
   };
 };
-const get_messages = async () => {
+const get_messages =  () => {
   return {
     messages: [
       {

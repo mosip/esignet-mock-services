@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import React, { useState, useEffect, Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import clientDetails from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
@@ -16,13 +16,8 @@ export default function Sidenav({
     const { t, i18n } = useTranslation("translation", {
         keyPrefix: i18nKeyPrefix,
     });
-
     const [isOpen, setIsOpen] = useState(false);
-
     const currentDate = new Date();
-    //Date with 10 days ahead from current date
-    const futureDate = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000);
-
     const [searchParams, setSearchParams] = useSearchParams();
     const [error, setError] = useState({ errorCode: "", errorMsg: "" });
     const [userInfo, setUserInfo] = useState(null);
@@ -41,7 +36,6 @@ export default function Sidenav({
 
         //REQUIRED
         params = params + "error=" + errorCode;
-
         navigate("/" + params, { replace: true });
     };
 
@@ -78,7 +72,6 @@ export default function Sidenav({
             setAddress(address);
             setUserInfo(userInfo);
             setEmailAddress(userInfo?.email_verified ?? userInfo?.email);
-            setUserInfo(userInfo);
             localStorage.setItem(userInfo_keyname, JSON.stringify(userInfo));
             setStatus(states.LOADED);
         } catch (errormsg) {
@@ -96,33 +89,17 @@ export default function Sidenav({
     };
 
     //claimproviders details
-    const getClaimProvider = async () => {
-        setError(null);
+    const getClaimProvider = () => {
         setClaimInfo(null);
-        try {
-            var claimInfo = await get_claimProvider();
-            setClaimInfo(claimInfo);
-            setStatus(states.LOADED);
-        } catch (errormsg) {
-            setError({ errorCode: "", errorMsg: errormsg.message });
-            setStatus(states.ERROR);
-        }
+        var claimInfo = get_claimProvider();
+        setClaimInfo(claimInfo);
     };
 
-
-
     //Getting message information from json
-    const getMessages = async () => {
-        setError(null);
+    const getMessages = () => {
         setMessagesInfo(null);
-        try {
-            var messagesInfo = await get_messages();
-            setMessagesInfo(messagesInfo);
-            setStatus(states.LOADED);
-        } catch (errormsg) {
-            setError({ errorCode: "", errorMsg: errormsg.message });
-            setStatus(states.ERROR);
-        }
+        var messagesInfo = get_messages();
+        setMessagesInfo(messagesInfo);
     };
 
     const getAddress = (userAddress) => {
@@ -448,7 +425,7 @@ export default function Sidenav({
                     </a>
 
                     <div className="flex items-center">
-                        <div className="relative ">
+                        <div className="relative">
                             <div className="flex">
                                 <img
                                     alt={"profile_picture"}
@@ -486,27 +463,28 @@ export default function Sidenav({
                                 </button>
                             </div>
                             {isOpen && (
-                                <div className="origin-top-left absolute right-10  flow-root  shadow-lg">
-                                    <div className="px-1 py-1 rounded-md bg-white shadow-xs overflow-clip truncate  max-w-29 ">
-                                        <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                                            Email:
+                                <div className="origin-top-left absolute right-0 max-w-sm shadow-lg">
+                                    <div className="flex flex-col px-1 py-1 rounded-md bg-white shadow-xs mt-2">
+                                        <a className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" title={emailAddress}>
+                                            Email:&nbsp;
                                             <span className="truncate">
-                                                {" " + emailAddress?.split("@")[0]}
+                                                {emailAddress?.split("@")[0]}
                                             </span>
                                             @
                                             <span className="truncate">
                                                 {emailAddress?.split("@")[1]}
-                                            </span>                                        </a>
-                                        <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
+                                            </span>
+                                        </a>
+                                        <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
                                             DOB: {userInfo?.birthdate}
                                         </a>
-                                        <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
+                                        <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
                                             Gender: {userInfo?.gender}
                                         </a>
-                                        <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
+                                        <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
                                             Mobile No: {userInfo?.phone_number}
                                         </a>
-                                        <a className="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
+                                        <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
                                             Address: {address}
                                         </a>
                                         <button
@@ -544,7 +522,7 @@ export default function Sidenav({
                                 </div>
                             </div>
                             <div className="w-full flex">
-                                <table className="w-full p-4 mx-1 mb-4 text-sm table-auto whitespace-no-wrap   shadow-lg text-sm text-left text-gray-500 shadow-md ">
+                                <table className="w-full p-4 mx-1 mb-4 table-auto whitespace-no-wrap   shadow-lg text-sm text-left text-gray-500">
                                     <thead className="text-xs text-gray-700 uppercase bg-white">
                                         <tr>
                                             <th scope="col" className="px-6 py-3">

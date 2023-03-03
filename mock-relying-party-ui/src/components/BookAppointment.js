@@ -1,13 +1,11 @@
 import { useTranslation } from "react-i18next";
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import { Link } from "react-router-dom";
 import AppointmentConfirmation from "./AppointmentConfirmation";
 export default function BookAppointment({
   userInfo,
   i18nKeyPrefix = "bookappointment",
 }) {
-  const userInfo_keyname = "user_info";
-
   const { t, i18n } = useTranslation("translation", {
     keyPrefix: i18nKeyPrefix,
   });
@@ -17,18 +15,12 @@ export default function BookAppointment({
     setIsDialogOpen(false);
   }
 
-  const currentDate = new Date();
-
   return (
     <>
-
       <div className="p-1 bg-gray-50 font-sans ">
         <div className="p-1">
-
           <div className="flex w-full px-4 pb-4 bg-gray-50">
-
             <div className="flex flex-wrap">
-
               <p className=" text-lg font-medium">Book Appointment</p>
               <div>
                 <img src="images/Schedule for Vaccination.jpeg"></img>
@@ -51,9 +43,7 @@ export default function BookAppointment({
                   onClose={handleDialogClose}
                 />
               </div>
-
             </div>
-
           </div>
         </div>
       </div>
