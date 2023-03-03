@@ -1,7 +1,5 @@
 import { useTranslation } from "react-i18next";
 import React, { useState, useEffect } from "react";
-import {  useNavigate, useSearchParams } from "react-router-dom";
-import { LoadingStates as states } from "../constants/states";
 
 export default function ProfileUI({
   relyingPartyService,
@@ -17,70 +15,27 @@ export default function ProfileUI({
   //Date with 10 days ahead from current date
   const futureDate = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000);
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [error, setError] = useState({ errorCode: "", errorMsg: "" });
-  const [status, setStatus] = useState(states.LOADING);
   const [medicationInfo, setMedicationInfo] = useState([]);
   const [appointmentInfo, setappointmentInfo] = useState([]);
-  const [address, setAddress] = useState(null);
-  const [emailAddress, setEmailAddress] = useState(null);
 
-  const navigate = useNavigate();
-
-  const navigateToLogin = (errorCode, errorDescription) => {
-    let params = "?";
-    if (errorDescription) {
-      params = params + "error_description=" + errorDescription + "&";
-    }
-
-    //REQUIRED
-    params = params + "error=" + errorCode;
-
-    navigate("/" + params, { replace: true });
-  };
 
   useEffect(() => {
-    const getSearchParams = async () => {
-      let authCode = searchParams.get("code");
-      let errorCode = searchParams.get("error");
-      let error_desc = searchParams.get("error_description");
-      if (errorCode) {
-        navigateToLogin(errorCode, error_desc);
-        return;
-      }
-      getCurrentMedication();
-      getAppointment();
-    };
-    getSearchParams();
+    getCurrentMedication();
+    getAppointment();
   }, []);
 
   //Getting Medication from json
-  const getCurrentMedication = async () => {
-    setError(null);
+  const getCurrentMedication = () => {
     setMedicationInfo(null);
-    try {
-      var medicationInfo = await get_currentMedications();
-      setMedicationInfo(medicationInfo);
-      setStatus(states.LOADED);
-    } catch (errormsg) {
-      setError({ errorCode: "", errorMsg: errormsg.message });
-      setStatus(states.ERROR);
-    }
+    var medicationInfo = get_currentMedications();
+    setMedicationInfo(medicationInfo)
   };
 
   //Next Appointment details
-  const getAppointment = async () => {
-    setError(null);
+  const getAppointment = () => {
     setappointmentInfo(null);
-    try {
-      var appointmentInfo = await get_nextAppointment();
-
-      setappointmentInfo(appointmentInfo);
-      setStatus(states.LOADED);
-    } catch (errormsg) {
-      setError({ errorCode: "", errorMsg: errormsg.message });
-      setStatus(states.ERROR);
-    }
+    var appointmentInfo = get_nextAppointment();
+    setappointmentInfo(appointmentInfo);
   };
 
   let el = (
