@@ -108,7 +108,7 @@ const get_messages =  () => {
     ],
   };
 };
-const get_nextAppointment = async () => {
+const get_nextAppointment =  () => {
   return {
     appointment: [
       {
