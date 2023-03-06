@@ -13,7 +13,7 @@ while true; do
       then
         helm -n $NS delete mock-relying-party-service
         helm -n $NS delete mock-relying-party-ui
-	      helm -n $NS delete mock-identity-system
+	helm -n $NS delete mock-identity-system
         break
       else
         break
