@@ -18,7 +18,7 @@ jobs:
         uses: stefanprodan/helm-gh-pages@v1.7.0
         with:
           token: ${{ secrets.ACTION_PAT }}
-          charts_dir: ./helm
+          charts_dir: .
           charts_url: https://github.com/mosip
           repository: mosip-helm
           branch: gh-pages
