@@ -2,6 +2,7 @@
 # Uninstalls mock-relying-party-service and mock-relying-party-ui
 ## Usage: ./delete.sh [kubeconfig]
 
+
 if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
 fi
