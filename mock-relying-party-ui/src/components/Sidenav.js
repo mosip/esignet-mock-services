@@ -415,7 +415,7 @@ export default function Sidenav({
 
             <div className="p-4 sm:ml-64 overflow-auto  bg-gray-50 font-sans bg-none">
                 <div className="flex flex-wrap  justify-between items-center mx-auto max-w-screen-xl px-4 md:px-6 py-2.5">
-                    <a className="flex-1 items-center">
+                    <a className="flex-1 items-center truncate">
                         <span className="self-center text-2xl font-semibold whitespace-nowrap">
                             Welcome, {userInfo?.name}
                         </span>
@@ -436,8 +436,8 @@ export default function Sidenav({
                                             : "User-Profile-Icon.png"
                                     }
                                 />
-                                <div className="flex ml-3 my-3">
-                                    <p className="text-gray-500 truncate bg-gray-50">
+                                <div className="flex ml-3 my-3 max-w-xs">
+                                    <p className="text-gray-500 truncate bg-gray-50" title={userInfo?.name}>
                                         {userInfo?.name}
                                     </p>
                                 </div>
@@ -598,7 +598,7 @@ export default function Sidenav({
                                                     {pastDate.toDateString()}
                                                 </p>
 
-                                                <p className="text-sm text-gray-500 truncate whitespace-pre-wrap">
+                                                <p className="text-sm text-gray-500 truncate max-w-xs whitespace-pre-wrap">
                                                     Hi {userInfo?.name} , {message["message"]}
                                                 </p>
                                             </div>
