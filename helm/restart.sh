@@ -1,7 +1,6 @@
 #!/bin/sh
 # Restarts the esignet mock service
-## Usage: ./restart.sh [kubeconfig]111100
-
+## Usage: ./restart.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
