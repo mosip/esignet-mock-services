@@ -3,15 +3,18 @@
 -- file, You can obtain one at https://mozilla.org/MPL/2.0/.
 -- -------------------------------------------------------------------------------------------------
 -- Database Name: mosip_mockidentitysystem
--- Table Name : mock_identity
--- Purpose    : To store mock Identity
+-- Table Name : kyc_auth
+-- Purpose    : To store authentication data
 --
 --
 -- Modified Date        Modified By         Comments / Remarks
 -- ------------------------------------------------------------------------------------------
 -- ------------------------------------------------------------------------------------------
-CREATE TABLE mockidentitysystem.mock_identity(
-	individual_id VARCHAR(36) NOT NULL,
-	identity_json VARCHAR(2048) NOT NULL,
-    CONSTRAINT pk_mock_id_code PRIMARY KEY (individual_id)
+CREATE TABLE mockidentitysystem.kyc_auth(
+    kyc_token VARCHAR(255),
+    individual_id VARCHAR(255),
+    partner_specific_user_token VARCHAR(255),
+    response_time TIMESTAMP,
+    transaction_id VARCHAR(255),
+    validity INTEGER
 );

@@ -424,7 +424,7 @@ mock_relying_party_ui:
   CLIENT_ID: 88Vjt34c5Twz1oJ
   ACRS: mosip:idp:acr:generated-code%20mosip:idp:acr:biometrics%20mosip:idp:acr:static-code
   MOCK_RELYING_PARTY_SERVICE_INTERNAL_URL: http://mock-relying-party-service.esignet
-
+  REDIRECT_URI_REGISTRATION: https://healthservices.sandbox.xyz.net/registration
 ## oidc UI swagger should have only internal access. Hence linked to internal gateway
 ## We create a gateway for oidc specific URL(s) listed under `hosts`
 istio:

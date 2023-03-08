@@ -55,6 +55,8 @@ cd mock-relying-party-service
 helm dependency update
 cd ../mock-relying-party-ui
 helm dependency update
+cd ../mock-identity-system
+helm dependency update
 
 cd ../
 
@@ -85,11 +87,12 @@ helm -n $NS install mock-relying-party-ui ./mock-relying-party-ui \
     --set mock_relying_party_ui.ESIGNET_UI_BASE_URL="https://$ESIGNET_HOST" \
     --set mock_relying_party_ui.MOCK_RELYING_PARTY_SERVER_URL="https://$MOCK_UI_HOST/mock-relying-party-service" \
     --set mock_relying_party_ui.REDIRECT_URI="https://$MOCK_UI_HOST/userprofile" \
+    --set mock_relying_party_ui.REDIRECT_URI_REGISTRATION="https://$MOCK_UI_HOST/registration" \
     --set istio.hosts\[0\]="$MOCK_UI_HOST"
 
 echo Installing mock-identity-system
 helm -n $NS install mock-identity-system ./mock-identity-system --version $CHART_VERSION
 
-kubectl -n $NS get deploy mock-relying-party-ui mock-relying-party-service -o name |  xargs -n1 -t  kubectl -n $NS rollout status
+kubectl -n $NS get deploy mock-relying-party-ui mock-relying-party-service mock-identity-system -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
-echo "Installed Mock Relying Party Service & Mock Relying Party UI"
+echo "Installed Mock Relying Party Service, Mock Relying Party UI & Mock Identity System"

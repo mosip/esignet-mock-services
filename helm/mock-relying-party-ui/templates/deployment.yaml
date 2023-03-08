@@ -103,6 +103,8 @@ spec:
               value: {{ .Values.mock_relying_party_ui.CLIENT_ID }}
             - name: ACRS
               value: {{ .Values.mock_relying_party_ui.ACRS }}
+            - name: REDIRECT_URI_REGISTRATION
+              value: {{ .Values.mock_relying_party_ui.REDIRECT_URI_REGISTRATION }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
