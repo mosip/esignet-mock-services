@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import static io.mosip.esignet.mock.identitysystem.util.Constants.APPLICATION_ID;
+
 
 @Slf4j
 @EnableJpaRepositories(basePackages = {"io.mosip.esignet.mock.identitysystem.repository",
@@ -24,8 +26,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "io.mosip.kernel.keymanagerservice.entity"})
 @Configuration
 public class AppConfig implements ApplicationRunner {
-
-    private static final String APPLICATION_ID = "MOCK_AUTHENTICATION_SERVICE";
 
     @Autowired
     private KeymanagerService keymanagerService;
