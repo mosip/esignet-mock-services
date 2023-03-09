@@ -46,13 +46,13 @@ public class MockAuthenticationService implements Authenticator {
     private static final String APPLICATION_ID = "MOCK_AUTHENTICATION_SERVICE";
     public static final String SEND_OTP_FAILED = "send_otp_failed";
 
-    @Value("${mosip.esignet.mock.authenticator.ida.get-identity-url}")
+    @Value("${mosip.esignet.mock.authenticator.get-identity-url}")
     private String getIdentityUrl;
 
-    @Value("${mosip.esignet.mock.authenticator.ida.kyc-auth-url}")
+    @Value("${mosip.esignet.mock.authenticator.kyc-auth-url}")
     private String kycAuthUrl;
 
-    @Value("${mosip.esignet.mock.authenticator.ida.kyc-exchange-url}")
+    @Value("${mosip.esignet.mock.authenticator.kyc-exchange-url}")
     private String kycExchangeUrl;
 
     @Autowired
