@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name="kyc_auth")
+@Table(name="kyc_auth", schema = "mockidentitysystem")
 public class KycAuth {
     @Id
     @Column(name="kyc_token")
