@@ -32,7 +32,7 @@ const post_fetchUserInfo = async (
   });
   return response.data;
 };
-const get_claimProvider = async () => {
+const get_claimProvider = () => {
   return {
     claimproviders: [
       {
@@ -62,7 +62,7 @@ const get_claimProvider = async () => {
     ],
   };
 };
-const get_currentMedications = async () => {
+const get_currentMedications =  () => {
   return {
     medications: [
       {
@@ -80,7 +80,7 @@ const get_currentMedications = async () => {
     ],
   };
 };
-const get_messages = async () => {
+const get_messages =  () => {
   return {
     messages: [
       {
@@ -108,7 +108,7 @@ const get_messages = async () => {
     ],
   };
 };
-const get_nextAppointment = async () => {
+const get_nextAppointment =  () => {
   return {
     appointment: [
       {
