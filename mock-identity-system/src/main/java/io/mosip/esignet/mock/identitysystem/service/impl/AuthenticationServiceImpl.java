@@ -28,6 +28,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.mosip.esignet.mock.identitysystem.util.Constants.APPLICATION_ID;
 import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256;
 
 
@@ -35,7 +36,6 @@ import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256
 @Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private static final String APPLICATION_ID = "MOCK_AUTH_WRAPPER";
     private static final String PSUT_FORMAT = "%s%s";
     private static final String OTP_VALUE = "111111";
 
