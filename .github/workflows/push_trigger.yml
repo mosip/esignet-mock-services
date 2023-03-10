@@ -312,17 +312,8 @@ jobs:
 
       - name: run sonar analysis
         run: |
-          echo "sonar.host.url=https://sonarcloud.io/
-             sonar.login=${{ secrets.SONAR_TOKEN }}
-             sonar.projectKey=mosip_mock-relying-party-ui
-             sonar.organization=${{ secrets.ORG_KEY }}
-             sonar.sourceEncoding=UTF-8
-             sonar.sources=src
-             sonar.exclusions=**/node_modules/**
-             sonar.tests=src
-             sonar.test.inclusions=**/*.spec.ts
-             sonar.typescript.lcov.reportPaths=coverage/lcov.info" >> sonar-project.properties
-          npm install sonar-scanner && npm run sonar
+          cd esignet-mock-services
+          mvn -B -Dgpg.skip verify sonar:sonar -Dsonar.projectKey=mosip_esignet-mock-services -Dsonar.organization=${{ secrets.ORG_KEY }} -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
