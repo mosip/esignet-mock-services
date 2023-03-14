@@ -206,7 +206,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     if(identityData.getPhone() != null) { kyc.put("phone_number", identityData.getPhone()); }
                     break;
                 case "address" :
-                    //TODO
+                	Map<String, Object> addressValues = new HashMap<>();
+                	addressValues.putAll(getKycValues(locales, "street_address", identityData.getStreetAddress(), singleLanguage));
+                	addressValues.putAll(getKycValues(locales, "locality", identityData.getLocality(), singleLanguage));
+                	addressValues.putAll(getKycValues(locales, "region", identityData.getRegion(), singleLanguage));
+                	if (identityData.getPostalCode() != null) { addressValues.put("postal_code", identityData.getPostalCode()); }
+                	addressValues.putAll(getKycValues(locales, "country", identityData.getCountry(), singleLanguage));
+                	kyc.put("address", addressValues);
                     break;
                 case "picture" :
                     if(identityData.getEncodedPhoto() != null) { kyc.put("picture", identityData.getEncodedPhoto()); }
@@ -220,7 +226,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private Map<String, Object> getKycValues(List<String> locales, String claimName, List<LanguageValue> values, boolean isSingleLanguage) {
-        for(String locale : locales) {
+    	if (values == null) {
+			return Collections.emptyMap();
+		}
+    	for(String locale : locales) {
             return values.stream()
                     .filter( v -> v.getLanguage().equalsIgnoreCase(locale) || v.getLanguage().startsWith(locale))
                     .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName+"#"+locale, v -> v.getValue()));
