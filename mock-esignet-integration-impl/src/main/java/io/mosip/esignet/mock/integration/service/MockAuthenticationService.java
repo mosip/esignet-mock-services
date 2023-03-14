@@ -14,6 +14,7 @@ import io.mosip.esignet.api.spi.Authenticator;
 import io.mosip.esignet.api.util.ErrorConstants;
 import io.mosip.esignet.mock.integration.dto.*;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.keymanagerservice.dto.AllCertificatesDataResponseDto;
 import io.mosip.kernel.keymanagerservice.dto.CertificateDataResponseDto;
 import io.mosip.kernel.keymanagerservice.service.KeymanagerService;
@@ -172,6 +173,15 @@ public class MockAuthenticationService implements Authenticator {
     @Override
     public SendOtpResult sendOtp(String relyingPartyId, String clientId, SendOtpDto sendOtpDto)
             throws SendOtpException {
+        if (sendOtpDto == null || StringUtils.isEmpty(sendOtpDto.getTransactionId())) {
+            throw new SendOtpException("invalid_transaction_id");
+        }
+
+        if (sendOtpDto.getOtpChannels() == null
+                || !sendOtpDto.getOtpChannels().stream().allMatch(this::isSupportedOtpChannel)) {
+            throw new SendOtpException("invalid_otp_channel");
+        }
+
         try {
             RequestEntity requestEntity = RequestEntity
                     .get(UriComponentsBuilder.fromUriString(getIdentityUrl + "/" + sendOtpDto.getIndividualId()).build().toUri()).build();
@@ -190,14 +200,14 @@ public class MockAuthenticationService implements Authenticator {
             log.error("Provided identity is not found {}", sendOtpDto.getIndividualId());
             throw new SendOtpException("mock-ida-001");
         } catch (Exception e) {
-            log.error("authenticateIndividualWithPin failed", e);
+            log.error("authentication failed", e);
         }
         throw new SendOtpException(SEND_OTP_FAILED);
     }
 
     @Override
     public boolean isSupportedOtpChannel(String channel) {
-        return channel != null && ("email".equalsIgnoreCase(channel) || "mobile".equalsIgnoreCase(channel));
+        return ("email".equalsIgnoreCase(channel) || "mobile".equalsIgnoreCase(channel));
     }
 
     @Override
