@@ -177,37 +177,16 @@ public class MockAuthenticationService implements Authenticator {
             throw new SendOtpException("invalid_transaction_id");
         }
 
-        if (sendOtpDto.getOtpChannels() == null
-                || !sendOtpDto.getOtpChannels().stream().allMatch(this::isSupportedOtpChannel)) {
-            throw new SendOtpException("invalid_otp_channel");
-        }
-
         try {
-            RequestEntity requestEntity = RequestEntity
-                    .get(UriComponentsBuilder.fromUriString(getIdentityUrl + "/" + sendOtpDto.getIndividualId()).build().toUri()).build();
-            ResponseEntity<ResponseWrapper> responseEntity = restTemplate.exchange(requestEntity,
-                    ResponseWrapper.class);
-
-            if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
-                ResponseWrapper responseWrapper = responseEntity.getBody();
-                IdentityData IdentityData = objectMapper.convertValue(responseWrapper.getResponse(), IdentityData.class);
-
-                String maskedEmailId = MockHelperService.maskEmail(IdentityData.getEmail());
-                String maskedMobile = MockHelperService.maskMobile(IdentityData.getPhone());
-
-                return new SendOtpResult(sendOtpDto.getTransactionId(), maskedEmailId, maskedMobile);
-            }
-            log.error("Provided identity is not found {}", sendOtpDto.getIndividualId());
-            throw new SendOtpException("mock-ida-001");
+            return mockHelperService.sendOtpMock(sendOtpDto.getIndividualId(), sendOtpDto.getOtpChannels(), sendOtpDto.getTransactionId());
         } catch (Exception e) {
-            log.error("authentication failed", e);
+            throw new SendOtpException(e.getMessage());
         }
-        throw new SendOtpException(SEND_OTP_FAILED);
     }
 
     @Override
     public boolean isSupportedOtpChannel(String channel) {
-        return ("email".equalsIgnoreCase(channel) || "mobile".equalsIgnoreCase(channel));
+        return MockHelperService.isSupportedOtpChannel(channel);
     }
 
     @Override

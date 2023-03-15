@@ -68,12 +68,12 @@ public class MockKeyBindingWrapperService implements KeyBinder {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private MockHelperService mockHelperService;
+
     private static final Map<String, List<String>> supportedFormats = new HashMap<>();
 
     static {
-        supportedFormats.put("OTP", List.of("alpha-numeric"));
-        supportedFormats.put("PIN", List.of("number"));
-        supportedFormats.put("BIO", List.of("encoded-json"));
         supportedFormats.put("WLA", List.of("jwt"));
     }
 
@@ -81,32 +81,10 @@ public class MockKeyBindingWrapperService implements KeyBinder {
     @Override
     public SendOtpResult sendBindingOtp(String individualId, List<String> otpChannels,
                                         Map<String, String> requestHeaders) throws SendOtpException {
-
-        if (otpChannels == null
-                || !otpChannels.stream().allMatch(this::isSupportedOtpChannel)) {
-            throw new SendOtpException("invalid_otp_channel");
-        }
-
         try {
-            var requestEntity = RequestEntity
-                    .get(UriComponentsBuilder.fromUriString(getIdentityUrl + "/" + individualId).build().toUri()).build();
-            var responseEntity = restTemplate.exchange(requestEntity,
-                    ResponseWrapper.class);
-
-            if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
-                var responseWrapper = responseEntity.getBody();
-                IdentityData IdentityData = objectMapper.convertValue(responseWrapper.getResponse(), IdentityData.class);
-
-                String maskedEmailId = MockHelperService.maskEmail(IdentityData.getEmail());
-                String maskedMobile = MockHelperService.maskMobile(IdentityData.getPhone());
-
-                return new SendOtpResult(null, maskedEmailId, maskedMobile);
-            }
-            log.error("Provided individual Id not found {}", individualId);
-            throw new SendOtpException("invalid_individual_id");
+            return mockHelperService.sendOtpMock(individualId, otpChannels, null);
         } catch (Exception e) {
-            log.error("send otp failed", e);
-            throw new SendOtpException("send_otp_failed: " + e.getMessage());
+            throw new SendOtpException(e.getMessage());
         }
     }
 
@@ -170,10 +148,6 @@ public class MockKeyBindingWrapperService implements KeyBinder {
         }
         keyBindingResult.setPartnerSpecificUserToken(individualId);
         return keyBindingResult;
-    }
-
-    private boolean isSupportedOtpChannel(String channel) {
-        return ("email".equalsIgnoreCase(channel) || "mobile".equalsIgnoreCase(channel));
     }
 
     public boolean authenticate(IdentityData identityData, List<AuthChallenge> challengeList) throws KeyBindingException {
