@@ -14,6 +14,7 @@ export default function ProfileUI({
   const currentDate = new Date();
   //Date with 10 days ahead from current date
   const futureDate = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000);
+  const formattedDate = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full' }).format(futureDate)
 
   const [medicationInfo, setMedicationInfo] = useState([]);
   const [appointmentInfo, setappointmentInfo] = useState([]);
@@ -30,6 +31,7 @@ export default function ProfileUI({
     var medicationInfo = get_currentMedications();
     setMedicationInfo(medicationInfo)
   };
+  const medicationCount = medicationInfo.medications?.length;
 
   //Next Appointment details
   const getAppointment = () => {
@@ -44,7 +46,7 @@ export default function ProfileUI({
         <div className="flex">
           <div className="flex flex-wrap w-full sm:w-30 md:w-30 p-1">
             <div className="w-full sm:w-1/2 md:w-30 p-1 ">
-              <p className="text-lg font-medium mb-4">Current Medication</p>
+              <p className="text-lg font-medium mb-4">{t("current_medication")} ({medicationCount})</p>
 
               <div className="bg-white border border-gray-200 rounded   shadow sm:p-4">
                 <div className="flow-root">
@@ -70,27 +72,26 @@ export default function ProfileUI({
                                 <path d="M4.5 12.5l8 -8a4.94 4.94 0 0 1 7 7l-8 8a4.94 4.94 0 0 1 -7 -7" />{" "}
                                 <path d="M8.5 8.5l7 7" />
                               </svg>
-                              {data["tabletName"]}
+                              {t(data["tabletName"])}
                             </p>
                             <p className="text-xs text-gray-500 truncate">
-                              {data["dailyDosage"]}
+                              {t(data["dailyDosage"])}
                             </p>
                           </div>
                         </div>
                       </li>
                     ))}
-
                     <li>
                       <div className="flex items-center justify-between my-1 ">
                         <a
                           href="#"
-                          className="text-sm text-gray-500 truncate hover:underline "
+                          className="text-sm text-gray-500 truncate hover:underline whitespace-pre-wrap"
                         >
-                          See all interactions
+                          {t("see_all_interactions")}
                         </a>
                         <a
                           href="#"
-                          className="text-sm text-gray-500 truncate hover:underline inline-flex"
+                          className="text-sm text-gray-500 truncate hover:underline flex items-center mr-2 whitespace-pre-wrap"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +106,7 @@ export default function ProfileUI({
                           >
                             <path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38" />
                           </svg>
-                          Request refill
+                          {t("request_refill")}
                         </a>
                       </div>
                     </li>
@@ -115,7 +116,7 @@ export default function ProfileUI({
             </div>
 
             <div className="w-full sm:w-1/2 md:w-30 p-1">
-              <p className="text-lg font-medium mb-4">Next Appointment</p>
+              <p className="text-lg font-medium mb-4">{t("next_appointment")}</p>
               <div className="bg-white border border-gray-200 rounded shadow sm:p-4">
                 <div className="flow-root">
                   <ul role="list" className="divide-y divide-gray-200">
@@ -124,42 +125,16 @@ export default function ProfileUI({
                         <div className="flex items-center space-x-4">
                           <div className="flex-1 min-w-0 my-1">
                             <p className=" font-medium text-lg text-gray-900 truncate whitespace-pre-wrap">
-                              {futureDate.toDateString()}
+                              {i18n.t(formattedDate)}
                             </p>
                             <p className="text-xs text-gray-500 truncate inline-flex whitespace-pre-wrap">
-                              <svg
-                                className="h-4 w-4 text-gray-500"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                {" "}
-                                <circle cx="12" cy="12" r="10" />{" "}
-                                <polyline points="12 6 12 12 16 14" />
-                              </svg>
+                              <img src="./../images/scheduleTime.png" className="h-4 w-4 ml-2 mr-2"></img>
                               {data["time"]}
                             </p>
-
                             <div className="text-xs text-gray-500 truncate whitespace-pre-wrap inline-flex">
-                              <svg
-                                className="h-4 w-4 text-gray-500"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                {" "}
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />{" "}
-                                <circle cx="12" cy="10" r="3" />
-                              </svg>
-                              {data["location"]}
+                              <img src="./../images/marker.png" className="h-4 w-4 ml-2 mr-2 mb-2"></img>
+                              {t(data["location"])}
                             </div>
-
                             <div className="py-2">
                               <div className="flex">
                                 <img
@@ -167,12 +142,12 @@ export default function ProfileUI({
                                   src="./../images/doctor_logo.png"
                                   alt="Jese Leos image"
                                 />
-                                <div className="ml-3">
+                                <div className="ml-3 mr-3">
                                   <p className="text-sm font-medium text-gray-900 truncate whitespace-pre-wrap">
-                                    {data["doctorName"]}
+                                    {t(data["doctorName"])}
                                   </p>
                                   <p className="text-xs text-gray-500 truncate">
-                                    {data["department"]}
+                                    {t(data["department"])}
                                   </p>
                                 </div>
                               </div>
@@ -187,7 +162,7 @@ export default function ProfileUI({
                           href="#"
                           className="text-sm text-blue-600 hover:underline truncate my-0.5"
                         >
-                          Manage Appointment
+                          {t("manage_appointment")}
                         </a>
                       </div>
                     </li>

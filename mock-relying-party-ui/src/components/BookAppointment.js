@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import AppointmentConfirmation from "./AppointmentConfirmation";
 export default function BookAppointment({
@@ -21,21 +21,21 @@ export default function BookAppointment({
         <div className="p-1">
           <div className="flex w-full px-4 pb-4 bg-gray-50">
             <div className="flex flex-wrap">
-              <p className=" text-lg font-medium">Book Appointment</p>
+              <p className=" text-lg font-medium">{t("book_appointment")}</p>
               <div>
                 <img src="images/Schedule for Vaccination.jpeg"></img>
               </div>
               <div className="p-2 m-2">
                 <Link to="/userprofile">
                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Cancel
+                    {t("cancel")}
                   </button>
                 </Link>
                 <button
                   onClick={() => setIsDialogOpen(true)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 rounded"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 mr-2 rounded"
                 >
-                  Book Appointment
+                  {t("book_appointment")}
                 </button>
                 <AppointmentConfirmation
                   username={userInfo?.name}

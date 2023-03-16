@@ -3,7 +3,7 @@ import relyingPartyService from "../services/relyingPartyService";
 import BookAppointment from "../components/BookAppointment";
 import Sidenav from "../components/Sidenav";
 import { useNavigate } from "react-router-dom";
-export default function BookAppointmentPage() {
+export default function BookAppointmentPage({ langOptions }) {
 
   const userInfo_keyname = "user_info";
   const [userInfo, setUserInfo] = useState(null);
@@ -28,7 +28,7 @@ export default function BookAppointmentPage() {
   }, []);
 
   return (
-    <Sidenav relyingPartyService={relyingPartyService} component={React.createElement(BookAppointment, {userInfo:userInfo})}
+    <Sidenav relyingPartyService={relyingPartyService} langOptions={langOptions} component={React.createElement(BookAppointment, { userInfo: userInfo })}
     />
   );
 }

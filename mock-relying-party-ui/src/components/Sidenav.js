@@ -3,9 +3,13 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import clientDetails from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
-
+import Select from "react-select";
+import { Error } from "../common/Errors";
+import LoadingIndicator from "../common/LoadingIndicator";
+import moment from 'moment'
 export default function Sidenav({
     component,
+    langOptions,
     relyingPartyService,
     i18nKeyPrefix = "sidenav",
 }) {
@@ -38,7 +42,38 @@ export default function Sidenav({
         params = params + "error=" + errorCode;
         navigate("/" + params, { replace: true });
     };
+    const [selectedLang, setSelectedLang] = useState();
 
+
+    const changeLanguageHandler = (e) => {
+        i18n.changeLanguage(e.value);
+
+    };
+
+    const customStyles = {
+        control: (base) => ({
+            ...base,
+            border: 0,
+            boxShadow: "none",
+        }),
+    };
+
+    useEffect(() => {
+        let lang = langOptions?.find((option) => {
+            return option.value === i18n.language;
+        });
+        setSelectedLang(lang);
+    }, [langOptions]);
+
+    //Gets fired when changeLanguage got called.
+    i18n.on('languageChanged', function (lng) {
+        let lang = langOptions.find((option) => {
+            moment.locale(lng);
+            return option.value === lng;
+        });
+
+        setSelectedLang(lang);
+    })
     useEffect(() => {
         const getSearchParams = async () => {
             let authCode = searchParams.get("code");
@@ -56,8 +91,9 @@ export default function Sidenav({
     }, []);
 
     const getUserDetails = async (authCode) => {
-        setError(null);
         setUserInfo(null);
+        setError(null);
+        setStatus(states.LOADING);
         try {
             let client_id = clientDetails.clientId;
             let redirect_uri = clientDetails.redirect_uri_userprofile;
@@ -82,6 +118,7 @@ export default function Sidenav({
                 setAddress(address);
                 setEmailAddress(userInf?.email_verified ?? userInf?.email);
                 setUserInfo(userInf);
+                setStatus(states.LOADED);
             } else {
                 navigateToLogin("session_expired", "Session Expired");
             }
@@ -101,6 +138,7 @@ export default function Sidenav({
         var messagesInfo = get_messages();
         setMessagesInfo(messagesInfo);
     };
+    const messagesCount = messagesInfo.messages?.length
 
     const getAddress = (userAddress) => {
         let address = "";
@@ -153,19 +191,18 @@ export default function Sidenav({
         return address.substring(0, address.length - 2);
     };
 
-
     let el = (
         <>
             <aside
                 id="default-sidebar"
-                className="fixed top-0 left-0 z-40 w-64 h-full overflow-hidden  transition-transform-translate-x-full shadow-md sm:translate-x-0  "
+                className="fixed top-0 ltr:left-0 rtl:right-0 z-40 w-64 h-full overflow-hidden  transition-transform-translate-x-full shadow-md sm:translate-x-0  "
                 aria-label="Sidebar"
             >
-                <div className="h-full px-3 py-4 ">
+                <div className="h-full px-3 py-4">
                     <div className="flex items-center justify-center col-start-1">
                         <img src="images/doctor_logo.png" className="w-16 h-16 mx-4" />
                         <span className="title-font text-1xl text-gray-900 font-medium">
-                            Health Portal
+                            {t("health_portal")}
                         </span>
                     </div>
                     <ul className=" py-2">
@@ -191,7 +228,7 @@ export default function Sidenav({
                                     <line x1="4" y1="10" x2="20" y2="10" />{" "}
                                     <line x1="10" y1="4" x2="10" y2="20" />
                                 </svg>
-                                <span className="ml-3">Health Snapshot</span>
+                                <span className="ml-3">{t("health_snapshot")}</span>
                             </a>
                         </li>
                         <li>
@@ -212,7 +249,7 @@ export default function Sidenav({
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                     />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">Search</span>
+                                <span className="flex-1 ml-3 whitespace-nowrap">{t("search")}</span>
                             </a>
                         </li>
                         <li>
@@ -232,7 +269,7 @@ export default function Sidenav({
                                     {" "}
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">Messages</span>
+                                <span className="flex-1 ml-3 whitespace-nowrap">{t("messages")}</span>
                             </a>
                         </li>
                         <li>
@@ -256,7 +293,7 @@ export default function Sidenav({
                                     <path d="M14 3v4a1 1 0 0 0 1 1h4" />{" "}
                                     <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">Reports</span>
+                                <span className="flex-1 ml-3 whitespace-nowrap">{t("reports")}</span>
                             </a>
                         </li>
                         <li>
@@ -277,7 +314,7 @@ export default function Sidenav({
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />{" "}
                                     <circle cx="12" cy="7" r="4" />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">Profile</span>
+                                <span className="flex-1 ml-3 whitespace-nowrap">{t("profile")}</span>
                             </a>
                         </li>
                         <li>
@@ -302,7 +339,7 @@ export default function Sidenav({
                                     <path d="M8.5 8.5l7 7" />
                                 </svg>
                                 <span className="flex-1 ml-3 whitespace-nowrap">
-                                    Medications
+                                    {t("medications")}
                                 </span>
                             </a>
                         </li>
@@ -331,7 +368,7 @@ export default function Sidenav({
                                     <rect x="8" y="15" width="2" height="2" />
                                 </svg>{" "}
                                 <span className="flex-1 ml-3 whitespace-nowrap">
-                                    Vaccination
+                                    {t("vaccination")}
                                 </span>
                             </Link>
                         </li>
@@ -353,7 +390,7 @@ export default function Sidenav({
                                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                                 </svg>
                                 <span className="flex-1 ml-3 whitespace-nowrap">
-                                    Health Records
+                                    {t("health_records")}
                                 </span>
                             </a>
                         </li>
@@ -377,7 +414,7 @@ export default function Sidenav({
                                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
                                     </svg>
                                     <span className="flex-1 ml-3 whitespace-nowrap">
-                                        Settings
+                                        {t("settings")}
                                     </span>
                                 </a>
                             </li>
@@ -405,236 +442,264 @@ export default function Sidenav({
                                         <path d="M11.5 3a17 17 0 0 0 0 18" />{" "}
                                         <path d="M12.5 3a17 17 0 0 1 0 18" />
                                     </svg>
-                                    <span className="flex-1 ml-3 whitespace-nowrap">Help</span>
+                                    <span className="flex-1 ml-3 whitespace-nowrap">{t("help")}</span>
                                 </a>
                             </li>
                         </div>
                     </ul>
                 </div>
             </aside>
+            <div className="flex justify-end col-start-3 mr-3 p-2">
+                <img src="images/language_icon.png" alt={t("language")} className="mr-2" />
+                <Select
+                    styles={customStyles}
+                    isSearchable={false}
+                    className="appearance-none"
+                    value={selectedLang}
+                    options={langOptions}
+                    placeholder="Language"
+                    onChange={changeLanguageHandler}
+                />
+            </div>
+            {status === states.LOADING && (
+                <div className="relative inset-52 flex justify-center items-center">
+                    <LoadingIndicator size="medium" message={t("loading_msg")} />
+                </div>
+            )}
 
-            <div className="p-4 sm:ml-64 overflow-auto  bg-gray-50 font-sans bg-none">
-                <div className="flex flex-wrap  justify-between items-center mx-auto max-w-screen-xl px-4 md:px-6 py-2.5">
-                    <a className="flex-1 items-center truncate">
-                        <span className="self-center text-2xl font-semibold whitespace-nowrap">
-                            Welcome, {userInfo?.name}
-                        </span>
-                        <p className="text-sm text-gray-500 truncate bg-gray-50 font-sans">
-                            You have {4} new messages that needs your attention
-                        </p>
-                    </a>
+            {status === states.LOADED && (
+                <>
+                    <div className="p-4 ltr:sm:ml-64 rtl:sm:mr-64 overflow-auto bg-gray-50 font-sans bg-none">
+                        <div className="flex flex-wrap justify-between items-center px-4 md:px-6 py-2.5">
+                            <a className="flex-1 items-center truncate">
+                                <span className="self-center text-2xl font-semibold whitespace-nowrap">
+                                    {t("welcome")}, {userInfo?.name}
+                                </span>
+                                <p className="text-sm text-gray-500 truncate bg-gray-50 font-sans">
+                                    {t("message_notification")}
+                                </p>
+                            </a>
 
-                    <div className="flex items-center">
-                        <div className="relative">
-                            <div className="flex">
-                                <img
-                                    alt={"profile_picture"}
-                                    className="h-12 w-12 "
-                                    src={
-                                        userInfo?.picture
-                                            ? userInfo.picture
-                                            : "User-Profile-Icon.png"
-                                    }
-                                />
-                                <div className="flex ml-3 my-3 max-w-xs">
-                                    <p className="text-gray-500 truncate bg-gray-50" title={userInfo?.name}>
-                                        {userInfo?.name}
-                                    </p>
-                                </div>
-                                <button
-                                    className="flex items-center px-4 py-2  text-sm leading-5 font-medium rounded-md text-gray-700 bg-transparent hover:text-gray-500  active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out"
-                                    onClick={() => setIsOpen(!isOpen)}
-                                >
-                                    <svg
-                                        className="h-5 w-5 ml-1 text-black"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth="2"
-                                        stroke="currentColor"
-                                        fill="none"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        {" "}
-                                        <path stroke="none" d="M0 0h24v24H0z" />{" "}
-                                        <polyline points="6 9 12 15 18 9" />
-                                    </svg>
-                                </button>
-                            </div>
-                            {isOpen && (
-                                <div className="origin-top-left absolute right-0 max-w-sm shadow-lg">
-                                    <div className="flex flex-col px-1 py-1 rounded-md bg-white shadow-xs mt-2">
-                                        <a className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" title={emailAddress}>
-                                            Email:&nbsp;
-                                            <span className="truncate">
-                                                {emailAddress?.split("@")[0]}
-                                            </span>
-                                            @
-                                            <span className="truncate">
-                                                {emailAddress?.split("@")[1]}
-                                            </span>
-                                        </a>
-                                        <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                                            DOB: {userInfo?.birthdate}
-                                        </a>
-                                        <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                                            Gender: {userInfo?.gender}
-                                        </a>
-                                        <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                                            Mobile No: {userInfo?.phone_number}
-                                        </a>
-                                        <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                                            Address: {address}
-                                        </a>
+                            <div className="flex items-center">
+                                <div className="relative">
+                                    <div className="flex">
+                                        <img
+                                            alt={"profile_picture"}
+                                            className="h-12 w-12 ml-3 mr-3"
+                                            src={
+                                                userInfo?.picture
+                                                    ? userInfo.picture
+                                                    : "User-Profile-Icon.png"
+                                            }
+                                        />
+                                        <div className="flex my-3 max-w-xs">
+                                            <p className="text-gray-500 truncate bg-gray-50" title={userInfo?.name}>
+                                                {userInfo?.name}
+                                            </p>
+                                        </div>
                                         <button
-                                            className="w-full text-left block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
-                                            onClick={(e) => {
-                                                localStorage.removeItem(userInfo_keyname);
-                                                navigateToLogin("logged_out", "User Logout");
-                                            }}
+                                            className="flex items-center px-4 py-2  text-sm leading-5 font-medium rounded-md text-gray-700 bg-transparent hover:text-gray-500  active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out"
+                                            onClick={() => setIsOpen(!isOpen)}
                                         >
-                                            Sign Out
+                                            <svg
+                                                className="h-5 w-5 ml-1 text-black"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth="2"
+                                                stroke="currentColor"
+                                                fill="none"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            >
+                                                {" "}
+                                                <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                                                <polyline points="6 9 12 15 18 9" />
+                                            </svg>
                                         </button>
                                     </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-                <div className="p-1 ">
-                    <div className="flex">
-                        <div className="flex flex-wrap w-full sm:w-30 md:w-30 p-1">
-                            <div className="w-full">
-                                {component}
-                            </div>
-                            <div className="w-full p-2 grid grid-cols-3 rounded bg-white border border-gray-200  shadow sm:p-2 m-1">
-                                <div>
-                                    <p className=" text-lg font-medium ">Vaccinations</p>
-                                </div>
-                                <div className="col-end-5">
-                                    <a
-                                        href="#"
-                                        className=" text-sm text-gray-500 truncate hover:underline"
-                                    >
-                                        Vaccinations history
-                                    </a>
-                                </div>
-                            </div>
-                            <div className="w-full flex">
-                                <table className="w-full p-4 mx-1 mb-4 table-auto whitespace-no-wrap   shadow-lg text-sm text-left text-gray-500">
-                                    <thead className="text-xs text-gray-700 uppercase bg-white">
-                                        <tr>
-                                            <th scope="col" className="px-6 py-3">
-                                                <p>Vaccination Details</p>
-                                            </th>
-                                            <th scope="col" className="px-6 py-3">
-                                                Date
-                                            </th>
-                                            <th scope="col" className="px-6 py-3">
-                                                Vaccination Center
-                                            </th>
-
-                                            <th scope="col" className="px-6 py-3">
-                                                Total Cost
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {claimInfo?.claimproviders?.map((item, idx) => {
-                                            const pastDate = new Date(
-                                                currentDate.getTime() -
-                                                item["days"] * 24 * 60 * 60 * 1000
-                                            );
-                                            return (
-                                                <tr className="bg-white border-b" key={idx}>
-                                                    <th
-                                                        scope="row"
-                                                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                                                    >
-                                                        <p className="text-xs">{item["vaccinationName"]}</p>
-                                                    </th>
-                                                    <td className="px-6 py-4">
-                                                        <p>{pastDate.toLocaleDateString()}</p>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <p> {item["vaccinationCenter"]}</p>
-                                                    </td>
-                                                    <th className="px-6 py-4">
-                                                        <p>{item["totalCost"]}</p>
-                                                    </th>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div className="w-full sm:w-1/2 md:w-30 p-2">
-                            <p className="text-lg font-medium mb-4">
-                                New Messages <span className=""></span>
-                            </p>
-                            {messagesInfo?.messages?.map((message, index) => {
-                                const pastDate = new Date(
-                                    currentDate.getTime() - message["days"] * 24 * 60 * 60 * 1000
-                                );
-                                return (
-                                    <div
-                                        className=" bg-white overflow-auto border rounded border-gray-200 hover:bg-gray-100 shadow sm:p-4 "
-                                        key={index}
-                                    >
-                                        <div className="flex ">
-                                            <img
-                                                className="w-8 h-8 rounded-full shadow-lg"
-                                                src="./../images/doctor_logo.png"
-                                                alt="Jese Leos image"
-                                            />
-
-                                            <div className="ml-3">
-                                                <p className="text-sm font-medium text-gray-900 truncate">
-                                                    {message["doctorName"]}
-                                                </p>
-                                                <p className="text-sm text-gray-500 truncate">
-                                                    {pastDate.toDateString()}
-                                                </p>
-
-                                                <p className="text-sm text-gray-500 truncate max-w-xs whitespace-pre-wrap">
-                                                    Hi {userInfo?.name} , {message["message"]}
-                                                </p>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                className="ml-auto -mx-1.5 -my-1.5  text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
-                                                data-dismiss-target="#toast-message-cta"
-                                                aria-label="Close"
-                                            >
-                                                <span className="sr-only">Close</span>
-                                                <svg
-                                                    className="h-4 w-4 text-gray-500"
-                                                    width="24"
-                                                    height="24"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="2"
-                                                    stroke="currentColor"
-                                                    fill="none"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
+                                    {isOpen && (
+                                        <div className="origin-top-left absolute ltr:right-0 rtl:left-0 max-w-xs shadow-lg">
+                                            <div className="flex flex-col px-1 py-1 rounded-md bg-white shadow-xs mt-2">
+                                                <a className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" title={emailAddress}>
+                                                    {t("email")}:&nbsp;
+                                                    <span className="truncate">
+                                                        {emailAddress?.split("@")[0]}
+                                                    </span>
+                                                    @
+                                                    <span className="truncate">
+                                                        {emailAddress?.split("@")[1]}
+                                                    </span>
+                                                </a>
+                                                <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
+                                                    {t("dob")}: {userInfo?.birthdate}
+                                                </a>
+                                                <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
+                                                    {t("gender")}: {userInfo?.gender}
+                                                </a>
+                                                <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
+                                                    {t("mobile_no")}: {userInfo?.phone_number}
+                                                </a>
+                                                <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
+                                                    {t("address")}: {address}
+                                                </a>
+                                                <button
+                                                    className="w-full ltr:text-left rtl:text-right block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                                                    onClick={(e) => {
+                                                        localStorage.removeItem(userInfo_keyname);
+                                                        navigateToLogin("logged_out", "User Logout");
+                                                    }}
                                                 >
-                                                    {" "}
-                                                    <path stroke="none" d="M0 0h24v24H0z" />{" "}
-                                                    <circle cx="12" cy="12" r="1" />{" "}
-                                                    <circle cx="12" cy="19" r="1" />{" "}
-                                                    <circle cx="12" cy="5" r="1" />
-                                                </svg>{" "}
-                                            </button>
+                                                    {t("sign_out")}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-1 ">
+                            <div className="flex">
+                                <div className="flex flex-wrap w-full sm:w-30 md:w-30 p-1">
+                                    <div className="w-full">
+                                        {component}
+                                    </div>
+                                    <div className="w-full p-2 grid grid-cols-3 rounded bg-white border border-gray-200  shadow sm:p-2 m-1">
+                                        <div>
+                                            <p className=" text-lg font-medium ">{t("vaccinations")}</p>
+                                        </div>
+                                        <div className="col-end-5">
+                                            <a
+                                                href="#"
+                                                className=" text-sm text-gray-500 truncate hover:underline"
+                                            >
+                                                {t("vaccinations_history")}
+                                            </a>
                                         </div>
                                     </div>
-                                );
-                            })}
+                                    <div className="w-full flex">
+                                        <table className="w-full p-4 mx-1 mb-4 table-auto whitespace-pre-wrap shadow-lg text-sm text-left text-gray-500">
+                                            <thead className="text-xs text-gray-700 uppercase bg-white">
+                                                <tr>
+                                                    <th scope="col" className="px-6 py-3">
+                                                        <p>{t("vaccination_details")}</p>
+                                                    </th>
+                                                    <th scope="col" className="px-6 py-3">
+                                                        {t("date")}
+                                                    </th>
+                                                    <th scope="col" className="px-6 py-3">
+                                                        {t("vaccination_center")}
+                                                    </th>
+
+                                                    <th scope="col" className="px-6 py-3">
+                                                        {t("total_cost")}
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {claimInfo?.claimproviders?.map((item, idx) => {
+                                                    const pastDate = new Date(
+                                                        currentDate.getTime() -
+                                                        item["days"] * 24 * 60 * 60 * 1000
+                                                    );
+                                                    return (
+                                                        <tr className="bg-white border-b" key={idx}>
+                                                            <th
+                                                                scope="row"
+                                                                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                                                            >
+                                                                <p className="text-xs">{t(item["vaccinationName"])}</p>
+                                                            </th>
+                                                            <td className="px-6 py-4">
+                                                                <p>{pastDate.toLocaleDateString()}</p>
+                                                            </td>
+                                                            <td className="px-6 py-4">
+                                                                <p>{t(item["vaccinationCenter"])}</p>
+                                                            </td>
+                                                            <th className="px-6 py-4">
+                                                                <p>{item["totalCost"]}</p>
+                                                            </th>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div className="w-full sm:w-1/2 md:w-30 p-2">
+                                    <p className="text-lg font-medium mb-4">
+                                        {t("new_messages")} <span className="">({messagesCount})</span>
+                                    </p>
+                                    {messagesInfo?.messages?.map((message, index) => {
+                                        const pastDate = new Date(
+                                            currentDate.getTime() - message["days"] * 24 * 60 * 60 * 1000
+                                        );
+                                        const formattedDate = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full' }).format(pastDate);
+                                        return (
+                                            <div
+                                                className=" bg-white overflow-auto border rounded border-gray-200 hover:bg-gray-100 shadow sm:p-4"
+                                                key={index}
+                                            >
+                                                <div className="flex ">
+                                                    <img
+                                                        className="w-8 h-8 rounded-full shadow-lg"
+                                                        src="./../images/doctor_logo.png"
+                                                        alt="Jese Leos image"
+                                                    />
+
+                                                    <div className="ml-3 mr-3">
+                                                        <p className="text-sm font-medium text-gray-900 truncate">
+                                                            {t(message["doctorName"])}
+                                                        </p>
+                                                        <p className="text-sm text-gray-500 truncate">
+                                                            {i18n.t(formattedDate)}
+                                                        </p>
+
+                                                        <p className="text-sm text-gray-500 truncate max-w-xs whitespace-pre-wrap">
+                                                            {t("hi")} {userInfo?.name} , {t(message["message"])}
+                                                        </p>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className="ml-auto -mx-1.5 -my-1.5  text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
+                                                        data-dismiss-target="#toast-message-cta"
+                                                        aria-label="Close"
+                                                    >
+                                                        <svg
+                                                            className="h-4 w-4 text-gray-500"
+                                                            width="24"
+                                                            height="24"
+                                                            viewBox="0 0 24 24"
+                                                            strokeWidth="2"
+                                                            stroke="currentColor"
+                                                            fill="none"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            {" "}
+                                                            <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                                                            <circle cx="12" cy="12" r="1" />{" "}
+                                                            <circle cx="12" cy="19" r="1" />{" "}
+                                                            <circle cx="12" cy="5" r="1" />
+                                                        </svg>{" "}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
+
+                </>
+            )}
+            {error && (
+                <Error errorCode={error.errorCode} errorMsg={error.errorMsg} />
+            )}
+
+
+
         </>
     );
     return el;
