@@ -18,8 +18,8 @@ public class AuthController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @PostMapping(path="kyc-auth/{relyingPartyId}/{clientId}",
-            consumes= MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "kyc-auth/{relyingPartyId}/{clientId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<KycAuthResponseDto> kycAuth(@RequestBody @NotNull @Valid KycAuthRequestDto kycAuthRequestDto,
                                                        @PathVariable @NotBlank String relyingPartyId,
                                                        @PathVariable @NotBlank String clientId) {
@@ -27,8 +27,9 @@ public class AuthController {
         responseWrapper.setResponse(authenticationService.kycAuth(relyingPartyId, clientId, kycAuthRequestDto));
         return responseWrapper;
     }
-    @PostMapping(path="kyc-exchange/{relyingPartyId}/{clientId}",
-            consumes= MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
+
+    @PostMapping(path = "kyc-exchange/{relyingPartyId}/{clientId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<KycExchangeResponseDto> kycExchange(@PathVariable @NotBlank String relyingPartyId,
                                                                @PathVariable @NotBlank String clientId,
                                                                @RequestBody @NotNull @Valid KycExchangeRequestDto kycExchangeRequestDto) {
@@ -37,4 +38,13 @@ public class AuthController {
         return responseWrapper;
     }
 
+    @PostMapping(path = "/send-otp/{relyingPartyId}/{clientId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWrapper<SendOtpResult> sendOtp(@PathVariable @NotBlank String relyingPartyId,
+                                                  @PathVariable @NotBlank String clientId,
+                                                  @Valid @RequestBody SendOtpDto sendOtpDto) {
+        ResponseWrapper<SendOtpResult> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setResponse(authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto));
+        return responseWrapper;
+    }
 }

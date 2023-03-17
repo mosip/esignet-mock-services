@@ -12,26 +12,29 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.security.auth.x500.X500Principal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.esignet.api.dto.*;
+import io.mosip.esignet.api.exception.KycAuthException;
+import io.mosip.esignet.api.util.ErrorConstants;
 import io.mosip.esignet.mock.integration.dto.IdentityData;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.StringUtils;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.nimbusds.jose.jwk.RSAKey;
 
-import io.mosip.esignet.api.dto.AuthChallenge;
-import io.mosip.esignet.api.dto.KeyBindingResult;
-import io.mosip.esignet.api.dto.SendOtpResult;
 import io.mosip.esignet.api.exception.KeyBindingException;
 import io.mosip.esignet.api.exception.SendOtpException;
 import io.mosip.esignet.api.spi.KeyBinder;
@@ -51,6 +54,9 @@ public class MockKeyBindingWrapperService implements KeyBinder {
 
     public static final String BINDING_SERVICE_APP_ID = "MOCK_BINDING_SERVICE";
     private static final String OTP_VALUE = "111111";
+    public static final String BINDING_TRANSACTION = "bindingtransaction";
+    public static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
     @Value("${mosip.esignet.mock.authenticator.get-identity-url}")
     private String getIdentityUrl;
 
@@ -81,20 +87,48 @@ public class MockKeyBindingWrapperService implements KeyBinder {
     @Override
     public SendOtpResult sendBindingOtp(String individualId, List<String> otpChannels,
                                         Map<String, String> requestHeaders) throws SendOtpException {
-        try {
-            return mockHelperService.sendOtpMock(individualId, otpChannels, null);
-        } catch (Exception e) {
-            throw new SendOtpException(e.getMessage());
-        }
+        String transactionId = "MockTransaction";
+        String relyingPartyId = "MockRelyingPartyId";
+        String clientId = "MockClientId";
+
+        var sendOtpResult = mockHelperService.sendOtpMock(transactionId, individualId, otpChannels, relyingPartyId, clientId);
+        return sendOtpResult;
     }
 
     @Override
     public KeyBindingResult doKeyBinding(String individualId, List<AuthChallenge> challengeList,
                                          Map<String, Object> publicKeyJWK, String bindAuthFactorType, Map<String, String> requestHeaders) throws KeyBindingException {
+        //TODO use dummy transactionId using MAP
+        // use Individual Id Key
+        // store random transaction.
+        // remove transaction after key binding
+        // only for OTP authFactor
+        // Add proper comment in the code
+
         KeyBindingResult keyBindingResult = new KeyBindingResult();
 
         if (!supportedBindAuthFactorTypes.contains(bindAuthFactorType)) {
             throw new KeyBindingException("invalid_bind_auth_factor_type");
+        }
+
+        // use dummy transactionId
+        var kycAuthDto = new KycAuthDto();
+
+        String transactionId = "MockTransaction";
+        kycAuthDto.setTransactionId(transactionId);
+        kycAuthDto.setIndividualId(individualId);
+        kycAuthDto.setChallengeList(challengeList);
+        String relyingPartyId = "MockRelyingPartyId";
+        String clientId = "MockClientId";
+
+        try {
+            var kycAuthResult = mockHelperService.doKycAuthMock(relyingPartyId, clientId, kycAuthDto);
+            if (kycAuthResult == null || kycAuthResult.getKycToken() == null) {
+                //If not authenticated, throw error
+                throw new KeyBindingException(ErrorConstants.KEY_BINDING_FAILED);
+            }
+        } catch (KycAuthException e) {
+            throw new KeyBindingException(e.getErrorCode());
         }
 
         IdentityData identityData = null;
@@ -110,11 +144,6 @@ public class MockKeyBindingWrapperService implements KeyBinder {
         } catch (Exception e) {
             log.error("failed to fetch individual data", e);
             throw new KeyBindingException("auth_failed", e.getMessage());
-        }
-
-        var isAuthenticated = authenticate(identityData, challengeList);
-        if (!isAuthenticated) {
-            throw new KeyBindingException("auth_failed");
         }
 
         //TODO
@@ -148,30 +177,6 @@ public class MockKeyBindingWrapperService implements KeyBinder {
         }
         keyBindingResult.setPartnerSpecificUserToken(individualId);
         return keyBindingResult;
-    }
-
-    public boolean authenticate(IdentityData identityData, List<AuthChallenge> challengeList) throws KeyBindingException {
-        boolean authStatus = false;
-        if (identityData == null) {
-            throw new KeyBindingException("invalid_individual_id");
-        }
-        for (AuthChallenge authChallenge : challengeList) {
-            if (Objects.equals(authChallenge.getAuthFactorType(), "PIN")) {
-                authStatus = authChallenge.getAuthFactorType().equals(identityData.getPin());
-                if (!authStatus)
-                    throw new KeyBindingException("invalid_input");
-            } else if (Objects.equals(authChallenge.getAuthFactorType(), "OTP")) {
-                authStatus = authChallenge.getChallenge().equals(OTP_VALUE);
-                if (!authStatus)
-                    throw new KeyBindingException("invalid_input");
-            } else if (Objects.equals(authChallenge.getAuthFactorType(), "BIO")) {
-                authStatus = true; //TODO
-            } else {
-                authStatus = false;
-            }
-        }
-
-        return authStatus;
     }
 
     private void setupMockBindingKey() {
