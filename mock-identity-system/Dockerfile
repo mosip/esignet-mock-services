@@ -42,9 +42,6 @@ ENV is_glowroot_env=${is_glowroot}
 # environment variable to pass artifactory url, at docker runtime
 ENV artifactory_url_env=${artifactory_url}
 
-# environment variable to pass esignet_wrapper url(may be zip or jar), at docker runtime
-ENV esignet_mock_wrapper_url_env=${esignet_mock_wrapper_url}
-
 # environment variable to pass hsm client zip file path, at docker runtime
 ENV hsm_zip_file_path=${hsm_client_zip_path}
 
@@ -87,7 +84,7 @@ ADD configure_start.sh configure_start.sh
 
 RUN chmod +x configure_start.sh
 
-COPY ./target/mock-identity-system-*.jar  mock-identity-system.jar
+ADD target/mock-identity-system-*.jar  mock-identity-system.jar
 
 # change permissions of file inside working dir
 RUN chown -R ${container_user}:${container_user} /home/${container_user}
@@ -95,10 +92,11 @@ RUN chown -R ${container_user}:${container_user} /home/${container_user}
 # select container user for all tasks
 USER ${container_user_uid}:${container_user_gid}
 
-EXPOSE 8088
+EXPOSE 8081
 EXPOSE 9010
 
 ENTRYPOINT [ "./configure_start.sh" ]
+
 CMD if [ "$is_glowroot_env" = "present" ]; then \
     wget -q --show-progress "${artifactory_url_env}"/artifactory/libs-release-local/io/mosip/testing/glowroot.zip ; \
     unzip glowroot.zip ; \
