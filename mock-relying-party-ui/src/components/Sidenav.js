@@ -228,7 +228,7 @@ export default function Sidenav({
                                     <line x1="4" y1="10" x2="20" y2="10" />{" "}
                                     <line x1="10" y1="4" x2="10" y2="20" />
                                 </svg>
-                                <span className="ml-3">{t("health_snapshot")}</span>
+                                <span className="ml-3 mr-3">{t("health_snapshot")}</span>
                             </a>
                         </li>
                         <li>
@@ -249,7 +249,7 @@ export default function Sidenav({
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                     />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">{t("search")}</span>
+                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("search")}</span>
                             </a>
                         </li>
                         <li>
@@ -269,7 +269,7 @@ export default function Sidenav({
                                     {" "}
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">{t("messages")}</span>
+                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("messages")}</span>
                             </a>
                         </li>
                         <li>
@@ -293,7 +293,7 @@ export default function Sidenav({
                                     <path d="M14 3v4a1 1 0 0 0 1 1h4" />{" "}
                                     <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">{t("reports")}</span>
+                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("reports")}</span>
                             </a>
                         </li>
                         <li>
@@ -314,7 +314,7 @@ export default function Sidenav({
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />{" "}
                                     <circle cx="12" cy="7" r="4" />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">{t("profile")}</span>
+                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("profile")}</span>
                             </a>
                         </li>
                         <li>
@@ -338,7 +338,7 @@ export default function Sidenav({
                                     <path d="M4.5 12.5l8 -8a4.94 4.94 0 0 1 7 7l-8 8a4.94 4.94 0 0 1 -7 -7" />{" "}
                                     <path d="M8.5 8.5l7 7" />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">
+                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">
                                     {t("medications")}
                                 </span>
                             </a>
@@ -367,7 +367,7 @@ export default function Sidenav({
                                     <line x1="4" y1="11" x2="20" y2="11" />{" "}
                                     <rect x="8" y="15" width="2" height="2" />
                                 </svg>{" "}
-                                <span className="flex-1 ml-3 whitespace-nowrap">
+                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">
                                     {t("vaccination")}
                                 </span>
                             </Link>
@@ -389,7 +389,7 @@ export default function Sidenav({
                                     {" "}
                                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                                 </svg>
-                                <span className="flex-1 ml-3 whitespace-nowrap">
+                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">
                                     {t("health_records")}
                                 </span>
                             </a>
@@ -413,7 +413,7 @@ export default function Sidenav({
                                         <circle cx="12" cy="12" r="3" />{" "}
                                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
                                     </svg>
-                                    <span className="flex-1 ml-3 whitespace-nowrap">
+                                    <span className="flex-1 ml-3 mr-3 whitespace-nowrap">
                                         {t("settings")}
                                     </span>
                                 </a>
@@ -442,7 +442,7 @@ export default function Sidenav({
                                         <path d="M11.5 3a17 17 0 0 0 0 18" />{" "}
                                         <path d="M12.5 3a17 17 0 0 1 0 18" />
                                     </svg>
-                                    <span className="flex-1 ml-3 whitespace-nowrap">{t("help")}</span>
+                                    <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("help")}</span>
                                 </a>
                             </li>
                         </div>
