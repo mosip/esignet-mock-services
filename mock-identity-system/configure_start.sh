@@ -1,15 +1,5 @@
 #!/bin/bash
 
-#Downloads the zip/jar esignet-mock adapters
-wrapper_filename=$(basename "$esignet_mock_wrapper_url_env")
-wget -q "${esignet_mock_wrapper_url_env}" -O "${loader_path_env}"/"${wrapper_filename}"
-if file "${loader_path_env}"/"${wrapper_filename}" | grep -q "Zip archive"; then
-  echo "Downloaded wrapper file is a zip archive. Unzipping the ${wrapper_filename}"
-  unzip "${loader_path_env}"/"${wrapper_filename}" -d "${loader_path_env}"
-else
-  echo "Downloaded wrapper file ${wrapper_filename} is not a zip archive."
-fi
-
 #installs the pkcs11 libraries.
 set -e
 
