@@ -10,6 +10,7 @@ import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.signature.dto.JWTSignatureRequestDto;
 import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
 import io.mosip.kernel.signature.service.SignatureService;
@@ -60,26 +61,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.mock.ida.kyc.default-language:eng}")
     private String defaultLanguage;
 
+    ArrayList<String> trnHash = new ArrayList<>();
 
     @Override
     public KycAuthResponseDto kycAuth(String relyingPartyId, String clientId, KycAuthRequestDto kycAuthRequestDto) throws MockIdentityException {
         //TODO validate relying party Id and client Id
+
         IdentityData identityData = identityService.getIdentity(kycAuthRequestDto.getIndividualId());
-        if(identityData == null) {
-            throw new MockIdentityException("mock-ida-001");
+        if (identityData == null) {
+            throw new MockIdentityException("invalid_individual_id");
         }
         boolean authStatus = false;
-        if(kycAuthRequestDto.getOtp() != null) {
-            authStatus = kycAuthRequestDto.getOtp().equals(OTP_VALUE);
-            if(!authStatus)
-                throw new MockIdentityException("mock-ida-002");
+        if (kycAuthRequestDto.getOtp() != null) {
+            //check if the trn is available and active
+            if (StringUtils.isEmpty(kycAuthRequestDto.getTransactionId())) {
+                log.error("Invalid transaction Id");
+                throw new MockIdentityException("invalid_transaction_id");
+            }
+
+            var trn_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
+                    String.format(kycAuthRequestDto.getTransactionId(), kycAuthRequestDto.getIndividualId(), OTP_VALUE));
+
+            var isValid = trnHash.contains(trn_hash);
+            if (isValid) {
+                authStatus = kycAuthRequestDto.getOtp().equals(OTP_VALUE);
+                if (authStatus)
+                    trnHash.remove(trn_hash);
+                else
+                    throw new MockIdentityException("auth_failed");
+            } else {
+                throw new MockIdentityException("invalid_transaction");
+            }
         }
-        if(kycAuthRequestDto.getPin() != null) {
+        if (kycAuthRequestDto.getPin() != null) {
             authStatus = kycAuthRequestDto.getPin().equals(identityData.getPin());
-            if(!authStatus)
-                throw new MockIdentityException("mock-ida-003");
+            if (!authStatus)
+                throw new MockIdentityException("auth_failed");
         }
-        if(kycAuthRequestDto.getBiometrics() != null) {
+        if (kycAuthRequestDto.getBiometrics() != null) {
             authStatus = true; //TODO
         }
 
@@ -100,12 +119,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 (kycExchangeRequestDto.getKycToken(), Valid.ACTIVE, kycExchangeRequestDto.getTransactionId(),
                         kycExchangeRequestDto.getIndividualId());
 
-        if(!result.isPresent())
+        if (!result.isPresent())
             throw new MockIdentityException("mock-ida-006");
 
         LocalDateTime savedTime = result.get().getResponseTime();
         long seconds = savedTime.until(kycExchangeRequestDto.getRequestDateTime(), ChronoUnit.SECONDS);
-        if(seconds < 0 || seconds > transactionTimeoutInSecs) {
+        if (seconds < 0 || seconds > transactionTimeoutInSecs) {
             result.get().setValidity(Valid.EXPIRED);
             authRepository.save(result.get());
             throw new MockIdentityException("mock-ida-007");
@@ -129,7 +148,46 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private String signKyc(Map<String,Object> kyc) throws JsonProcessingException {
+    @Override
+    public SendOtpResult sendOtp(String relyingPartyId, String clientId, SendOtpDto sendOtpDto) throws MockIdentityException {
+        //TODO validate relying party Id and client Id
+
+        if (sendOtpDto == null || StringUtils.isEmpty(sendOtpDto.getTransactionId())) {
+            log.error("Invalid transaction Id");
+            throw new MockIdentityException("invalid_transaction_id");
+        }
+
+        IdentityData identityData = identityService.getIdentity(sendOtpDto.getIndividualId());
+        if (identityData == null) {
+            log.error("Provided individual Id not found {}", sendOtpDto.getIndividualId());
+            throw new MockIdentityException("invalid_individual_id");
+        }
+
+        if (sendOtpDto.getOtpChannels() == null
+                || !sendOtpDto.getOtpChannels().stream().allMatch(HelperUtil::isSupportedOtpChannel)) {
+            log.error("Invalid Otp Channels");
+            throw new MockIdentityException("invalid_otp_channel");
+        }
+
+        String maskedEmailId = null;
+        String maskedMobile = null;
+        for (String channel : sendOtpDto.getOtpChannels()) {
+            if (channel.equalsIgnoreCase("email")) {
+                maskedEmailId = HelperUtil.maskEmail(identityData.getEmail());
+            }
+            if (channel.equalsIgnoreCase("mobile")) {
+                maskedMobile = HelperUtil.maskMobile(identityData.getPhone());
+            }
+        }
+
+        var trn_token_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
+                String.format(sendOtpDto.getTransactionId(), sendOtpDto.getIndividualId(), OTP_VALUE));
+
+        trnHash.add(trn_token_hash);
+        return new SendOtpResult(sendOtpDto.getTransactionId(), maskedEmailId, maskedMobile);
+    }
+
+    private String signKyc(Map<String, Object> kyc) throws JsonProcessingException {
         String payload = objectMapper.writeValueAsString(kyc);
         JWTSignatureRequestDto jwtSignatureRequestDto = new JWTSignatureRequestDto();
         jwtSignatureRequestDto.setApplicationId(APPLICATION_ID);
@@ -155,7 +213,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private RSAKey getRelyingPartyPublicKey(String relyingPartyId) {
-        //TODO where to strore relying-party public key
+        //TODO where to store relying-party public key
         throw new MockIdentityException("jwe-not-implemented");
     }
 
@@ -172,7 +230,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         KycAuth kycAuth = new KycAuth(kycToken, psut, LocalDateTime.now(ZoneOffset.UTC), Valid.ACTIVE, transactionId,
                 individualId);
-        if(kycAuth == null)
+        if (kycAuth == null)
             throw new MockIdentityException("mock-ida-005");
         return authRepository.save(kycAuth);
     }
@@ -180,45 +238,57 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private Map<String, Object> buildKycDataBasedOnPolicy(String individualId, List<String> claims, List<String> locales) {
         Map<String, Object> kyc = new HashMap<>();
         IdentityData identityData = identityService.getIdentity(individualId);
-        if(identityData == null) {
+        if (identityData == null) {
             throw new MockIdentityException("mock-ida-001");
         }
 
-        if(CollectionUtils.isEmpty(locales)) {
+        if (CollectionUtils.isEmpty(locales)) {
             locales = Arrays.asList(defaultLanguage);
         }
         boolean singleLanguage = locales.size() == 1;
-        for(String claim : claims) {
+        for (String claim : claims) {
             switch (claim) {
-                case "name" :
+                case "name":
                     kyc.putAll(getKycValues(locales, "name", identityData.getFullName(), singleLanguage));
                     break;
-                case "birthdate" :
-                    if(identityData.getDateOfBirth() != null) { kyc.put("birthdate", identityData.getDateOfBirth()); }
+                case "birthdate":
+                    if (identityData.getDateOfBirth() != null) {
+                        kyc.put("birthdate", identityData.getDateOfBirth());
+                    }
                     break;
-                case "gender" :
+                case "gender":
                     kyc.putAll(getKycValues(locales, "gender", identityData.getGender(), singleLanguage));
                     break;
-                case "email" :
-                    if(identityData.getEmail() != null) { kyc.put("email", identityData.getEmail()); }
+                case "email":
+                    if (identityData.getEmail() != null) {
+                        kyc.put("email", identityData.getEmail());
+                    }
                     break;
-                case "phone_number" :
-                    if(identityData.getPhone() != null) { kyc.put("phone_number", identityData.getPhone()); }
+                case "phone_number":
+                    if (identityData.getPhone() != null) {
+                        kyc.put("phone_number", identityData.getPhone());
+                    }
                     break;
-                case "address" :
-                	Map<String, Object> addressValues = new HashMap<>();
-                	addressValues.putAll(getKycValues(locales, "street_address", identityData.getStreetAddress(), singleLanguage));
-                	addressValues.putAll(getKycValues(locales, "locality", identityData.getLocality(), singleLanguage));
-                	addressValues.putAll(getKycValues(locales, "region", identityData.getRegion(), singleLanguage));
-                	if (identityData.getPostalCode() != null) { addressValues.put("postal_code", identityData.getPostalCode()); }
-                	addressValues.putAll(getKycValues(locales, "country", identityData.getCountry(), singleLanguage));
-                	kyc.put("address", addressValues);
+                case "address":
+                    Map<String, Object> addressValues = new HashMap<>();
+                    addressValues.putAll(getKycValues(locales, "street_address", identityData.getStreetAddress(), singleLanguage));
+                    addressValues.putAll(getKycValues(locales, "locality", identityData.getLocality(), singleLanguage));
+                    addressValues.putAll(getKycValues(locales, "region", identityData.getRegion(), singleLanguage));
+                    if (identityData.getPostalCode() != null) {
+                        addressValues.put("postal_code", identityData.getPostalCode());
+                    }
+                    addressValues.putAll(getKycValues(locales, "country", identityData.getCountry(), singleLanguage));
+                    kyc.put("address", addressValues);
                     break;
-                case "picture" :
-                    if(identityData.getEncodedPhoto() != null) { kyc.put("picture", identityData.getEncodedPhoto()); }
+                case "picture":
+                    if (identityData.getEncodedPhoto() != null) {
+                        kyc.put("picture", identityData.getEncodedPhoto());
+                    }
                     break;
-                case "individual_id" :
-                    if(identityData.getIndividualId() != null) { kyc.put("individual_id", identityData.getIndividualId()); }
+                case "individual_id":
+                    if (identityData.getIndividualId() != null) {
+                        kyc.put("individual_id", identityData.getIndividualId());
+                    }
                     break;
             }
         }
@@ -226,13 +296,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private Map<String, Object> getKycValues(List<String> locales, String claimName, List<LanguageValue> values, boolean isSingleLanguage) {
-    	if (values == null) {
-			return Collections.emptyMap();
-		}
-    	for(String locale : locales) {
+        if (values == null) {
+            return Collections.emptyMap();
+        }
+        for (String locale : locales) {
             return values.stream()
-                    .filter( v -> v.getLanguage().equalsIgnoreCase(locale) || v.getLanguage().startsWith(locale))
-                    .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName+"#"+locale, v -> v.getValue()));
+                    .filter(v -> v.getLanguage().equalsIgnoreCase(locale) || v.getLanguage().startsWith(locale))
+                    .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, v -> v.getValue()));
         }
         return Collections.emptyMap();
     }
