@@ -4,9 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import clientDetails from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
 import Select from "react-select";
-import { Error } from "../common/Errors";
 import LoadingIndicator from "../common/LoadingIndicator";
-import moment from 'moment'
 export default function Sidenav({
     component,
     langOptions,
@@ -23,7 +21,6 @@ export default function Sidenav({
     const [isOpen, setIsOpen] = useState(false);
     const currentDate = new Date();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [error, setError] = useState({ errorCode: "", errorMsg: "" });
     const [userInfo, setUserInfo] = useState(null);
     const [status, setStatus] = useState(states.LOADING);
     const [claimInfo, setClaimInfo] = useState([]);
@@ -43,11 +40,8 @@ export default function Sidenav({
         navigate("/" + params, { replace: true });
     };
     const [selectedLang, setSelectedLang] = useState();
-
-
     const changeLanguageHandler = (e) => {
         i18n.changeLanguage(e.value);
-
     };
 
     const customStyles = {
@@ -68,12 +62,11 @@ export default function Sidenav({
     //Gets fired when changeLanguage got called.
     i18n.on('languageChanged', function (lng) {
         let lang = langOptions.find((option) => {
-            moment.locale(lng);
             return option.value === lng;
         });
-
         setSelectedLang(lang);
     })
+
     useEffect(() => {
         const getSearchParams = async () => {
             let authCode = searchParams.get("code");
@@ -92,7 +85,6 @@ export default function Sidenav({
 
     const getUserDetails = async (authCode) => {
         setUserInfo(null);
-        setError(null);
         setStatus(states.LOADING);
         try {
             let client_id = clientDetails.clientId;
@@ -691,15 +683,8 @@ export default function Sidenav({
                             </div>
                         </div>
                     </div>
-
                 </>
             )}
-            {error && (
-                <Error errorCode={error.errorCode} errorMsg={error.errorMsg} />
-            )}
-
-
-
         </>
     );
     return el;
