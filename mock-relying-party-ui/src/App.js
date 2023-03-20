@@ -13,7 +13,6 @@ import BookAppointmentPage from "./pages/BookAppointment";
 
 function App() {
   const { i18n } = useTranslation();
-  const [rtlLangs, setRtlLangs] = useState([]);
   const [langOptions, setLangOptions] = useState([]);
   const [dir, setDir] = useState("ltr");
 
