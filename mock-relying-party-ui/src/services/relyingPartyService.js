@@ -32,90 +32,90 @@ const post_fetchUserInfo = async (
   });
   return response.data;
 };
-const get_claimProvider = async () => {
+const get_claimProvider = () => {
   return {
     claimproviders: [
       {
-        vaccinationName: "Covaxin",
+        vaccinationName: "covaxin",
         days: 7,
-        vaccinationCenter: "AIIMS, Banglore.....",
+        vaccinationCenter: "aiims_address",
         totalCost: "$234",
       },
       {
-        vaccinationName: "Hepatitis A.",
+        vaccinationName: "hepatitis_a.",
         days: 40,
-        vaccinationCenter: "Apollo, Apollo  HSR Layout.....",
+        vaccinationCenter: "apollo_address",
         totalCost: "$85",
       },
       {
-        vaccinationName: "Rubella",
+        vaccinationName: "rubella",
         days: 295,
-        vaccinationCenter: "Urban Health care, NRH....",
+        vaccinationCenter: "urban_address",
         totalCost: "$55",
       },
       {
-        vaccinationName: "Influenza",
+        vaccinationName: "influenza",
         days: 390,
-        vaccinationCenter: "Manipal Hospital, Sarjapur.....",
+        vaccinationCenter: "manipal_address",
         totalCost: "$75",
       },
     ],
   };
 };
-const get_currentMedications = async () => {
+const get_currentMedications = () => {
   return {
     medications: [
       {
-        tabletName: "Acebutolol 400mg",
-        dailyDosage: "2Pill(s) Daily",
+        tabletName: "acebutolol_400mg",
+        dailyDosage: "dailydosage_2",
       },
       {
-        tabletName: "Aluminium Hydroxide (OTC) 320mg",
-        dailyDosage: "2Pill(s) Daily",
+        tabletName: "aluminium_hydroxide_(otc)_320mg",
+        dailyDosage: "dailydosage_2",
       },
       {
-        tabletName: "Warferin 2mg",
-        dailyDosage: "1Pill(s) Daily",
+        tabletName: "warfarin_2mg",
+        dailyDosage: "dailydoseage_1",
       },
     ],
   };
 };
-const get_messages = async () => {
+const get_messages = () => {
   return {
     messages: [
       {
-        doctorName: "Dr Alexander Kalish",
+        doctorName: "dr_alexander_kalish",
         days: "1",
-        message: "I have results back from the blood culture we ran to see it",
+        message: "dr_alexander_kalish_message_1",
       },
       {
-        doctorName: "Dr Alexander Kalish",
+        doctorName: "dr_alexander_kalish",
         days: "3",
         message:
-          "could you send your most updated email? so i can send the updated records to you",
+          "dr_alexander_kalish_message_2",
       },
       {
-        doctorName: "Samantha Kleizar",
+        doctorName: "samantha_kleizar",
         days: "4",
         message:
-          "Just a remainder of your appointment with Dr Alexander Kalish in around",
+          "samantha_kleizar_message_1",
       },
       {
-        doctorName: "Dr Fariz",
+        doctorName: "dr_fariz",
         days: "5",
-        message: "I have results back from the blood culture we ran to see it",
+        message: "dr_fariz_message_1",
       },
     ],
   };
 };
-const get_nextAppointment = async () => {
+const get_nextAppointment = () => {
   return {
     appointment: [
       {
         time: "10:30am - 11:00am 30mins",
-        location: "213-219, Darlinghurst Rd, Darlinghurst, NSW 2010",
-        doctorName: "Dr Alexander Kalish",
-        department: "Endocrinologist",
+        location: "appointment_location",
+        doctorName: "dr_alexander_kalish",
+        department: "endocrin",
       },
     ],
   };
