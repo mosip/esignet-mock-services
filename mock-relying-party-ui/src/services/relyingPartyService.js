@@ -32,9 +32,9 @@ const post_fetchUserInfo = async (
   });
   return response.data;
 };
-const get_claimProvider = () => {
+const get_vaccinationinfo = () => {
   return {
-    claimproviders: [
+    vaccinations: [
       {
         vaccinationName: "covaxin",
         days: 7,
@@ -122,7 +122,7 @@ const get_nextAppointment = () => {
 };
 const relyingPartyService = {
   post_fetchUserInfo,
-  get_claimProvider,
+  get_vaccinationinfo,
   get_currentMedications,
   get_messages,
   get_nextAppointment,

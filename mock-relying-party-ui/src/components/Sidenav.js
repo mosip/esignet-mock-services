@@ -5,6 +5,9 @@ import clientDetails from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
 import Select from "react-select";
 import LoadingIndicator from "../common/LoadingIndicator";
+import MessagesInfo from "./MessagesInfo";
+import VaccinationInfo from "./VaccinationInfo";
+import Header from "./Header";
 export default function Sidenav({
     component,
     langOptions,
@@ -13,20 +16,12 @@ export default function Sidenav({
 }) {
     const userInfo_keyname = "user_info";
     const post_fetchUserInfo = relyingPartyService.post_fetchUserInfo;
-    const get_claimProvider = relyingPartyService.get_claimProvider;
-    const get_messages = relyingPartyService.get_messages;
     const { t, i18n } = useTranslation("translation", {
         keyPrefix: i18nKeyPrefix,
     });
-    const [isOpen, setIsOpen] = useState(false);
-    const currentDate = new Date();
     const [searchParams, setSearchParams] = useSearchParams();
     const [userInfo, setUserInfo] = useState(null);
     const [status, setStatus] = useState(states.LOADING);
-    const [claimInfo, setClaimInfo] = useState([]);
-    const [messagesInfo, setMessagesInfo] = useState([]);
-    const [address, setAddress] = useState(null);
-    const [emailAddress, setEmailAddress] = useState(null);
     const navigate = useNavigate();
 
     const navigateToLogin = (errorCode, errorDescription) => {
@@ -76,8 +71,6 @@ export default function Sidenav({
                 navigateToLogin(errorCode, error_desc);
                 return;
             }
-            getClaimProvider();
-            getMessages();
             getUserDetails(authCode);
         };
         getSearchParams();
@@ -96,91 +89,19 @@ export default function Sidenav({
                 redirect_uri,
                 grant_type
             );
-            let address = getAddress(userInfo?.address);
-            setAddress(address);
             setUserInfo(userInfo);
-            setEmailAddress(userInfo?.email_verified ?? userInfo?.email);
             localStorage.setItem(userInfo_keyname, JSON.stringify(userInfo));
             setStatus(states.LOADED);
         } catch (errormsg) {
             //Load from local storage
             if (localStorage.getItem(userInfo_keyname)) {
                 let userInf = JSON.parse(localStorage.getItem(userInfo_keyname));
-                let address = getAddress(userInf?.address);
-                setAddress(address);
-                setEmailAddress(userInf?.email_verified ?? userInf?.email);
                 setUserInfo(userInf);
                 setStatus(states.LOADED);
             } else {
                 navigateToLogin("session_expired", "Session Expired");
             }
         }
-    };
-
-    //claimproviders details
-    const getClaimProvider = () => {
-        setClaimInfo(null);
-        var claimInfo = get_claimProvider();
-        setClaimInfo(claimInfo);
-    };
-
-    //Getting message information from json
-    const getMessages = () => {
-        setMessagesInfo(null);
-        var messagesInfo = get_messages();
-        setMessagesInfo(messagesInfo);
-    };
-    const messagesCount = messagesInfo.messages?.length
-
-    const getAddress = (userAddress) => {
-        let address = "";
-
-        if (userAddress?.formatted) {
-            address += userAddress?.formatted + ", ";
-        }
-
-        if (userAddress?.street_address) {
-            address += userAddress?.street_address + ", ";
-        }
-
-        if (userAddress?.addressLine1) {
-            address += userAddress?.addressLine1 + ", ";
-        }
-
-        if (userAddress?.addressLine2) {
-            address += userAddress?.addressLine2 + ", ";
-        }
-
-        if (userAddress?.addressLine3) {
-            address += userAddress?.addressLine3 + ", ";
-        }
-
-        if (userAddress?.locality) {
-            address += userAddress?.locality + ", ";
-        }
-
-        if (userAddress?.city) {
-            address += userAddress?.city + ", ";
-        }
-
-        if (userAddress?.province) {
-            address += userAddress?.province + ", ";
-        }
-
-        if (userAddress?.region) {
-            address += userAddress?.region + ", ";
-        }
-
-        if (userAddress?.postalCode) {
-            address += "(" + userAddress?.postalCode + "), ";
-        }
-
-        if (userAddress?.country) {
-            address += userAddress?.country + ", ";
-        }
-
-        //returning after removing last ", " characters
-        return address.substring(0, address.length - 2);
     };
 
     let el = (
@@ -462,93 +383,8 @@ export default function Sidenav({
             {status === states.LOADED && (
                 <>
                     <div className="p-4 ltr:sm:ml-64 rtl:sm:mr-64 overflow-auto bg-gray-50 font-sans bg-none">
-                        <div className="flex flex-wrap justify-between items-center px-4 md:px-6 py-2.5">
-                            <a className="flex-1 items-center truncate">
-                                <span className="self-center text-2xl font-semibold whitespace-nowrap">
-                                    {t("welcome")}, {userInfo?.name}
-                                </span>
-                                <p className="text-sm text-gray-500 truncate bg-gray-50 font-sans">
-                                    {t("message_notification")}
-                                </p>
-                            </a>
-
-                            <div className="flex items-center">
-                                <div className="relative">
-                                    <div className="flex">
-                                        <img
-                                            alt={"profile_picture"}
-                                            className="h-12 w-12 ml-3 mr-3"
-                                            src={
-                                                userInfo?.picture
-                                                    ? userInfo.picture
-                                                    : "User-Profile-Icon.png"
-                                            }
-                                        />
-                                        <div className="flex my-3 max-w-xs">
-                                            <p className="text-gray-500 truncate bg-gray-50" title={userInfo?.name}>
-                                                {userInfo?.name}
-                                            </p>
-                                        </div>
-                                        <button
-                                            className="flex items-center px-4 py-2  text-sm leading-5 font-medium rounded-md text-gray-700 bg-transparent hover:text-gray-500  active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out"
-                                            onClick={() => setIsOpen(!isOpen)}
-                                        >
-                                            <svg
-                                                className="h-5 w-5 ml-1 text-black"
-                                                width="24"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                                strokeWidth="2"
-                                                stroke="currentColor"
-                                                fill="none"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            >
-                                                {" "}
-                                                <path stroke="none" d="M0 0h24v24H0z" />{" "}
-                                                <polyline points="6 9 12 15 18 9" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    {isOpen && (
-                                        <div className="origin-top-left absolute ltr:right-0 rtl:left-0 max-w-xs shadow-lg">
-                                            <div className="flex flex-col px-1 py-1 rounded-md bg-white shadow-xs mt-2">
-                                                <a className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" title={emailAddress}>
-                                                    {t("email")}:&nbsp;
-                                                    <span className="truncate">
-                                                        {emailAddress?.split("@")[0]}
-                                                    </span>
-                                                    @
-                                                    <span className="truncate">
-                                                        {emailAddress?.split("@")[1]}
-                                                    </span>
-                                                </a>
-                                                <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                                                    {t("dob")}: {userInfo?.birthdate}
-                                                </a>
-                                                <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                                                    {t("gender")}: {userInfo?.gender}
-                                                </a>
-                                                <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                                                    {t("mobile_no")}: {userInfo?.phone_number}
-                                                </a>
-                                                <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900">
-                                                    {t("address")}: {address}
-                                                </a>
-                                                <button
-                                                    className="w-full ltr:text-left rtl:text-right block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
-                                                    onClick={(e) => {
-                                                        localStorage.removeItem(userInfo_keyname);
-                                                        navigateToLogin("logged_out", "User Logout");
-                                                    }}
-                                                >
-                                                    {t("sign_out")}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                        <div>
+                            <Header />
                         </div>
                         <div className="p-1 ">
                             <div className="flex">
@@ -556,129 +392,12 @@ export default function Sidenav({
                                     <div className="w-full">
                                         {component}
                                     </div>
-                                    <div className="w-full p-2 grid grid-cols-3 rounded bg-white border border-gray-200  shadow sm:p-2 m-1">
-                                        <div>
-                                            <p className=" text-lg font-medium ">{t("vaccinations")}</p>
-                                        </div>
-                                        <div className="col-end-5">
-                                            <a
-                                                href="#"
-                                                className=" text-sm text-gray-500 truncate hover:underline"
-                                            >
-                                                {t("vaccinations_history")}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="w-full flex">
-                                        <table className="w-full p-4 mx-1 mb-4 table-auto whitespace-pre-wrap shadow-lg text-sm text-left text-gray-500">
-                                            <thead className="text-xs text-gray-700 uppercase bg-white">
-                                                <tr>
-                                                    <th scope="col" className="px-6 py-3">
-                                                        <p>{t("vaccination_details")}</p>
-                                                    </th>
-                                                    <th scope="col" className="px-6 py-3">
-                                                        {t("date")}
-                                                    </th>
-                                                    <th scope="col" className="px-6 py-3">
-                                                        {t("vaccination_center")}
-                                                    </th>
-
-                                                    <th scope="col" className="px-6 py-3">
-                                                        {t("total_cost")}
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {claimInfo?.claimproviders?.map((item, idx) => {
-                                                    const pastDate = new Date(
-                                                        currentDate.getTime() -
-                                                        item["days"] * 24 * 60 * 60 * 1000
-                                                    );
-                                                    return (
-                                                        <tr className="bg-white border-b" key={idx}>
-                                                            <th
-                                                                scope="row"
-                                                                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                                                            >
-                                                                <p className="text-xs">{t(item["vaccinationName"])}</p>
-                                                            </th>
-                                                            <td className="px-6 py-4">
-                                                                <p>{pastDate.toLocaleDateString()}</p>
-                                                            </td>
-                                                            <td className="px-6 py-4">
-                                                                <p>{t(item["vaccinationCenter"])}</p>
-                                                            </td>
-                                                            <th className="px-6 py-4">
-                                                                <p>{item["totalCost"]}</p>
-                                                            </th>
-                                                        </tr>
-                                                    );
-                                                })}
-                                            </tbody>
-                                        </table>
+                                    <div className="w-full p-2">
+                                        <VaccinationInfo />
                                     </div>
                                 </div>
                                 <div className="w-full sm:w-1/2 md:w-30 p-2">
-                                    <p className="text-lg font-medium mb-4">
-                                        {t("new_messages")} <span className="">({messagesCount})</span>
-                                    </p>
-                                    {messagesInfo?.messages?.map((message, index) => {
-                                        const pastDate = new Date(
-                                            currentDate.getTime() - message["days"] * 24 * 60 * 60 * 1000
-                                        );
-                                        const formattedDate = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full' }).format(pastDate);
-                                        return (
-                                            <div
-                                                className=" bg-white overflow-auto border rounded border-gray-200 hover:bg-gray-100 shadow sm:p-4"
-                                                key={index}
-                                            >
-                                                <div className="flex ">
-                                                    <img
-                                                        className="w-8 h-8 rounded-full shadow-lg"
-                                                        src="./../images/doctor_logo.png"
-                                                        alt="Jese Leos image"
-                                                    />
-
-                                                    <div className="ml-3 mr-3">
-                                                        <p className="text-sm font-medium text-gray-900 truncate">
-                                                            {t(message["doctorName"])}
-                                                        </p>
-                                                        <p className="text-sm text-gray-500 truncate">
-                                                            {i18n.t(formattedDate)}
-                                                        </p>
-
-                                                        <p className="text-sm text-gray-500 truncate max-w-xs whitespace-pre-wrap">
-                                                            {t("hi")} {userInfo?.name} , {t(message["message"])}
-                                                        </p>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        className="ml-auto -mx-1.5 -my-1.5  text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
-                                                        data-dismiss-target="#toast-message-cta"
-                                                        aria-label="Close"
-                                                    >
-                                                        <svg
-                                                            className="h-4 w-4 text-gray-500"
-                                                            width="24"
-                                                            height="24"
-                                                            viewBox="0 0 24 24"
-                                                            strokeWidth="2"
-                                                            stroke="currentColor"
-                                                            fill="none"
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                        >
-                                                            {" "}
-                                                            <path stroke="none" d="M0 0h24v24H0z" />{" "}
-                                                            <circle cx="12" cy="12" r="1" />{" "}
-                                                            <circle cx="12" cy="19" r="1" />{" "}
-                                                            <circle cx="12" cy="5" r="1" />
-                                                        </svg>{" "}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
+                                    <MessagesInfo username={userInfo?.name} />
                                 </div>
                             </div>
                         </div>
