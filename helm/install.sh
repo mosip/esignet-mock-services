@@ -6,6 +6,18 @@ if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
 fi
 
+NS=softhsm
+CHART_VERSION=12.0.1-B2
+echo Installing Softhsm for mock-identity-system
+helm -n $NS install softhsm-mock-identity-system mosip/softhsm -f softhsm-values.yaml --version $CHART_VERSION --wait
+echo Installed Softhsm for mock-identity-system
+
+./copy_cm_func.sh secret softhsm-mock-identity-system softhsm config-server
+
+kubectl -n config-server set env --keys=security-pin --from secret/softhsm-mock-identity-system deployment/config-server --prefix=SPRING_CLOUD_CONFIG_SERVER_OVERRIDES_SOFTHSM_MOCK_IDENTITY_SYSTEM
+
+kubectl -n config-server get deploy -o name |  xargs -n1 -t  kubectl -n config-server rollout status
+
 read -p "Please provide client private key file : " CLIENT_PRIVATE_KEY
 
 if [ -z "$CLIENT_PRIVATE_KEY" ]; then
