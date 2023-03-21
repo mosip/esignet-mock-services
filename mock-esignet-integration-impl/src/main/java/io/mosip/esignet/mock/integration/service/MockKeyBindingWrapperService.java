@@ -5,47 +5,46 @@
  */
 package io.mosip.esignet.mock.integration.service;
 
-import java.io.StringWriter;
-import java.math.BigInteger;
-import java.security.PrivateKey;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-
-import javax.security.auth.x500.X500Principal;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.esignet.api.dto.*;
+import com.nimbusds.jose.jwk.RSAKey;
+import io.mosip.esignet.api.dto.AuthChallenge;
+import io.mosip.esignet.api.dto.KeyBindingResult;
+import io.mosip.esignet.api.dto.KycAuthDto;
+import io.mosip.esignet.api.dto.SendOtpResult;
+import io.mosip.esignet.api.exception.KeyBindingException;
 import io.mosip.esignet.api.exception.KycAuthException;
+import io.mosip.esignet.api.exception.SendOtpException;
+import io.mosip.esignet.api.spi.KeyBinder;
 import io.mosip.esignet.api.util.ErrorConstants;
 import io.mosip.esignet.mock.integration.dto.IdentityData;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.StringUtils;
-import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
-import org.bouncycastle.x509.X509V3CertificateGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-
-import com.nimbusds.jose.jwk.RSAKey;
-
-import io.mosip.esignet.api.exception.KeyBindingException;
-import io.mosip.esignet.api.exception.SendOtpException;
-import io.mosip.esignet.api.spi.KeyBinder;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.keymanagerservice.dto.KeyPairGenerateRequestDto;
 import io.mosip.kernel.keymanagerservice.dto.SignatureCertificate;
 import io.mosip.kernel.keymanagerservice.service.KeymanagerService;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
+import org.bouncycastle.x509.X509V3CertificateGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.RequestEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.security.auth.x500.X500Principal;
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.security.PrivateKey;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @ConditionalOnProperty(value = "mosip.esignet.integration.key-binder", havingValue = "MockKeyBindingWrapperService")
 @Component
@@ -77,10 +76,10 @@ public class MockKeyBindingWrapperService implements KeyBinder {
     @Autowired
     private MockHelperService mockHelperService;
 
-    private static final Map<String, List<String>> supportedFormats = new HashMap<>();
+    private static final Map<String, List<String>> supportedKeyBindingFormats = new HashMap<>();
 
     static {
-        supportedFormats.put("WLA", List.of("jwt"));
+        supportedKeyBindingFormats.put("WLA", List.of("jwt"));
     }
 
 
@@ -98,13 +97,6 @@ public class MockKeyBindingWrapperService implements KeyBinder {
     @Override
     public KeyBindingResult doKeyBinding(String individualId, List<AuthChallenge> challengeList,
                                          Map<String, Object> publicKeyJWK, String bindAuthFactorType, Map<String, String> requestHeaders) throws KeyBindingException {
-        //TODO use dummy transactionId using MAP
-        // use Individual Id Key
-        // store random transaction.
-        // remove transaction after key binding
-        // only for OTP authFactor
-        // Add proper comment in the code
-
         KeyBindingResult keyBindingResult = new KeyBindingResult();
 
         if (!supportedBindAuthFactorTypes.contains(bindAuthFactorType)) {
@@ -188,6 +180,6 @@ public class MockKeyBindingWrapperService implements KeyBinder {
 
     @Override
     public List<String> getSupportedChallengeFormats(String authFactorType) {
-        return supportedFormats.getOrDefault(authFactorType, List.of());
+        return supportedKeyBindingFormats.getOrDefault(authFactorType, List.of());
     }
 }

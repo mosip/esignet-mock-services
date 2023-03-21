@@ -61,6 +61,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.mock.ida.kyc.default-language:eng}")
     private String defaultLanguage;
 
+    @Value("${mosip.esignet.mock.authenticator.ida.otp-channels}")
+    private List<String> otpChannels;
+
     ArrayList<String> trnHash = new ArrayList<>();
 
     @Override
@@ -93,14 +96,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new MockIdentityException("invalid_transaction");
             }
         }
+
         if (kycAuthRequestDto.getPin() != null) {
             authStatus = kycAuthRequestDto.getPin().equals(identityData.getPin());
             if (!authStatus)
                 throw new MockIdentityException("auth_failed");
         }
+
         if (kycAuthRequestDto.getBiometrics() != null) {
             authStatus = true; //TODO
         }
+
+        if (!CollectionUtils.isEmpty(kycAuthRequestDto.getTokens())) {
+            authStatus = !StringUtils.isEmpty(kycAuthRequestDto.getTokens().get(0));
+            if (!authStatus)
+                throw new MockIdentityException("auth_failed");
+        }
+
 
         KycAuth kycAuth = saveKycAuthTransaction(kycAuthRequestDto.getTransactionId(), relyingPartyId,
                 kycAuthRequestDto.getIndividualId());
@@ -152,19 +164,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public SendOtpResult sendOtp(String relyingPartyId, String clientId, SendOtpDto sendOtpDto) throws MockIdentityException {
         //TODO validate relying party Id and client Id
 
-        if (sendOtpDto == null || StringUtils.isEmpty(sendOtpDto.getTransactionId())) {
-            log.error("Invalid transaction Id");
-            throw new MockIdentityException("invalid_transaction_id");
-        }
-
         IdentityData identityData = identityService.getIdentity(sendOtpDto.getIndividualId());
         if (identityData == null) {
             log.error("Provided individual Id not found {}", sendOtpDto.getIndividualId());
             throw new MockIdentityException("invalid_individual_id");
         }
 
-        if (sendOtpDto.getOtpChannels() == null
-                || !sendOtpDto.getOtpChannels().stream().allMatch(HelperUtil::isSupportedOtpChannel)) {
+        if (!sendOtpDto.getOtpChannels().stream().allMatch(this::isSupportedOtpChannel)) {
             log.error("Invalid Otp Channels");
             throw new MockIdentityException("invalid_otp_channel");
         }
@@ -175,7 +181,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (channel.equalsIgnoreCase("email")) {
                 maskedEmailId = HelperUtil.maskEmail(identityData.getEmail());
             }
-            if (channel.equalsIgnoreCase("mobile")) {
+            if (channel.equalsIgnoreCase("phone") || channel.equalsIgnoreCase("mobile")) {
                 maskedMobile = HelperUtil.maskMobile(identityData.getPhone());
             }
         }
@@ -305,5 +311,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, v -> v.getValue()));
         }
         return Collections.emptyMap();
+    }
+
+    public boolean isSupportedOtpChannel(String channel) {
+        return channel != null && otpChannels.contains(channel.toLowerCase());
     }
 }
