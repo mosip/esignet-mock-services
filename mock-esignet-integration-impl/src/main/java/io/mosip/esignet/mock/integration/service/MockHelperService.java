@@ -24,15 +24,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -44,12 +39,24 @@ public class MockHelperService {
     private String sendOtpUrl;
     @Value("${mosip.esignet.mock.authenticator.kyc-auth-url}")
     private String kycAuthUrl;
+    @Value("${mosip.esignet.mock.authenticator.ida.otp-channels}")
+    private List<String> otpChannels;
     @Autowired
     private SignatureService signatureService;
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
     private ObjectMapper objectMapper;
+
+    private static final Map<String, List<String>> supportedKycAuthFormats = new HashMap<>();
+
+    static {
+        supportedKycAuthFormats.put("OTP", List.of("alpha-numeric"));
+        supportedKycAuthFormats.put("PIN", List.of("number"));
+        supportedKycAuthFormats.put("BIO", List.of("encoded-json"));
+        supportedKycAuthFormats.put("WLA", List.of("jwt"));
+    }
+
 
     public static String b64Encode(String value) {
         return urlSafeEncoder.encodeToString(value.getBytes(StandardCharsets.UTF_8));
@@ -76,8 +83,8 @@ public class MockHelperService {
         return responseDto.getJwtSignedData();
     }
 
-    public static boolean isSupportedOtpChannel(String channel) {
-        return ("email".equalsIgnoreCase(channel) || "mobile".equalsIgnoreCase(channel));
+    public boolean isSupportedOtpChannel(String channel) {
+        return channel != null && otpChannels.contains(channel.toLowerCase());
     }
 
     public SendOtpResult sendOtpMock(String transactionId, String individualId, List<String> otpChannels, String relyingPartyId, String clientId)
@@ -130,6 +137,14 @@ public class MockHelperService {
                     kycAuthRequestDto.setOtp(authChallenge.getChallenge());
                 } else if (Objects.equals(authChallenge.getAuthFactorType(), "BIO")) {
                     kycAuthRequestDto.setBiometrics(authChallenge.getChallenge());
+                } else if (Objects.equals(authChallenge.getAuthFactorType(), "WLA")) {
+                    kycAuthRequestDto.setTokens(List.of(authChallenge.getChallenge()));
+                } else {
+                    throw new KycAuthException("invalid_auth_challenge");
+                }
+
+                if (!isKycAuthFormatSupported(authChallenge.getAuthFactorType(), authChallenge.getFormat())) {
+                    throw new KycAuthException("invalid_challenge_format");
                 }
             }
 
@@ -161,5 +176,10 @@ public class MockHelperService {
                     clientId, e);
         }
         throw new KycAuthException(ErrorConstants.AUTH_FAILED);
+    }
+
+    private boolean isKycAuthFormatSupported(String authFactorType, String kycAuthFormat) {
+        var supportedFormat = supportedKycAuthFormats.get(authFactorType);
+        return supportedFormat != null && supportedFormat.contains(kycAuthFormat);
     }
 }

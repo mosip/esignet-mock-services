@@ -13,16 +13,12 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 import static io.mosip.esignet.mock.identitysystem.util.Constants.UTC_DATETIME_PATTERN;
 
 @Slf4j
 public class HelperUtil {
-
     public static final String ALGO_SHA3_256 = "SHA3-256";
     public static final String ALGO_SHA_256 = "SHA-256";
     public static final String ALGO_SHA_1 = "SHA-1";
@@ -84,9 +80,5 @@ public class HelperUtil {
         IntStream.range(1, StringUtils.split(email, '@')[0].length() + 1).filter(i -> i % 3 != 0)
                 .forEach(i -> maskedEmail.setCharAt(i - 1, 'X'));
         return maskedEmail.toString();
-    }
-
-    public static boolean isSupportedOtpChannel(String channel) {
-        return ("email".equalsIgnoreCase(channel) || "mobile".equalsIgnoreCase(channel));
     }
 }

@@ -3,6 +3,8 @@ package io.mosip.esignet.mock.identitysystem.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class KycAuthRequestDto {
 
@@ -11,5 +13,6 @@ public class KycAuthRequestDto {
     private String otp;
     private String pin;
     private String biometrics;
+    private List<String> tokens;
 
 }

@@ -132,7 +132,7 @@ public class MockAuthenticationService implements Authenticator {
 
     @Override
     public boolean isSupportedOtpChannel(String channel) {
-        return MockHelperService.isSupportedOtpChannel(channel);
+        return mockHelperService.isSupportedOtpChannel(channel);
     }
 
     @Override

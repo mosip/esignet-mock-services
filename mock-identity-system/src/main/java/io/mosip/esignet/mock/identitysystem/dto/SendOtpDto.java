@@ -7,12 +7,19 @@ package io.mosip.esignet.mock.identitysystem.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
 public class SendOtpDto {
 
+    @NotBlank(message = "invalid_transaction_id")
     private String transactionId;
+    @NotBlank(message = "invalid_individual_id")
     private String individualId;
+    @NotNull(message = "invalid_otp_channel")
+    @Size(min = 1, message = "invalid_otp_channel")
     private List<String> otpChannels;
 }
