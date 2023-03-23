@@ -22,7 +22,7 @@ while true; do
         helm -n $NS delete postgres-init-mockidentitysystem
 
         echo Copy Postgres secrets
-        ./copy_cm_func.sh secret postgres-postgresql postgres $NS
+        ../helm/copy_cm_func.sh secret postgres-postgresql postgres $NS
 
         echo Initializing DB
         helm -n $NS install postgres-init-mockidentitysystem mosip/postgres-init -f init_values.yaml \
