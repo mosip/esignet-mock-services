@@ -186,6 +186,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
         }
 
+        if(org.springframework.util.StringUtils.isEmpty(maskedEmailId) &&
+                org.springframework.util.StringUtils.isEmpty(maskedMobile)) {
+            log.error("neither email id nor mobile number found for the given individualId");
+            throw new MockIdentityException("no_email_mobile_found");
+        }
+
         var trn_token_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
                 String.format(sendOtpDto.getTransactionId(), sendOtpDto.getIndividualId(), OTP_VALUE));
 
