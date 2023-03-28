@@ -248,6 +248,7 @@ extraEnvVarsCM:
   - global
   - config-server-share
   - artifactory-share
+  - softhsm-mock-identity-system-share
 
 ## Secret with extra environment variables
 ##

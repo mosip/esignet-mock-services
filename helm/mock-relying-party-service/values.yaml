@@ -71,7 +71,7 @@ mock_relying_party_service:
   mock_relying_party_serviceMountDIr: /home/mosip/oidc/
   puburl:
   privurl:
-  ESIGNET_SERVICE_URL: https://api.sandbox.xyz.net/v1/esignet
+  ESIGNET_SERVICE_URL: http://esignet.namespace/v1/esignet
   ESIGNET_AUD_URL: https://api.sandbox.xyz.net/v1/esignet/oauth/token
   USERINFO_RESPONSE_TYPE: jwt
 ## Port on which this particular spring service module is running.
