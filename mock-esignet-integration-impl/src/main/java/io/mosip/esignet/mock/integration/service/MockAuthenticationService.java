@@ -14,6 +14,7 @@ import io.mosip.esignet.api.spi.Authenticator;
 import io.mosip.esignet.api.util.ErrorConstants;
 import io.mosip.esignet.mock.integration.dto.*;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.keymanagerservice.dto.AllCertificatesDataResponseDto;
 import io.mosip.kernel.keymanagerservice.dto.CertificateDataResponseDto;
 import io.mosip.kernel.keymanagerservice.service.KeymanagerService;
@@ -46,15 +47,8 @@ public class MockAuthenticationService implements Authenticator {
     private static final String APPLICATION_ID = "MOCK_AUTHENTICATION_SERVICE";
     public static final String SEND_OTP_FAILED = "send_otp_failed";
 
-    @Value("${mosip.esignet.mock.authenticator.get-identity-url}")
-    private String getIdentityUrl;
-
-    @Value("${mosip.esignet.mock.authenticator.kyc-auth-url}")
-    private String kycAuthUrl;
-
     @Value("${mosip.esignet.mock.authenticator.kyc-exchange-url}")
     private String kycExchangeUrl;
-
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -79,50 +73,7 @@ public class MockAuthenticationService implements Authenticator {
 
         log.info("Started to build kyc-auth request with transactionId : {} && clientId : {}",
                 kycAuthDto.getTransactionId(), clientId);
-        try {
-            KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
-            kycAuthRequestDto.setTransactionId(kycAuthDto.getTransactionId());
-            kycAuthRequestDto.setIndividualId(kycAuthDto.getIndividualId());
-
-            for (AuthChallenge authChallenge : kycAuthDto.getChallengeList()) {
-                if (Objects.equals(authChallenge.getAuthFactorType(), "PIN")) {
-                    kycAuthRequestDto.setPin(authChallenge.getChallenge());
-                } else if (Objects.equals(authChallenge.getAuthFactorType(), "OTP")) {
-                    kycAuthRequestDto.setOtp(authChallenge.getChallenge());
-                } else if (Objects.equals(authChallenge.getAuthFactorType(), "BIO")) {
-                    kycAuthRequestDto.setBiometrics(authChallenge.getChallenge());
-                }
-            }
-
-            //set signature header, body and invoke kyc auth endpoint
-            String requestBody = objectMapper.writeValueAsString(kycAuthRequestDto);
-            RequestEntity requestEntity = RequestEntity
-                    .post(UriComponentsBuilder.fromUriString(kycAuthUrl).pathSegment(relyingPartyId, clientId).build().toUri())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .body(requestBody);
-            ResponseEntity<ResponseWrapper<KycAuthResponseDto>> responseEntity = restTemplate.exchange(requestEntity,
-                    new ParameterizedTypeReference<>() {
-                    });
-
-            if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
-                ResponseWrapper<KycAuthResponseDto> responseWrapper = responseEntity.getBody();
-                if (responseWrapper.getResponse() != null && responseWrapper.getResponse().isAuthStatus() && responseWrapper.getResponse().getKycToken() != null) {
-                    return new KycAuthResult(responseEntity.getBody().getResponse().getKycToken(),
-                            responseEntity.getBody().getResponse().getKycToken());
-                }
-                log.error("Error response received from IDA KycStatus : {} && Errors: {}",
-                        responseWrapper.getResponse().isAuthStatus(), responseWrapper.getErrors());
-                throw new KycAuthException(CollectionUtils.isEmpty(responseWrapper.getErrors()) ?
-                        ErrorConstants.AUTH_FAILED : responseWrapper.getErrors().get(0).getErrorCode());
-            }
-            log.error("Error response received from IDA (Kyc-auth) with status : {}", responseEntity.getStatusCode());
-        } catch (KycAuthException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("KYC-auth failed with transactionId : {} && clientId : {}", kycAuthDto.getTransactionId(),
-                    clientId, e);
-        }
-        throw new KycAuthException(ErrorConstants.AUTH_FAILED);
+        return mockHelperService.doKycAuthMock(relyingPartyId, clientId, kycAuthDto);
     }
 
     @Override
@@ -172,32 +123,16 @@ public class MockAuthenticationService implements Authenticator {
     @Override
     public SendOtpResult sendOtp(String relyingPartyId, String clientId, SendOtpDto sendOtpDto)
             throws SendOtpException {
-        try {
-            RequestEntity requestEntity = RequestEntity
-                    .get(UriComponentsBuilder.fromUriString(getIdentityUrl + "/" + sendOtpDto.getIndividualId()).build().toUri()).build();
-            ResponseEntity<ResponseWrapper> responseEntity = restTemplate.exchange(requestEntity,
-                    ResponseWrapper.class);
-
-            if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
-                ResponseWrapper responseWrapper = responseEntity.getBody();
-                IdentityData IdentityData = objectMapper.convertValue(responseWrapper.getResponse(), IdentityData.class);
-
-                String maskedEmailId = MockHelperService.maskEmail(IdentityData.getEmail());
-                String maskedMobile = MockHelperService.maskMobile(IdentityData.getPhone());
-
-                return new SendOtpResult(sendOtpDto.getTransactionId(), maskedEmailId, maskedMobile);
-            }
-            log.error("Provided identity is not found {}", sendOtpDto.getIndividualId());
-            throw new SendOtpException("mock-ida-001");
-        } catch (Exception e) {
-            log.error("authenticateIndividualWithPin failed", e);
+        if (sendOtpDto == null || StringUtils.isEmpty(sendOtpDto.getTransactionId())) {
+            throw new SendOtpException("invalid_transaction_id");
         }
-        throw new SendOtpException(SEND_OTP_FAILED);
+
+        return mockHelperService.sendOtpMock(sendOtpDto.getTransactionId(), sendOtpDto.getIndividualId(), sendOtpDto.getOtpChannels(), relyingPartyId, clientId);
     }
 
     @Override
     public boolean isSupportedOtpChannel(String channel) {
-        return channel != null && ("email".equalsIgnoreCase(channel) || "mobile".equalsIgnoreCase(channel));
+        return mockHelperService.isSupportedOtpChannel(channel);
     }
 
     @Override

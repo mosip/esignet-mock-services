@@ -6,6 +6,20 @@ if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
 fi
 
+NS=softhsm
+CHART_VERSION=12.0.1-B2
+SOFTHSM_CHART_VERSION=12.0.2
+
+echo Installing Softhsm for mock-identity-system
+helm -n $NS install softhsm-mock-identity-system mosip/softhsm -f softhsm-values.yaml --version $SOFTHSM_CHART_VERSION --wait
+echo Installed Softhsm for mock-identity-system
+
+./copy_cm_func.sh secret softhsm-mock-identity-system softhsm config-server
+
+kubectl -n config-server set env --keys=security-pin --from secret/softhsm-mock-identity-system deployment/config-server --prefix=SPRING_CLOUD_CONFIG_SERVER_OVERRIDES_SOFTHSM_MOCK_IDENTITY_SYSTEM_
+
+kubectl -n config-server get deploy -o name |  xargs -n1 -t  kubectl -n config-server rollout status
+
 read -p "Please provide client private key file : " CLIENT_PRIVATE_KEY
 
 if [ -z "$CLIENT_PRIVATE_KEY" ]; then
@@ -78,8 +92,8 @@ ESIGNET_HOST=$(kubectl get cm global -o jsonpath={.data.mosip-esignet-host})
 
 echo Installing Mock Relying Party Service
 helm -n $NS install mock-relying-party-service ./mock-relying-party-service \
-    --set mock_relying_party_service.ESIGNET_SERVICE_URL="https://$API_HOST"/v1/esignet"" \
-    --set mock_relying_party_service.ESIGNET_AUD_URL="https://$API_HOST"/v1/esignet/oauth/token""
+    --set mock_relying_party_service.ESIGNET_SERVICE_URL="http://esignet.$NS/v1/esignet" \
+    --set mock_relying_party_service.ESIGNET_AUD_URL="https://$API_HOST/v1/esignet/oauth/token"
 
 echo Installing Mock Relying Party UI
 helm -n $NS install mock-relying-party-ui ./mock-relying-party-ui \

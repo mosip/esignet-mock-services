@@ -1,3 +1,7 @@
 mock-esignet-integration-impl/.idea/*
-mock-identity-system/target/classes/*
-mock-esignet-integration-impl/target/classes/*
+mock-identity-system/target/*
+mock-esignet-integration-impl/target/*
+mock-identity-system/local.p12
+.idea
+helm/*/charts
+helm/*/Chart.lock

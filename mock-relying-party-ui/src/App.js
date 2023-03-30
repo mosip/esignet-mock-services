@@ -54,7 +54,7 @@ function App() {
           <Route path="/signup" element={<SignUpPage langOptions={langOptions} />} />
           <Route path="/userprofile" element={<UserProfilePage langOptions={langOptions} />} />
           <Route path="/registration" element={<RegistrationPage langOptions={langOptions} />} />
-          <Route path="/bookappointment" element={<BookAppointmentPage/>}></Route>
+          <Route path="/bookappointment" element={<BookAppointmentPage langOptions={langOptions}/>}/>
         </Routes>
       </BrowserRouter>
       <ToastContainer position="top-center" hideProgressBar={true} pauseOnHover={false} draggable={false} />
