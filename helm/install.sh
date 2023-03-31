@@ -8,7 +8,7 @@ fi
 
 NS=softhsm
 CHART_VERSION=12.0.1-B2
-SOFTHSM_CHART_VERSION=12.0.2
+SOFTHSM_CHART_VERSION=12.0.1-B2
 
 echo Installing Softhsm for mock-identity-system
 helm -n $NS install softhsm-mock-identity-system mosip/softhsm -f softhsm-values.yaml --version $SOFTHSM_CHART_VERSION --wait
@@ -56,7 +56,7 @@ if [ $? -gt 0 ]; then
 fi
 
 NS=esignet
-CHART_VERSION=0.0.1
+CHART_VERSION=0.9.0
 
 echo Create $NS namespace
 kubectl create ns $NS
@@ -93,7 +93,8 @@ ESIGNET_HOST=$(kubectl get cm global -o jsonpath={.data.mosip-esignet-host})
 echo Installing Mock Relying Party Service
 helm -n $NS install mock-relying-party-service ./mock-relying-party-service \
     --set mock_relying_party_service.ESIGNET_SERVICE_URL="http://esignet.$NS/v1/esignet" \
-    --set mock_relying_party_service.ESIGNET_AUD_URL="https://$API_HOST/v1/esignet/oauth/token"
+    --set mock_relying_party_service.ESIGNET_AUD_URL="https://$API_HOST/v1/esignet/oauth/token" \
+    --version $CHART_VERSION
 
 echo Installing Mock Relying Party UI
 helm -n $NS install mock-relying-party-ui ./mock-relying-party-ui \
@@ -102,7 +103,8 @@ helm -n $NS install mock-relying-party-ui ./mock-relying-party-ui \
     --set mock_relying_party_ui.MOCK_RELYING_PARTY_SERVER_URL="https://$MOCK_UI_HOST/mock-relying-party-service" \
     --set mock_relying_party_ui.REDIRECT_URI="https://$MOCK_UI_HOST/userprofile" \
     --set mock_relying_party_ui.REDIRECT_URI_REGISTRATION="https://$MOCK_UI_HOST/registration" \
-    --set istio.hosts\[0\]="$MOCK_UI_HOST"
+    --set istio.hosts\[0\]="$MOCK_UI_HOST" \
+    --version $CHART_VERSION
 
 echo Installing mock-identity-system
 helm -n $NS install mock-identity-system ./mock-identity-system --version $CHART_VERSION
