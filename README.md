@@ -5,9 +5,10 @@ Repository contains mock implementation of auth for e-signet
 ### Pre-requisites
 1. Set the kube config file of the Mosip cluster having dependent services is set correctly in PC.
 1. Make sure [DB setup](db_scripts/README.md#install-in-existing-mosip-k8-cluster) is done.
-1. Add [mock-identity-system-default.properties](https://github.com/mosip/mosip-config/blob/v1.2.0.1-B3/mock-identity-system-default.properties)
-   and [application-default.properties](https://github.com/mosip/mosip-config/blob/v1.2.0.1-B3/application-default.properties) in required branch of config repo.
-1. Add below properties in [esignet-default.properties](https://github.com/mosip/mosip-config/blob/v1.2.0.1-B3/esignet-default.properties) to enable MockAuth for esignet.
+1. Add / merge below mentioned properties files into existing config branch:
+     * [mock-identity-system-default.properties](https://github.com/mosip/mosip-config/blob/v1.2.0.1-B3/mock-identity-system-default.properties)
+     * [application-default.properties](https://github.com/mosip/mosip-config/blob/v1.2.0.1-B3/application-default.properties)
+1. Add below properties in [esignet-default.properties](https://github.com/mosip/mosip-config/blob/v1.2.0.1-B3/esignet-default.properties) incase using MockAuth for esignet.
    ```
    mosip.esignet.integration.scan-base-package=io.mosip.authentication.esignet.integration,io.mosip.esignet.mock.integration
    mosip.esignet.integration.binding-validator=BindingValidatorServiceImpl
