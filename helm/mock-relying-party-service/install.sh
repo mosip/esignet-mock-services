@@ -50,7 +50,9 @@ kubectl -n $NS create secret generic mock-relying-party-service-secrets --from-f
 kubectl -n $NS create secret generic jwe-userinfo-service-secrets --from-file="/tmp/jwe-userinfo-private-key"
 
 API_HOST=$(kubectl get cm global -o jsonpath={.data.mosip-api-host})
-read -p "Please provide Esignet service url : ( ex: http://esignet.esignet/v1/esignet )" ESIGNET_SERVICE_URL
+DEFAULT_ESIGNET_SERVICE_URL='http://esignet.esignet/v1/esignet'
+read -p "Please provide Esignet service url : ( default: http://esignet.esignet/v1/esignet )" USER_PROVIDED_ESIGNET_SERVICE_URL
+ESIGNET_SERVICE_URL=${USER_PROVIDED_ESIGNET_SERVICE_URL:-$DEFAULT_ESIGNET_SERVICE_URL}
 
 echo Installing Mock Relying Party Service
 helm -n $NS install mock-relying-party-service mosip/mock-relying-party-service \
