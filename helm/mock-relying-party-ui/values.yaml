@@ -422,7 +422,7 @@ mock_relying_party_ui:
   MOCK_RELYING_PARTY_SERVER_URL: https://healthservices.sandbox.xyz.net/mock-relying-party-service
   REDIRECT_URI: https://healthservices.sandbox.xyz.net/userprofile
   CLIENT_ID: 88Vjt34c5Twz1oJ
-  ACRS: mosip:idp:acr:generated-code%20mosip:idp:acr:biometrics%20mosip:idp:acr:static-code
+  ACRS: mosip:idp:acr:generated-code%20mosip:idp:acr:biometrics%20mosip:idp:acr:linked-wallet
   MOCK_RELYING_PARTY_SERVICE_INTERNAL_URL: http://mock-relying-party-service.esignet
   REDIRECT_URI_REGISTRATION: https://healthservices.sandbox.xyz.net/registration
 ## oidc UI swagger should have only internal access. Hence linked to internal gateway
