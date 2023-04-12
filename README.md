@@ -53,5 +53,5 @@ Repository contains mock implementation of auth for e-signet
   ./restart.sh
   ```
 
-## Onboard esignet mock services
+## Onboard esignet mock and relying party services
 * Run onboarder's [install.sh](https://github.com/mosip/mosip-infra/blob/v1.2.0.1-B3/deployment/v3/mosip/partner-onboarder) script to exchange jwk certificates.
