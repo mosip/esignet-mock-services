@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.mosip.esignet.mock</groupId>
 		<artifactId>esignet-mock-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.9.1-SNAPSHOT</version>
 	</parent>
 	
 	<artifactId>mock-esignet-integration-impl</artifactId>
