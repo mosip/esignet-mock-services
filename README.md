@@ -63,7 +63,7 @@ Repository contains mock implementation of auth for e-signet
 *  After successfull partner onboarder run for demo-oidc partner , download html reports from `onboarder` bucket of object store .
 *  Get `CLIENT_ID` from  response body of  request `create-oidc-client` from the report **_demo-oidc.html_**
 *  Update deployment of `mock-relying-party-ui` in esignet namespace with `CLIENT_ID` value from last step .
-*  As per screenshot get the private and public key pair (shown as selected in the screenshot )from the response of the `get-jwks` request from the report **_demo-oidc.html_**
+*  As per screenshot get the private and public key pair (shown as selected in the screenshot )from the response of the `get-jwks` request from the report **_demo-oidc.html_** 
    ![](docs/images/get-jwks-details.PNG)
-*  Update `client-private-key` in esignet namespace with above base64 encoded value.
+*  Update `client-private-key` in esignet namespace with  `base64 encoded` value of the keypair from previous step.
 *  Restart mock-relying-party-service pod
