@@ -59,3 +59,15 @@ Repository contains mock implementation of auth for e-signet
 
 ## Onboard esignet mock and relying party services
 * Run onboarder's [install.sh](partner-onboarder) script to exchange jwk certificates.
+### Configurational steps after onboarding is completed.
+*  Below mentioned onboarding steps are added after 1.2.0.1-b3
+   *  Onboarding the default demo-oidc partner
+
+###.Onboarding the default resident-oidc partner
+*  After successfull partner onboarder run for demo-oidc partner , download html reports from `onboarder` bucket of object store .
+*  Get `CLIENT_ID` from  response body of  request `create-oidc-client` from the report **_demo-oidc.html_**
+*  Update deployment of `mock-relying-party-ui` in esignet namespace with `CLIENT_ID` value from last step .
+*  As per screenshot get the private and public key pair (shown as selected in the screenshot )from the response of the `get-jwks` request from the report **_demo-oidc.html_** 
+   ![](docs/images/get-jwks-details.PNG)
+*  Update `client-private-key` in esignet namespace with  `base64 encoded` value of the keypair from previous step.
+*  Restart mock-relying-party-service pod
