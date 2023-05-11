@@ -8,9 +8,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
+import io.mosip.esignet.mock.identitysystem.validator.IdData;
 import lombok.Data;
 
 @Data
+@IdData
 public class IdentityData {
 	
 	@NotBlank(message = ErrorConstants.INVALID_INDIVIDUAL_ID)
@@ -19,9 +21,14 @@ public class IdentityData {
 	@NotBlank(message = ErrorConstants.INVALID_PIN)
 	String pin;
 
-	@NotNull(message = ErrorConstants.INVALID_FULLNAME)
 	@Size(min = 1, message = ErrorConstants.INVALID_FULLNAME)
 	List<LanguageValue> fullName;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_FIRSTNAME)
+	List<LanguageValue> firstName;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_LASTNAME)
+	List<LanguageValue> lastName;
 
 	@NotNull(message = ErrorConstants.INVALID_GENDER)
 	@Size(min = 1, message = ErrorConstants.INVALID_GENDER)
