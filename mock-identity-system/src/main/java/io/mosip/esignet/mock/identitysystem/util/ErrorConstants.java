@@ -15,7 +15,16 @@ public class ErrorConstants {
 	public static final String INVALID_FULLNAME = "invalid_fullname";
 	public static final String INVALID_FIRSTNAME = "invalid_firstname";
 	public static final String INVALID_LASTNAME = "invalid_lastname";
+	public static final String INVALID_NAME = "invalid_name";
+	public static final String INVALID_FAMILY_NAME = "invalid_family_name";
+	public static final String INVALID_GIVEN_NAME = "invalid_given_name";
+	public static final String INVALID_MIDDLE_NAME = "invalid_middle_name";
+	public static final String INVALID_NICK_NAME = "invalid_nick_name";
+	public static final String INVALID_PREFERRED_USERNAME = "invalid_preferred_username";
 	public static final String INVALID_GENDER = "invalid_gender";
+	public static final String INVALID_WEBSITE = "invalid_website";
+	public static final String INVALID_ZONEINFO = "invalid_zoneinfo";
+	public static final String INVALID_LOCALE = "invalid_locale";
 	public static final String INVALID_STREET_ADDRESS = "invalid_street_address";
 	public static final String INVALID_LOCALITY = "invalid_locality";
 	public static final String INVALID_REGION = "invalid_region";

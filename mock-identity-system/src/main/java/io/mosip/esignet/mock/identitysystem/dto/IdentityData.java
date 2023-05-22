@@ -20,6 +20,9 @@ public class IdentityData {
 
 	@NotBlank(message = ErrorConstants.INVALID_PIN)
 	String pin;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_NAME)
+	List<LanguageValue> name;
 
 	@Size(min = 1, message = ErrorConstants.INVALID_FULLNAME)
 	List<LanguageValue> fullName;
@@ -27,32 +30,42 @@ public class IdentityData {
 	@Size(min = 1, message = ErrorConstants.INVALID_FIRSTNAME)
 	List<LanguageValue> firstName;
 	
+	@Size(min = 1, message = ErrorConstants.INVALID_MIDDLE_NAME)
+	List<LanguageValue> middleName;
+	
 	@Size(min = 1, message = ErrorConstants.INVALID_LASTNAME)
 	List<LanguageValue> lastName;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_GIVEN_NAME)
+	List<LanguageValue> givenName;
 
-	@NotNull(message = ErrorConstants.INVALID_GENDER)
+	@Size(min = 1, message = ErrorConstants.INVALID_FAMILY_NAME)
+	List<LanguageValue> familyName;
+
+	@Size(min = 1, message = ErrorConstants.INVALID_NICK_NAME)
+	List<LanguageValue> nickName;
+
+	@Size(min = 1, message = ErrorConstants.INVALID_PREFERRED_USERNAME)
+	List<LanguageValue> preferredUsername;
+
 	@Size(min = 1, message = ErrorConstants.INVALID_GENDER)
 	List<LanguageValue> gender;
 
-	@NotBlank(message = ErrorConstants.INVALID_DATE_OF_BIRTH)
+	@Size(min = 1, message = ErrorConstants.INVALID_DATE_OF_BIRTH)
 	String dateOfBirth;
 
-	@NotNull(message = ErrorConstants.INVALID_STREET_ADDRESS)
 	@Size(min = 1, message = ErrorConstants.INVALID_STREET_ADDRESS)
 	List<LanguageValue> streetAddress;
 
-	@NotNull(message = ErrorConstants.INVALID_LOCALITY)
 	@Size(min = 1, message = ErrorConstants.INVALID_LOCALITY)
 	List<LanguageValue> locality;
 
-	@NotNull(message = ErrorConstants.INVALID_REGION)
 	@Size(min = 1, message = ErrorConstants.INVALID_REGION)
 	List<LanguageValue> region;
 
-	@NotBlank(message = ErrorConstants.INVALID_POSTAL_CODE)
+	@Size(min = 1, message = ErrorConstants.INVALID_POSTAL_CODE)
 	String postalCode;
 
-	@NotNull(message = ErrorConstants.INVALID_COUNTRY)
 	@Size(min = 1, message = ErrorConstants.INVALID_COUNTRY)
 	List<LanguageValue> country;
 
@@ -62,10 +75,19 @@ public class IdentityData {
 	@NotNull(message = ErrorConstants.INVALID_BIOMETRICS)
 	BiometricData individualBiometrics;
 
-	@NotBlank(message = ErrorConstants.INVALID_EMAIL)
+	@Size(min = 1, message = ErrorConstants.INVALID_EMAIL)
 	String email;
 
-	@NotBlank(message = ErrorConstants.INVALID_PHONE)
+	@Size(min = 1, message = ErrorConstants.INVALID_PHONE)
 	String phone;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_WEBSITE)
+	String website;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_ZONEINFO)
+	String zoneInfo;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_LOCALE)
+	String locale;
 
 }
