@@ -323,11 +323,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         kyc.put("zoneinfo", identityData.getZoneInfo());
                     }
                     break;
-                case "website":
-                    if (identityData.getWebsite() != null) {
-                        kyc.put("website", identityData.getWebsite());
-                    }
-                    break;
                 case "locale":
                     if (identityData.getLocale() != null) {
                         kyc.put("picture", identityData.getLocale());

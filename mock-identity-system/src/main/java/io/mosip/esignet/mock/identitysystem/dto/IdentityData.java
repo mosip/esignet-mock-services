@@ -81,9 +81,6 @@ public class IdentityData {
 	@Size(min = 1, message = ErrorConstants.INVALID_PHONE)
 	String phone;
 	
-	@Size(min = 1, message = ErrorConstants.INVALID_WEBSITE)
-	String website;
-	
 	@Size(min = 1, message = ErrorConstants.INVALID_ZONEINFO)
 	String zoneInfo;
 	
