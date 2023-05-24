@@ -261,7 +261,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         for (String claim : claims) {
             switch (claim) {
                 case "name":
-                    kyc.putAll(getKycValues(locales, "name", identityData.getFullName(), singleLanguage));
+                	if (identityData.getName() != null) {
+                		kyc.putAll(getKycValues(locales, "name", identityData.getName(), singleLanguage));
+                        break;
+                	} else if (identityData.getFullName() != null) {
+                		kyc.putAll(getKycValues(locales, "name", identityData.getFullName(), singleLanguage));
+                        break;
+                	}
+                case "first_name":
+                    kyc.putAll(getKycValues(locales, "first_name", identityData.getFirstName(), singleLanguage));
+                    break;
+                case "middle_name":
+                    kyc.putAll(getKycValues(locales, "middle_name", identityData.getMiddleName(), singleLanguage));
+                    break;
+                case "last_name":
+                    kyc.putAll(getKycValues(locales, "last_name", identityData.getLastName(), singleLanguage));
+                    break;
+                case "given_name":
+                    kyc.putAll(getKycValues(locales, "given_name", identityData.getGivenName(), singleLanguage));
+                    break;
+                case "family_name":
+                    kyc.putAll(getKycValues(locales, "family_name", identityData.getFamilyName(), singleLanguage));
+                    break;
+                case "nickname":
+                    kyc.putAll(getKycValues(locales, "nickname", identityData.getNickName(), singleLanguage));
+                    break;
+                case "preferred_username":
+                    kyc.putAll(getKycValues(locales, "name", identityData.getPreferredUsername(), singleLanguage));
                     break;
                 case "birthdate":
                     if (identityData.getDateOfBirth() != null) {
@@ -291,6 +317,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     }
                     addressValues.putAll(getKycValues(locales, "country", identityData.getCountry(), singleLanguage));
                     kyc.put("address", addressValues);
+                    break;
+                case "zoneinfo":
+                    if (identityData.getZoneInfo() != null) {
+                        kyc.put("zoneinfo", identityData.getZoneInfo());
+                    }
+                    break;
+                case "locale":
+                    if (identityData.getLocale() != null) {
+                        kyc.put("picture", identityData.getLocale());
+                    }
                     break;
                 case "picture":
                     if (identityData.getEncodedPhoto() != null) {
