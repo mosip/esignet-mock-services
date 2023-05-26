@@ -22,8 +22,8 @@ echo Installed Softhsm for mock-identity-system
 ./copy_cm_func.sh secret softhsm-mock-identity-system softhsm config-server
 
 kubectl -n config-server set env --keys=security-pin --from secret/softhsm-mock-identity-system deployment/config-server --prefix=SPRING_CLOUD_CONFIG_SERVER_OVERRIDES_SOFTHSM_MOCK_IDENTITY_SYSTEM_
-
-#kubectl -n config-server get deploy -o name |  xargs -n1 -t  kubectl -n config-server rollout status
+kubectl -n config-server rollout restart deploy config-server
+kubectl -n config-server rollout status config-server
 
 declare -a module=("mock-identity-system"
                    "mock-relying-party-service"
