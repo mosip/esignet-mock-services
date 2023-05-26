@@ -27,20 +27,14 @@ public class IdentityData {
 	@Size(min = 1, message = ErrorConstants.INVALID_FULLNAME)
 	List<LanguageValue> fullName;
 	
-	@Size(min = 1, message = ErrorConstants.INVALID_FIRSTNAME)
-	List<LanguageValue> firstName;
-	
-	@Size(min = 1, message = ErrorConstants.INVALID_MIDDLE_NAME)
-	List<LanguageValue> middleName;
-	
-	@Size(min = 1, message = ErrorConstants.INVALID_LASTNAME)
-	List<LanguageValue> lastName;
-	
 	@Size(min = 1, message = ErrorConstants.INVALID_GIVEN_NAME)
 	List<LanguageValue> givenName;
 
 	@Size(min = 1, message = ErrorConstants.INVALID_FAMILY_NAME)
 	List<LanguageValue> familyName;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_MIDDLE_NAME)
+	List<LanguageValue> middleName;
 
 	@Size(min = 1, message = ErrorConstants.INVALID_NICK_NAME)
 	List<LanguageValue> nickName;

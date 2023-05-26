@@ -13,8 +13,6 @@ public class ErrorConstants {
 	public static final String INVALID_POSTAL_CODE = "invalid_postalcode";
 	public static final String INVALID_DATE_OF_BIRTH = "invalid_date_of_birth";
 	public static final String INVALID_FULLNAME = "invalid_fullname";
-	public static final String INVALID_FIRSTNAME = "invalid_firstname";
-	public static final String INVALID_LASTNAME = "invalid_lastname";
 	public static final String INVALID_NAME = "invalid_name";
 	public static final String INVALID_FAMILY_NAME = "invalid_family_name";
 	public static final String INVALID_GIVEN_NAME = "invalid_given_name";

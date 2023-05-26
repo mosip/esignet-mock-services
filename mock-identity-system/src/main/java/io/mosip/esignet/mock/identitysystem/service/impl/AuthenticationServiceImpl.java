@@ -268,14 +268,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 		kyc.putAll(getKycValues(locales, "name", identityData.getFullName(), singleLanguage));
                         break;
                 	}
-                case "first_name":
-                    kyc.putAll(getKycValues(locales, "first_name", identityData.getFirstName(), singleLanguage));
-                    break;
                 case "middle_name":
                     kyc.putAll(getKycValues(locales, "middle_name", identityData.getMiddleName(), singleLanguage));
-                    break;
-                case "last_name":
-                    kyc.putAll(getKycValues(locales, "last_name", identityData.getLastName(), singleLanguage));
                     break;
                 case "given_name":
                     kyc.putAll(getKycValues(locales, "given_name", identityData.getGivenName(), singleLanguage));
