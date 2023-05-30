@@ -451,3 +451,5 @@ istio:
   gateways:
     - istio-system/public
   prefix: /v1/mock-identity-system/
+
+enable_insecure: false

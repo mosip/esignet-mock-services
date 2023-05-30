@@ -459,3 +459,5 @@ istio:
     istio: ingressgateway-internal
   mock_relying_party_servicePrefix: /
   reWritemock_relying_party_servicePrefix: ""
+
+enable_insecure: false
