@@ -29,6 +29,20 @@ if [ ! -f "$CLIENT_PRIVATE_KEY" ]; then
   exit 0;
 fi
 
+echo "Do you have public domain & valid SSL? (Y/n) "
+echo "Y: if you have public domain & valid ssl certificate"
+echo "n: If you don't have a public domain and a valid SSL certificate. Note: It is recommended to use this option only in development environments."
+read -p "" flag
+
+if [ -z "$flag" ]; then
+  echo "'flag' was provided; EXITING;"
+  exit 1;
+fi
+ENABLE_INSECURE=''
+if [ "$flag" = "n" ]; then
+  ENABLE_INSECURE='--set enable_insecure=true';
+fi
+
 read -p "Please provide jwe userinfo private key file : " JWE_USERINFO_PRIVATE_KEY
 
 if [ -z "$JWE_USERINFO_PRIVATE_KEY" ]; then
@@ -58,7 +72,7 @@ echo Installing Mock Relying Party Service
 helm -n $NS install mock-relying-party-service mosip/mock-relying-party-service \
     --set mock_relying_party_service.ESIGNET_SERVICE_URL="$ESIGNET_SERVICE_URL" \
     --set mock_relying_party_service.ESIGNET_AUD_URL="https://$ESIGNET_HOST/v1/esignet/oauth/token" \
-    --version $CHART_VERSION
+    --version $CHART_VERSION $ENABLE_INSECURE
 
 kubectl -n $NS get deploy mock-relying-party-service -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
