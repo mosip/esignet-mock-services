@@ -5,20 +5,14 @@ import clientDetails from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { useTranslation } from "react-i18next";
-import RedirectButton from "../common/RedirectButton";
 
 export default function Registration({
-  clientService,
   relyingPartyService,
   i18nKeyPrefix = "registration",
 }) {
-  const { t } = useTranslation("translation", {
+  const { i18n, t } = useTranslation("translation", {
     keyPrefix: i18nKeyPrefix,
   });
-
-  const { getURIforRegistration } = {
-    ...clientService,
-  };
 
   const { post_fetchUserInfo } = {
     ...relyingPartyService,
@@ -31,7 +25,6 @@ export default function Registration({
   const [showRawUserInfo, setShowRawUserInfo] = useState(false);
   const [address, setAddress] = useState(null);
   const [emailAddress, setEmailAddress] = useState(null);
-  const uri_UI = getURIforRegistration();
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -62,7 +55,42 @@ export default function Registration({
       }
     };
     getSearchParams();
+
+    renderSignInButton();
+
+    i18n.on("languageChanged", function (lng) {
+      renderSignInButton();
+    });
   }, []);
+
+  const renderSignInButton = () => {
+
+    const oidcConfig = {
+      authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
+      redirect_uri: clientDetails.redirect_uri_registration,
+      client_id: clientDetails.clientId,
+      scope: clientDetails.scopeRegistration,
+      nonce: clientDetails.nonce,
+      state: clientDetails.state,
+      acr_values: clientDetails.acr_values,
+      claims_locales: clientDetails.claims_locales,
+      display: clientDetails.display,
+      prompt: clientDetails.prompt,
+      max_age: clientDetails.max_age,
+      ui_locales: i18n.language,
+      claims: JSON.parse(decodeURI(clientDetails.registrationClaims)),
+    };
+
+    window.SignInWithEsignetButton.init({
+      oidcConfig: oidcConfig,
+      buttonConfig: {
+        shape: "soft_edges",
+        labelText: t("fetch_details"),
+        width: "100%"
+      },
+      signInElement: document.getElementById("sign-in-with-esignet"),
+    });
+  }
 
   //Handle Login API Integration here
   const getUserDetails = async (authCode) => {
@@ -222,11 +250,9 @@ export default function Registration({
           >
             {t("register")}
           </button>
-          <RedirectButton
-            redirectURL={uri_UI}
-            text={t("fetch_details")}
-            logoPath="esignet_logo.png"
-          />
+
+          <div id="sign-in-with-esignet" className="w-full"></div>
+
         </div>
 
         <div className="px-4">
