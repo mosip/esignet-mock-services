@@ -425,6 +425,7 @@ mock_relying_party_ui:
   ACRS: mosip:idp:acr:generated-code%20mosip:idp:acr:biometrics%20mosip:idp:acr:linked-wallet
   MOCK_RELYING_PARTY_SERVICE_INTERNAL_URL: http://mock-relying-party-service.esignet
   REDIRECT_URI_REGISTRATION: https://healthservices.sandbox.xyz.net/registration
+  SIGN_IN_BUTTON_PLUGIN_URL: https://esignet.sandbox.xyz.net/plugins/sign-in-button-plugin.js
 ## oidc UI swagger should have only internal access. Hence linked to internal gateway
 ## We create a gateway for oidc specific URL(s) listed under `hosts`
 istio:
