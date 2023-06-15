@@ -9,7 +9,8 @@ Note: This is not production use implementation.
 
 ## Configurations required to added in esignet-default.properties
 
-mosip.esignet.integration.scan-base-package=io.mosip.esignet.mock.integration,io.mosip.authentication.esignet.integration
+````
+mosip.esignet.integration.scan-base-package=io.mosip.esignet.mock.integration
 mosip.esignet.integration.authenticator=MockAuthenticationService
 mosip.esignet.integration.key-binder=MockKeyBindingWrapperService
 mosip.esignet.integration.audit-plugin=LoggerAuditService
@@ -26,15 +27,16 @@ mosip.esignet.mock.authenticator.kyc-exchange-url=https://${mosip.api.public.hos
 mosip.esignet.mock.authenticator.send-otp=https://${mosip.api.public.host}/v1/mock-identity-system/send-otp
 mosip.esignet.mock.supported.bind-auth-factor-types={'WLA'}
 mosip.esignet.mock.authenticator.ida.otp-channels=email,phone
-
+````
 
 ## Databases
 Below two entries need to be added in mosip_esignet.key_policy_def table.
 
+```
 INSERT INTO KEY_POLICY_DEF(APP_ID,KEY_VALIDITY_DURATION,PRE_EXPIRE_DAYS,ACCESS_ALLOWED,IS_ACTIVE,CR_BY,CR_DTIMES) VALUES('MOCK_AUTHENTICATION_SERVICE', 1095, 50, 'NA', true, 'mosipadmin', now());
 
 INSERT INTO KEY_POLICY_DEF(APP_ID,KEY_VALIDITY_DURATION,PRE_EXPIRE_DAYS,ACCESS_ALLOWED,IS_ACTIVE,CR_BY,CR_DTIMES) VALUES('MOCK_BINDING_SERVICE', 1095, 50, 'NA', true, 'mosipadmin', now());
-
+```
 
 ## License
 This project is licensed under the terms of [Mozilla Public License 2.0](LICENSE).
