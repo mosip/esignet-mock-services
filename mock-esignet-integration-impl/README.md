@@ -29,6 +29,8 @@ mosip.esignet.mock.supported.bind-auth-factor-types={'WLA'}
 mosip.esignet.mock.authenticator.ida.otp-channels=email,phone
 ````
 
+Add "bindingtransaction" cache name in "mosip.esignet.cache.names" property.
+
 ## Databases
 Below two entries need to be added in mosip_esignet.key_policy_def table.
 
