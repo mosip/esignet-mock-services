@@ -2,5 +2,22 @@
 
 ## About
 
-This is the mock implementation of IDA. Currently supports create-identity, get-identity endpoints. Once the identities are created, mock-identity-system also provides endpoint to perform "PIN" / "OTP" / "BIO" based authentication (kyc-auth & kyc-exchange).
+This is the mock implementation of IDA system.
+
+Currently supports below endpoints
+* create-identity
+* get-identity 
+* kyc-auth
+* kyc-exchange
+
+Below authentication factors are supported:
+* PIN
+* OTP
+* BIO
+
+## Databases
+Refer to [SQL scripts](db_scripts).
+
+## License
+This project is licensed under the terms of [Mozilla Public License 2.0](LICENSE).
 
