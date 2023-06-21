@@ -48,7 +48,7 @@ export default function Login({ i18nKeyPrefix = "login" }) {
       claims: JSON.parse(decodeURI(clientDetails.userProfileClaims)),
     };
 
-    window.SignInWithEsignetButton.init({
+    window.SignInWithEsignetButton?.init({
       oidcConfig: oidcConfig,
       buttonConfig: {
         shape: "soft_edges",

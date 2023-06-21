@@ -81,7 +81,7 @@ export default function Registration({
       claims: JSON.parse(decodeURI(clientDetails.registrationClaims)),
     };
 
-    window.SignInWithEsignetButton.init({
+    window.SignInWithEsignetButton?.init({
       oidcConfig: oidcConfig,
       buttonConfig: {
         shape: "soft_edges",

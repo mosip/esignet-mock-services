@@ -36,7 +36,7 @@ export default function SignUp({ i18nKeyPrefix = "signup" }) {
       claims: JSON.parse(decodeURI(clientDetails.userProfileClaims)),
     };
 
-    window.SignInWithEsignetButton.init({
+    window.SignInWithEsignetButton?.init({
       oidcConfig: oidcConfig,
       buttonConfig: {
         shape: "soft_edges",
