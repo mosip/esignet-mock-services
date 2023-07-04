@@ -80,6 +80,10 @@ public class MockKeyBindingWrapperService implements KeyBinder {
 
     static {
         supportedKeyBindingFormats.put("WLA", List.of("jwt"));
+        supportedKeyBindingFormats.put("OTP", List.of("alpha-numeric"));
+        supportedKeyBindingFormats.put("PIN", List.of("number"));
+        supportedKeyBindingFormats.put("BIO", List.of("encoded-json"));
+
     }
 
 
