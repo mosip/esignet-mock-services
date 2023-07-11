@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Uninstalls mock-relying-party-service and mock-relying-party-ui
 ## Usage: ./delete.sh [kubeconfig]
 
@@ -8,10 +8,12 @@ fi
 
 function Deleting_All() {
   NS=esignet
+  SOFTHSM_NS=softhsm
   while true; do
       read -p "Are you sure you want to delete esignet mock service helm charts?(Y/n) " yn
       if [ $yn = "Y" ]
         then
+          helm -n $SOFTHSM_NS delete softhsm-mock-identity-system
           helm -n $NS delete mock-relying-party-service
           helm -n $NS delete mock-relying-party-ui
         helm -n $NS delete mock-identity-system

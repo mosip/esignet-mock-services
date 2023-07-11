@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Installs all esignet helm charts
 ## Usage: ./install.sh [kubeconfig]
 
@@ -12,7 +12,7 @@ CHART_VERSION=0.9.0
 echo Create $NS namespace
 kubectl create ns $NS
 
-function installing_mock-relying-party-service () {
+function installing_mock-relying-party-service() {
   echo Istio label
   kubectl label ns $NS istio-injection=enabled --overwrite
 

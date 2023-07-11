@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Restarts the esignet mock service
 ## Usage: ./restart.sh [kubeconfig]
 

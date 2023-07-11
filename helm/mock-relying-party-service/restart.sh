@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Restart the esignet services
 
 if [ $# -ge 1 ] ; then
@@ -9,7 +9,7 @@ function Restarting_mock-relying-party-service() {
   NS=esignet
   kubectl -n $NS rollout restart deploy mock-relying-party-service
 
-  kubectl -n $NS  get mock-relying-party-service deploy -o name |  xargs -n1 -t  kubectl -n $NS rollout status
+  kubectl -n $NS  get mock-relying-party-service-test deploy -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
   echo Retarted mock-relying-party-service
   return 0
