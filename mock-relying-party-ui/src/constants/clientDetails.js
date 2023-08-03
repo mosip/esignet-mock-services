@@ -3,11 +3,11 @@ const nonce = "ere973eieljznge2311";
 const responseType = "code";
 const scopeUserProfile = window._env_.SCOPE_USER_PROFILE ?? "openid profile";
 const scopeRegistration = window._env_.SCOPE_REGISTRATION ?? "openid profile";
-const display = window._env_.DISPLAY;
-const prompt = window._env_.PROMPT;
-const grantType = window._env_.GRANT_TYPE;
-const maxAge = window._env_.MAX_AGE;
-const claimsLocales = window._env_.CLAIMS_LOCALES;
+const display = window._env_.DISPLAY ?? "page";
+const prompt = window._env_.PROMPT ?? "consent";
+const grantType = window._env_.GRANT_TYPE ?? "authorization_code";
+const maxAge = window._env_.MAX_AGE ?? "21";
+const claimsLocales = window._env_.CLAIMS_LOCALES ?? "en";
 const authorizeEndpoint = "/authorize";
 const clientId = window._env_.CLIENT_ID;
 const uibaseUrl = window._env_.ESIGNET_UI_BASE_URL;
@@ -20,6 +20,7 @@ const userProfileClaims =
   window._env_.CLAIMS_USER_PROFILE;
 const registrationClaims =
   window._env_.CLAIMS_REGISTRATION;
+
 
 const claims = {
   userinfo: {

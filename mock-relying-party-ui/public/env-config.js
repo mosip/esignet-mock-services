@@ -14,6 +14,6 @@ window._env_ = {
   DISPLAY: "page",
   PROMPT: "consent",
   GRANT_TYPE: "authorization_code",
-  MAX_AGE: 21,
+  MAX_AGE: "21",
   CLAIMS_LOCALES: "en"
 };
