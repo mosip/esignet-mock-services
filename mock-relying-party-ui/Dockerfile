@@ -7,6 +7,8 @@ ARG redirect_uri_registration
 ARG client_id
 ARG acrs
 ARG sign_in_button_plugin_url
+ARG code_challenge
+ARG code_challenge_method
 
 ENV ESIGNET_UI_BASE_URL=$esignet_ui_base_url
 ENV MOCK_RELYING_PARTY_SERVER_URL=$mock_relying_party_server_url
@@ -15,6 +17,8 @@ ENV REDIRECT_URI_REGISTRATION=$redirect_uri_registration
 ENV CLIENT_ID=$client_id
 ENV ACRS=$acrs
 ENV SIGN_IN_BUTTON_PLUGIN_URL=$sign_in_button_plugin_url
+ENV CODE_CHALLENGE=$code_challenge
+ENV CODE_CHALLENGE_METHOD=$code_challenge_method
 
 
 ## Mock relying party portal
@@ -87,7 +91,7 @@ COPY ./env.sh ${work_dir}/env.sh
 # Make our shell script executable
 RUN chmod +x ${work_dir}/env.sh
 
-RUN echo "ESIGNET_UI_BASE_URL=$ESIGNET_UI_BASE_URL" > ${work_dir}/.env && echo "MOCK_RELYING_PARTY_SERVER_URL=$MOCK_RELYING_PARTY_SERVER_URL" >> ${work_dir}/.env && echo "REDIRECT_URI=$REDIRECT_URI" >> ${work_dir}/.env && echo "REDIRECT_URI_REGISTRATION=$REDIRECT_URI_REGISTRATION" >> ${work_dir}/.env && echo "CLIENT_ID=$CLIENT_ID" >> ${work_dir}/.env && echo "ACRS=$ACRS" >> ${work_dir}/.env && echo "SIGN_IN_BUTTON_PLUGIN_URL=$SIGN_IN_BUTTON_PLUGIN_URL" >> ${work_dir}/.env
+RUN echo "ESIGNET_UI_BASE_URL=$ESIGNET_UI_BASE_URL" > ${work_dir}/.env && echo "MOCK_RELYING_PARTY_SERVER_URL=$MOCK_RELYING_PARTY_SERVER_URL" >> ${work_dir}/.env && echo "REDIRECT_URI=$REDIRECT_URI" >> ${work_dir}/.env && echo "REDIRECT_URI_REGISTRATION=$REDIRECT_URI_REGISTRATION" >> ${work_dir}/.env && echo "CLIENT_ID=$CLIENT_ID" >> ${work_dir}/.env && echo "CODE_CHALLENGE=$CODE_CHALLENGE" >> ${work_dir}/.env && echo "CODE_CHALLENGE_METHOD=$CODE_CHALLENGE_METHOD" >> ${work_dir}/.env && echo "ACRS=$ACRS" >> ${work_dir}/.env && echo "SIGN_IN_BUTTON_PLUGIN_URL=$SIGN_IN_BUTTON_PLUGIN_URL" >> ${work_dir}/.env
 
 # change permissions of file inside working dir
 RUN chown -R ${container_user}:${container_user} ${work_dir}

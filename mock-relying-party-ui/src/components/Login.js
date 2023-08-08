@@ -45,9 +45,11 @@ export default function Login({ i18nKeyPrefix = "login" }) {
       prompt: clientDetails.prompt,
       max_age: clientDetails.max_age,
       ui_locales: i18n.language,
+      code_challenge: clientDetails.code_challenge,
+      code_challenge_method: clientDetails.code_challenge_method,
       claims: JSON.parse(decodeURI(clientDetails.userProfileClaims)),
     };
-
+    
     window.SignInWithEsignetButton?.init({
       oidcConfig: oidcConfig,
       buttonConfig: {

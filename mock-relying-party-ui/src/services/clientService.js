@@ -36,6 +36,8 @@ const getURI = (redirect_uri, scope, encodedClaims) => {
   let claimsLocales = clientDetails.claims_locales;
   let uibaseUrl = clientDetails.uibaseUrl;
   let authorizeEndpoint = clientDetails.authorizeEndpoint;
+  let codeChallenge = clientDetails.code_challenge;
+  let codeChallengeMethod = clientDetails.code_challenge_method;
 
   let uri_UI =
     uibaseUrl +
@@ -63,7 +65,11 @@ const getURI = (redirect_uri, scope, encodedClaims) => {
     "&max_age=" +
     maxAge +
     "&claims_locales=" +
-    claimsLocales;
+    claimsLocales +
+    "&code_challenge=" +
+    codeChallenge +
+    "&code_challenge_method" +
+    codeChallengeMethod;
 
   return uri_UI;
 };
