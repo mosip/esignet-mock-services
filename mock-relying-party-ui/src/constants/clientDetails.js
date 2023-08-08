@@ -8,6 +8,8 @@ const prompt = "consent";
 const grantType = "authorization_code";
 const maxAge = "21";
 const claimsLocales = "en";
+const code_challenge = window._env_.CODE_CHALLENGE;
+const code_challenge_method = window._env_.CODE_CHALLENGE_METHOD;
 const authorizeEndpoint = "/authorize";
 const clientId = window._env_.CLIENT_ID;
 const uibaseUrl = window._env_.ESIGNET_UI_BASE_URL;
@@ -61,6 +63,8 @@ const clientDetails = {
   prompt: prompt,
   acr_values: acr_values,
   claims_locales: claimsLocales,
+  code_challenge: code_challenge,
+  code_challenge_method: code_challenge_method,
   max_age: maxAge,
   grant_type: grantType,
   uibaseUrl: uibaseUrl,
