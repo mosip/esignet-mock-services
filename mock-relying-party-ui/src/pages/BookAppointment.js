@@ -15,7 +15,7 @@ export default function BookAppointmentPage({ langOptions }) {
     }
     //REQUIRED
     params = params + "error=" + errorCode;
-    navigate("/" + params, { replace: true });
+    navigate(process.env.PUBLIC_URL + "/" + params, { replace: true });
   };
 
   useEffect(() => {

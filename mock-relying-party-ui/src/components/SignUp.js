@@ -81,7 +81,7 @@ export default function SignUp({ clientService, i18nKeyPrefix = "signup" }) {
         <div className="flex flex-justify mt-3 w-full items-center text-center">
           <p className="w-full text-center">
             {t("already_have_account")}&nbsp;
-            <a href="/" className="text-[#2F8EA3]">
+            <a href={process.env.PUBLIC_URL + "/"} className="text-[#2F8EA3]">
               {t("sign_in_here")}
             </a>
           </p>

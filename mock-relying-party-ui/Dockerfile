@@ -1,5 +1,7 @@
 FROM node:12.18.4-alpine as build
 
+# Set a build-time environment variable
+ARG mockRpUIPublicUrl
 ARG esignet_ui_base_url
 ARG mock_relying_party_server_url
 ARG redirect_uri
@@ -14,6 +16,10 @@ ENV REDIRECT_URI_REGISTRATION=$redirect_uri_registration
 ENV CLIENT_ID=$client_id
 ENV ACRS=$acrs
 
+ENV MOCK_RP_UI_PUBLIC_URL=$mockRpUIPublicUrl
+
+# Set the environment variable as a placeholder for PUBLIC_URL
+ENV PUBLIC_URL=_PUBLIC_URL_
 
 ## Mock relying party portal
 WORKDIR ./app
@@ -53,7 +59,9 @@ ARG artifactory_url
 # environment variable to pass artifactory url, at docker runtime
 ENV artifactory_url_env=${artifactory_url}
 
-ENV work_dir=/usr/share/nginx/html
+ENV nginx_dir=/usr/share/nginx
+
+ENV work_dir=${nginx_dir}/html
 
 ENV i18n_path=${work_dir}/locales
 
@@ -78,14 +86,7 @@ COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 
 COPY --from=build /app/build ${work_dir}
 
-ADD .env ${work_dir}/.env
-
-COPY ./env.sh ${work_dir}/env.sh
-
-# Make our shell script executable
-RUN chmod +x ${work_dir}/env.sh
-
-RUN echo "ESIGNET_UI_BASE_URL=$ESIGNET_UI_BASE_URL" > ${work_dir}/.env && echo "MOCK_RELYING_PARTY_SERVER_URL=$MOCK_RELYING_PARTY_SERVER_URL" >> ${work_dir}/.env && echo "REDIRECT_URI=$REDIRECT_URI" >> ${work_dir}/.env && echo "REDIRECT_URI_REGISTRATION=$REDIRECT_URI_REGISTRATION" >> ${work_dir}/.env && echo "CLIENT_ID=$CLIENT_ID" >> ${work_dir}/.env && echo "ACRS=$ACRS" >> ${work_dir}/.env
+RUN echo "ESIGNET_UI_BASE_URL=$ESIGNET_UI_BASE_URL" >> ${work_dir}/env.env && echo "MOCK_RELYING_PARTY_SERVER_URL=$MOCK_RELYING_PARTY_SERVER_URL" >> ${work_dir}/env.env && echo "REDIRECT_URI=$REDIRECT_URI" >> ${work_dir}/env.env && echo "REDIRECT_URI_REGISTRATION=$REDIRECT_URI_REGISTRATION" >> ${work_dir}/env.env && echo "CLIENT_ID=$CLIENT_ID" >> ${work_dir}/env.env && echo "ACRS=$ACRS" >> ${work_dir}/env.env
 
 # change permissions of file inside working dir
 RUN chown -R ${container_user}:${container_user} ${work_dir}
@@ -95,7 +96,9 @@ USER ${container_user_uid}:${container_user_gid}
 
 EXPOSE 5000
 
-ENTRYPOINT [ "/home/mosip/configure_start.sh" ]
+ENTRYPOINT [ "./configure_start.sh" ]
 
 # Start Nginx server
-CMD ["/bin/sh", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
+CMD echo "starting nginx" ; \
+    nginx ; \
+    sleep infinity
