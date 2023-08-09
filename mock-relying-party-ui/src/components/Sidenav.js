@@ -37,7 +37,7 @@ export default function Sidenav({
 
         //REQUIRED
         params = params + "error=" + errorCode;
-        navigate("/" + params, { replace: true });
+        navigate(process.env.PUBLIC_URL + "/" + params, { replace: true });
     };
     const [selectedLang, setSelectedLang] = useState();
     const changeLanguageHandler = (e) => {
