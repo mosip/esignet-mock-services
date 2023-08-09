@@ -10,7 +10,7 @@ window._env_ = {
   SCOPE_REGISTRATION: "openid%20profile",
   CLAIMS_USER_PROFILE: "%7B%22userinfo%22:%7B%22given_name%22:%7B%22essential%22:true%7D,%22phone_number%22:%7B%22essential%22:false%7D,%22email%22:%7B%22essential%22:true%7D,%22picture%22:%7B%22essential%22:false%7D,%22gender%22:%7B%22essential%22:false%7D,%22birthdate%22:%7B%22essential%22:false%7D,%22address%22:%7B%22essential%22:false%7D%7D,%22id_token%22:%7B%7D%7D",
   CLAIMS_REGISTRATION: "%7B%22userinfo%22:%7B%22given_name%22:%7B%22essential%22:true%7D,%22phone_number%22:%7B%22essential%22:false%7D,%22email%22:%7B%22essential%22:true%7D,%22picture%22:%7B%22essential%22:false%7D,%22gender%22:%7B%22essential%22:false%7D,%22birthdate%22:%7B%22essential%22:false%7D,%22address%22:%7B%22essential%22:false%7D%7D,%22id_token%22:%7B%7D%7D",
-  SIGN_IN_BUTTON_PLUGIN_URL: "http://127.0.0.1:5500/dist/iife/index.js",
+  SIGN_IN_BUTTON_PLUGIN_URL: "http://127.0.0.1:5500/sign-in-with-esignet/dist/iife/index.js",
   DISPLAY: "page",
   PROMPT: "consent",
   GRANT_TYPE: "authorization_code",

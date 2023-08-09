@@ -125,7 +125,10 @@ export default function Login({ i18nKeyPrefix = "login" }) {
         <div className="flex flex-justify mt-5 w-full items-center text-center">
           <p className="w-full text-center">
             {t("dont_have_existing_account")}&nbsp;
-            <a href="/signup" className="text-[#2F8EA3]">
+            <a
+              href={process.env.PUBLIC_URL + "/signup"}
+              className="text-[#2F8EA3]"
+            >
               {t("sign_up_here")}
             </a>
           </p>
