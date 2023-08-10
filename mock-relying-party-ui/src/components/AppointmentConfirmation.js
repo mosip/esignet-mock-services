@@ -39,7 +39,7 @@ export default function AppointmentConfirmation({ isOpen,
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-start p-2 ">
-                                        <Link to="/userprofile">
+                                        <Link to={process.env.PUBLIC_URL + "/userprofile"}>
                                             <button className="bg-blue-500 hover:bg-blue-700 text-white left-0 p-2 m-2 font-bold rounded">
                                                 {t("home")}
                                             </button>

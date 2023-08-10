@@ -128,18 +128,18 @@ export default function ProfileUI({
                               {i18n.t(formattedDate)}
                             </p>
                             <p className="text-xs text-gray-500 truncate inline-flex whitespace-pre-wrap">
-                              <img src="./../images/scheduleTime.png" className="h-4 w-4 ml-2 mr-2"></img>
+                              <img src="images/scheduleTime.png" className="h-4 w-4 ml-2 mr-2"></img>
                               {data["time"]}
                             </p>
                             <div className="text-xs text-gray-500 truncate whitespace-pre-wrap inline-flex">
-                              <img src="./../images/marker.png" className="h-4 w-4 ml-2 mr-2 mb-2"></img>
+                              <img src="images/marker.png" className="h-4 w-4 ml-2 mr-2 mb-2"></img>
                               {t(data["location"])}
                             </div>
                             <div className="py-2">
                               <div className="flex">
                                 <img
                                   className="w-8 h-8 rounded-full shadow-lg"
-                                  src="./../images/doctor_logo.png"
+                                  src="images/doctor_logo.png"
                                   alt="Jese Leos image"
                                 />
                                 <div className="ml-3 mr-3">
