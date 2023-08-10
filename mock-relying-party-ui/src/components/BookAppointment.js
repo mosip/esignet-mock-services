@@ -26,7 +26,7 @@ export default function BookAppointment({
                 <img src="images/Schedule for Vaccination.jpeg"></img>
               </div>
               <div className="p-2 m-2">
-                <Link to="/userprofile">
+                <Link to={process.env.PUBLIC_URL + "/userprofile"}>
                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     {t("cancel")}
                   </button>
