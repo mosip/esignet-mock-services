@@ -8,6 +8,7 @@ on:
       - master
       - develop
       - 0.9.0
+      - ES-*
 
 jobs:
   build:
