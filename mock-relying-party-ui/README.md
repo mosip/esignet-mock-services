@@ -38,9 +38,9 @@ The application run on PORT=5000 by default.
   To host mock relying party ui on a context path:
   1. Remove the location path with `/` in the nignx file and add the location with context path as below.
     ```
-    location /oidc-ui {
-       alias /usr/share/nginx/oidc-ui;
-       try_files $uri $uri/ /oidc-ui/index.html;
+    location /healthservices {
+       alias /usr/share/nginx/healthservices;
+       try_files $uri $uri/ /healthservices/index.html;
     }
     ```
   2. Provide the context path in the env variable `MOCK_RP_UI_PUBLIC_URL` during docker run.
