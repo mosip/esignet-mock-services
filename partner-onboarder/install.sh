@@ -76,10 +76,7 @@ function installing_onboarder() {
     $ENABLE_INSECURE \
     -f values.yaml \
     --version $CHART_VERSION \
-    --wait
-
-    kubectl wait --for=condition=complete job/esignet-demo-oidc-partner-onboarder-demo-oidc -n $NS --timeout=5m
-
+    --wait --wait-for-jobs
 
     private_public_key_pair=$(kubectl logs -n $NS job/esignet-demo-oidc-partner-onboarder-demo-oidc | grep -Pzo "(?s)Private and Public KeyPair:\s*\K.*?(?=\s*mpartner default demo OIDC clientId:)" | tr -d '\0' | tr -d '\n')
     echo Encoded Private and Public Key Pair: $private_public_key_pair
