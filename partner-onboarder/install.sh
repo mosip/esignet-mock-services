@@ -68,41 +68,27 @@ function installing_onboarder() {
     s3_user_key=$( kubectl -n s3 get cm s3 -o json | jq -r '.data."s3-user-key"' )
 
     echo Onboarding default partners
-    helm -n $NS install esignet-demo-oidc-partner-onboarder mosip/partner-onboarder \
+    helm -n $NS install esignet-demo-oidc-partner-onboarder /home/techno-422/Desktop/MOSIP/mosip-helm/charts/partner-onboarder \
     --set onboarding.configmaps.s3.s3-host="$s3_url" \
     --set onboarding.configmaps.s3.s3-user-key="$s3_user_key" \
     --set onboarding.configmaps.s3.s3-region="$s3_region" \
     --set onboarding.configmaps.s3.s3-bucket-name="$s3_bucket" \
     $ENABLE_INSECURE \
     -f values.yaml \
-    --version $CHART_VERSION &
-    helm_install_pid=$!
+    --version $CHART_VERSION \
+    --wait
 
-    # Wait for the Helm installation command to finish
-    wait $helm_install_pid
+    kubectl wait --for=condition=complete job/esignet-demo-oidc-partner-onboarder-demo-oidc -n $NS --timeout=5m
 
-    # Check the status of the Helm installation job
-    if [ $? -eq 0 ]; then
-      # Helm installation command completed successfully, now check job status
-      kubectl wait --for=condition=complete job/esignet-demo-oidc-partner-onboarder-demo-oidc -n $NS --timeout=5m
 
-      # Check the status of the Helm installation job
-      if [ $? -eq 0 ]; then
-        private_public_key_pair=$(kubectl logs -n $NS job/esignet-demo-oidc-partner-onboarder-demo-oidc | grep -Pzo "(?s)Private and Public KeyPair:\s*\K.*?(?=\s*mpartner default demo OIDC clientId:)" | tr -d '\0' | tr -d '\n')
-        echo Encoded Private and Public Key Pair: $private_public_key_pair
-        kubectl patch secret mock-relying-party-service-secrets -n $NS -p '{"data":{"client-private-key":"'$(echo -n "$private_public_key_pair" | base64 | tr -d '\n')'"}}'
-        kubectl rollout restart deployment -n esignet mock-relying-party-service
-        demo_oidc_clientid=$(kubectl logs -n $NS job/esignet-demo-oidc-partner-onboarder-demo-oidc | grep "mpartner default demo OIDC clientId:" | awk '{sub("clientId:", ""); print $5}')
-        echo mpartner default demo OIDC clientId is: $demo_oidc_clientid
-        kubectl -n esignet set env deployment/mock-relying-party-ui CLIENT_ID=$demo_oidc_clientid
-      else
-        # Helm installation job failed, handle the error here if needed
-        echo "Helm installation job failed. Please check the logs for more details."
-      fi
-    else
-      # Helm installation command failed, handle the error here if needed
-      echo "Helm installation failed. Please check the logs for more details."
-    fi
+    private_public_key_pair=$(kubectl logs -n $NS job/esignet-demo-oidc-partner-onboarder-demo-oidc | grep -Pzo "(?s)Private and Public KeyPair:\s*\K.*?(?=\s*mpartner default demo OIDC clientId:)" | tr -d '\0' | tr -d '\n')
+    echo Encoded Private and Public Key Pair: $private_public_key_pair
+    kubectl patch secret mock-relying-party-service-secrets -n $NS -p '{"data":{"client-private-key":"'$(echo -n "$private_public_key_pair" | base64 | tr -d '\n')'"}}'
+    kubectl rollout restart deployment -n esignet mock-relying-party-service
+    demo_oidc_clientid=$(kubectl logs -n $NS job/esignet-demo-oidc-partner-onboarder-demo-oidc | grep "mpartner default demo OIDC clientId:" | awk '{sub("clientId:", ""); print $5}')
+    echo mpartner default demo OIDC clientId is: $demo_oidc_clientid
+    kubectl -n esignet set env deployment/mock-relying-party-ui CLIENT_ID=$demo_oidc_clientid
+
 
     echo Reports are moved to S3 under onboarder bucket
     return 0
