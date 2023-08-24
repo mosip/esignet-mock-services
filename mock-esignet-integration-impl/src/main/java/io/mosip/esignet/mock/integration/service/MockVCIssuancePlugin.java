@@ -42,13 +42,12 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 
 	private ConfigurableDocumentLoader confDocumentLoader = null;
 
-	@Value("#{${mosip.esignet.discovery.key-values}}")
+	@Value("#{${mosip.esignet.mock.vciplugin.verification-method}}")
 	private URI discoveryKey;
 
 	public static final String UTC_DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-	
+
 	public static final String OIDC_SERVICE_APP_ID = "OIDC_SERVICE";
-	
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
@@ -62,61 +61,55 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 			return vcResult;
 		} catch (Exception e) {
 			log.error("Failed to build mock VC", e);
-			return null;
 		}
+		return null;
 	}
 
-private JsonLDObject buildDummyJsonLDWithLDProof(String holderId) throws IOException, GeneralSecurityException, JsonLDException, URISyntaxException {
-	  Map<String, Object> formattedMap = new HashMap<>();
-      formattedMap.put("id", holderId);
-      formattedMap.put("name", "John Doe");
-      formattedMap.put("age", 30);
+	private JsonLDObject buildDummyJsonLDWithLDProof(String holderId)
+			throws IOException, GeneralSecurityException, JsonLDException, URISyntaxException {
+		Map<String, Object> formattedMap = new HashMap<>();
+		formattedMap.put("id", holderId);
+		formattedMap.put("name", "John Doe");
+		formattedMap.put("age", 30);
 
-      Map<String, Object> verCredJsonObject = new HashMap<>();
-      verCredJsonObject.put("@context", "https://www.w3.org/2018/credentials/v1");
-      verCredJsonObject.put("type", Arrays.asList("VerifiableCredential"));
-      verCredJsonObject.put("id", holderId);
-      verCredJsonObject.put("issuer", "did:example:123");
-      verCredJsonObject.put("issuanceDate", getUTCDateTime());
-      verCredJsonObject.put("credentialSubject", formattedMap);
+		Map<String, Object> verCredJsonObject = new HashMap<>();
+		verCredJsonObject.put("@context", "https://www.w3.org/2018/credentials/v1");
+		verCredJsonObject.put("type", Arrays.asList("VerifiableCredential"));
+		verCredJsonObject.put("id", "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5");
+		verCredJsonObject.put("issuer", "did:mock:123");
+		verCredJsonObject.put("issuanceDate", getUTCDateTime());
+		verCredJsonObject.put("credentialSubject", formattedMap);
 
-      JsonLDObject vcJsonLdObject = JsonLDObject.fromJsonObject(verCredJsonObject);
-      vcJsonLdObject.setDocumentLoader(confDocumentLoader);
-      // vc proof
-      Date created = Date.from(LocalDateTime.parse((String)verCredJsonObject.get("issuanceDate"),
-                      DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN))
-              .atZone(ZoneId.systemDefault()).toInstant());
-      LdProof vcLdProof = LdProof.builder()
-              .defaultContexts(false)
-              .defaultTypes(false)
-              .type("RsaSignature2018")
-              .created(created)
-              .proofPurpose("assertionMethod")
-              .verificationMethod(discoveryKey)
-              .build();
+		JsonLDObject vcJsonLdObject = JsonLDObject.fromJsonObject(verCredJsonObject);
+		vcJsonLdObject.setDocumentLoader(confDocumentLoader);
+		// vc proof
+		Date created = Date
+				.from(LocalDateTime
+						.parse((String) verCredJsonObject.get("issuanceDate"),
+								DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN))
+						.atZone(ZoneId.systemDefault()).toInstant());
+		LdProof vcLdProof = LdProof.builder().defaultContexts(false).defaultTypes(false).type("RsaSignature2018")
+				.created(created).proofPurpose("assertionMethod").verificationMethod(discoveryKey).build();
 
-      URDNA2015Canonicalizer canonicalizer =	new URDNA2015Canonicalizer();
-      byte[] vcSignBytes = canonicalizer.canonicalize(vcLdProof, vcJsonLdObject);
-      String vcEncodedData = CryptoUtil.encodeToURLSafeBase64(vcSignBytes);
+		URDNA2015Canonicalizer canonicalizer = new URDNA2015Canonicalizer();
+		byte[] vcSignBytes = canonicalizer.canonicalize(vcLdProof, vcJsonLdObject);
+		String vcEncodedData = CryptoUtil.encodeToURLSafeBase64(vcSignBytes);
 
-      JWTSignatureRequestDto jwtSignatureRequestDto = new JWTSignatureRequestDto();
-      jwtSignatureRequestDto.setApplicationId(OIDC_SERVICE_APP_ID);
-      jwtSignatureRequestDto.setReferenceId("");
-      jwtSignatureRequestDto.setIncludePayload(false);
-      jwtSignatureRequestDto.setIncludeCertificate(true);
-      jwtSignatureRequestDto.setIncludeCertHash(true);
-      jwtSignatureRequestDto.setDataToSign(vcEncodedData);
-      JWTSignatureResponseDto responseDto = signatureService.jwtSign(jwtSignatureRequestDto);
-      LdProof ldProofWithJWS = LdProof.builder()
-              .base(vcLdProof)
-              .defaultContexts(false)
-              .jws(responseDto.getJwtSignedData())
-              .build();
-      ldProofWithJWS.addToJsonLDObject(vcJsonLdObject);
-      return vcJsonLdObject;	
+		JWTSignatureRequestDto jwtSignatureRequestDto = new JWTSignatureRequestDto();
+		jwtSignatureRequestDto.setApplicationId(OIDC_SERVICE_APP_ID);
+		jwtSignatureRequestDto.setReferenceId("");
+		jwtSignatureRequestDto.setIncludePayload(false);
+		jwtSignatureRequestDto.setIncludeCertificate(true);
+		jwtSignatureRequestDto.setIncludeCertHash(true);
+		jwtSignatureRequestDto.setDataToSign(vcEncodedData);
+		JWTSignatureResponseDto responseDto = signatureService.jwtSign(jwtSignatureRequestDto);
+		LdProof ldProofWithJWS = LdProof.builder().base(vcLdProof).defaultContexts(false)
+				.jws(responseDto.getJwtSignedData()).build();
+		ldProofWithJWS.addToJsonLDObject(vcJsonLdObject);
+		return vcJsonLdObject;
 	}
 
-	public static String getUTCDateTime() {
+	private static String getUTCDateTime() {
 		return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN));
 	}
 
