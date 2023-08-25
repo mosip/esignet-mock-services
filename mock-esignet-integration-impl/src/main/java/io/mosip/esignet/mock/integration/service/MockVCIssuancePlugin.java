@@ -14,10 +14,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import foundation.identity.jsonld.ConfigurableDocumentLoader;
 import foundation.identity.jsonld.JsonLDException;
@@ -26,7 +28,9 @@ import info.weboftrust.ldsignatures.LdProof;
 import info.weboftrust.ldsignatures.canonicalizer.URDNA2015Canonicalizer;
 import io.mosip.esignet.api.dto.VCRequestDto;
 import io.mosip.esignet.api.dto.VCResult;
+import io.mosip.esignet.api.exception.KycAuthException;
 import io.mosip.esignet.api.spi.VCIssuancePlugin;
+import io.mosip.esignet.api.util.ErrorConstants;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.signature.dto.JWTSignatureRequestDto;
 import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
@@ -43,7 +47,7 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 	private ConfigurableDocumentLoader confDocumentLoader = null;
 
 	@Value("#{${mosip.esignet.mock.vciplugin.verification-method}}")
-	private URI discoveryKey;
+	private URI verificationMethod;
 
 	public static final String UTC_DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -51,7 +55,7 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public VCResult getVerifiableCredential(VCRequestDto vcRequestDto, String holderId,
+	public VCResult getVerifiableCredentialWithLinkedDataProof(VCRequestDto vcRequestDto, String holderId,
 			Map<String, Object> identityDetails) {
 		JsonLDObject vcJsonLdObject = null;
 		try {
@@ -89,7 +93,7 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 								DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN))
 						.atZone(ZoneId.systemDefault()).toInstant());
 		LdProof vcLdProof = LdProof.builder().defaultContexts(false).defaultTypes(false).type("RsaSignature2018")
-				.created(created).proofPurpose("assertionMethod").verificationMethod(discoveryKey).build();
+				.created(created).proofPurpose("assertionMethod").verificationMethod(verificationMethod).build();
 
 		URDNA2015Canonicalizer canonicalizer = new URDNA2015Canonicalizer();
 		byte[] vcSignBytes = canonicalizer.canonicalize(vcLdProof, vcJsonLdObject);
@@ -111,6 +115,12 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 
 	private static String getUTCDateTime() {
 		return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN));
+	}
+
+	@Override
+	public VCResult<String> getVerifiableCredential(VCRequestDto vcRequestDto, String holderId,
+			Map<String, Object> identityDetails) {
+		throw new NotImplementedException("This method is not implemented");
 	}
 
 }
