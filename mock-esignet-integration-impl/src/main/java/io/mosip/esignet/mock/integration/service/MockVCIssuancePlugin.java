@@ -37,7 +37,7 @@ import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
 import io.mosip.kernel.signature.service.SignatureService;
 import lombok.extern.slf4j.Slf4j;
 
-@ConditionalOnProperty(value = "mosip.esignet.integration.mock.vcissuance", havingValue = "MockVCIssuancePlugin")
+@ConditionalOnProperty(value = "mosip.esignet.integration.vci-plugin", havingValue = "MockVCIssuancePlugin")
 @Component
 @Slf4j
 public class MockVCIssuancePlugin implements VCIssuancePlugin {
@@ -46,8 +46,8 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 
 	private ConfigurableDocumentLoader confDocumentLoader = null;
 
-	@Value("#{${mosip.esignet.mock.vciplugin.verification-method}}")
-	private URI verificationMethod;
+	@Value("${mosip.esignet.mock.vciplugin.verification-method}")
+	private String verificationMethod;
 
 	public static final String UTC_DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -93,7 +93,9 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 								DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN))
 						.atZone(ZoneId.systemDefault()).toInstant());
 		LdProof vcLdProof = LdProof.builder().defaultContexts(false).defaultTypes(false).type("RsaSignature2018")
-				.created(created).proofPurpose("assertionMethod").verificationMethod(verificationMethod).build();
+				.created(created).proofPurpose("assertionMethod")
+				.verificationMethod(URI.create(verificationMethod))
+				.build();
 
 		URDNA2015Canonicalizer canonicalizer = new URDNA2015Canonicalizer();
 		byte[] vcSignBytes = canonicalizer.canonicalize(vcLdProof, vcJsonLdObject);
