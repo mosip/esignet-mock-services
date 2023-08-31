@@ -62,6 +62,7 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 			VCResult vcResult = new VCResult();
 			vcJsonLdObject = buildDummyJsonLDWithLDProof(holderId);
 			vcResult.setCredential(vcJsonLdObject);
+			vcResult.setFormat("ldp_vc");
 			return vcResult;
 		} catch (Exception e) {
 			log.error("Failed to build mock VC", e);
@@ -80,7 +81,7 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 		verCredJsonObject.put("@context", "https://www.w3.org/2018/credentials/v1");
 		verCredJsonObject.put("type", Arrays.asList("VerifiableCredential"));
 		verCredJsonObject.put("id", "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5");
-		verCredJsonObject.put("issuer", "did:mock:123");
+		verCredJsonObject.put("issuer", "did:mock:123456789");
 		verCredJsonObject.put("issuanceDate", getUTCDateTime());
 		verCredJsonObject.put("credentialSubject", formattedMap);
 
