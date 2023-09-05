@@ -23,7 +23,13 @@ export default function Login({ i18nKeyPrefix = "login" }) {
     };
     getSearchParams();
 
-    renderSignInButton();
+    if (window.SignInWithEsignetButton) {
+      renderSignInButton();
+    } else {
+      setTimeout(() => {
+        renderSignInButton();
+      }, 500);
+    }
 
     i18n.on("languageChanged", function (lng) {
       renderSignInButton();
