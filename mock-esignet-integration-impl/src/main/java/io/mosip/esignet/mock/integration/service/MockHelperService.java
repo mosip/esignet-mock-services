@@ -162,7 +162,7 @@ public class MockHelperService {
                 ResponseWrapper<KycAuthResponseDto> responseWrapper = responseEntity.getBody();
                 if (responseWrapper.getResponse() != null && responseWrapper.getResponse().isAuthStatus() && responseWrapper.getResponse().getKycToken() != null) {
                     return new KycAuthResult(responseEntity.getBody().getResponse().getKycToken(),
-                            responseEntity.getBody().getResponse().getKycToken());
+                            responseEntity.getBody().getResponse().getPartnerSpecificUserToken());
                 }
                 log.error("Error response received from IDA, Errors: {}", responseWrapper.getErrors());
                 throw new KycAuthException(CollectionUtils.isEmpty(responseWrapper.getErrors()) ?

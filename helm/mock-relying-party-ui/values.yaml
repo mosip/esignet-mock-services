@@ -51,8 +51,8 @@ service:
 
 image:
   registry: docker.io
-  repository: mosipid/mock-relying-party-ui
-  tag: 0.9.0
+  repository: mosipqa/mock-relying-party-ui
+  tag: develop
 
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -137,7 +137,7 @@ additionalResources:
 
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
 ## Clamav container already runs as 'mosip' user, so we may not need to enable this
-container_user: 'root'
+container_user: 'mosip'
 containerSecurityContext:
   enabled: true
   runAsUser: 0
@@ -425,6 +425,12 @@ mock_relying_party_ui:
   ACRS: mosip:idp:acr:generated-code%20mosip:idp:acr:biometrics%20mosip:idp:acr:linked-wallet
   MOCK_RELYING_PARTY_SERVICE_INTERNAL_URL: http://mock-relying-party-service.esignet
   REDIRECT_URI_REGISTRATION: https://healthservices.sandbox.xyz.net/registration
+  SIGN_IN_BUTTON_PLUGIN_URL: https://esignet.sandbox.xyz.net/plugins/sign-in-button-plugin.js
+  DISPLAY: page
+  PROMPT: consent
+  GRANT_TYPE: authorization_code
+  CLAIMS_LOCALES: en
+  SCOPE_USER_PROFILE: openid profile
 ## oidc UI swagger should have only internal access. Hence linked to internal gateway
 ## We create a gateway for oidc specific URL(s) listed under `hosts`
 istio:

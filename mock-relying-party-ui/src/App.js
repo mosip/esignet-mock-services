@@ -50,11 +50,11 @@ function App() {
     <div dir={dir} className="h-screen">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LoginPage langOptions={langOptions} />} />
-          <Route path="/signup" element={<SignUpPage langOptions={langOptions} />} />
-          <Route path="/userprofile" element={<UserProfilePage langOptions={langOptions} />} />
-          <Route path="/registration" element={<RegistrationPage langOptions={langOptions} />} />
-          <Route path="/bookappointment" element={<BookAppointmentPage langOptions={langOptions}/>}/>
+          <Route path={process.env.PUBLIC_URL + "/"} element={<LoginPage langOptions={langOptions} />} />
+          <Route path={process.env.PUBLIC_URL + "/signup"} element={<SignUpPage langOptions={langOptions} />} />
+          <Route path={process.env.PUBLIC_URL + "/userprofile"} element={<UserProfilePage langOptions={langOptions} />} />
+          <Route path={process.env.PUBLIC_URL + "/registration"} element={<RegistrationPage langOptions={langOptions} />} />
+          <Route path={process.env.PUBLIC_URL + "/bookappointment"} element={<BookAppointmentPage langOptions={langOptions}/>}/>
         </Routes>
       </BrowserRouter>
       <ToastContainer position="top-center" hideProgressBar={true} pauseOnHover={false} draggable={false} />

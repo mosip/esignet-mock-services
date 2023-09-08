@@ -12,6 +12,6 @@
 -- ------------------------------------------------------------------------------------------
 CREATE TABLE mockidentitysystem.mock_identity(
 	individual_id VARCHAR(36) NOT NULL,
-	identity_json VARCHAR(2048) NOT NULL,
+	identity_json VARCHAR NOT NULL,
     CONSTRAINT pk_mock_id_code PRIMARY KEY (individual_id)
 );

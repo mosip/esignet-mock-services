@@ -105,6 +105,18 @@ spec:
               value: {{ .Values.mock_relying_party_ui.ACRS }}
             - name: REDIRECT_URI_REGISTRATION
               value: {{ .Values.mock_relying_party_ui.REDIRECT_URI_REGISTRATION }}
+            - name: SIGN_IN_BUTTON_PLUGIN_URL
+              value: {{ .Values.mock_relying_party_ui.SIGN_IN_BUTTON_PLUGIN_URL }}
+            - name: DISPLAY
+              value: {{ .Values.mock_relying_party_ui.DISPLAY}}
+            - name: PROMPT
+              value: {{.Values.mock_relying_party_ui.PROMPT}}
+            - name: GRANT_TYPE
+              value: {{.Values.mock_relying_party_ui.GRANT_TYPE}}
+            - name: CLAIMS_LOCALES
+              value: {{.Values.mock_relying_party_ui.CLAIMS_LOCALES}}
+            - name: SCOPE_USER_PROFILE
+              value: {{.Values.mock_relying_party_ui.SCOPE_USER_PROFILE}}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

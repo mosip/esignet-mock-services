@@ -1,19 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Error } from "../common/Errors";
 import { useTranslation } from "react-i18next";
-import RedirectButton from "../common/RedirectButton";
+import clientDetails from "../constants/clientDetails";
 
-export default function SignUp({ clientService, i18nKeyPrefix = "signup" }) {
-  const { t } = useTranslation("translation", {
+export default function SignUp({ i18nKeyPrefix = "signup" }) {
+  const { i18n, t } = useTranslation("translation", {
     keyPrefix: i18nKeyPrefix,
   });
 
-  const { getURIforSignIn } = {
-    ...clientService,
-  };
-
   const [error, setError] = useState(null);
-  const uri_UI = getURIforSignIn();
+  
+  useEffect(() => {
+    renderSignInButton();
+
+    i18n.on("languageChanged", function (lng) {
+      renderSignInButton();
+    });
+  }, []);
+
+  const renderSignInButton = () => {
+
+    const oidcConfig = {
+      authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
+      redirect_uri: clientDetails.redirect_uri_userprofile,
+      client_id: clientDetails.clientId,
+      scope: clientDetails.scopeUserProfile,
+      nonce: clientDetails.nonce,
+      state: clientDetails.state,
+      acr_values: clientDetails.acr_values,
+      claims_locales: clientDetails.claims_locales,
+      display: clientDetails.display,
+      prompt: clientDetails.prompt,
+      max_age: clientDetails.max_age,
+      ui_locales: i18n.language,
+      claims: JSON.parse(decodeURI(clientDetails.userProfileClaims)),
+    };
+
+    window.SignInWithEsignetButton?.init({
+      oidcConfig: oidcConfig,
+      buttonConfig: {
+        shape: "soft_edges",
+        labelText: t("sign_up_with"),
+        width: "100%"
+      },
+      signInElement: document.getElementById("sign-in-with-esignet"),
+    });
+  }
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -73,15 +105,13 @@ export default function SignUp({ clientService, i18nKeyPrefix = "signup" }) {
           </div>
           <div className="flex-1 h-px bg-black" />
         </div>
-        <RedirectButton
-          redirectURL={uri_UI}
-          text={t("sign_up_with")}
-          logoPath="esignet_logo.png"
-        />
+
+        <div id="sign-in-with-esignet" className="w-full"></div>
+
         <div className="flex flex-justify mt-3 w-full items-center text-center">
           <p className="w-full text-center">
             {t("already_have_account")}&nbsp;
-            <a href="/" className="text-[#2F8EA3]">
+            <a href={process.env.PUBLIC_URL + "/"} className="text-[#2F8EA3]">
               {t("sign_in_here")}
             </a>
           </p>
