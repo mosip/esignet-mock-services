@@ -40,7 +40,7 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
   }, [langOptions]);
 
   const navList = [
-    { label: "home", url: "#" },
+    { label: "home", url: "\\" },
     { label: "polices", url: "#" },
     { label: "registration", url: "/registration" },
     { label: "gov_circulars", url: "#" },
@@ -78,7 +78,7 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
               return (
                 <div key={nav.label}>
                   <a
-                    href={window.origin + nav.url}
+                    href={process.env.PUBLIC_URL + nav.url}
                     className="text-gray-900 text-white hover:underline"
                     aria-current="page"
                   >

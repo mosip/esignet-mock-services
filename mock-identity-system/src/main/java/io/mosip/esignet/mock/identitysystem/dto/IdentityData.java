@@ -8,9 +8,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
+import io.mosip.esignet.mock.identitysystem.validator.IdData;
 import lombok.Data;
 
 @Data
+@IdData
 public class IdentityData {
 	
 	@NotBlank(message = ErrorConstants.INVALID_INDIVIDUAL_ID)
@@ -18,34 +20,46 @@ public class IdentityData {
 
 	@NotBlank(message = ErrorConstants.INVALID_PIN)
 	String pin;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_NAME)
+	List<LanguageValue> name;
 
-	@NotNull(message = ErrorConstants.INVALID_FULLNAME)
 	@Size(min = 1, message = ErrorConstants.INVALID_FULLNAME)
 	List<LanguageValue> fullName;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_GIVEN_NAME)
+	List<LanguageValue> givenName;
 
-	@NotNull(message = ErrorConstants.INVALID_GENDER)
+	@Size(min = 1, message = ErrorConstants.INVALID_FAMILY_NAME)
+	List<LanguageValue> familyName;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_MIDDLE_NAME)
+	List<LanguageValue> middleName;
+
+	@Size(min = 1, message = ErrorConstants.INVALID_NICK_NAME)
+	List<LanguageValue> nickName;
+
+	@Size(min = 1, message = ErrorConstants.INVALID_PREFERRED_USERNAME)
+	List<LanguageValue> preferredUsername;
+
 	@Size(min = 1, message = ErrorConstants.INVALID_GENDER)
 	List<LanguageValue> gender;
 
-	@NotBlank(message = ErrorConstants.INVALID_DATE_OF_BIRTH)
+	@Size(min = 1, message = ErrorConstants.INVALID_DATE_OF_BIRTH)
 	String dateOfBirth;
 
-	@NotNull(message = ErrorConstants.INVALID_STREET_ADDRESS)
 	@Size(min = 1, message = ErrorConstants.INVALID_STREET_ADDRESS)
 	List<LanguageValue> streetAddress;
 
-	@NotNull(message = ErrorConstants.INVALID_LOCALITY)
 	@Size(min = 1, message = ErrorConstants.INVALID_LOCALITY)
 	List<LanguageValue> locality;
 
-	@NotNull(message = ErrorConstants.INVALID_REGION)
 	@Size(min = 1, message = ErrorConstants.INVALID_REGION)
 	List<LanguageValue> region;
 
-	@NotBlank(message = ErrorConstants.INVALID_POSTAL_CODE)
+	@Size(min = 1, message = ErrorConstants.INVALID_POSTAL_CODE)
 	String postalCode;
 
-	@NotNull(message = ErrorConstants.INVALID_COUNTRY)
 	@Size(min = 1, message = ErrorConstants.INVALID_COUNTRY)
 	List<LanguageValue> country;
 
@@ -55,10 +69,16 @@ public class IdentityData {
 	@NotNull(message = ErrorConstants.INVALID_BIOMETRICS)
 	BiometricData individualBiometrics;
 
-	@NotBlank(message = ErrorConstants.INVALID_EMAIL)
+	@Size(min = 1, message = ErrorConstants.INVALID_EMAIL)
 	String email;
 
-	@NotBlank(message = ErrorConstants.INVALID_PHONE)
+	@Size(min = 1, message = ErrorConstants.INVALID_PHONE)
 	String phone;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_ZONEINFO)
+	String zoneInfo;
+	
+	@Size(min = 1, message = ErrorConstants.INVALID_LOCALE)
+	String locale;
 
 }

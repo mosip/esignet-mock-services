@@ -1,21 +1,16 @@
 import { useEffect, useState } from "react";
 import { Error } from "../common/Errors";
 import { useTranslation } from "react-i18next";
-import RedirectButton from "../common/RedirectButton";
 import { useSearchParams } from "react-router-dom";
+import clientDetails from "../constants/clientDetails";
 
-export default function Login({ clientService, i18nKeyPrefix = "login" }) {
-  const { t } = useTranslation("translation", {
+export default function Login({ i18nKeyPrefix = "login" }) {
+  const { i18n, t } = useTranslation("translation", {
     keyPrefix: i18nKeyPrefix,
   });
 
-  const { getURIforSignIn } = {
-    ...clientService,
-  };
-
   const [searchParams, setSearchParams] = useSearchParams();
   const [error, setError] = useState(null);
-  const uri_UI = getURIforSignIn();
 
   useEffect(() => {
     const getSearchParams = async () => {
@@ -27,7 +22,42 @@ export default function Login({ clientService, i18nKeyPrefix = "login" }) {
       }
     };
     getSearchParams();
+
+    renderSignInButton();
+
+    i18n.on("languageChanged", function (lng) {
+      renderSignInButton();
+    });
   }, []);
+
+  const renderSignInButton = () => {
+
+    const oidcConfig = {
+      authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
+      redirect_uri: clientDetails.redirect_uri_userprofile,
+      client_id: clientDetails.clientId,
+      scope: clientDetails.scopeUserProfile,
+      nonce: clientDetails.nonce,
+      state: clientDetails.state,
+      acr_values: clientDetails.acr_values,
+      claims_locales: clientDetails.claims_locales,
+      display: clientDetails.display,
+      prompt: clientDetails.prompt,
+      max_age: clientDetails.max_age,
+      ui_locales: i18n.language,
+      claims: JSON.parse(decodeURI(clientDetails.userProfileClaims)),
+    };
+
+    window.SignInWithEsignetButton?.init({
+      oidcConfig: oidcConfig,
+      buttonConfig: {
+        shape: "soft_edges",
+        labelText: t("sign_in_with"),
+        width: "100%"
+      },
+      signInElement: document.getElementById("sign-in-with-esignet"),
+    });
+  }
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -72,7 +102,7 @@ export default function Login({ clientService, i18nKeyPrefix = "login" }) {
         </div>
         <button
           type="button"
-          className="w-full justify-center text-white bg-[#2F8EA3] hover:bg-[#2F8EA3]/90 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center mr-2 mb-2"
+          className="w-full justify-center text-white bg-[#2F8EA3] hover:bg-[#2F8EA3]/90 font-medium rounded-md text-sm px-5 py-2.5 flex items-center mr-2 mb-2 h-11"
           onClick={handleLogin}
         >
           {t("submit")}
@@ -89,15 +119,16 @@ export default function Login({ clientService, i18nKeyPrefix = "login" }) {
           </div>
           <div className="flex-1 h-px bg-black" />
         </div>
-        <RedirectButton
-          redirectURL={uri_UI}
-          text={t("sign_in_with")}
-          logoPath="esignet_logo.png"
-        />
+
+        <div id="sign-in-with-esignet" className="w-full"></div>
+
         <div className="flex flex-justify mt-5 w-full items-center text-center">
           <p className="w-full text-center">
             {t("dont_have_existing_account")}&nbsp;
-            <a href="/signup" className="text-[#2F8EA3]">
+            <a
+              href={process.env.PUBLIC_URL + "/signup"}
+              className="text-[#2F8EA3]"
+            >
               {t("sign_up_here")}
             </a>
           </p>
