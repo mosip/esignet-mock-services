@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import foundation.identity.jsonld.ConfigurableDocumentLoader;
 import foundation.identity.jsonld.JsonLDException;
@@ -28,9 +27,7 @@ import info.weboftrust.ldsignatures.LdProof;
 import info.weboftrust.ldsignatures.canonicalizer.URDNA2015Canonicalizer;
 import io.mosip.esignet.api.dto.VCRequestDto;
 import io.mosip.esignet.api.dto.VCResult;
-import io.mosip.esignet.api.exception.KycAuthException;
 import io.mosip.esignet.api.spi.VCIssuancePlugin;
-import io.mosip.esignet.api.util.ErrorConstants;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.signature.dto.JWTSignatureRequestDto;
 import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
@@ -78,7 +75,7 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 		formattedMap.put("age", 30);
 
 		Map<String, Object> verCredJsonObject = new HashMap<>();
-		verCredJsonObject.put("@context", "https://www.w3.org/2018/credentials/v1");
+		verCredJsonObject.put("@context", Arrays.asList("https://www.w3.org/2018/credentials/v1"));
 		verCredJsonObject.put("type", Arrays.asList("VerifiableCredential"));
 		verCredJsonObject.put("id", "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5");
 		verCredJsonObject.put("issuer", "did:mock:123456789");
