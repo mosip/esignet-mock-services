@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -142,13 +143,15 @@ public class MockKeyBindingWrapperService implements KeyBinder {
             throw new KeyBindingException("auth_failed", e.getMessage());
         }
 
-        //TODO
         //create a signed certificate, with cn as username
         //certificate validity based on configuration
         try {
             RSAKey rsaKey = RSAKey.parse(new JSONObject(publicKeyJWK));
             X509V3CertificateGenerator generator = new X509V3CertificateGenerator();
-            generator.setSubjectDN(new X500Principal("CN=" + identityData.getFullName().get(0).getValue()));
+            String username = !CollectionUtils.isEmpty(identityData.getName()) ?
+                    identityData.getName().get(0).getValue() : (!CollectionUtils.isEmpty(identityData.getFullName()) ?
+                    identityData.getFullName().get(0).getValue() : "mock-user");
+            generator.setSubjectDN(new X500Principal("CN=" + username));
             generator.setIssuerDN(new X500Principal("CN=Mock-IDA"));
             LocalDateTime notBeforeDate = DateUtils.getUTCCurrentDateTime();
             LocalDateTime notAfterDate = notBeforeDate.plus(expireInDays, ChronoUnit.DAYS);
