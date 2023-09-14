@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.NotImplementedException;
+import io.mosip.esignet.api.exception.VCIExchangeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -53,7 +53,7 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public VCResult getVerifiableCredentialWithLinkedDataProof(VCRequestDto vcRequestDto, String holderId,
-			Map<String, Object> identityDetails) {
+			Map<String, Object> identityDetails) throws VCIExchangeException {
 		JsonLDObject vcJsonLdObject = null;
 		try {
 			VCResult vcResult = new VCResult();
@@ -64,7 +64,7 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 		} catch (Exception e) {
 			log.error("Failed to build mock VC", e);
 		}
-		return null;
+		throw new VCIExchangeException();
 	}
 
 	private JsonLDObject buildDummyJsonLDWithLDProof(String holderId)
@@ -119,8 +119,8 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 
 	@Override
 	public VCResult<String> getVerifiableCredential(VCRequestDto vcRequestDto, String holderId,
-			Map<String, Object> identityDetails) {
-		throw new NotImplementedException("This method is not implemented");
+			Map<String, Object> identityDetails) throws VCIExchangeException {
+		throw new VCIExchangeException("not_implemented");
 	}
 
 }
