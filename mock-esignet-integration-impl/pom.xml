@@ -56,7 +56,7 @@
 			<artifactId>lombok</artifactId>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.mosip.esignet</groupId>
     		<artifactId>esignet-integration-api</artifactId>
