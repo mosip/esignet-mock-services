@@ -14,7 +14,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.NotImplementedException;
+import io.mosip.esignet.api.exception.VCIExchangeException;
+import io.mosip.esignet.api.util.ErrorConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -50,10 +51,9 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 
 	public static final String OIDC_SERVICE_APP_ID = "OIDC_SERVICE";
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public VCResult getVerifiableCredentialWithLinkedDataProof(VCRequestDto vcRequestDto, String holderId,
-			Map<String, Object> identityDetails) {
+	public VCResult<JsonLDObject> getVerifiableCredentialWithLinkedDataProof(VCRequestDto vcRequestDto, String holderId,
+			Map<String, Object> identityDetails) throws VCIExchangeException {
 		JsonLDObject vcJsonLdObject = null;
 		try {
 			VCResult vcResult = new VCResult();
@@ -64,7 +64,7 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 		} catch (Exception e) {
 			log.error("Failed to build mock VC", e);
 		}
-		return null;
+		throw new VCIExchangeException();
 	}
 
 	private JsonLDObject buildDummyJsonLDWithLDProof(String holderId)
@@ -72,13 +72,14 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 		Map<String, Object> formattedMap = new HashMap<>();
 		formattedMap.put("id", holderId);
 		formattedMap.put("name", "John Doe");
-		formattedMap.put("age", 30);
+		formattedMap.put("email", "john.doe@mail.com");
+		formattedMap.put("gender", "Male");
 
 		Map<String, Object> verCredJsonObject = new HashMap<>();
-		verCredJsonObject.put("@context", Arrays.asList("https://www.w3.org/2018/credentials/v1"));
-		verCredJsonObject.put("type", Arrays.asList("VerifiableCredential"));
+		verCredJsonObject.put("@context", Arrays.asList("https://www.w3.org/2018/credentials/v1", "https://schema.org/"));
+		verCredJsonObject.put("type", Arrays.asList("VerifiableCredential", "Person"));
 		verCredJsonObject.put("id", "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5");
-		verCredJsonObject.put("issuer", "did:mock:123456789");
+		verCredJsonObject.put("issuer", "did:example:123456789");
 		verCredJsonObject.put("issuanceDate", getUTCDateTime());
 		verCredJsonObject.put("credentialSubject", formattedMap);
 
@@ -119,8 +120,8 @@ public class MockVCIssuancePlugin implements VCIssuancePlugin {
 
 	@Override
 	public VCResult<String> getVerifiableCredential(VCRequestDto vcRequestDto, String holderId,
-			Map<String, Object> identityDetails) {
-		throw new NotImplementedException("This method is not implemented");
+			Map<String, Object> identityDetails) throws VCIExchangeException {
+		throw new VCIExchangeException(ErrorConstants.NOT_IMPLEMENTED);
 	}
 
 }
