@@ -7,7 +7,7 @@
     "help": "يساعد",
     "language": "لغة"
   },
-  "userprofile": {
+  "simRegistrationCompleted": {
     "welcome_msg": "مرحباً",
     "loading_msg": "تحميل! انتظر من فضلك...",
     "profile_picture": "الصوره الشخصيه",
@@ -19,9 +19,6 @@
     "fetch_details": "قم بالتسجيل للحصول على بطاقة SIM الإلكترونية باستخدام بطاقة الهوية الوطنية"
   },
   "error": {
-    "sign_in_failed": "المصادقة فشلت! حاول تسجيل الدخول باستخدام e-Signet",
-    "sign_up_failed": "فشل انشاء الحساب! حاول تسجيل الدخول باستخدام e-Signet",
-    "invalid_details": "تفاصيل غير صحيحة! حاول جلب التفاصيل من e-Signet",
     "authCode_missing": "AuthCode مفقود",
     "no_response_msg": "لا يوجد رد",
     "no_devices_found_msg": "لم يتم العثور علي الجهاز. يرجى التحقق من الاتصال وإعادة المحاولة.",

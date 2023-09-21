@@ -1,9 +1,0 @@
-{
-  "colors": {
-    "backgroundColor": "#F7FBFC"
-  },
-  "images" : {
-    "telecomBackground": "./images/5g.png",
-    "telecomLogo": "./images/fastline.png"
-  }
-}

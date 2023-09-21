@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
-import themes from "../components/theme.json"
 
 export default function NavHeader({ langOptions, i18nKeyPrefix = "background" }) {
   const { t, i18n } = useTranslation("translation", {
@@ -48,8 +47,6 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
     { label: "help", url: "#" },
   ];
 
-  const telecomLogo = process.env.REACT_APP_TELECOM_LOGO_URL;
-
   return (
     <nav className="bg-white border-gray-500">
       <div className="flex items-center grid grid-cols-3 md:order-2 justify-center mb-2 mt-2">
@@ -68,14 +65,14 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
       </div>
       <div className="bg-[#FFFFFF] shadow-lg border-[#707070] px-2 sm:px-4 py-3">
         <div className="flex items-center">
-          <img src={themes.images.telecomLogo} alt={t("fastline")} className="ml-8 mr-8" />
+          <img src="images/company_logo.png" alt={t("fastline")} className="ml-8 mr-8" />
           <div className="flex w-full justify-end space-x-8 ml-8 mr-8 text-xl font-medium">
             {navList.map((nav) => {
               return (
                 <div key={nav.label}>
                   <a
                     href={process.env.PUBLIC_URL + nav.url}
-                    className="text-[#1C1C1C] hover:text-[#014AE7]"
+                    className="buttonColor buttonColor:hover"
                     aria-current="page"
                   >
                     {t(nav.label)}

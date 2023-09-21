@@ -135,7 +135,7 @@ export default function Registration({
           {t("new_sim")}
         </h1>
         <div className="flex items-center justify-center">
-          <img src="../images/sim.png" alt={t("sim")} />
+          <img src="images/sim_image.png" alt={t("sim")} className="object-contain rtl:scale-x-[-1]" />
         </div>
         <div id="sign-in-with-esignet" className="flex items-center justify-center"></div>
 

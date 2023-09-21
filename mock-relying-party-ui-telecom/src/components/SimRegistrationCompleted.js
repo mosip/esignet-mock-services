@@ -6,9 +6,9 @@ import { LoadingStates as states } from "../constants/states";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { useTranslation } from "react-i18next";
 
-export default function UserProfile({
+export default function SimRegistrationCompleted({
   relyingPartyService,
-  i18nKeyPrefix = "userprofile",
+  i18nKeyPrefix = "simRegistrationCompleted",
 }) {
   const { t } = useTranslation("translation", {
     keyPrefix: i18nKeyPrefix,
@@ -44,7 +44,7 @@ export default function UserProfile({
       }
     };
     getSearchParams();
-    
+
   }, []);
 
   //Handle Login API Integration here
@@ -95,10 +95,10 @@ export default function UserProfile({
                 }
               />
             </div>
-            <div className="p-2 m-8 text-center bg-[#FFFAF0] rounded-md text-[#764B00] font-medium justify-center">
+            <div className="p-2 m-8 text-center rounded-md font-medium justify-center secondaryBackgroundColor secondaryTextColor">
               {t("telecom_msg")}
             </div>
-            <div className="flex text-center justify-center text-[#2C2C2C]">
+            <div className={"flex text-center justify-center primaryTextColor"}>
               <p dangerouslySetInnerHTML={{ __html: t("further_steps") }}></p>
             </div>
           </>

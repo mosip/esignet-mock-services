@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import NavHeader from "./NavHeader";
-import themes from "../components/theme.json"
 
 export default function Background({
   component,
@@ -15,12 +14,12 @@ export default function Background({
     <>
       <section className="flex flex-col h-screen">
         <NavHeader langOptions={langOptions} />
-        <div className="flex flex-grow md:flex-row flex-col h-fit" style={{ backgroundColor: themes.colors.backgroundColor }}>
+        <div className="flex flex-grow md:flex-row flex-col h-fit backgroundColor">
           <div className="flex flex-col md:w-1/2">
             <div className="h-3/5 mt-5 flex justify-center h-96">
               <img
                 alt="util"
-                src={themes.images.telecomBackground}
+                src="images/backgroundImage.png"
               />
             </div>
           </div>

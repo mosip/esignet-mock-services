@@ -1,0 +1,23 @@
+.backgroundColor {
+  background-color: #f7fbfc;
+}
+
+.buttonColor {
+  color: #1c1c1c;
+}
+
+.buttonColor:hover {
+  color: #014ae7;
+}
+
+.primaryTextColor {
+  color: #2c2c2c;
+}
+
+.secondaryTextColor {
+  color: #764b00;
+}
+
+.secondaryBackgroundColor {
+  background-color: #fffaf0;
+}

@@ -13,7 +13,7 @@ i18n
   // init i18next
   .init({
     debug: false,
-    fallbackLng: "en", //window["envConfigs"].defaultLang, //default language
+    fallbackLng: process.env.REACT_APP_DEFAULT_LANGUAGE, //window["envConfigs"].defaultLang, //default language
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },

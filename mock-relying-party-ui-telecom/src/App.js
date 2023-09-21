@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import langConfigService from "./services/langConfigService";
 import Background from "./components/Background";
-import UserProfilePage from "./pages/UserProfile";
+import SimRegistrationCompletedPage from "./pages/SimRegistrationCompleted";
 
 function App() {
   const { i18n } = useTranslation();
@@ -49,8 +49,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path={process.env.PUBLIC_URL + "/"} element={<Background langOptions={langOptions} />} />
+          <Route path={process.env.PUBLIC_URL + "/sim-registration-completed"} element={<SimRegistrationCompletedPage langOptions={langOptions} />} />
           <Route path={process.env.PUBLIC_URL + "/sim-register"} element={<RegistrationPage langOptions={langOptions} />} />
-          <Route path={process.env.PUBLIC_URL + "/userprofile"} element={<UserProfilePage langOptions={langOptions} />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer position="top-center" hideProgressBar={true} pauseOnHover={false} draggable={false} />

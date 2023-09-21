@@ -7,7 +7,7 @@
     "help": "Help",
     "language": "Language"
   },
-  "userprofile": {
+  "simRegistrationCompleted": {
     "welcome_msg": "Welcome",
     "loading_msg": "Loading! Please wait...",
     "profile_picture": "profile picture",
@@ -19,9 +19,6 @@
     "fetch_details": "Register for e-SIM Using National ID"
   },
   "errors": {
-    "sign_in_failed": "Authentication failed! Try sign in with e-Signet",
-    "sign_up_failed": "Sign Up failed! Try sign in with e-Signet",
-    "invalid_details": "Invalid details! Try fetching details from e-Signet",
     "authCode_missing": "AuthCode Missing",
     "no_response_msg": "No Response",
     "no_devices_found_msg": "Device Not Found. Please Check the Connectivity and Retry.",
