@@ -91,8 +91,8 @@ jobs:
         include:
           - SERVICE_LOCATION: 'mock-relying-party-service'
             SERVICE_NAME: 'mock-relying-party-service'
-          - - SERVICE_LOCATION: 'mock-relying-party-ui'
-              SERVICE_NAME: 'mock-relying-party-ui'
+          - SERVICE_LOCATION: 'mock-relying-party-ui'
+            SERVICE_NAME: 'mock-relying-party-ui'
       fail-fast: false
     name: ${{ matrix.SERVICE_NAME }}
     uses: mosip/kattu/.github/workflows/docker-build.yml@master
