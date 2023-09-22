@@ -51,8 +51,8 @@ service:
 
 image:
   registry: docker.io
-  repository: mosipqa/mock-relying-party-ui
-  tag: develop
+  repository: mosipdev/mock-relying-party-ui-telecom
+  tag: demo-ES-278
 
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
