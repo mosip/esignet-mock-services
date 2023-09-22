@@ -48,9 +48,8 @@ function App() {
     <div dir={dir} className="h-screen">
       <BrowserRouter>
         <Routes>
-          <Route path={process.env.PUBLIC_URL + "/"} element={<Background langOptions={langOptions} />} />
+          <Route path={process.env.PUBLIC_URL + "/"} element={<RegistrationPage langOptions={langOptions} />} />
           <Route path={process.env.PUBLIC_URL + "/sim-registration-completed"} element={<SimRegistrationCompletedPage langOptions={langOptions} />} />
-          <Route path={process.env.PUBLIC_URL + "/sim-register"} element={<RegistrationPage langOptions={langOptions} />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer position="top-center" hideProgressBar={true} pauseOnHover={false} draggable={false} />
