@@ -42,7 +42,7 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
   const navList = [
     { label: "prepaid", url: "#" },
     { label: "postpaid", url: "#" },
-    { label: "new_sim_connection", url: "/sim-register" },
+    { label: "new_sim_connection", url: "/" },
     { label: "explore", url: "#" },
     { label: "help", url: "#" },
   ];

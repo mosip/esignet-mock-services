@@ -74,7 +74,7 @@ export default function Registration({
     window.SignInWithEsignetButton?.init({
       oidcConfig: oidcConfig,
       buttonConfig: {
-        labelText: t("fetch_details"),
+        labelText: t("register_for_sim"),
         customStyle: {
           outerDivStyleStandard: {
             position: "relative",

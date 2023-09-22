@@ -44,7 +44,6 @@ export default function SimRegistrationCompleted({
       }
     };
     getSearchParams();
-
   }, []);
 
   //Handle Login API Integration here
@@ -99,7 +98,15 @@ export default function SimRegistrationCompleted({
               {t("telecom_msg")}
             </div>
             <div className={"flex text-center justify-center primaryTextColor"}>
-              <p dangerouslySetInnerHTML={{ __html: t("further_steps") }}></p>
+              <span>{t("please_visit_our")}</span>&nbsp;
+              <a
+                href="https://docs.esignet.io"
+                className="text-[#0953FA] font-medium"
+              >
+                {t("esim_website")}
+              </a>
+              &nbsp;
+              <span>{t("for_next_steps")}</span>
             </div>
           </>
         )}
