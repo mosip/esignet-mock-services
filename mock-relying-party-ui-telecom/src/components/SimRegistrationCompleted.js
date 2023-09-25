@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Error } from "../common/Errors";
 import clientDetails from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
@@ -23,12 +23,34 @@ export default function SimRegistrationCompleted({
   const [userInfo, setUserInfo] = useState(null);
   const [status, setStatus] = useState(states.LOADING);
 
+  const navigate = useNavigate();
+
+  const navigateToSimRegistration = (errorCode, errorDescription) => {
+    let params = "?";
+    if (errorDescription) {
+      params = params + "error_description=" + errorDescription + "&";
+    }
+
+    //REQUIRED
+    params = params + "error=" + errorCode;
+
+    navigate(process.env.PUBLIC_URL + "/" + params, { replace: true });
+  };
+
   useEffect(() => {
     const getSearchParams = async () => {
       let authCode = searchParams.get("code");
+      let errorCode = searchParams.get("error");
+      let error_desc = searchParams.get("error_description");
+
+      if (errorCode) {
+        navigateToSimRegistration(errorCode, error_desc);
+        return;
+      }
 
       if (authCode) {
         const storedUserInfo = JSON.parse(localStorage.getItem("userInfo"));
+
         if (storedUserInfo) {
           setUserInfo(storedUserInfo);
           setStatus(states.LOADED);
