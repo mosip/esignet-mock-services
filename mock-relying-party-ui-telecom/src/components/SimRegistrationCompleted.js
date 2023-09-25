@@ -25,7 +25,7 @@ export default function SimRegistrationCompleted({
 
   const navigate = useNavigate();
 
-  const navigateToSimRegistration = (errorCode, errorDescription) => {
+  const navigateToHome = (errorCode, errorDescription) => {
     let params = "?";
     if (errorDescription) {
       params = params + "error_description=" + errorDescription + "&";
@@ -44,7 +44,7 @@ export default function SimRegistrationCompleted({
       let error_desc = searchParams.get("error_description");
 
       if (errorCode) {
-        navigateToSimRegistration(errorCode, error_desc);
+        navigateToHome(errorCode, error_desc);
         return;
       }
 
