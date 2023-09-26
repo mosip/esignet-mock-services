@@ -86,8 +86,8 @@ RUN apt-get -y update \
     && apt-get install -y wget unzip zip \
     && groupadd -g ${container_user_gid} ${container_user_group} \
     && useradd -u ${container_user_uid} -g ${container_user_group} -s /bin/sh -m ${container_user} \
-    && mkdir -p /var/run/nginx /var/tmp/nginx ${work_dir}/locales\
-    && chown -R ${container_user}:${container_user} /usr/share/nginx /var/run/nginx /var/tmp/nginx ${work_dir}/locales
+    && mkdir -p /var/run/nginx /var/tmp/nginx ${i18n_path}\
+    && chown -R ${container_user}:${container_user} /usr/share/nginx /var/run/nginx /var/tmp/nginx ${i18n_path}
 
 ADD configure_start.sh configure_start.sh
 
