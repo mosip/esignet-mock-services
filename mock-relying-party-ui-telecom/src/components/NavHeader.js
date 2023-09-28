@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
 
-export default function NavHeader({ langOptions, i18nKeyPrefix = "background" }) {
+export default function NavHeader({ component, langOptions, i18nKeyPrefix = "background" }) {
   const { t, i18n } = useTranslation("translation", {
     keyPrefix: i18nKeyPrefix,
   });
@@ -49,7 +49,7 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
 
   return (
     <nav className="bg-white border-gray-500">
-      <div className="flex items-center grid grid-cols-3 md:order-2 justify-center mb-2 mt-2">
+      <div className="flex items-center grid grid-cols-3 md:order-2 justify-center">
         <div className="flex justify-end col-start-3 mr-3">
           <img src="images/language_icon.png" alt={t("language")} className="mr-2" />
           <Select
@@ -65,8 +65,8 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
       </div>
       <div className="bg-[#FFFFFF] shadow-lg border-[#707070] px-2 sm:px-4 py-3">
         <div className="flex items-center">
-          <img src="images/company_logo.png" alt={t("fastline")} className="ml-8 mr-8" />
-          <div className="flex w-full justify-end space-x-8 ml-8 mr-8 text-xl font-medium">
+          <img src="images/company_logo.png" alt={t("fastline")} className="justify-evenly ml-32 mr-32" />
+          <div className="flex w-full space-x-8 ml-8 mr-8 text-xl font-medium">
             {navList.map((nav) => {
               return (
                 <div key={nav.label}>
@@ -82,6 +82,9 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
             })}
           </div>
         </div>
+      </div>
+      <div className="lg:flex-grow lg:px-24 md:px-16 backgroundColor">
+        {component}
       </div>
     </nav>
   );

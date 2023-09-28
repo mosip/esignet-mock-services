@@ -6,7 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import langConfigService from "./services/langConfigService";
-import Background from "./components/Background";
 import SimRegistrationCompletedPage from "./pages/SimRegistrationCompleted";
 
 function App() {

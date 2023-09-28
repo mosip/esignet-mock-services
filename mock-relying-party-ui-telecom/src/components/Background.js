@@ -12,7 +12,7 @@ export default function Background({
 
   return (
     <>
-      <section className="flex flex-col h-screen">
+      <section className="flex flex-col h-[calc(100%-99px)]">
         <NavHeader langOptions={langOptions} />
         <div className="flex flex-grow md:flex-row flex-col h-fit backgroundColor">
           <div className="flex flex-col md:w-1/2">

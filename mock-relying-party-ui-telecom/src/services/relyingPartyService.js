@@ -33,7 +33,32 @@ const post_fetchUserInfo = async (
   return response.data;
 };
 
+const get_rechargeDetails= () => {
+  return {
+    rechargePacks: [
+      {
+        mobileData: "1.5gb/day",
+        callsAndMessages: "unlimited_calls_and_messages",
+        packDescription: [
+          "best_value_plan",
+          "unlimted_calls",
+          "surf_internet"
+        ],
+      },
+      {
+        mobileData: "2gb/day",
+        callsAndMessages: "unlimited_calls_and_messages",
+        packDescription: [
+          "best_value_plan",
+          "unlimted_calls",
+          "surf_internet"
+        ],
+      },
+    ],
+  };
+};
 const relyingPartyService = {
   post_fetchUserInfo,
+  get_rechargeDetails
 };
 export default relyingPartyService;
