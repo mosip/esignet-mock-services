@@ -4,9 +4,22 @@
     "loading_msg": "تحميل! انتظر من فضلك...",
     "profile_picture": "الصوره الشخصيه",
     "telecom_msg": "تم إرسال رقم هاتفك الجديد إلى عنوان بريدك الإلكتروني",
-    "please_visit_our":"يرجى زيارة موقعنا",
-    "esim_website":"موقع eSIM",
-    "for_next_steps":"للخطوات القادمة."
+    "please_visit_our": "يرجى زيارة موقعنا",
+    "esim_website": "موقع eSIM",
+    "for_next_steps": "للخطوات القادمة.",
+    "initiate_activation": "بدء التنشيط ،",
+    "refuel_your_digital_life": "تزويد حياتك الرقمية",
+    "1.5gb/day": "1.5 جيجابايت/يوم",
+    "2gb/day": "2 جيجابايت/يوم",
+    "unlimited_calls_and_messages": "مكالمات غير محدودة ورسائل نصية",
+    "best_value_plan": "أفضل خطة قيمة",
+    "unlimted_calls": "تحدث إلى أحبائك لساعات مع مكالمات صوتية غير محدودة",
+    "surf_internet": "تصفح الإنترنت أو الاستمتاع بوسائل التواصل الاجتماعي أو التواصل مع الأصدقاء عبر الإنترنت",
+    "view_more": "عرض المزيد",
+    "go_for_unlimited_entertainment": "اذهب للترفيه غير المحدود",
+    "contents_available": "شاهد أكثر من 900 قناة تلفزيونية ، ودفق المحتوى بأكثر من 16 لغة ، وأكثر من ذلك بكثير على تطبيق Fastline.",
+    "explore": "يستكشف",
+    "sign_out": "خروج"
   },
   "background": {
     "home": "مسكن",
@@ -115,7 +128,7 @@
     "name": "اسم",
     "application_number": "رقم الطلب",
     "appointment_details": "تفاصيل الموعد",
-    "appointment_confirmation_date":"4 مارس 2023",
+    "appointment_confirmation_date": "4 مارس 2023",
     "home": "بيت",
     "location": "# 45/2 ، كولومبيا آسيا ، ماراثاهالي - طريق سارجابور ، مقابل إبلور ، بيلاندور ، بنغالورو ، كارناتاكا -560102"
   },
@@ -150,7 +163,6 @@
     "hide_raw_user_info": "إخفاء معلومات المستخدم الأولية",
     "new_sim": "هل تبحث عن شريحة SIM جديدة؟",
     "register_for_sim": "قم بالتسجيل للحصول على بطاقة SIM الإلكترونية باستخدام بطاقة الهوية الوطنية"
-  
   },
   "error": {
     "sign_in_failed": "المصادقة فشلت! حاول تسجيل الدخول باستخدام e-Signet",

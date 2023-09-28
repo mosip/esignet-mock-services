@@ -33,7 +33,7 @@ export default function Registration({
       let error_desc = searchParams.get("error_description");
 
       if (errorCode) {
-        setError({ errorCode: errorCode, errorMsg: error_desc });
+        setError({ errorCode: errorCode, errorMsg: error_desc, showToast: true });
         setStatus(states.ERROR);
         return;
       }
@@ -78,10 +78,10 @@ export default function Registration({
         customStyle: {
           outerDivStyleStandard: {
             position: "relative",
-            width: "250px",
+            width: "fit-content",
             border: "1px solid #0E3572",
             background: "#0E3572",
-            padding: "0.625rem 1.25rem",
+            padding: "0.625rem 1.5rem",
             display: "flex",
             "border-radius": "0.375rem",
             "text-decoration": "none",
@@ -139,13 +139,15 @@ export default function Registration({
         </div>
         <div id="sign-in-with-esignet" className="flex items-center justify-center"></div>
 
-        {status === states.LOADING && (
-          <LoadingIndicator size="medium" message={t("loading_msg")} />
-        )}
+        <div className="p-4">
+          {status === states.LOADING && (
+            <LoadingIndicator size="medium" message={t("loading_msg")} />
+          )}
 
-        {error && (
-          <Error errorCode={error.errorCode} errorMsg={error.errorMsg} />
-        )}
+          {error && (
+            <Error errorCode={error.errorCode} errorMsg={error.errorMsg} showToast={error.showToast}/>
+          )}
+        </div>
       </div>
     </>
   );

@@ -1,11 +1,11 @@
 import React from "react";
 import relyingPartyService from "../services/relyingPartyService";
-import Background from "../components/Background";
 import SimRegistrationCompleted from "../components/SimRegistrationCompleted";
+import NavHeader from "../components/NavHeader";
 
 export default function SimRegistrationCpmpletedPage({ langOptions }) {
   return (
-    <Background
+    <NavHeader
       component={React.createElement(SimRegistrationCompleted, {
         relyingPartyService: relyingPartyService,
       })}
