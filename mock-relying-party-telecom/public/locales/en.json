@@ -1,18 +1,17 @@
 {
   "background": {
-    "home": "Home",
-    "polices": "Polices",
     "departments": "Departments",
-    "gov_circulars": "Gov Circulars",
-    "recruitment": "Recruitment",
-    "about_us": "About Us",
-    "contact_us": "Contact Us",
     "health_portal": "Health Portal",
     "confirmed": "Confirmed",
     "recovered": "Recovered",
     "active": "Active",
-    "registration": "Registration",
-    "language": "Language"
+    "language": "Language",
+    "prepaid": "Prepaid",
+    "postpaid": "Postpaid",
+    "new_sim_connection": "New Sim Connection",
+    "explore": "Explore",
+    "help": "Help",
+    "background_image_alt": "Background Image of Platform"
   },
   "login": {
     "sign_in_with_health_portal": "Sign In to the Health portal",
@@ -22,7 +21,8 @@
     "or": "OR",
     "sign_in_with": "Sign In with e-Signet",
     "dont_have_existing_account": "Don't have an existing account?",
-    "sign_up_here": "Sign Up here"
+    "sign_up_here": "Sign Up here",
+    "header": "Looking for New SIM ?"
   },
   "signup": {
     "sign_up_with_health_portal": "Sign Up to the Health portal",

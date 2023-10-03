@@ -1,0 +1,9 @@
+:root {
+  --mrp-brand-logo-url: url("../public/images/fast_line.png");
+  --mrp-background-logo-url: url("../public/images/fast_line_illustration.png");
+  --mrp-login-logo-url: url("../public/images/new_sim.png");
+  --mrp-background-color: #f7fbfc;
+  --mrp-navheader-list-text-color: #1c1c1c;
+  --mrp-navheader-list-text-color-active: #014ae7;
+  --mrp-login-header-text-color: #1c1c1c;
+}

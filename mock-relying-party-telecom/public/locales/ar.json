@@ -1,18 +1,17 @@
 {
   "background": {
-    "home": "مسكن",
-    "polices": "شرطة",
     "departments": "الإدارات",
-    "gov_circulars": "التعاميم الحكومية",
-    "recruitment": "توظيف",
-    "about_us": "معلومات عنا",
-    "contact_us": "اتصل بنا",
     "health_portal": "اتصل بنا",
     "confirmed": "مؤكد",
     "recovered": "تعافى",
     "active": "نشيط",
-    "registration": "تسجيل",
-    "language": "لغة"
+    "language": "لغة",
+    "prepaid": "Prepaid",
+    "postpaid": "Postpaid",
+    "new_sim_connection": "New Sim Connection",
+    "explore": "Explore",
+    "help": "Help",
+    "background_image_alt": "Background Image of Platform"
   },
   "login": {
     "sign_in_with_health_portal": "قم بتسجيل الدخول إلى بوابة الصحة",
@@ -22,7 +21,8 @@
     "or": "أو",
     "sign_in_with": "تسجيل الدخول باستخدام e-Signet",
     "dont_have_existing_account": "ليس لديك حساب موجود؟",
-    "sign_up_here": "سجل هنا"
+    "sign_up_here": "سجل هنا",
+    "header": "Looking for New SIM ?"
   },
   "signup": {
     "sign_up_with_health_portal": "قم بالتسجيل في بوابة الصحة",

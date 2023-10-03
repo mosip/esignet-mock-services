@@ -1,0 +1,38 @@
+@import "variables.css";
+
+.mrp-section-background {
+  background-color: var(--mrp-background-color);
+}
+
+.mrp-brand-logo {
+  content: var(--mrp-brand-logo-url);
+}
+
+.mrp-background-logo {
+  content: var(--mrp-background-logo-url);
+}
+
+.mrp-login-logo {
+  content: var(--mrp-login-logo-url);
+  height: 244px;
+  width: 244px;
+}
+
+.mrp-navbar-header-list {
+  font: normal normal 500 14px/17px Inter;
+  letter-spacing: 0px;
+  color: var(--mrp-navheader-list-text-color);
+  opacity: 1;
+}
+
+.mrp-navbar-header-list:active {
+  font-weight: bold;
+  color: var(--mrp-navheader-list-text-color-active);
+}
+
+.mrp-login-header {
+  font: normal normal bold 22px/26px Inter;
+  letter-spacing: 0px;
+  color: #1c1c1c;
+  opacity: 1;
+}

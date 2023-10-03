@@ -12,46 +12,21 @@ export default function Background({
 
   return (
     <>
-      <section className="flex flex-col h-screen">
+      <section className="flex flex-col h-screen mrp-section-background">
         <NavHeader langOptions={langOptions} />
-        <div className="flex flex-grow md:flex-row flex-col h-fit">
-          <div className="flex flex-col shadow-lg rounded-tr-[64px] bg-[#FAFAFC] md:w-1/2">
-            <div className="h-3/5 mt-5 flex justify-center h-96">
+        <div className="container flex mx-auto px-5 sm:flex-row flex-col">
+          <div className="flex justify-center m-10 lg:mt-20 mb:mt-0 lg:w-1/2 md:w-1/2 md:block sm:w-1/2 sm:block hidden w-5/6 mt-20 mb-10 md:mb-0">
+            <div>
               <img
-                alt="util"
-                className="rtl:scale-x-[-1]"
-                src="images/illustartion.png"
+                className="mrp-background-logo object-contain rtl:scale-x-[-1]"
+                alt={t("background_image_alt")}
               />
             </div>
-            <div className="flex w-full justify-center mt-8">
-              <div className="flex grid grid-cols-3 gap-8">
-                <div className="flex flex-col justify-center bg-neutral-300 rounded w-32 h-24">
-                  <span className="font-bold flex justify-center">
-                    {t("confirmed")}
-                  </span>
-                  <span className="font-bold flex justify-center">
-                    39,67,888
-                  </span>
-                </div>
-                <div className="flex flex-col justify-center bg-[#2F8EA3] rounded w-32 h-24">
-                  <span className="font-bold flex justify-center">
-                    {t("active")}
-                  </span>
-                  <span className="font-bold flex justify-center">5,000</span>
-                </div>
-                <div className="flex flex-col justify-center bg-neutral-300 rounded w-32 h-24">
-                  <span className="font-bold flex justify-center">
-                    {t("recovered")}
-                  </span>
-                  <span className="font-bold flex justify-center">
-                    39,67,888
-                  </span>
-                </div>
-              </div>
-            </div>
           </div>
-          <div className="lg:flex-grow md:w-1/2 lg:px-24 md:px-16 flex flex-col md:items-start md:text-left">
-            {component}
+          <div className="rounded-[20px] shadow-lg mt-[60px] pb-4 w-full md:w-3/6 sm:w-1/2 sm:max-w-sm bg-white">
+            <div className="flex flex-col flex-grow lg:px-5 md:px-4 sm:px-3 px-3">
+              {component}
+            </div>
           </div>
         </div>
       </section>
