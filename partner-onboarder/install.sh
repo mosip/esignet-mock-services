@@ -78,15 +78,6 @@ function installing_onboarder() {
     --version $CHART_VERSION \
     --wait --wait-for-jobs
 
-    private_public_key_pair=$(kubectl logs -n $NS job/esignet-demo-oidc-partner-onboarder-demo-oidc | grep -Pzo "(?s)Private and Public KeyPair:\s*\K.*?(?=\s*mpartner default demo OIDC clientId:)" | tr -d '\0' | tr -d '\n')
-    echo Encoded Private and Public Key Pair: $private_public_key_pair
-    kubectl patch secret mock-relying-party-service-secrets -n $NS -p '{"data":{"client-private-key":"'$(echo -n "$private_public_key_pair" | base64 | tr -d '\n')'"}}'
-    kubectl rollout restart deployment -n esignet mock-relying-party-service
-    demo_oidc_clientid=$(kubectl logs -n $NS job/esignet-demo-oidc-partner-onboarder-demo-oidc | grep "mpartner default demo OIDC clientId:" | awk '{sub("clientId:", ""); print $5}')
-    echo mpartner default demo OIDC clientId is: $demo_oidc_clientid
-    kubectl -n esignet set env deployment/mock-relying-party-ui CLIENT_ID=$demo_oidc_clientid
-
-
     echo Reports are moved to S3 under onboarder bucket
     return 0
   fi
