@@ -11,7 +11,8 @@
     "new_sim_connection": "New Sim Connection",
     "explore": "Explore",
     "help": "Help",
-    "background_image_alt": "Background Image of Platform"
+    "background_image_alt": "Background Image of Platform",
+    "username_alt": "Username Alternate"
   },
   "login": {
     "sign_in_with_health_portal": "قم بتسجيل الدخول إلى بوابة الصحة",
@@ -19,10 +20,10 @@
     "password": "كلمة المرور",
     "submit": "إرسال",
     "or": "أو",
-    "sign_in_with": "تسجيل الدخول باستخدام e-Signet",
+    "sign_in_with": "باستخدام الهوية الوطنية esim سجل في",
     "dont_have_existing_account": "ليس لديك حساب موجود؟",
     "sign_up_here": "سجل هنا",
-    "header": "Looking for New SIM ?"
+    "header": "؟sim تبحث عن الجديد"
   },
   "signup": {
     "sign_up_with_health_portal": "قم بالتسجيل في بوابة الصحة",

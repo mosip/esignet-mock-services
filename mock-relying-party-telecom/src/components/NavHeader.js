@@ -51,12 +51,12 @@ export default function NavHeader({
 
   return (
     <nav className="bg-white border-gray-500 shadow px-2 sm:px-4 py-2">
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
         <div className="ltr:sm:ml-8 rtl:sm:mr-8 ltr:ml-1 rtl:mr-1">
           <img className="mrp-brand-logo" />
         </div>
         <div className="flex rtl:sm:ml-8 ltr:sm:mr-8 rtl:ml-1 ltr:mr-1">
-          <div className="flex w-full text-xl justify-evenly space-x-8 font-medium">
+          <div className="flex items-center w-full text-xl justify-evenly space-x-8 font-medium">
             {navList.map((nav) => {
               return (
                 <div key={nav.label}>
@@ -70,6 +70,10 @@ export default function NavHeader({
                 </div>
               );
             })}
+
+            <div>
+              <img className="rounded-[50%] w-[46px] h-[46px]" src="images/user_icon.png" alt={t("username_alt")} />
+            </div>
           </div>
         </div>
       </div>

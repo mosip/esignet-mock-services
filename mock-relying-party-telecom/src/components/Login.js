@@ -18,7 +18,11 @@ export default function Login({ i18nKeyPrefix = "login" }) {
       let error_desc = searchParams.get("error_description");
 
       if (errorCode) {
-        setError({ errorCode: errorCode, errorMsg: error_desc, showToast: true });
+        setError({
+          errorCode: errorCode,
+          errorMsg: error_desc,
+          showToast: true,
+        });
       }
     };
     getSearchParams();
@@ -31,7 +35,6 @@ export default function Login({ i18nKeyPrefix = "login" }) {
   }, []);
 
   const renderSignInButton = () => {
-
     const oidcConfig = {
       authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
       redirect_uri: clientDetails.redirect_uri_userprofile,
@@ -53,11 +56,26 @@ export default function Login({ i18nKeyPrefix = "login" }) {
       buttonConfig: {
         shape: "soft_edges",
         labelText: t("sign_in_with"),
-        width: "100%"
+        width: "100%",
+        customStyle: {
+          outerDivStyleStandard: {
+            "border-radius": "5px",
+            "padding-top": "14px",
+            "padding-bottom": "14px",
+            background:
+              "transparent linear-gradient(180deg, #0050FF 0%, #0244D1 100%) 0% 0% no-repeat padding-box",
+          },
+          logoDivStyle: { display: "none" },
+          labelSpanStyle: {
+            font: "normal normal bold 14px/17px Inter",
+            "letter-spacing": "0px",
+            color: "#FFFFFF",
+          },
+        },
       },
       signInElement: document.getElementById("sign-in-with-esignet"),
     });
-  }
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -78,11 +96,14 @@ export default function Login({ i18nKeyPrefix = "login" }) {
         </div>
 
         {error && (
-          <Error errorCode={error.errorCode} errorMsg={error.errorMsg} showToast={error.showToast} />
+          <Error
+            errorCode={error.errorCode}
+            errorMsg={error.errorMsg}
+            showToast={error.showToast}
+          />
         )}
 
         <div id="sign-in-with-esignet" className="w-full"></div>
-
       </div>
     </>
   );

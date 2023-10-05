@@ -11,7 +11,8 @@
     "new_sim_connection": "New Sim Connection",
     "explore": "Explore",
     "help": "Help",
-    "background_image_alt": "Background Image of Platform"
+    "background_image_alt": "Background Image of Platform",
+    "username_alt": "Username Alternate"
   },
   "login": {
     "sign_in_with_health_portal": "Sign In to the Health portal",
@@ -19,7 +20,7 @@
     "password": "Password",
     "submit": "SUBMIT",
     "or": "OR",
-    "sign_in_with": "Sign In with e-Signet",
+    "sign_in_with": "Register for e-SIM Using National ID",
     "dont_have_existing_account": "Don't have an existing account?",
     "sign_up_here": "Sign Up here",
     "header": "Looking for New SIM ?"

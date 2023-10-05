@@ -60,12 +60,12 @@ export default function Sidenav({
   }, [langOptions]);
 
   //Gets fired when changeLanguage got called.
-    i18n.on('languageChanged', function (lng) {
+  i18n.on("languageChanged", function (lng) {
     let lang = langOptions.find((option) => {
       return option.value === lng;
     });
     setSelectedLang(lang);
-    })
+  });
 
   useEffect(() => {
     const getSearchParams = async () => {
@@ -130,7 +130,7 @@ export default function Sidenav({
     var messagesInfo = get_messages();
     setMessagesInfo(messagesInfo);
   };
-    const messagesCount = messagesInfo.messages?.length
+  const messagesCount = messagesInfo.messages?.length;
 
   const getAddress = (userAddress) => {
     let address = "";
@@ -241,7 +241,9 @@ export default function Sidenav({
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("search")}</span>
+                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">
+                  {t("search")}
+                </span>
               </a>
             </li>
             <li>
@@ -261,7 +263,9 @@ export default function Sidenav({
                   {" "}
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
-                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("messages")}</span>
+                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">
+                  {t("messages")}
+                </span>
               </a>
             </li>
             <li>
@@ -285,7 +289,9 @@ export default function Sidenav({
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />{" "}
                   <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
                 </svg>
-                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("reports")}</span>
+                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">
+                  {t("reports")}
+                </span>
               </a>
             </li>
             <li>
@@ -306,7 +312,9 @@ export default function Sidenav({
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />{" "}
                   <circle cx="12" cy="7" r="4" />
                 </svg>
-                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("profile")}</span>
+                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">
+                  {t("profile")}
+                </span>
               </a>
             </li>
             <li>
@@ -434,7 +442,9 @@ export default function Sidenav({
                     <path d="M11.5 3a17 17 0 0 0 0 18" />{" "}
                     <path d="M12.5 3a17 17 0 0 1 0 18" />
                   </svg>
-                                    <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("help")}</span>
+                  <span className="flex-1 ml-3 mr-3 whitespace-nowrap">
+                    {t("help")}
+                  </span>
                 </a>
               </li>
             </div>
@@ -442,7 +452,11 @@ export default function Sidenav({
         </div>
       </aside>
       <div className="flex justify-end col-start-3 mr-3 p-2">
-                <img src="images/language_icon.png" alt={t("language")} className="mr-2" />
+        <img
+          src="images/language_icon.png"
+          alt={t("language")}
+          className="mr-2"
+        />
         <Select
           styles={customStyles}
           isSearchable={false}
@@ -485,7 +499,10 @@ export default function Sidenav({
                       }
                     />
                     <div className="flex my-3 max-w-xs">
-                                            <p className="text-gray-500 truncate bg-gray-50" title={userInfo?.name}>
+                      <p
+                        className="text-gray-500 truncate bg-gray-50"
+                        title={userInfo?.name}
+                      >
                         {userInfo?.name}
                       </p>
                     </div>
@@ -513,7 +530,10 @@ export default function Sidenav({
                   {isOpen && (
                     <div className="origin-top-left absolute ltr:right-0 rtl:left-0 max-w-xs shadow-lg">
                       <div className="flex flex-col px-1 py-1 rounded-md bg-white shadow-xs mt-2">
-                                                <a className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" title={emailAddress}>
+                        <a
+                          className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                          title={emailAddress}
+                        >
                           {t("email")}:&nbsp;
                           <span className="truncate">
                             {emailAddress?.split("@")[0]}
@@ -553,12 +573,12 @@ export default function Sidenav({
             <div className="p-1 ">
               <div className="flex">
                 <div className="flex flex-wrap w-full sm:w-30 md:w-30 p-1">
-                                    <div className="w-full">
-                                        {component}
-                                    </div>
+                  <div className="w-full">{component}</div>
                   <div className="w-full p-2 grid grid-cols-3 rounded bg-white border border-gray-200  shadow sm:p-2 m-1">
                     <div>
-                                            <p className=" text-lg font-medium ">{t("vaccinations")}</p>
+                      <p className=" text-lg font-medium ">
+                        {t("vaccinations")}
+                      </p>
                     </div>
                     <div className="col-end-5">
                       <a
@@ -600,7 +620,9 @@ export default function Sidenav({
                                 scope="row"
                                 className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                               >
-                                                                <p className="text-xs">{t(item["vaccinationName"])}</p>
+                                <p className="text-xs">
+                                  {t(item["vaccinationName"])}
+                                </p>
                               </th>
                               <td className="px-6 py-4">
                                 <p>{pastDate.toLocaleDateString()}</p>
@@ -620,13 +642,18 @@ export default function Sidenav({
                 </div>
                 <div className="w-full sm:w-1/2 md:w-30 p-2">
                   <p className="text-lg font-medium mb-4">
-                                        {t("new_messages")} <span className="">({messagesCount})</span>
+                    {t("new_messages")}{" "}
+                    <span className="">({messagesCount})</span>
                   </p>
                   {messagesInfo?.messages?.map((message, index) => {
                     const pastDate = new Date(
-                                            currentDate.getTime() - message["days"] * 24 * 60 * 60 * 1000
+                      currentDate.getTime() -
+                        message["days"] * 24 * 60 * 60 * 1000
                     );
-                                        const formattedDate = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full' }).format(pastDate);
+                    const formattedDate = new Intl.DateTimeFormat(
+                      i18n.language,
+                      { dateStyle: "full" }
+                    ).format(pastDate);
                     return (
                       <div
                         className=" bg-white overflow-auto border rounded border-gray-200 hover:bg-gray-100 shadow sm:p-4"
@@ -648,7 +675,8 @@ export default function Sidenav({
                             </p>
 
                             <p className="text-sm text-gray-500 truncate max-w-xs whitespace-pre-wrap">
-                                                            {t("hi")} {userInfo?.name} , {t(message["message"])}
+                              {t("hi")} {userInfo?.name} ,{" "}
+                              {t(message["message"])}
                             </p>
                           </div>
                           <button
