@@ -72,7 +72,7 @@ mock_relying_party_service:
   puburl:
   privurl:
   ESIGNET_SERVICE_URL: http://esignet.namespace/v1/esignet
-  ESIGNET_AUD_URL: https://api.sandbox.xyz.net/v1/esignet/oauth/token
+  ESIGNET_AUD_URL: https://esignet.sandbox.xyz.net/v1/esignet/oauth/token
   USERINFO_RESPONSE_TYPE: jwt
 ## Port on which this particular spring service module is running.
 containerPort: 8888
