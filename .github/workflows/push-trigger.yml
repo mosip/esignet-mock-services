@@ -1,0 +1,106 @@
+name: Maven Package upon a push
+
+on:
+  release:
+    types: [published]
+  pull_request:
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'Message for manually triggering'
+        required: false
+        default: 'Triggered for Updates'
+        type: string
+  push:
+    branches:
+      - '!release-branch'
+      - master
+      - 1.*
+      - develop
+      - MOSIP*
+      - release*
+
+jobs:
+  build-maven-esignet-mock-services:
+    uses: mosip/kattu/.github/workflows/maven-build.yml@master
+    with:
+      SERVICE_LOCATION: ./
+      BUILD_ARTIFACT: esignet-mock-services
+    secrets:
+      OSSRH_USER: ${{ secrets.OSSRH_USER }}
+      OSSRH_SECRET: ${{ secrets.OSSRH_SECRET }}
+      OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+      GPG_SECRET: ${{ secrets.GPG_SECRET }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  publish_to_nexus:
+    if: "${{ !contains(github.ref, 'master') && github.event_name != 'pull_request' }}"
+    needs: build-maven-esignet-mock-services
+    uses: mosip/kattu/.github/workflows/maven-publish-to-nexus.yml@master
+    with:
+      SERVICE_LOCATION: ./
+    secrets:
+      OSSRH_USER: ${{ secrets.OSSRH_USER }}
+      OSSRH_SECRET: ${{ secrets.OSSRH_SECRET }}
+      OSSRH_URL: ${{ secrets.OSSRH_SNAPSHOT_URL }}
+      OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+      GPG_SECRET: ${{ secrets.GPG_SECRET }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+
+  sonar_analysis:
+    needs: build-maven-esignet-mock-services
+    if: "${{  github.event_name != 'pull_request' }}"
+    uses: mosip/kattu/.github/workflows/maven-sonar-analysis.yml@master
+    with:
+      SERVICE_LOCATION: ./
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      ORG_KEY: ${{ secrets.ORG_KEY }}
+      OSSRH_USER: ${{ secrets.OSSRH_USER }}
+      OSSRH_SECRET: ${{ secrets.OSSRH_SECRET }}
+      OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+      GPG_SECRET: ${{ secrets.GPG_SECRET }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  build-dockers:
+    needs: build-maven-esignet-mock-services
+    strategy:
+      matrix:
+        include:
+          - SERVICE_LOCATION: 'mock-identity-system'
+            SERVICE_NAME: 'mock-identity-system'
+            BUILD_ARTIFACT: 'esignet-mock-services'
+      fail-fast: false
+    name: ${{ matrix.SERVICE_NAME }}
+    uses: mosip/kattu/.github/workflows/docker-build.yml@master
+    with:
+      SERVICE_LOCATION: ${{ matrix.SERVICE_LOCATION }}
+      SERVICE_NAME: ${{ matrix.SERVICE_NAME }}
+      BUILD_ARTIFACT: ${{ matrix.BUILD_ARTIFACT }}
+    secrets:
+      DEV_NAMESPACE_DOCKER_HUB: ${{ secrets.DEV_NAMESPACE_DOCKER_HUB }}
+      ACTOR_DOCKER_HUB: ${{ secrets.ACTOR_DOCKER_HUB }}
+      RELEASE_DOCKER_HUB: ${{ secrets.RELEASE_DOCKER_HUB }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  build-dockers-mock:
+    strategy:
+      matrix:
+        include:
+          - SERVICE_LOCATION: 'mock-relying-party-service'
+            SERVICE_NAME: 'mock-relying-party-service'
+          - SERVICE_LOCATION: 'mock-relying-party-ui'
+            SERVICE_NAME: 'mock-relying-party-ui'
+      fail-fast: false
+    name: ${{ matrix.SERVICE_NAME }}
+    uses: mosip/kattu/.github/workflows/docker-build.yml@master
+    with:
+      SERVICE_LOCATION: ${{ matrix.SERVICE_LOCATION }}
+      SERVICE_NAME: ${{ matrix.SERVICE_NAME }}
+    secrets:
+      DEV_NAMESPACE_DOCKER_HUB: ${{ secrets.DEV_NAMESPACE_DOCKER_HUB }}
+      ACTOR_DOCKER_HUB: ${{ secrets.ACTOR_DOCKER_HUB }}
+      RELEASE_DOCKER_HUB: ${{ secrets.RELEASE_DOCKER_HUB }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
