@@ -11,7 +11,7 @@
 	<artifactId>mock-esignet-integration-impl</artifactId>
 	<version>0.9.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	
+	<version>0.9.1-SNAPSHOT</version>
 	<name>mock-esignet-integration-impl</name>
 	<description>Mockup of a wrapper implementation that is used to showcase the integration with e-Signet</description>
 	<url>https://github.com/mosip/esignet-mock-services</url>
