@@ -14,6 +14,13 @@ unzip -o mock-relying-party-i18n-bundle.zip
 
 echo "unzip pre-requisites completed."
 
+echo "Updating sign-in-plugin-url-placeholder with sign-in-plugin URL: ${SIGN_IN_BUTTON_PLUGIN_URL}"
+
+rpSignInCmd="s#sign-in-plugin-url-placeholder#${SIGN_IN_BUTTON_PLUGIN_URL}#"
+sed -i $rpSignInCmd $work_dir/index.html
+
+echo "Update for sign-in-plugin url completed."
+
 echo "Replacing public url placeholder with public url"
 
 workingDir=$nginx_dir/html
