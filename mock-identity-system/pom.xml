@@ -12,6 +12,7 @@
   <packaging>jar</packaging>
 
   <name>mock-identity-system</name>
+	<version>0.9.1-SNAPSHOT</version>
   <description>Mockup of a ID system that is used to showcase the integration with e-Signet</description>
   <url>https://github.com/mosip/esignet-mock-services</url>
   
