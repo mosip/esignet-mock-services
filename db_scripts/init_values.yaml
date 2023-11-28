@@ -66,4 +66,5 @@ databases:
         name: postgres-postgresql
         key: postgres-password
     dml: 1
-    branch: develop
+    repoUrl: https://github.com/mosip/esignet-mock-services.git
+    branch: release-0.9.x

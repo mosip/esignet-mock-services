@@ -51,8 +51,8 @@ service:
 
 image:
   registry: docker.io
-  repository: mosipqa/mock-relying-party-service
-  tag: develop
+  repository: mosipdev/mock-relying-party-service
+  tag: 0.9.x
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
