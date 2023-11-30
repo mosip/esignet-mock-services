@@ -66,6 +66,10 @@ function installing_onboarder() {
     fi
 
     s3_user_key=$( kubectl -n s3 get cm s3 -o json | jq -r '.data."s3-user-key"' )
+    kubectl -n $NS --ignore-not-found=true delete cm esignet-onboarder-namespace
+    kubectl -n $NS get cm onboarder-namespace -o yaml | sed 's/name:.*/name: esignet-onboarder-namespace/g' | kubectl -n $NS create -f - 
+    kubectl -n $NS --ignore-not-found=true delete cm onboarder-namespace
+
 
     echo Onboarding default partners
     helm -n $NS install esignet-demo-oidc-partner-onboarder mosip/partner-onboarder \
