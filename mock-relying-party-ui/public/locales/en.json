@@ -204,6 +204,7 @@
     "response_timeout": "Deferred Response Timedout.",
     "invalid_state": "Transaction Found in Invalid State.",
     "authorization_failed_msg": "Authorization Failed",
-    "consent_request_rejected": "Consent Request Rejected"
+    "consent_request_rejected": "Consent Request Rejected",
+    "transaction_timeout": "Transaction timeout"
   }
 }
