@@ -32,7 +32,7 @@ function installing_mock-relying-party-ui() {
   ESIGNET_HOST=$(kubectl get cm global -o jsonpath={.data.mosip-esignet-host})
 
   echo Installing Mock Relying Party UI
-  helm -n $NS install mock-relying-party-ui mosip/mock-relying-party-ui \
+  helm -n $NS install mock-relying-party-ui /home/techno-376/IdeaProjects/esignet-mock-services/helm/mock-relying-party-ui \
       --set mock_relying_party_ui.mock_relying_party_ui_service_host="$MOCK_UI_HOST" \
       --set mock_relying_party_ui.ESIGNET_UI_BASE_URL="https://$ESIGNET_HOST" \
       --set mock_relying_party_ui.MOCK_RELYING_PARTY_SERVER_URL="https://$MOCK_UI_HOST/mock-relying-party-service" \
