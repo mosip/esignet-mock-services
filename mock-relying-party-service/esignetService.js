@@ -11,7 +11,7 @@ const jweEncryAlgo = "RSA-OAEP-256";
 const expirationTime = "1h";
 
 /**
- * Triggers /oauth/token API on esignet service to fetch access token
+ * Triggers /oauth/v2/token API on esignet service to fetch access token
  * @param {string} code auth code
  * @param {string} client_id registered client id
  * @param {string} redirect_uri validated redirect_uri
