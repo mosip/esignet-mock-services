@@ -3,7 +3,7 @@ const jose = require("jose");
 const { ESIGNET_SERVICE_URL, ESIGNET_AUD_URL, CLIENT_ASSERTION_TYPE, CLIENT_PRIVATE_KEY, USERINFO_RESPONSE_TYPE, JWE_USERINFO_PRIVATE_KEY } = require("./config");
 
 const baseUrl = ESIGNET_SERVICE_URL.trim();
-const getTokenEndPoint = "/oauth/token";
+const getTokenEndPoint = "/oauth/v2/token";
 const getUserInfoEndPoint = "/oidc/userinfo";
 
 const alg = "RS256";
