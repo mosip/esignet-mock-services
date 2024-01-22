@@ -8,7 +8,9 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
   });
   const [selectedLang, setSelectedLang] = useState();
   // fallback language from the environment configuration
-  const fallbackLangObj = decodeURIComponent(window._env_.FALLBACK_LANG);
+  const fallbackLangObj = window._env_.FALLBACK_LANG
+    ? decodeURIComponent(window._env_.FALLBACK_LANG)
+    : "";
   // converting it to JSON, and if the fallback language
   // is also not present, taking english as default
   const fallbackLang =
