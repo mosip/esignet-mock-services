@@ -124,6 +124,8 @@ spec:
               value: {{ .Values.mock_relying_party_ui.CLAIMS_REGISTRATION | quote }}
             - name: DEFAULT_LANG
               value: {{ .Values.mock_relying_party_ui.DEFAULT_LANG }}
+            - name: FALLBACK_LANG
+              value: {{ .Values.mock_relying_party_ui.FALLBACK_LANG | quote }}
 
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}

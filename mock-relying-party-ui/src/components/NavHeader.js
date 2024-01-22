@@ -7,7 +7,14 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
     keyPrefix: i18nKeyPrefix,
   });
   const [selectedLang, setSelectedLang] = useState();
-  const fallbackLang = {label: "English", value: "en"};
+  // fallback language from the environment configuration
+  const fallbackLangObj = decodeURIComponent(window._env_.FALLBACK_LANG);
+  // converting it to JSON, and if the fallback language
+  // is also not present, taking english as default
+  const fallbackLang =
+    fallbackLangObj !== ""
+      ? JSON.parse(fallbackLangObj)
+      : { label: "English", value: "en" };
 
   const changeLanguageHandler = (e) => {
     i18n.changeLanguage(e.value);
@@ -21,10 +28,13 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
     }),
   };
 
+  // check language in the langOptions,
+  // which came through langCnfigService
+  // then setting that language as selected one
   const setLanguage = (lng) => {
-    let lang = langOptions.find((op)=> op.value === lng);
+    let lang = langOptions.find((op) => op.value === lng);
     setSelectedLang(lang ?? fallbackLang);
-  }
+  };
 
   useEffect(() => {
     if (!langOptions || langOptions.length === 0) {
