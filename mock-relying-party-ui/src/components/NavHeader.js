@@ -23,8 +23,6 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
 
   const setLanguage = (lng) => {
     let lang = langOptions.find((op)=> op.value === lng);
-    console.log({lang});
-    console.log({langOptions});
     setSelectedLang(lang ?? fallbackLang);
   }
 
