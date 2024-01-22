@@ -17,6 +17,8 @@ ARG claims_locales
 ARG scope_user_profile
 ARG claims_user_profile
 ARG claims_registration
+ARG default_lang
+ARG fallback_lang
 
 ENV ESIGNET_UI_BASE_URL=$esignet_ui_base_url
 ENV MOCK_RELYING_PARTY_SERVER_URL=$mock_relying_party_server_url
@@ -34,6 +36,8 @@ ENV SCOPE_USER_PROFILE=$scope_user_profile
 ENV MOCK_RP_UI_PUBLIC_URL=$mockRpUIPublicUrl
 ENV CLAIMS_USER_PROFILE=$claims_user_profile
 ENV CLAIMS_REGISTRATION=$claims_registration
+ENV DEFAULT_LANG=$default_lang
+ENV FALLBACK_LANG=$fallback_lang
 
 # Set the environment variable as a placeholder for PUBLIC_URL
 ENV PUBLIC_URL=_PUBLIC_URL_
@@ -117,7 +121,9 @@ RUN echo "ESIGNET_UI_BASE_URL=$ESIGNET_UI_BASE_URL" >> ${work_dir}/env.env \
     && echo "CLAIMS_LOCALES=$CLAIMS_LOCALES" >> ${work_dir}/env.env \
     && echo "SCOPE_USER_PROFILE=$SCOPE_USER_PROFILE" >> ${work_dir}/env.env \
     && echo "CLAIMS_USER_PROFILE=$CLAIMS_USER_PROFILE" >> ${work_dir}/env.env \
-    && echo "CLAIMS_REGISTRATION=$CLAIMS_REGISTRATION" >> ${work_dir}/env.env
+    && echo "CLAIMS_REGISTRATION=$CLAIMS_REGISTRATION" >> ${work_dir}/env.env \
+    && echo "DEFAULT_LANG=$DEFAULT_LANG" >> ${work_dir}/env.env \
+    && echo "FALLBACK_LANG=$FALLBACK_LANG" >> ${work_dir}/env.env
 
 
 # change permissions of file inside working dir
