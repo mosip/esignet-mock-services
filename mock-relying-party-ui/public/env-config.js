@@ -15,5 +15,7 @@ window._env_ = {
   PROMPT: "consent",
   GRANT_TYPE: "authorization_code",
   MAX_AGE: 21,
-  CLAIMS_LOCALES: "en"
+  CLAIMS_LOCALES: "en",
+  DEFAULT_LANG: "en",
+  FALLBACK_LANG: "%7B%22label%22%3A%22English%22%2C%22value%22%3A%22en%22%7D"
 };
