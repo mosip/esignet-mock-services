@@ -16,7 +16,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.mosip.esignet.mock</groupId>
 	<artifactId>esignet-mock-parent</artifactId>
-	<version>0.9.1</version>
+	<version>0.9.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>esignet-mock</name>
 	<description>Parent project of MOSIP e-Signet Mock Services</description>

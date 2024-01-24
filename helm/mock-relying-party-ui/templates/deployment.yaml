@@ -88,6 +88,7 @@ spec:
           {{- if .Values.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.args "context" $) | nindent 12 }}
           {{- end }}
+
           env:
             - name: container_user
               value: {{ .Values.container_user }}
@@ -108,15 +109,24 @@ spec:
             - name: SIGN_IN_BUTTON_PLUGIN_URL
               value: {{ .Values.mock_relying_party_ui.SIGN_IN_BUTTON_PLUGIN_URL }}
             - name: DISPLAY
-              value: {{ .Values.mock_relying_party_ui.DISPLAY}}
+              value: {{ .Values.mock_relying_party_ui.DISPLAY }}
             - name: PROMPT
-              value: {{.Values.mock_relying_party_ui.PROMPT}}
+              value: {{ .Values.mock_relying_party_ui.PROMPT }}
             - name: GRANT_TYPE
-              value: {{.Values.mock_relying_party_ui.GRANT_TYPE}}
+              value: {{ .Values.mock_relying_party_ui.GRANT_TYPE }}
             - name: CLAIMS_LOCALES
-              value: {{.Values.mock_relying_party_ui.CLAIMS_LOCALES}}
+              value: {{ .Values.mock_relying_party_ui.CLAIMS_LOCALES }}
             - name: SCOPE_USER_PROFILE
-              value: {{.Values.mock_relying_party_ui.SCOPE_USER_PROFILE}}
+              value: {{ .Values.mock_relying_party_ui.SCOPE_USER_PROFILE }}
+            - name: CLAIMS_USER_PROFILE
+              value: {{ .Values.mock_relying_party_ui.CLAIMS_USER_PROFILE | quote }}
+            - name: CLAIMS_REGISTRATION
+              value: {{ .Values.mock_relying_party_ui.CLAIMS_REGISTRATION | quote }}
+            - name: DEFAULT_LANG
+              value: {{ .Values.mock_relying_party_ui.DEFAULT_LANG }}
+            - name: FALLBACK_LANG
+              value: {{ .Values.mock_relying_party_ui.FALLBACK_LANG | quote }}
+
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

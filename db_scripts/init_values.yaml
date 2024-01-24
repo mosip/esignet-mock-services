@@ -64,7 +64,7 @@ databases:
       user: postgres
       secret:
         name: postgres-postgresql
-        key: postgresql-password
+        key: postgres-password
     dml: 1
     repoUrl: https://github.com/mosip/esignet-mock-services.git
     branch: release-0.9.x

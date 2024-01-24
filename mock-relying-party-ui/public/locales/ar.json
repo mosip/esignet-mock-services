@@ -203,6 +203,7 @@
     "response_timeout": "انتهت مهلة الرد المؤجل.",
     "invalid_state": "وجدت المعاملة في حالة غير صالحة.",
     "authorization_failed_msg": "فشل التفويض",
-    "consent_request_rejected": "تم رفض طلب الموافقة"
+    "consent_request_rejected": "تم رفض طلب الموافقة",
+    "transaction_timeout": "مهلة المعاملة"
   }
 }

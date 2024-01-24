@@ -7,7 +7,16 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
     keyPrefix: i18nKeyPrefix,
   });
   const [selectedLang, setSelectedLang] = useState();
-
+  // fallback language from the environment configuration
+  const fallbackLangObj = window._env_.FALLBACK_LANG
+    ? decodeURIComponent(window._env_.FALLBACK_LANG)
+    : "";
+  // converting it to JSON, and if the fallback language
+  // is also not present, taking english as default
+  const fallbackLang =
+    fallbackLangObj !== ""
+      ? JSON.parse(fallbackLangObj)
+      : { label: "English", value: "en" };
 
   const changeLanguageHandler = (e) => {
     i18n.changeLanguage(e.value);
@@ -21,21 +30,23 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
     }),
   };
 
+  // check language in the langOptions,
+  // which came through langCnfigService
+  // then setting that language as selected one
+  const setLanguage = (lng) => {
+    let lang = langOptions.find((op) => op.value === lng);
+    setSelectedLang(lang ?? fallbackLang);
+  };
+
   useEffect(() => {
     if (!langOptions || langOptions.length === 0) {
       return;
     }
 
-    let lang = langOptions.find((option) => {
-      return option.value === i18n.language;
-    });
-    setSelectedLang(lang);
+    setLanguage(i18n.language);
     //Gets fired when changeLanguage got called.
     i18n.on("languageChanged", function (lng) {
-      let lang = langOptions.find((option) => {
-        return option.value === lng;
-      });
-      setSelectedLang(lang);
+      setLanguage(lng);
     });
   }, [langOptions]);
 

@@ -3,7 +3,7 @@ const jose = require("jose");
 const { ESIGNET_SERVICE_URL, ESIGNET_AUD_URL, CLIENT_ASSERTION_TYPE, CLIENT_PRIVATE_KEY, USERINFO_RESPONSE_TYPE, JWE_USERINFO_PRIVATE_KEY } = require("./config");
 
 const baseUrl = ESIGNET_SERVICE_URL.trim();
-const getTokenEndPoint = "/oauth/token";
+const getTokenEndPoint = "/oauth/v2/token";
 const getUserInfoEndPoint = "/oidc/userinfo";
 
 const alg = "RS256";
@@ -11,7 +11,7 @@ const jweEncryAlgo = "RSA-OAEP-256";
 const expirationTime = "1h";
 
 /**
- * Triggers /oauth/token API on esignet service to fetch access token
+ * Triggers /oauth/v2/token API on esignet service to fetch access token
  * @param {string} code auth code
  * @param {string} client_id registered client id
  * @param {string} redirect_uri validated redirect_uri

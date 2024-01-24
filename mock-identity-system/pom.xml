@@ -5,14 +5,14 @@
   <parent>
         <groupId>io.mosip.esignet.mock</groupId>
         <artifactId>esignet-mock-parent</artifactId>
-        <version>0.9.1</version>
+        <version>0.9.2-SNAPSHOT</version>
    </parent>
 
   <artifactId>mock-identity-system</artifactId>
+	<version>0.9.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>mock-identity-system</name>
-	<version>0.9.1</version>
   <description>Mockup of a ID system that is used to showcase the integration with e-Signet</description>
   <url>https://github.com/mosip/esignet-mock-services</url>
   
