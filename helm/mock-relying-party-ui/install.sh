@@ -40,6 +40,7 @@ function installing_mock-relying-party-ui() {
       --set mock_relying_party_ui.REDIRECT_URI_REGISTRATION="https://$MOCK_UI_HOST/registration" \
       --set mock_relying_party_ui.SIGN_IN_BUTTON_PLUGIN_URL="https://$ESIGNET_HOST/plugins/sign-in-button-plugin.js" \
       --set istio.hosts\[0\]="$MOCK_UI_HOST" \
+      -f values.yaml \
       --version $CHART_VERSION
 
   kubectl -n $NS get deploy mock-relying-party-ui -o name |  xargs -n1 -t  kubectl -n $NS rollout status
