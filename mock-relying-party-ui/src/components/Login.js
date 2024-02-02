@@ -3,6 +3,7 @@ import { Error } from "../common/Errors";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import clientDetails from "../constants/clientDetails";
+import { useExternalScript } from "../hooks/useExternalScript";
 
 export default function Login({ i18nKeyPrefix = "login" }) {
   const { i18n, t } = useTranslation("translation", {
@@ -11,7 +12,9 @@ export default function Login({ i18nKeyPrefix = "login" }) {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [error, setError] = useState(null);
-
+  const signInButtonScript = window._env_.SIGN_IN_BUTTON_PLUGIN_URL;
+  const state = useExternalScript(signInButtonScript);
+  
   useEffect(() => {
     const getSearchParams = async () => {
       let errorCode = searchParams.get("error");
@@ -28,7 +31,7 @@ export default function Login({ i18nKeyPrefix = "login" }) {
     i18n.on("languageChanged", function (lng) {
       renderSignInButton();
     });
-  }, []);
+  }, [state]);
 
   const renderSignInButton = () => {
 
@@ -120,7 +123,7 @@ export default function Login({ i18nKeyPrefix = "login" }) {
           <div className="flex-1 h-px bg-black" />
         </div>
 
-        <div id="sign-in-with-esignet" className="w-full"></div>
+        {state === "ready" && <div id="sign-in-with-esignet" className="w-full"></div>}
 
         <div className="flex flex-justify mt-5 w-full items-center text-center">
           <p className="w-full text-center">
