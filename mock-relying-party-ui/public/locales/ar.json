@@ -22,7 +22,9 @@
     "or": "أو",
     "sign_in_with": "تسجيل الدخول باستخدام e-Signet",
     "dont_have_existing_account": "ليس لديك حساب موجود؟",
-    "sign_up_here": "سجل هنا"
+    "sign_up_here": "سجل هنا",
+    "logged_out": "تسجيل الخروج",
+    "session_expired": "انتهت الجلسة"
   },
   "signup": {
     "sign_up_with_health_portal": "قم بالتسجيل في بوابة الصحة",
