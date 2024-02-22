@@ -1,7 +1,11 @@
 {
   "languages": {
     "en": "English",
-    "ar": "عربى"
+    "hi": "हिंदी",
+    "ar": "عربى",
+    "km": "ខ្មែរ",
+    "kn": "ಕನ್ನಡ",
+    "ta": "தமிழ்"
   },
-  "rtlLanguages": ["ara", "ar"]
+  "rtlLanguages": ["ar"]
 }
