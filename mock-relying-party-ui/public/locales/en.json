@@ -20,7 +20,7 @@
     "password": "Password",
     "submit": "SUBMIT",
     "or": "OR",
-    "sign_in_with": "Sign In with e-Signet",
+    "sign_in_with": "Sign In with eSignet",
     "dont_have_existing_account": "Don't have an existing account?",
     "sign_up_here": "Sign Up here"
   },
@@ -31,7 +31,7 @@
     "password": "Password",
     "submit": "SUBMIT",
     "or": "OR",
-    "sign_up_with": "Sign Up with e-Signet",
+    "sign_up_with": "Sign Up with eSignet",
     "already_have_account": "Already have an account?",
     "sign_in_here": "Sign In here"
   },
@@ -113,7 +113,7 @@
     "date_of_birth": "Date of birth",
     "city": "City",
     "address": "Address",
-    "fetch_details": "Fetch details from e-Signet",
+    "fetch_details": "Fetch details from eSignet",
     "register": "Register",
     "loading_msg": "Loading! Please wait...",
     "phone_number": "Phone number",
@@ -137,9 +137,9 @@
     "endocrin": "Endocrinologist"
   },
   "errors": {
-    "sign_in_failed": "Authentication failed! Try sign in with e-Signet",
-    "sign_up_failed": "Sign Up failed! Try sign in with e-Signet",
-    "invalid_details": "Invalid details! Try fetching details from e-Signet",
+    "sign_in_failed": "Authentication failed! Try sign in with eSignet",
+    "sign_up_failed": "Sign Up failed! Try sign in with eSignet",
+    "invalid_details": "Invalid details! Try fetching details from eSignet",
     "authCode_missing": "AuthCode Missing",
     "no_response_msg": "No Response",
     "no_devices_found_msg": "Device Not Found. Please Check the Connectivity and Retry.",
