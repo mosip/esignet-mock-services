@@ -20,7 +20,7 @@
     "password": "كلمة المرور",
     "submit": "إرسال",
     "or": "أو",
-    "sign_in_with": "تسجيل الدخول باستخدام e-Signet",
+    "sign_in_with": "تسجيل الدخول باستخدام eSignet",
     "dont_have_existing_account": "ليس لديك حساب موجود؟",
     "sign_up_here": "سجل هنا"
   },
@@ -31,7 +31,7 @@
     "password": "كلمة المرور",
     "submit": "إرسال",
     "or": "أو",
-    "sign_up_with": "قم بالتسجيل مع e-Signet",
+    "sign_up_with": "قم بالتسجيل مع eSignet",
     "already_have_account": "هل لديك حساب؟",
     "sign_in_here": "تسجيل الدخول هنا"
   },
@@ -112,7 +112,7 @@
     "date_of_birth": "تاريخ الولادة",
     "city": "مدينة",
     "address": "تبوك",
-    "fetch_details": "إحضار التفاصيل من e-Signet",
+    "fetch_details": "إحضار التفاصيل من eSignet",
     "register": "يسجل",
     "loading_msg": "تحميل! يرجى الانتظار...",
     "phone_number": "رقم التليفون",
@@ -136,9 +136,9 @@
     "endocrin": "أخصائي الغدد الصماء"
   },
   "error": {
-    "sign_in_failed": "المصادقة فشلت! حاول تسجيل الدخول باستخدام e-Signet",
-    "sign_up_failed": "فشل انشاء الحساب! حاول تسجيل الدخول باستخدام e-Signet",
-    "invalid_details": "تفاصيل غير صحيحة! حاول جلب التفاصيل من e-Signet",
+    "sign_in_failed": "المصادقة فشلت! حاول تسجيل الدخول باستخدام eSignet",
+    "sign_up_failed": "فشل انشاء الحساب! حاول تسجيل الدخول باستخدام eSignet",
+    "invalid_details": "تفاصيل غير صحيحة! حاول جلب التفاصيل من eSignet",
     "authCode_missing": "AuthCode مفقود",
     "no_response_msg": "لا يوجد رد",
     "no_devices_found_msg": "لم يتم العثور علي الجهاز. يرجى التحقق من الاتصال وإعادة المحاولة.",

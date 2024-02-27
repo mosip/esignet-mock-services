@@ -47,7 +47,7 @@
     "password": "ពាក្យសម្ងាត់",
     "submit": "បញ្ជូន",
     "or": "ឬ",
-    "sign_in_with": "ចូលដោយប្រើ e-Signet",
+    "sign_in_with": "ចូលដោយប្រើ eSignet",
     "dont_have_existing_account": "មិនមានគណនីដែលមានស្រាប់មែនទេ?",
     "sign_up_here": "ចុះឈ្មោះនៅទីនេះ"
   },
@@ -58,7 +58,7 @@
     "password": "ពាក្យសម្ងាត់",
     "submit": "បញ្ជូន",
     "or": "ឬ",
-    "sign_up_with": "ចុះឈ្មោះជាមួយ e-Signet",
+    "sign_up_with": "ចុះឈ្មោះជាមួយ eSignet",
     "already_have_account": "មានគណនីរួចហើយ?",
     "sign_in_here": "ចុះឈ្មោះនៅទីនេះ"
   },
@@ -155,7 +155,7 @@
     "date_of_birth": "ថ្ងៃខែ​ឆ្នាំ​កំណើត",
     "city": "ទីក្រុង",
     "address": "អាស័យដ្ឋាន",
-    "fetch_details": "ទាញយកព័ត៌មានលម្អិតពី e-Signet",
+    "fetch_details": "ទាញយកព័ត៌មានលម្អិតពី eSignet",
     "register": "ចុះឈ្មោះ",
     "loading_msg": "កំពុងផ្ទុក! សូមរង់ចាំ...",
     "phone_number": "លេខទូរសព្ទ",
@@ -166,9 +166,9 @@
     "register_for_sim": "ចុះឈ្មោះសម្រាប់ e-SIM ដោយប្រើអត្តសញ្ញាណប័ណ្ណជាតិ"
   },
   "errors": {
-    "sign_in_failed": "ការផ្ទៀងផ្ទាត់បានបរាជ័យ! សាកល្បងចូលដោយប្រើ e-Signet",
-    "sign_up_failed": "ការចុះឈ្មោះបរាជ័យ! សាកល្បងចូលដោយប្រើ e-Signet",
-    "invalid_details": "ព័ត៌មានលម្អិតមិនត្រឹមត្រូវ! ព្យាយាមទាញយកព័ត៌មានលម្អិតពី e-Signet",
+    "sign_in_failed": "ការផ្ទៀងផ្ទាត់បានបរាជ័យ! សាកល្បងចូលដោយប្រើ eSignet",
+    "sign_up_failed": "ការចុះឈ្មោះបរាជ័យ! សាកល្បងចូលដោយប្រើ eSignet",
+    "invalid_details": "ព័ត៌មានលម្អិតមិនត្រឹមត្រូវ! ព្យាយាមទាញយកព័ត៌មានលម្អិតពី eSignet",
     "authCode_missing": "AuthCode បាត់",
     "no_response_msg": "គ្មានការឆ្លើយតប",
     "no_devices_found_msg": "រកមិនឃើញឧបករណ៍។ សូមពិនិត្យមើលការតភ្ជាប់ ហើយព្យាយាមម្តងទៀត។",
