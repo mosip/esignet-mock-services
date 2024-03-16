@@ -22,7 +22,9 @@
     "or": "OR",
     "sign_in_with": "Sign In with eSignet",
     "dont_have_existing_account": "Don't have an existing account?",
-    "sign_up_here": "Sign Up here"
+    "sign_up_here": "Sign Up here",
+    "logged_out": "User Logout",
+    "session_expired": "Session Expired"
   },
   "signup": {
     "sign_up_with_health_portal": "Sign Up to the Health portal",
