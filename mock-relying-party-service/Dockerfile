@@ -11,14 +11,8 @@ LABEL build_time=${BUILD_TIME}
 
 # can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user=mosip
-
-# can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user_group=mosip
-
-# can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user_uid=1001
-
-# can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user_gid=1001
 
 ARG esignet_service_url
@@ -29,10 +23,11 @@ ARG jwe_userinfo_private_key
 
 ENV work_dir=/app
 
-WORKDIR ${work_dir}
+ENV work_dir=${work_dir}
 
 RUN addgroup -g ${container_user_gid} ${container_user} && \
-    adduser ${container_user} -G ${container_user} -u ${container_user_uid} --disabled-password
+    adduser ${container_user} -G ${container_user} -u ${container_user_uid} --disabled-password && \
+    chown -R ${container_user}:${container_user} /home/${container_user}
 
 #Copy the app
 COPY . ./
