@@ -64,14 +64,8 @@ LABEL build_time=${BUILD_TIME}
 
 # can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user=mosip
-
-# can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user_group=mosip
-
-# can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user_uid=1001
-
-# can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user_gid=1001
 
 # can be passed during Docker build as build time environment for artifactory URL
@@ -99,10 +93,6 @@ RUN apt-get -y update \
 
 ADD configure_start.sh configure_start.sh
 
-RUN chmod +x configure_start.sh
-
-RUN chown ${container_user}:${container_user} configure_start.sh
-
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 
 COPY --from=build /app/build ${work_dir}
@@ -123,11 +113,10 @@ RUN echo "ESIGNET_UI_BASE_URL=$ESIGNET_UI_BASE_URL" >> ${work_dir}/env.env \
     && echo "CLAIMS_USER_PROFILE=$CLAIMS_USER_PROFILE" >> ${work_dir}/env.env \
     && echo "CLAIMS_REGISTRATION=$CLAIMS_REGISTRATION" >> ${work_dir}/env.env \
     && echo "DEFAULT_LANG=$DEFAULT_LANG" >> ${work_dir}/env.env \
-    && echo "FALLBACK_LANG=$FALLBACK_LANG" >> ${work_dir}/env.env
-
-
-# change permissions of file inside working dir
-RUN chown -R ${container_user}:${container_user} ${work_dir}
+    && echo "FALLBACK_LANG=$FALLBACK_LANG" >> ${work_dir}/env.env \
+    && chmod +x configure_start.sh \
+    && chown ${container_user}:${container_user} configure_start.sh \
+    && chown -R ${container_user}:${container_user} /home/${container_user} ${work_dir}
 
 # select container user for all tasks
 USER ${container_user_uid}:${container_user_gid}
