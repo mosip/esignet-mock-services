@@ -25,6 +25,8 @@ ENV work_dir=/app
 
 ENV work_dir=${work_dir}
 
+WORKDIR /home/${container_user}
+
 RUN addgroup -g ${container_user_gid} ${container_user} && \
     adduser ${container_user} -G ${container_user} -u ${container_user_uid} --disabled-password && \
     chown -R ${container_user}:${container_user} /home/${container_user}
@@ -43,6 +45,8 @@ RUN chown -R ${container_user}:${container_user} ${work_dir}
 
 # select container user for all tasks
 USER ${container_user}
+
+USER ${container_user_uid}:${container_user_gid}
 
 EXPOSE ${PORT}
 
