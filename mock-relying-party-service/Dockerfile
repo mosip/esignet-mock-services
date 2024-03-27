@@ -48,6 +48,8 @@ RUN chown -R ${container_user}:${container_user} /home/${container_user} ${work_
 # Select container user for all tasks
 USER ${container_user}
 
+USER ${container_user_uid}:${container_user_gid}
+
 EXPOSE ${PORT}
 
 RUN npm install
