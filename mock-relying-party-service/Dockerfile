@@ -38,7 +38,7 @@ ENV JWE_USERINFO_PRIVATE_KEY=${jwe_userinfo_private_key}
 
 ## Create the work directory and Change permissions of files inside working directory
 
-RUN addgroup -g ${container_user_gid} ${container_user} && \
+RUN addgroup -g ${container_user_gid} ${container_user} \
 && adduser ${container_user} -G ${container_user} -u ${container_user_uid} --disabled-password \
 && mkdir -p ${work_dir} \
 && chown -R ${container_user}:${container_user} /home/${container_user} ${work_dir}
