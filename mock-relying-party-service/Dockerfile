@@ -43,9 +43,6 @@ RUN addgroup -g ${container_user_gid} ${container_user} \
 && mkdir -p ${work_dir} \
 && chown -R ${container_user}:${container_user} /home/${container_user} ${work_dir}
 
-# Select container user for all tasks
-USER ${container_user}
-
 USER ${container_user_uid}:${container_user_gid}
 
 EXPOSE ${PORT}
