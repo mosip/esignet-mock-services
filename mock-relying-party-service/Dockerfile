@@ -25,12 +25,6 @@ ENV work_dir=/app
 
 WORKDIR /home/${container_user}
 
-RUN addgroup -g ${container_user_gid} ${container_user} && \
-    adduser ${container_user} -G ${container_user} -u ${container_user_uid} --disabled-password
-
-# Create the work directory
-RUN mkdir -p ${work_dir}
-
 # Copy the app
 COPY . ${work_dir}/
 WORKDIR ${work_dir}
@@ -42,8 +36,12 @@ ENV CLIENT_PRIVATE_KEY=${client_private_key}
 ENV USERINFO_RESPONSE_TYPE=${userinfo_response_type}
 ENV JWE_USERINFO_PRIVATE_KEY=${jwe_userinfo_private_key}
 
-# Change permissions of files inside working directory
-RUN chown -R ${container_user}:${container_user} /home/${container_user} ${work_dir}
+## Create the work directory and Change permissions of files inside working directory
+
+RUN addgroup -g ${container_user_gid} ${container_user} && \
+&& adduser ${container_user} -G ${container_user} -u ${container_user_uid} --disabled-password \
+&& mkdir -p ${work_dir} \
+&& chown -R ${container_user}:${container_user} /home/${container_user} ${work_dir}
 
 # Select container user for all tasks
 USER ${container_user}
