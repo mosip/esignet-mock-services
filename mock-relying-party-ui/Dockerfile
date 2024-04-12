@@ -20,6 +20,18 @@ ARG claims_registration
 ARG default_lang
 ARG fallback_lang
 
+# can be passed during Docker build as build time environment for github branch to pickup configuration from.
+ARG container_user=mosip
+ARG container_user_group=mosip
+ARG container_user_uid=1001
+ARG container_user_gid=1001
+
+# can be passed during Docker build as build time environment for label related addition to docker.
+ARG SOURCE
+ARG COMMIT_HASH
+ARG COMMIT_ID
+ARG BUILD_TIME
+
 ENV ESIGNET_UI_BASE_URL=$esignet_ui_base_url
 ENV MOCK_RELYING_PARTY_SERVER_URL=$mock_relying_party_server_url
 ENV REDIRECT_URI=$redirect_uri
@@ -42,6 +54,12 @@ ENV FALLBACK_LANG=$fallback_lang
 # Set the environment variable as a placeholder for PUBLIC_URL
 ENV PUBLIC_URL=_PUBLIC_URL_
 
+# can be passed during Docker build as build time environment for label.
+LABEL source=${SOURCE}
+LABEL commit_hash=${COMMIT_HASH}
+LABEL commit_id=${COMMIT_ID}
+LABEL build_time=${BUILD_TIME}
+
 ## Mock relying party portal
 WORKDIR ./app
 COPY package*.json ./
@@ -52,21 +70,6 @@ RUN npm run build
 EXPOSE 443
 
 FROM nginx
-
-ARG SOURCE
-ARG COMMIT_HASH
-ARG COMMIT_ID
-ARG BUILD_TIME
-LABEL source=${SOURCE}
-LABEL commit_hash=${COMMIT_HASH}
-LABEL commit_id=${COMMIT_ID}
-LABEL build_time=${BUILD_TIME}
-
-# can be passed during Docker build as build time environment for github branch to pickup configuration from.
-ARG container_user=mosip
-ARG container_user_group=mosip
-ARG container_user_uid=1001
-ARG container_user_gid=1001
 
 # can be passed during Docker build as build time environment for artifactory URL
 ARG artifactory_url
