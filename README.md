@@ -63,7 +63,7 @@ Repository contains mock implementation of auth for e-signet
 *  Below mentioned onboarding steps are added after 1.2.0.1-b3
    *  Onboarding the default demo-oidc partner
 
-###.Onboarding the default demo-oidc partner
+### Onboarding the default demo-oidc partner
 *  After successfull partner onboarder run for demo-oidc partner , download html reports from `onboarder` bucket of object store .
 *  Get `CLIENT_ID` from  response body of  request `create-oidc-client` from the report **_demo-oidc.html_**
 *  Update deployment of `mock-relying-party-ui` in esignet namespace with `CLIENT_ID` value from last step .
