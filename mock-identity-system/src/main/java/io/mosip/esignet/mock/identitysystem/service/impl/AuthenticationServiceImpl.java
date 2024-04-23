@@ -1,6 +1,7 @@
 package io.mosip.esignet.mock.identitysystem.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
@@ -23,6 +24,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -107,13 +111,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             authStatus = true; //TODO
         }
 
+        if(kycAuthRequestDto.getKba()!=null){
+            authStatus=knowledgeBaseAuthnetication(kycAuthRequestDto,identityData);
+        }
+
         if (!CollectionUtils.isEmpty(kycAuthRequestDto.getTokens())) {
             authStatus = !StringUtils.isEmpty(kycAuthRequestDto.getTokens().get(0));
             if (!authStatus)
                 throw new MockIdentityException("auth_failed");
         }
-
-
         KycAuth kycAuth = saveKycAuthTransaction(kycAuthRequestDto.getTransactionId(), relyingPartyId,
                 kycAuthRequestDto.getIndividualId());
 
@@ -197,6 +203,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         trnHash.add(trn_token_hash);
         return new SendOtpResult(sendOtpDto.getTransactionId(), maskedEmailId, maskedMobile);
+    }
+
+    private boolean knowledgeBaseAuthnetication(KycAuthRequestDto kycAuthRequestDto,IdentityData identityData){
+        String encodedChallenge=kycAuthRequestDto.getKba();
+        try{
+            byte[] decodedBytes = Base64.getUrlDecoder().decode(encodedChallenge);
+            String challenge = new String(decodedBytes, StandardCharsets.UTF_8);
+            Map<String, String> challengeMap = objectMapper.readValue(challenge, Map.class);
+
+            if(challengeMap.containsKey("fullName") && challengeMap.containsKey("dob")){
+                String fullName = challengeMap.get("fullName");
+
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = inputFormat.parse(challengeMap.get("dob"));
+
+                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd");
+                String formattedDateOfBirth = outputFormat.format(date);
+
+                String IdentityFullName=identityData.getFullName().get(0).getValue();
+                String IdentityDob=identityData.getDateOfBirth();
+                if(fullName.equals(IdentityFullName) && formattedDateOfBirth.equals(IdentityDob)){
+                    return true;
+                }
+            }
+        }catch (ParseException | JsonProcessingException | IllegalArgumentException  e){
+            log.error("Failed to decode KBA challenge", e);
+            throw new MockIdentityException("auth-failed");
+        }
+        return false;
     }
 
     private String signKyc(Map<String, Object> kyc) throws JsonProcessingException {
