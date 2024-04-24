@@ -70,5 +70,5 @@ Repository contains mock implementation of auth for e-signet
 *  Update deployment of `mock-relying-party-ui` in esignet namespace with `CLIENT_ID` value from last step .
 *  As per screenshot get the private and public key pair (shown as selected in the screenshot )from the response of the `get-jwks` request from the report **_demo-oidc.html_** 
    ![](docs/images/get-jwks-details.PNG)
-*  Update `client-private-key` inside  storage in esignet namespace with  `base64 encoded` value of the keypair from previous step.
+*  Update `client-private-key` inside  secrets in esignet namespace with  `base64 encoded` value of the keypair from previous step.
 *  Restart mock-relying-party-service pod
