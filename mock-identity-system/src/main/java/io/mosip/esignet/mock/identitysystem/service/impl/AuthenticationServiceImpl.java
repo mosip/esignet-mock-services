@@ -1,7 +1,6 @@
 package io.mosip.esignet.mock.identitysystem.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
@@ -24,8 +23,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -43,6 +42,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private static final String PSUT_FORMAT = "%s%s";
     private static final String OTP_VALUE = "111111";
+
+    private final String FIELD_ID_KEY="id";
 
     @Autowired
     private AuthRepository authRepository;
@@ -67,6 +68,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${mosip.esignet.mock.authenticator.ida.otp-channels}")
     private List<String> otpChannels;
+
+    @Value("#{${mosip.esignet.authenticator.sunbird-rc.auth-factor.kba.field-details}}")
+    private List<Map<String,String>> fieldDetailList;
 
     ArrayList<String> trnHash = new ArrayList<>();
 
@@ -112,7 +116,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if(kycAuthRequestDto.getKba()!=null){
-            authStatus=knowledgeBaseAuthnetication(kycAuthRequestDto,identityData);
+            authStatus=validateKnowledgeBasedAuth(kycAuthRequestDto,identityData);
         }
 
         if (!CollectionUtils.isEmpty(kycAuthRequestDto.getTokens())) {
@@ -205,33 +209,52 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new SendOtpResult(sendOtpDto.getTransactionId(), maskedEmailId, maskedMobile);
     }
 
-    private boolean knowledgeBaseAuthnetication(KycAuthRequestDto kycAuthRequestDto,IdentityData identityData){
+    private boolean validateKnowledgeBasedAuth(KycAuthRequestDto kycAuthRequestDto,IdentityData identityData){
+        if(CollectionUtils.isEmpty(fieldDetailList)){
+            log.error("KBA field details not configured");
+            throw new MockIdentityException("auth-failed");
+        }
         String encodedChallenge=kycAuthRequestDto.getKba();
         try{
             byte[] decodedBytes = Base64.getUrlDecoder().decode(encodedChallenge);
             String challenge = new String(decodedBytes, StandardCharsets.UTF_8);
             Map<String, String> challengeMap = objectMapper.readValue(challenge, Map.class);
 
-            if(challengeMap.containsKey("fullName") && challengeMap.containsKey("dob")){
-                String fullName = challengeMap.get("fullName");
+            for(Map<String,String> fieldDetail:fieldDetailList){
+                if(challengeMap.containsKey(fieldDetail.get(FIELD_ID_KEY))) {
+                    String challengField = fieldDetail.get(FIELD_ID_KEY);
+                    Object challengeValue = challengeMap.get(challengField);
 
-                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date date = inputFormat.parse(challengeMap.get("dob"));
-
-                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd");
-                String formattedDateOfBirth = outputFormat.format(date);
-
-                String IdentityFullName=identityData.getFullName().get(0).getValue();
-                String IdentityDob=identityData.getDateOfBirth();
-                if(fullName.equals(IdentityFullName) && formattedDateOfBirth.equals(IdentityDob)){
-                    return true;
+                    Field field = identityData.getClass().getDeclaredField(challengField);
+                    field.setAccessible(true);
+                    Object fieldValue = field.get(identityData);
+                    if(fieldValue instanceof List){
+                        List<LanguageValue> languageValues = (List<LanguageValue>) fieldValue;
+                        if(!languageValues.get(0).getValue().equals(challengeValue)){
+                            return false;
+                        }
+                    }else {
+                        if(challengField.equals("dateOfBirth")) {
+                            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            Date date = inputFormat.parse((String) challengeValue);
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd");
+                            String formattedDateOfBirth = outputFormat.format(date);
+                            if (!formattedDateOfBirth.equals(identityData.getDateOfBirth())) {
+                                return false;
+                            }
+                        }else{
+                            if(!fieldValue.equals(challengeValue)){
+                                return false;
+                            }
+                        }
+                    }
                 }
             }
-        }catch (ParseException | JsonProcessingException | IllegalArgumentException  e){
-            log.error("Failed to decode KBA challenge", e);
+        }catch (Exception e){
+            log.error("Failed to decode KBA challenge or compare it with IdentityData", e);
             throw new MockIdentityException("auth-failed");
         }
-        return false;
+        return true;
     }
 
     private String signKyc(Map<String, Object> kyc) throws JsonProcessingException {

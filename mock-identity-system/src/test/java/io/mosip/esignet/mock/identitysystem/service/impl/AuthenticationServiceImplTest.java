@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticationServiceImplTest {
@@ -34,10 +35,15 @@ public class AuthenticationServiceImplTest {
 
     @Test
     public void kycAuth_withValidKbaChallenge_thenPass() {
+
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","policyNumber","type","string","format","string")
+                ,Map.of("id","fullName","type","string","format","string")
+                ,Map.of("id","dateOfBirth","type","string","format","date"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
-        kycAuthRequestDto.setKba("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkb2IiOiIxOTg3LTExLTI1In0=");
+        kycAuthRequestDto.setKba("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
         kycAuthRequestDto.setIndividualId("individualId");
         kycAuthRequestDto.setTransactionId("transactionId");
 
@@ -57,8 +63,12 @@ public class AuthenticationServiceImplTest {
 
     @Test
     public void kycAuth_withInCorrectKbaChallenge_thenFail() {
-        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","policyNumber","type","string","format","string")
+                ,Map.of("id","fullName","type","string","format","string")
+                ,Map.of("id","dateOfBirth","type","string","format","date"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
         kycAuthRequestDto.setKba("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIiwiZG9iIjoiMTk4Ny0xMS0yNSJ9");
         kycAuthRequestDto.setIndividualId("individualId");
@@ -80,6 +90,11 @@ public class AuthenticationServiceImplTest {
 
     @Test
     public void kycAuth_withInValidKbaChallenge_thenFail() {
+
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","policyNumber","type","string","format","string")
+                ,Map.of("id","fullName","type","string","format","string")
+                ,Map.of("id","dateOfBirth","type","string","format","date"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
