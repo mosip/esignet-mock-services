@@ -69,8 +69,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.esignet.mock.authenticator.ida.otp-channels}")
     private List<String> otpChannels;
 
-    @Value("#{${mosip.esignet.authenticator.sunbird-rc.auth-factor.kba.field-details}}")
+    @Value("#{${mosip.esignet.authenticator.auth-factor.kba.field-details}}")
     private List<Map<String,String>> fieldDetailList;
+
+    @Value("${mosip.esignet.authenticator.auth-factor.kba.field-language}")
+    private String fieldLang;
 
     ArrayList<String> trnHash = new ArrayList<>();
 
@@ -210,7 +213,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private boolean validateKnowledgeBasedAuth(KycAuthRequestDto kycAuthRequestDto,IdentityData identityData){
-        if(CollectionUtils.isEmpty(fieldDetailList)){
+        if(CollectionUtils.isEmpty(fieldDetailList) || StringUtils.isEmpty(fieldLang)){
             log.error("KBA field details not configured");
             throw new MockIdentityException("auth-failed");
         }
@@ -222,31 +225,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             for(Map<String,String> fieldDetail:fieldDetailList){
                 if(challengeMap.containsKey(fieldDetail.get(FIELD_ID_KEY))) {
-                    String challengField = fieldDetail.get(FIELD_ID_KEY);
-                    Object challengeValue = challengeMap.get(challengField);
-
-                    Field field = identityData.getClass().getDeclaredField(challengField);
-                    field.setAccessible(true);
-                    Object fieldValue = field.get(identityData);
-                    if(fieldValue instanceof List){
-                        List<LanguageValue> languageValues = (List<LanguageValue>) fieldValue;
-                        if(!languageValues.get(0).getValue().equals(challengeValue)){
-                            return false;
-                        }
-                    }else {
-                        if(challengField.equals("dateOfBirth")) {
-                            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
-                            Date date = inputFormat.parse((String) challengeValue);
-                            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd");
-                            String formattedDateOfBirth = outputFormat.format(date);
-                            if (!formattedDateOfBirth.equals(identityData.getDateOfBirth())) {
-                                return false;
-                            }
-                        }else{
-                            if(!fieldValue.equals(challengeValue)){
-                                return false;
-                            }
-                        }
+                    String challengeField = fieldDetail.get(FIELD_ID_KEY);
+                    String challengeValue = challengeMap.get(challengeField);
+                    if(challengeField.equals("dateOfBirth")) {
+                        challengeValue = new SimpleDateFormat("yyyy/MM/dd").format(
+                                new SimpleDateFormat(fieldDetail.get("format")).parse(challengeValue));
+                    }
+                    String identityDataValue = getIdentityDataFieldValue(identityData, challengeField);
+                    if(!identityDataValue.equals(challengeValue)) {
+                        return false;
                     }
                 }
             }
@@ -255,6 +242,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new MockIdentityException("auth-failed");
         }
         return true;
+    }
+    private String getIdentityDataFieldValue(IdentityData identityData,String challengeField) throws Exception {
+        Field field = identityData.getClass().getDeclaredField(challengeField);
+        field.setAccessible(true);
+        Object fieldValue = field.get(identityData);
+        if(fieldValue instanceof List){
+            List<LanguageValue> languageValues = (List<LanguageValue>) fieldValue;
+            for(LanguageValue languageValue:languageValues){
+                if(languageValue.getLanguage().equals(fieldLang)){
+                    return languageValue.getValue();
+                }
+            }
+        }
+        return (String) fieldValue;
     }
 
     private String signKyc(Map<String, Object> kyc) throws JsonProcessingException {

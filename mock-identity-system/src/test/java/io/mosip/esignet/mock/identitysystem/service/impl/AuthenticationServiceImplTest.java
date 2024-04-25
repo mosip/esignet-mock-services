@@ -36,10 +36,11 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycAuth_withValidKbaChallenge_thenPass() {
 
-        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","policyNumber","type","string","format","string")
-                ,Map.of("id","fullName","type","string","format","string")
-                ,Map.of("id","dateOfBirth","type","string","format","date"));
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
         ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
@@ -64,10 +65,11 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycAuth_withInCorrectKbaChallenge_thenFail() {
 
-        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","policyNumber","type","string","format","string")
-                ,Map.of("id","fullName","type","string","format","string")
-                ,Map.of("id","dateOfBirth","type","string","format","date"));
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
         ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
         kycAuthRequestDto.setKba("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIiwiZG9iIjoiMTk4Ny0xMS0yNSJ9");
@@ -91,10 +93,11 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycAuth_withInValidKbaChallenge_thenFail() {
 
-        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","policyNumber","type","string","format","string")
-                ,Map.of("id","fullName","type","string","format","string")
-                ,Map.of("id","dateOfBirth","type","string","format","date"));
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
         ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
