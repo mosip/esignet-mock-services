@@ -6,3 +6,4 @@ mock-identity-system/local.p12
 helm/*/charts
 helm/*/Chart.lock
 */build
+.vscode
