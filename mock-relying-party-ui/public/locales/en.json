@@ -170,7 +170,7 @@
     "invalid_prompt": "Invalid/Unsupported UI Prompt",
     "invalid_assertion_type": "Invalid/Unsupported Client Assertion Type",
     "invalid_client_auth": "Invalid/Unsupported Client Authentication Types",
-    "invalid_transaction": "Invalid Transaction or Transaction Expired",
+    "invalid_transaction": "The transaction has timed out. Please try again",
     "invalid_assertion": "Invalid Client Assertion",
     "invalid_acr": "Invalid/Unsupported Authentication Context Class Refs",
     "invalid_token": "Invalid/Expired Access token",
