@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.entity.KycAuth;
+import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
+import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
@@ -28,11 +30,13 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.mosip.esignet.mock.identitysystem.util.Constants.APPLICATION_ID;
+import static io.mosip.esignet.mock.identitysystem.util.Constants.UTC_DATETIME_PATTERN;
 import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256;
 
 
@@ -57,6 +61,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private SignatureService signatureService;
 
+    @Autowired
+    private VerifiedClaimRepository verifiedClaimRepository;
+
     @Value("${mosip.mock.ida.kyc.transaction-timeout-secs:60}")
     private int transactionTimeoutInSecs;
 
@@ -75,6 +82,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.esignet.authenticator.auth-factor.kba.field-language}")
     private String fieldLang;
 
+    @Value("#{${mosip.esignet.mock.authenticator.ida.oidc-claims}}")
+    private Map<String,String> oidcClaimsMapping;
+
     ArrayList<String> trnHash = new ArrayList<>();
 
     @Override
@@ -85,48 +95,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (identityData == null) {
             throw new MockIdentityException("invalid_individual_id");
         }
-        boolean authStatus = false;
-        if (kycAuthRequestDto.getOtp() != null) {
-            //check if the trn is available and active
-            if (StringUtils.isEmpty(kycAuthRequestDto.getTransactionId())) {
-                log.error("Invalid transaction Id");
-                throw new MockIdentityException("invalid_transaction_id");
-            }
+        Boolean authStatus=doKycAuthentication(kycAuthRequestDto,identityData);
 
-            var trn_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
-                    String.format(kycAuthRequestDto.getTransactionId(), kycAuthRequestDto.getIndividualId(), OTP_VALUE));
-
-            var isValid = trnHash.contains(trn_hash);
-            if (isValid) {
-                authStatus = kycAuthRequestDto.getOtp().equals(OTP_VALUE);
-                if (authStatus)
-                    trnHash.remove(trn_hash);
-                else
-                    throw new MockIdentityException("auth_failed");
-            } else {
-                throw new MockIdentityException("invalid_transaction");
-            }
-        }
-
-        if (kycAuthRequestDto.getPin() != null) {
-            authStatus = kycAuthRequestDto.getPin().equals(identityData.getPin());
-            if (!authStatus)
-                throw new MockIdentityException("auth_failed");
-        }
-
-        if (kycAuthRequestDto.getBiometrics() != null) {
-            authStatus = true; //TODO
-        }
-
-        if(kycAuthRequestDto.getKba()!=null){
-            authStatus=validateKnowledgeBasedAuth(kycAuthRequestDto,identityData);
-        }
-
-        if (!CollectionUtils.isEmpty(kycAuthRequestDto.getTokens())) {
-            authStatus = !StringUtils.isEmpty(kycAuthRequestDto.getTokens().get(0));
-            if (!authStatus)
-                throw new MockIdentityException("auth_failed");
-        }
         KycAuth kycAuth = saveKycAuthTransaction(kycAuthRequestDto.getTransactionId(), relyingPartyId,
                 kycAuthRequestDto.getIndividualId());
 
@@ -136,6 +106,53 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
         return kycAuthResponseDto;
     }
+
+    @Override
+    public KycAuthResponseDtoV2 kycAuthV2(String relyingPartyId, String clientId, KycAuthRequestDto kycAuthRequestDto) {
+
+        IdentityData identityData = identityService.getIdentity(kycAuthRequestDto.getIndividualId());
+        Boolean authStatus=doKycAuthentication(kycAuthRequestDto,identityData);
+
+        Optional<List<VerifiedClaim>> verifiedClaimsOptional = verifiedClaimRepository.findByIndividualIdAndActive(kycAuthRequestDto.getIndividualId(), true);
+
+        List<AvailableClaim> availableClaims = new ArrayList<>();
+        if (verifiedClaimsOptional.isPresent()) {
+            log.info("Verified Claims found for individualId: {}", kycAuthRequestDto.getIndividualId());
+
+            // Group verified claims
+            Map<String, List<VerifiedClaim>> verifiedClaims = verifiedClaimsOptional.get().stream()
+                    .collect(Collectors.groupingBy(VerifiedClaim::getClaim));
+
+            for (String claim : oidcClaimsMapping.keySet()) {
+                AvailableClaim availableClaim = new AvailableClaim();
+                availableClaim.setClaim(oidcClaimsMapping.get(claim));
+
+                List<VerificationDetail> verificationDetailList = new ArrayList<>();
+                if (verifiedClaims.containsKey(claim)) {
+                    List<VerifiedClaim> verifiedClaimsList = verifiedClaims.get(claim);
+
+                    for (VerifiedClaim verifiedClaim : verifiedClaimsList) {
+                        VerificationDetail verificationDetail = new VerificationDetail();
+                        verificationDetail.setDateTime(verifiedClaim.getVerifiedDateTime().format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+                        verificationDetail.setTrustFramework(verifiedClaim.getTrustFramework());
+                        verificationDetailList.add(verificationDetail);
+                    }
+                }
+                availableClaim.setVerificationDetails(verificationDetailList);
+                availableClaims.add(availableClaim);
+            }
+        }
+
+        KycAuth kycAuth = saveKycAuthTransaction(kycAuthRequestDto.getTransactionId(), relyingPartyId,
+                kycAuthRequestDto.getIndividualId());
+        KycAuthResponseDtoV2 kycAuthResponseDtoV2 = new KycAuthResponseDtoV2();
+        kycAuthResponseDtoV2.setAuthStatus(authStatus);
+        kycAuthResponseDtoV2.setKycToken(kycAuth.getKycToken());
+        kycAuthResponseDtoV2.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
+        kycAuthResponseDtoV2.setAvailableClaims(availableClaims);
+        return kycAuthResponseDtoV2;
+    }
+
 
     @Override
     public KycExchangeResponseDto kycExchange(String relyingPartyId, String clientId, KycExchangeRequestDto kycExchangeRequestDto) throws MockIdentityException {
@@ -210,6 +227,52 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         trnHash.add(trn_token_hash);
         return new SendOtpResult(sendOtpDto.getTransactionId(), maskedEmailId, maskedMobile);
+    }
+
+    private Boolean doKycAuthentication(KycAuthRequestDto kycAuthRequestDto,IdentityData identityData){
+        boolean authStatus=false;
+        if (kycAuthRequestDto.getOtp() != null) {
+            //check if the trn is available and active
+            if (StringUtils.isEmpty(kycAuthRequestDto.getTransactionId())) {
+                log.error("Invalid transaction Id");
+                throw new MockIdentityException("invalid_transaction_id");
+            }
+
+            var trn_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
+                    String.format(kycAuthRequestDto.getTransactionId(), kycAuthRequestDto.getIndividualId(), OTP_VALUE));
+
+            var isValid = trnHash.contains(trn_hash);
+            if (isValid) {
+                authStatus = kycAuthRequestDto.getOtp().equals(OTP_VALUE);
+                if (authStatus)
+                    trnHash.remove(trn_hash);
+                else
+                    throw new MockIdentityException("auth_failed");
+            } else {
+                throw new MockIdentityException("invalid_transaction");
+            }
+        }
+
+        if (kycAuthRequestDto.getPin() != null) {
+            authStatus = kycAuthRequestDto.getPin().equals(identityData.getPin());
+            if (!authStatus)
+                throw new MockIdentityException("auth_failed");
+        }
+
+        if (kycAuthRequestDto.getBiometrics() != null) {
+            authStatus = true; //TODO
+        }
+
+        if(kycAuthRequestDto.getKba()!=null){
+            authStatus=validateKnowledgeBasedAuth(kycAuthRequestDto,identityData);
+        }
+
+        if (!CollectionUtils.isEmpty(kycAuthRequestDto.getTokens())) {
+            authStatus = !StringUtils.isEmpty(kycAuthRequestDto.getTokens().get(0));
+            if (!authStatus)
+                throw new MockIdentityException("auth_failed");
+        }
+        return authStatus;
     }
 
     private boolean validateKnowledgeBasedAuth(KycAuthRequestDto kycAuthRequestDto,IdentityData identityData){

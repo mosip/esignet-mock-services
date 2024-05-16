@@ -31,5 +31,8 @@ public class ErrorConstants {
 	public static final String INVALID_VERSION = "invalid_version";
 	public static final String INVALID_VALUE = "invalid_value";
 	public static final String DUPLICATE_INDIVIDUAL_ID = "duplicate_individual_id";
-
+    public static final String INVALID_CLAIM = "invalid_claim";
+	public static final String INVALID_TRUST_FRAMEWORK = "invalid_trust_framework";
+	public static final String INVALID_VERIFIED_DATE = "invalid_verified_date";
+	;
 }
