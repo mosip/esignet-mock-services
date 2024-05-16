@@ -10,6 +10,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import io.mosip.esignet.mock.identitysystem.dto.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,10 +25,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.mosip.esignet.mock.identitysystem.dto.BiometricData;
-import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
-import io.mosip.esignet.mock.identitysystem.dto.LanguageValue;
-import io.mosip.esignet.mock.identitysystem.dto.RequestWrapper;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 
@@ -106,6 +103,46 @@ public class IdentityControllerTest {
 		mockMvc.perform(get("/identity/{individualId}", "123456789")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.response.individualId").value("123456789"));
+	}
+
+	@Test
+	public void addVerifiedCliams_withValidDetails_returnSuccessResponse() throws Exception {
+
+		RequestWrapper<VerifiedClaimRequestDto> requestWrapper = new RequestWrapper<VerifiedClaimRequestDto>();
+		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
+		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+
+		VerifiedClaimRequestDto verifiedClaimRequestDto = new VerifiedClaimRequestDto();
+		verifiedClaimRequestDto.setClaim("testClaim");
+		verifiedClaimRequestDto.setIndividualId("123456789");
+		verifiedClaimRequestDto.setTrustFramework("testTrustFramework");
+		requestWrapper.setRequest(verifiedClaimRequestDto);
+
+		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDto);
+		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
+
+		mockMvc.perform(post("/identity/add-verified-claim").content(objectMapper.writeValueAsString(requestWrapper))
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.response.status").value("Verified Claim added successfully"));;
+	}
+
+	@Test
+	public void add_withInvalidClaim_returnErrorResponse() throws JsonProcessingException, Exception {
+		RequestWrapper<VerifiedClaimRequestDto> requestWrapper = new RequestWrapper<VerifiedClaimRequestDto>();
+		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
+		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+
+		VerifiedClaimRequestDto verifiedClaimRequestDto = new VerifiedClaimRequestDto();
+		verifiedClaimRequestDto.setTrustFramework("testTrustFramework");
+		verifiedClaimRequestDto.setIndividualId("123456789");
+		verifiedClaimRequestDto.setClaim(null);
+		requestWrapper.setRequest(verifiedClaimRequestDto);
+
+		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDto);
+		mockMvc.perform(post("/identity/add-verified-claim").content(objectMapper.writeValueAsString(requestWrapper))
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors").isNotEmpty())
+				.andExpect(jsonPath("$.errors[0].errorCode").value(ErrorConstants.INVALID_CLAIM));
 	}
 
 }
