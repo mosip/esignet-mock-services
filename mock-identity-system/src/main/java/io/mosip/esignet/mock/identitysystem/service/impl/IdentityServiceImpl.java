@@ -1,7 +1,13 @@
 package io.mosip.esignet.mock.identitysystem.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
+import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
+import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
+import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
+import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
+import io.mosip.kernel.core.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +21,8 @@ import io.mosip.esignet.mock.identitysystem.repository.IdentityRepository;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 
+import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256;
+
 @Service
 public class IdentityServiceImpl implements IdentityService {
 	
@@ -23,6 +31,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	IdentityRepository identityRepository;
+
+	@Autowired
+	VerifiedClaimRepository verifiedClaimRepository;
 
 	@Override
 	public void addIdentity(IdentityData identityData) throws MockIdentityException {
@@ -53,5 +64,37 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		return identityData;
 	}
+
+	@Override
+	public void addVerifiedClaim(VerifiedClaimRequestDto verifiedClaimRequestDto) throws MockIdentityException {
+		VerifiedClaim verifiedClaim =null;
+		//validateVerifiedClaim(verifiedClaimRequestDto);
+		String idHash= HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, verifiedClaimRequestDto.getIndividualId()+ verifiedClaimRequestDto.getTrustFramework()+ verifiedClaimRequestDto.getClaim());
+		Optional<VerifiedClaim> verifiedClaimOptional=verifiedClaimRepository.findById(idHash);
+		if(verifiedClaimOptional.isPresent()){
+			throw new MockIdentityException("Claim already exists");
+		}else{
+
+			verifiedClaim = new VerifiedClaim();
+			verifiedClaim.setId(idHash);
+			verifiedClaim.setClaim(verifiedClaimRequestDto.getClaim());
+			verifiedClaim.setIndividualId(verifiedClaimRequestDto.getIndividualId());
+			verifiedClaim.setVerifiedDateTime(verifiedClaimRequestDto.getVerifiedDateTime());
+			verifiedClaim.setTrustFramework(verifiedClaimRequestDto.getTrustFramework());
+			verifiedClaim.setCrDateTime(LocalDateTime.now());
+			verifiedClaim.setActive(true);
+			verifiedClaimRepository.save(verifiedClaim);
+		}
+		verifiedClaimRepository.save(verifiedClaim);
+	}
+
+//	private void validateVerifiedClaim(VerifiedClaimRequestDto verifiedClaimRequestDto) {
+//		//Check if all the fields are present
+//		if(StringUtils.isEmpty(verifiedClaimRequestDto.getClaim()) ||
+//				StringUtils.isEmpty(verifiedClaimRequestDto.getIndividualId()) ||
+//				StringUtils.isEmpty(verifiedClaimRequestDto.getTrustFramework()) || verifiedClaimRequestDto.getVerifiedDateTime()==null){
+//			throw new MockIdentityException("Claim, IndividualId, TrustFramework and VerifiedDateTime are mandatory fields");
+//		}
+//	}
 
 }
