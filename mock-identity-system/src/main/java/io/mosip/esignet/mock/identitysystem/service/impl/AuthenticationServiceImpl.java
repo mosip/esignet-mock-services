@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.entity.KycAuth;
+import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
+import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
@@ -15,9 +17,11 @@ import io.mosip.kernel.signature.dto.JWTSignatureRequestDto;
 import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
 import io.mosip.kernel.signature.service.SignatureService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.jose4j.jwe.ContentEncryptionAlgorithmIdentifiers;
 import org.jose4j.jwe.JsonWebEncryption;
 import org.jose4j.jwe.KeyManagementAlgorithmIdentifiers;
+import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -57,6 +61,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private SignatureService signatureService;
 
+    @Autowired
+    private VerifiedClaimRepository verifiedClaimRepository;
+
     @Value("${mosip.mock.ida.kyc.transaction-timeout-secs:60}")
     private int transactionTimeoutInSecs;
 
@@ -74,6 +81,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${mosip.esignet.authenticator.auth-factor.kba.field-language}")
     private String fieldLang;
+
+    @Value("#{${mosip.esignet.mock.authenticator.ida.oidc-claims}}")
+    private Map<String,String> oidcClaimsMapping;
 
     ArrayList<String> trnHash = new ArrayList<>();
 
@@ -135,6 +145,43 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         kycAuthResponseDto.setKycToken(kycAuth.getKycToken());
         kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
         return kycAuthResponseDto;
+    }
+
+
+    @Override
+    public KycExchangeResponseDto kycExchangeV2(String relyingPartyId, String clientId, KycExchangeRequestDtoV2 kycExchangeRequestDtoV2){
+        //TODO validate relying party Id and client Id
+        Optional<KycAuth> result = authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId
+                (kycExchangeRequestDtoV2.getKycToken(), Valid.ACTIVE, kycExchangeRequestDtoV2.getTransactionId(),
+                        kycExchangeRequestDtoV2.getIndividualId());
+
+        if (!result.isPresent())
+            throw new MockIdentityException("mock-ida-006");
+
+        LocalDateTime savedTime = result.get().getResponseTime();
+        long seconds = savedTime.until(kycExchangeRequestDtoV2.getRequestDateTime(), ChronoUnit.SECONDS);
+        if (seconds < 0 || seconds > transactionTimeoutInSecs) {
+            result.get().setValidity(Valid.EXPIRED);
+            authRepository.save(result.get());
+            throw new MockIdentityException("mock-ida-007");
+        }
+
+        try {
+            Map<String, Object> kyc = buildKycDataBasedOnPolicyV2(kycExchangeRequestDtoV2.getIndividualId(),
+                    kycExchangeRequestDtoV2.getAcceptedClaims(), kycExchangeRequestDtoV2.getClaimLocales());
+            kyc.put("sub", result.get().getPartnerSpecificUserToken());
+
+            result.get().setValidity(Valid.PROCESSED);
+            authRepository.save(result.get());
+
+            String finalKyc = this.encryptKyc ? getJWE(relyingPartyId, signKyc(kyc)) : signKyc(kyc);
+            KycExchangeResponseDto kycExchangeResponseDto = new KycExchangeResponseDto();
+            kycExchangeResponseDto.setKyc(finalKyc);
+            return kycExchangeResponseDto;
+        } catch (Exception ex) {
+            log.error("Failed to build kyc data", ex);
+            throw new MockIdentityException("mock-ida-008");
+        }
     }
 
     @Override
@@ -306,6 +353,110 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return authRepository.save(kycAuth);
     }
 
+    private Map<String, Object> buildKycDataBasedOnPolicyV2(String individualId, Map<String, Object> acceptedClaims, List<String> locales)  {
+        Map<String, Object> kyc = new HashMap<>();
+        IdentityData identityData = identityService.getIdentity(individualId);
+        if (identityData == null) {
+            throw new MockIdentityException("mock-ida-001");
+        }
+
+        Optional<List<VerifiedClaim>> verifiedClaimOptional = verifiedClaimRepository.findByIndividualIdAndActive(individualId, true);
+
+        if (CollectionUtils.isEmpty(locales)) {
+            locales = Arrays.asList(defaultLanguage);
+        }
+        boolean singleLanguage = locales.size() == 1;
+        try{
+            for(String claim: acceptedClaims.keySet()){
+
+                if(claim.equals("verified_claims")){
+                    if (verifiedClaimOptional.isEmpty() || verifiedClaimOptional.get().isEmpty()){
+                        continue;
+                    }
+                    JSONArray verifiedClaims = new JSONArray();
+                    List<Map<String,Object>> verifyingClaimsList = (List)acceptedClaims.get("verified_claims");
+                    for (Map<String,Object> verifyingClaimMap : verifyingClaimsList) {
+                        Map<String,Object> verification = new HashMap<>();//Verification Response
+                        Map<String,Object> claims = new HashMap<>();//Cliams Response
+
+                        Map<String,Object> verificationClaims = (Map)verifyingClaimMap.get("claims");
+                        String trustFramework=(String)((Map) verifyingClaimMap.get("verification")).get("trust_framework");
+                        List<VerifiedClaim> verifiedClaimsList=null;
+                        if(trustFramework==null){
+                            verifiedClaimsList=verifiedClaimOptional.get();
+                        }else{
+                            verifiedClaimsList = getFrameworkVerifiedClaim(verifiedClaimOptional.get(),trustFramework);
+                        }
+                        verification.put("trust_framework",trustFramework);
+                        for (Map.Entry<String, Object> entry : verificationClaims.entrySet()) {
+                            validateOidcClaims(entry.getKey());
+                            String key = getIdentityName(entry.getKey());
+                            for(VerifiedClaim verifiedClaim:verifiedClaimsList){
+                                if(verifiedClaim.getClaim().equals(key)){
+                                    Object value=PropertyUtils.getProperty(identityData,key);
+                                    if(value instanceof List){
+                                        List<LanguageValue> languageValues = (List<LanguageValue>) value;
+                                        claims.putAll(getKycValuesV2(locales, key, languageValues, singleLanguage));
+                                    }
+                                    else if(value!=null){
+                                        claims.put(key,value);
+                                    }else{
+                                        claims.put(key,"");
+                                    }
+                                }
+                            }
+                        }
+                        Map<String,Object> verificationObject = new HashMap<>();
+                        verificationObject.put("verification",verification);
+                        verificationObject.put("claims",claims);
+                        verifiedClaims.add(verificationObject);
+                    }
+                    kyc.put("verified_claims",verifiedClaims);
+                }else{
+                    validateOidcClaims(claim);
+                    Object value=PropertyUtils.getProperty(identityData,getIdentityName(claim));
+                    if(value instanceof List){
+                        List<LanguageValue> languageValues = (List<LanguageValue>) value;
+                        kyc.putAll(getKycValuesV2(locales, claim, languageValues, singleLanguage));
+                    }else if(value!=null){
+                        kyc.put(claim,value);
+                    }else {
+                        kyc.put(claim,"");
+                    }
+                }
+            }
+        }catch (Exception e) {
+            log.error("Failed to build kyc data", e);
+            throw new MockIdentityException("mock-ida-008");
+        }
+        return kyc;
+    }
+
+    private List<VerifiedClaim> getFrameworkVerifiedClaim(List<VerifiedClaim> verifiedClaimList, String trustFramework) {
+        return verifiedClaimList.stream().filter(verifiedClaim -> verifiedClaim.getTrustFramework().
+                equals(trustFramework)).collect(Collectors.toList());
+    }
+
+    private String getIdentityName(String oidcName) {
+        for (String key : oidcClaimsMapping.keySet()) {
+            if (oidcClaimsMapping.get(key).equals(oidcName)) {
+                return key;
+            }
+        }
+        return oidcName;
+    }
+
+    private void validateOidcClaims(String claim){
+        //validate claims with against the oidcClaimsMapping
+        for (String key: oidcClaimsMapping.keySet()) {
+            if(oidcClaimsMapping.get(key).equals(claim)){
+                return;
+            }
+        }
+        log.error("Invalid Claim {}",claim);
+        throw new MockIdentityException("invalid_claim");
+    }
+
     private Map<String, Object> buildKycDataBasedOnPolicy(String individualId, List<String> claims, List<String> locales) {
         Map<String, Object> kyc = new HashMap<>();
         IdentityData identityData = identityService.getIdentity(individualId);
@@ -407,6 +558,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return Collections.emptyMap();
     }
+
+    private Map<String, Object> getKycValuesV2(List<String> locales, String claimName, List<LanguageValue> values, boolean isSingleLanguage) {
+        if (values == null) {
+            return Collections.emptyMap();
+        }
+        Map<String,Object> map=new HashMap<>();
+        for (String locale : locales){
+
+            map.putAll(values.stream()
+                    .filter(v -> v.getLanguage().equalsIgnoreCase(locale) || v.getLanguage().startsWith(locale))
+                    .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, v -> v.getValue())));
+        }
+        return map;
+    }
+
 
     public boolean isSupportedOtpChannel(String channel) {
         return channel != null && otpChannels.contains(channel.toLowerCase());
