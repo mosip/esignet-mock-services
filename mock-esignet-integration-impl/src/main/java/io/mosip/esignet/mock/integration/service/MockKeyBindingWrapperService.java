@@ -119,7 +119,7 @@ public class MockKeyBindingWrapperService implements KeyBinder {
         String clientId = "MockClientId";
 
         try {
-            var kycAuthResult = mockHelperService.doKycAuthMock(relyingPartyId, clientId, kycAuthDto);
+            var kycAuthResult = mockHelperService.doKycAuthMock(relyingPartyId, clientId, kycAuthDto,false);
             if (kycAuthResult == null || kycAuthResult.getKycToken() == null) {
                 //If not authenticated, throw error
                 throw new KeyBindingException(ErrorConstants.KEY_BINDING_FAILED);

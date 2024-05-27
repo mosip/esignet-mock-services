@@ -5,8 +5,7 @@ import io.mosip.esignet.api.dto.*;
 import io.mosip.esignet.api.exception.KycAuthException;
 import io.mosip.esignet.api.exception.SendOtpException;
 import io.mosip.esignet.api.util.ErrorConstants;
-import io.mosip.esignet.mock.integration.dto.KycAuthRequestDto;
-import io.mosip.esignet.mock.integration.dto.KycAuthResponseDto;
+import io.mosip.esignet.mock.integration.dto.*;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.signature.dto.JWTSignatureRequestDto;
 import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
@@ -39,6 +38,9 @@ public class MockHelperService {
     private String sendOtpUrl;
     @Value("${mosip.esignet.mock.authenticator.kyc-auth-url}")
     private String kycAuthUrl;
+
+    @Value("${mosip.esignet.mock.authenticator.kyc-auth-url}")
+    private String kycAuthUrlV2;
     @Value("${mosip.esignet.mock.authenticator.ida.otp-channels}")
     private List<String> otpChannels;
     @Autowired
@@ -124,7 +126,7 @@ public class MockHelperService {
         }
     }
 
-    public KycAuthResult doKycAuthMock(String relyingPartyId, String clientId, KycAuthDto kycAuthDto)
+    public KycAuthResult doKycAuthMock(String relyingPartyId, String clientId, KycAuthDto kycAuthDto,boolean claimsMetadataRequired)
             throws KycAuthException {
         try {
             KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
@@ -158,15 +160,14 @@ public class MockHelperService {
                     .post(UriComponentsBuilder.fromUriString(kycAuthUrl).pathSegment(relyingPartyId, clientId).build().toUri())
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .body(requestBody);
-            ResponseEntity<ResponseWrapper<KycAuthResponseDto>> responseEntity = restTemplate.exchange(requestEntity,
+            ResponseEntity<ResponseWrapper<KycAuthResponseDtoV2>> responseEntity = restTemplate.exchange(requestEntity,
                     new ParameterizedTypeReference<>() {
                     });
 
             if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
-                ResponseWrapper<KycAuthResponseDto> responseWrapper = responseEntity.getBody();
+                ResponseWrapper<KycAuthResponseDtoV2> responseWrapper = responseEntity.getBody();
                 if (responseWrapper.getResponse() != null && responseWrapper.getResponse().isAuthStatus() && responseWrapper.getResponse().getKycToken() != null) {
-                    return new KycAuthResult(responseEntity.getBody().getResponse().getKycToken(),
-                            responseEntity.getBody().getResponse().getPartnerSpecificUserToken());
+                    return buildKycAuthResult(responseWrapper.getResponse(),claimsMetadataRequired);
                 }
                 log.error("Error response received from IDA, Errors: {}", responseWrapper.getErrors());
                 throw new KycAuthException(CollectionUtils.isEmpty(responseWrapper.getErrors()) ?
@@ -180,6 +181,29 @@ public class MockHelperService {
                     clientId, e);
         }
         throw new KycAuthException(ErrorConstants.AUTH_FAILED);
+    }
+
+    private KycAuthResult buildKycAuthResult(KycAuthResponseDtoV2 response,boolean claimsMetadataRequired) {
+        KycAuthResult kycAuthResult = new KycAuthResult();
+        kycAuthResult.setKycToken(response.getKycToken());
+        kycAuthResult.setPartnerSpecificUserToken(response.getPartnerSpecificUserToken());
+
+        if(claimsMetadataRequired && !CollectionUtils.isEmpty(response.getAvailableClaims())){
+            Map<String,List<ClaimMetadata>> claimMetadataMap = new HashMap<>();
+            for(AvailableClaim claim : response.getAvailableClaims()){
+                List<ClaimMetadata> claimMetadataList = new ArrayList<>();
+                for(VerificationDetail verificationDetail : claim.getVerificationDetails()){
+                    ClaimMetadata claimMetadata = new ClaimMetadata();
+                    claimMetadata.setTrustFramework(verificationDetail.getTrustFramework());
+                    //verificationCompletedOn expect long value but we have string
+                    //claimMetadata.setVerificationCompletedOn(verificationDetail.getDateTime());
+                    claimMetadataList.add(claimMetadata);
+                }
+                claimMetadataMap.put(claim.getClaim(),claimMetadataList);
+            }
+            kycAuthResult.setClaimsMetadata(claimMetadataMap);
+        }
+        return kycAuthResult;
     }
 
     private boolean isKycAuthFormatSupported(String authFactorType, String kycAuthFormat) {
