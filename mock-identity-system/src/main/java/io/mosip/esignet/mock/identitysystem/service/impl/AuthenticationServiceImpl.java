@@ -79,10 +79,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("#{${mosip.esignet.authenticator.auth-factor.kba.field-details}}")
     private List<Map<String,String>> fieldDetailList;
 
-    @Value("${mosip.esignet.authenticator.auth-factor.kba.field-language}")
+    @Value("${mosip.mock.ida.kba.default.field-language}")
     private String fieldLang;
 
-    @Value("#{${mosip.esignet.mock.authenticator.ida.oidc-claims}}")
+    @Value("#{${mosip.mock.ida.identity-openid-claims-mapping}}")
     private Map<String,String> oidcClaimsMapping;
 
     ArrayList<String> trnHash = new ArrayList<>();
@@ -115,7 +115,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = verifiedClaimRepository.findByIndividualIdAndActive(kycAuthRequestDto.getIndividualId(), true);
 
-        List<AvailableClaim> availableClaims = new ArrayList<>();
+        List<ClaimMetadata> claimMetadataList = new ArrayList<>();
         if (verifiedClaimsOptional.isPresent()) {
             log.info("Verified Claims found for individualId: {}", kycAuthRequestDto.getIndividualId());
 
@@ -124,8 +124,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .collect(Collectors.groupingBy(VerifiedClaim::getClaim));
 
             for (String claim : oidcClaimsMapping.keySet()) {
-                AvailableClaim availableClaim = new AvailableClaim();
-                availableClaim.setClaim(oidcClaimsMapping.get(claim));
+                ClaimMetadata claimMetadata = new ClaimMetadata();
+                claimMetadata.setClaim(oidcClaimsMapping.get(claim));
 
                 List<VerificationDetail> verificationDetailList = new ArrayList<>();
                 if (verifiedClaims.containsKey(claim)) {
@@ -138,8 +138,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         verificationDetailList.add(verificationDetail);
                     }
                 }
-                availableClaim.setVerificationDetails(verificationDetailList);
-                availableClaims.add(availableClaim);
+                claimMetadata.setVerificationDetails(verificationDetailList);
+                claimMetadataList.add(claimMetadata);
             }
         }
 
@@ -149,7 +149,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         kycAuthResponseDtoV2.setAuthStatus(authStatus);
         kycAuthResponseDtoV2.setKycToken(kycAuth.getKycToken());
         kycAuthResponseDtoV2.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
-        kycAuthResponseDtoV2.setAvailableClaims(availableClaims);
+        kycAuthResponseDtoV2.setClaimMetadataList(claimMetadataList);
         return kycAuthResponseDtoV2;
     }
 

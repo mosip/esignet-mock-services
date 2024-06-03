@@ -7,7 +7,6 @@ import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
-import io.mosip.kernel.core.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,8 +67,8 @@ public class IdentityServiceImpl implements IdentityService {
 	@Override
 	public void addVerifiedClaim(VerifiedClaimRequestDto verifiedClaimRequestDto) throws MockIdentityException {
 		VerifiedClaim verifiedClaim =null;
-		//validateVerifiedClaim(verifiedClaimRequestDto);
-		String idHash= HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, verifiedClaimRequestDto.getIndividualId()+ verifiedClaimRequestDto.getTrustFramework()+ verifiedClaimRequestDto.getClaim());
+		getIdentity(verifiedClaimRequestDto.getIndividualId());
+		String idHash= HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, verifiedClaimRequestDto.getIndividualId()+ verifiedClaimRequestDto.getTrustFramework().toLowerCase()+ verifiedClaimRequestDto.getClaim());
 		Optional<VerifiedClaim> verifiedClaimOptional=verifiedClaimRepository.findById(idHash);
 		if(verifiedClaimOptional.isPresent()){
 			throw new MockIdentityException("Claim already exists");
@@ -87,14 +86,5 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		verifiedClaimRepository.save(verifiedClaim);
 	}
-
-//	private void validateVerifiedClaim(VerifiedClaimRequestDto verifiedClaimRequestDto) {
-//		//Check if all the fields are present
-//		if(StringUtils.isEmpty(verifiedClaimRequestDto.getClaim()) ||
-//				StringUtils.isEmpty(verifiedClaimRequestDto.getIndividualId()) ||
-//				StringUtils.isEmpty(verifiedClaimRequestDto.getTrustFramework()) || verifiedClaimRequestDto.getVerifiedDateTime()==null){
-//			throw new MockIdentityException("Claim, IndividualId, TrustFramework and VerifiedDateTime are mandatory fields");
-//		}
-//	}
 
 }
