@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class KycAuthResponseDtoV2 extends KycAuthResponseDto{
 
-    private List<AvailableClaim> availableClaims;
+    private List<ClaimMetadata> ClaimMetadataList;
 }

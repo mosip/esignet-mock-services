@@ -18,6 +18,7 @@ public class VerifiedClaim {
     @Column(name = "individual_id")
     private String individualId;
 
+    @Column(name = "claim")
     private String claim;
 
     @Column(name = "trust_framework")

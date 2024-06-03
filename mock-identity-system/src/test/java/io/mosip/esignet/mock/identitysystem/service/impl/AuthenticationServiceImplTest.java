@@ -189,9 +189,9 @@ public class AuthenticationServiceImplTest {
         Mockito.when(verifiedClaimRepository.findByIndividualIdAndActive(Mockito.anyString(),Mockito.anyBoolean())).thenReturn(verifiedClaimsOptional);
 
         KycAuthResponseDtoV2 kycAuthResponseDtoV2 = authenticationService.kycAuthV2("relyingPartyId", "clientId", kycAuthRequestDto);
-        List<AvailableClaim> availableClaims = kycAuthResponseDtoV2.getAvailableClaims();
-        for(AvailableClaim availableClaim:availableClaims){
-            if(availableClaim.getClaim().equals("picture")){
+        List<ClaimMetadata> claimMetadataList = kycAuthResponseDtoV2.getClaimMetadataList();
+        for(ClaimMetadata claimMetadata : claimMetadataList){
+            if(claimMetadata.getClaim().equals("picture")){
                 break;
             }
             Assert.fail();

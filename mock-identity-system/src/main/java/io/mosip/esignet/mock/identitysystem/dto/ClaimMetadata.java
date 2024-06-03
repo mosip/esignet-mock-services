@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class AvailableClaim {
+public class ClaimMetadata {
 
     String claim;
     List<VerificationDetail> verificationDetails;
