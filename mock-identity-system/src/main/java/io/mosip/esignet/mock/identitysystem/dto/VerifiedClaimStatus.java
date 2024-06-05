@@ -3,7 +3,7 @@ package io.mosip.esignet.mock.identitysystem.dto;
 import lombok.Data;
 
 @Data
-public class VerifiedClaimStaus {
+public class VerifiedClaimStatus {
 
     private String status;
 }

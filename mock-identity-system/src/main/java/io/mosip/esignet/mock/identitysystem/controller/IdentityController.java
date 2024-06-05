@@ -48,13 +48,13 @@ public class IdentityController {
 	}
 
 	@PostMapping(value = "identity/add-verified-claim")
-	public ResponseWrapper<VerifiedClaimStaus> createVerifiedClaim(@Valid @RequestBody RequestWrapper<VerifiedClaimRequestDto> requestWrapper) throws MockIdentityException {
-		ResponseWrapper<VerifiedClaimStaus> response = new ResponseWrapper<>();
-		VerifiedClaimStaus verifiedClaimStaus = new VerifiedClaimStaus();
-		verifiedClaimStaus.setStatus("Verified Claim added successfully");
+	public ResponseWrapper<VerifiedClaimStatus> createVerifiedClaim(@Valid @RequestBody RequestWrapper<VerifiedClaimRequestDto> requestWrapper) throws MockIdentityException {
+		ResponseWrapper<VerifiedClaimStatus> response = new ResponseWrapper<>();
+		VerifiedClaimStatus verifiedClaimStatus = new VerifiedClaimStatus();
+		verifiedClaimStatus.setStatus("Verified Claim added successfully");
 		identityService.addVerifiedClaim(requestWrapper.getRequest());
 		response.setResponseTime(HelperUtil.getCurrentUTCDateTime());
-		response.setResponse(verifiedClaimStaus);
+		response.setResponse(verifiedClaimStatus);
 		return response;
 
 	}
