@@ -127,7 +127,7 @@ public class IdentityControllerTest {
 	}
 
 	@Test
-	public void add_withInvalidClaim_returnErrorResponse() throws JsonProcessingException, Exception {
+	public void addVerifiedClaim_withInvalidClaim_returnErrorResponse() throws  Exception {
 		RequestWrapper<VerifiedClaimRequestDto> requestWrapper = new RequestWrapper<VerifiedClaimRequestDto>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));

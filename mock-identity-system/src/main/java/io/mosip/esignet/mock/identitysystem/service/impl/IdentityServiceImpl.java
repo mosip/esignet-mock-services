@@ -71,19 +71,16 @@ public class IdentityServiceImpl implements IdentityService {
 		String idHash= HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, verifiedClaimRequestDto.getIndividualId()+ verifiedClaimRequestDto.getTrustFramework().toLowerCase()+ verifiedClaimRequestDto.getClaim());
 		Optional<VerifiedClaim> verifiedClaimOptional=verifiedClaimRepository.findById(idHash);
 		if(verifiedClaimOptional.isPresent()){
-			throw new MockIdentityException("Claim already exists");
-		}else{
-
-			verifiedClaim = new VerifiedClaim();
-			verifiedClaim.setId(idHash);
-			verifiedClaim.setClaim(verifiedClaimRequestDto.getClaim());
-			verifiedClaim.setIndividualId(verifiedClaimRequestDto.getIndividualId());
-			verifiedClaim.setVerifiedDateTime(verifiedClaimRequestDto.getVerifiedDateTime());
-			verifiedClaim.setTrustFramework(verifiedClaimRequestDto.getTrustFramework());
-			verifiedClaim.setCrDateTime(LocalDateTime.now());
-			verifiedClaim.setActive(true);
-			verifiedClaimRepository.save(verifiedClaim);
+			throw new MockIdentityException(ErrorConstants.CLAIM_ALREADY_EXISTS);
 		}
+		verifiedClaim = new VerifiedClaim();
+		verifiedClaim.setId(idHash);
+		verifiedClaim.setClaim(verifiedClaimRequestDto.getClaim());
+		verifiedClaim.setIndividualId(verifiedClaimRequestDto.getIndividualId());
+		verifiedClaim.setVerifiedDateTime(verifiedClaimRequestDto.getVerifiedDateTime());
+		verifiedClaim.setTrustFramework(verifiedClaimRequestDto.getTrustFramework());
+		verifiedClaim.setCrDateTime(LocalDateTime.now());
+		verifiedClaim.setActive(true);
 		verifiedClaimRepository.save(verifiedClaim);
 	}
 

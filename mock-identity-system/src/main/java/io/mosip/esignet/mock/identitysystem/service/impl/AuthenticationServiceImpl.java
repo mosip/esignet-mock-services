@@ -115,34 +115,38 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = verifiedClaimRepository.findByIndividualIdAndActive(kycAuthRequestDto.getIndividualId(), true);
 
-        List<ClaimMetadata> claimMetadataList = new ArrayList<>();
+        Map<String, List<VerifiedClaim>> verifiedClaims=new HashMap<>();
         if (verifiedClaimsOptional.isPresent()) {
-            log.info("Verified Claims found for individualId: {}", kycAuthRequestDto.getIndividualId());
-
             // Group verified claims
-            Map<String, List<VerifiedClaim>> verifiedClaims = verifiedClaimsOptional.get().stream()
+            verifiedClaims = verifiedClaimsOptional.get().stream()
                     .collect(Collectors.groupingBy(VerifiedClaim::getClaim));
-
-            for (String claim : oidcClaimsMapping.keySet()) {
-                ClaimMetadata claimMetadata = new ClaimMetadata();
-                claimMetadata.setClaim(oidcClaimsMapping.get(claim));
-
-                List<VerificationDetail> verificationDetailList = new ArrayList<>();
-                if (verifiedClaims.containsKey(claim)) {
-                    List<VerifiedClaim> verifiedClaimsList = verifiedClaims.get(claim);
-
-                    for (VerifiedClaim verifiedClaim : verifiedClaimsList) {
-                        VerificationDetail verificationDetail = new VerificationDetail();
-                        verificationDetail.setDateTime(verifiedClaim.getVerifiedDateTime().format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
-                        verificationDetail.setTrustFramework(verifiedClaim.getTrustFramework());
-                        verificationDetailList.add(verificationDetail);
-                    }
-                }
-                claimMetadata.setVerificationDetails(verificationDetailList);
-                claimMetadataList.add(claimMetadata);
-            }
         }
 
+        List<ClaimMetadata> claimMetadataList = new ArrayList<>();
+        try{
+            for(String oidcClaim : oidcClaimsMapping.keySet()){
+
+                if(isClaimAvailable(oidcClaim,identityData)){
+                    ClaimMetadata claimMetadata = new ClaimMetadata();
+                    claimMetadata.setClaim(oidcClaimsMapping.get(oidcClaim));
+                    List<VerificationDetail> verificationDetailList = new ArrayList<>();
+                    if(verifiedClaims.containsKey(oidcClaim)){
+                        List<VerifiedClaim> verifiedClaimsList = verifiedClaims.get(oidcClaim);
+
+                        for (VerifiedClaim verifiedClaim : verifiedClaimsList) {
+                            VerificationDetail verificationDetail = new VerificationDetail();
+                            verificationDetail.setDateTime(verifiedClaim.getVerifiedDateTime().format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+                            verificationDetail.setTrustFramework(verifiedClaim.getTrustFramework());
+                            verificationDetailList.add(verificationDetail);
+                        }
+                    }
+                    claimMetadata.setVerificationDetails(verificationDetailList);
+                    claimMetadataList.add(claimMetadata);
+                }
+            }
+        }catch (Exception e){
+            log.error("Authentication failed {} ",e);
+        }
         KycAuth kycAuth = saveKycAuthTransaction(kycAuthRequestDto.getTransactionId(), relyingPartyId,
                 kycAuthRequestDto.getIndividualId());
         KycAuthResponseDtoV2 kycAuthResponseDtoV2 = new KycAuthResponseDtoV2();
@@ -469,6 +473,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, v -> v.getValue()));
         }
         return Collections.emptyMap();
+    }
+
+    private boolean isClaimAvailable(String claim, IdentityData identityData) throws Exception {
+        return getIdentityDataFieldValue(identityData,claim)!=null;
     }
 
     public boolean isSupportedOtpChannel(String channel) {

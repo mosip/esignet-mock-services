@@ -34,4 +34,5 @@ public class ErrorConstants {
     public static final String INVALID_CLAIM = "invalid_claim";
 	public static final String INVALID_TRUST_FRAMEWORK = "invalid_trust_framework";
 	public static final String INVALID_VERIFIED_DATE = "invalid_verified_date";
+	public static final String CLAIM_ALREADY_EXISTS="Claim already exists";
 }
