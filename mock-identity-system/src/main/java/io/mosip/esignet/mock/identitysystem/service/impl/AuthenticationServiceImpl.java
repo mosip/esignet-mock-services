@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -298,7 +297,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         challengeValue = new SimpleDateFormat("yyyy/MM/dd").format(
                                 new SimpleDateFormat(fieldDetail.get("format")).parse(challengeValue));
                     }
-                    String identityDataValue = getIdentityDataFieldValue(identityData, challengeField);
+                    String identityDataValue = HelperUtil.getIdentityDataFieldValue(identityData, challengeField, fieldLang);
                     if(!identityDataValue.equals(challengeValue)) {
                         return false;
                     }
@@ -309,20 +308,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new MockIdentityException("auth-failed");
         }
         return true;
-    }
-    private String getIdentityDataFieldValue(IdentityData identityData,String challengeField) throws Exception {
-        Field field = identityData.getClass().getDeclaredField(challengeField);
-        field.setAccessible(true);
-        Object fieldValue = field.get(identityData);
-        if(fieldValue instanceof List){
-            List<LanguageValue> languageValues = (List<LanguageValue>) fieldValue;
-            for(LanguageValue languageValue:languageValues){
-                if(languageValue.getLanguage().equals(fieldLang)){
-                    return languageValue.getValue();
-                }
-            }
-        }
-        return (String) fieldValue;
     }
 
     private String signKyc(Map<String, Object> kyc) throws JsonProcessingException {
@@ -476,7 +461,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private boolean isClaimAvailable(String claim, IdentityData identityData) throws Exception {
-        return getIdentityDataFieldValue(identityData,claim)!=null;
+        return HelperUtil.getIdentityDataFieldValue(identityData,claim,fieldLang)!=null;
     }
 
     public boolean isSupportedOtpChannel(String channel) {

@@ -6,8 +6,10 @@ import java.util.Optional;
 import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
+import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,6 +26,9 @@ import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256
 
 @Service
 public class IdentityServiceImpl implements IdentityService {
+
+	@Value("${mosip.mock.ida.kba.default.field-language}")
+	private String fieldLang;
 	
 	@Autowired
 	ObjectMapper objectmapper;
@@ -67,7 +72,11 @@ public class IdentityServiceImpl implements IdentityService {
 	@Override
 	public void addVerifiedClaim(VerifiedClaimRequestDto verifiedClaimRequestDto) throws MockIdentityException {
 		VerifiedClaim verifiedClaim =null;
-		getIdentity(verifiedClaimRequestDto.getIndividualId());
+		IdentityData identity = getIdentity(verifiedClaimRequestDto.getIndividualId());
+		Object fieldValue= HelperUtil.getIdentityDataFieldValue(identity, verifiedClaimRequestDto.getClaim(),fieldLang);
+		if(fieldValue==null){
+			throw new MockIdentityException(ErrorConstants.INVALID_CLAIM);
+		}
 		String idHash= HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, verifiedClaimRequestDto.getIndividualId()+ verifiedClaimRequestDto.getTrustFramework().toLowerCase()+ verifiedClaimRequestDto.getClaim());
 		Optional<VerifiedClaim> verifiedClaimOptional=verifiedClaimRepository.findById(idHash);
 		if(verifiedClaimOptional.isPresent()){
