@@ -140,7 +140,7 @@ public class MockHelperService {
                     kycAuthRequestDto.setBiometrics(authChallenge.getChallenge());
                 } else if (Objects.equals(authChallenge.getAuthFactorType(), "WLA")) {
                     kycAuthRequestDto.setTokens(List.of(authChallenge.getChallenge()));
-                } else if(Objects.equals(authChallenge.getAuthFactorType(),"kbi")){
+                } else if(Objects.equals(authChallenge.getAuthFactorType(),"KBI")){
                     kycAuthRequestDto.setKbi(authChallenge.getChallenge());
                 }
                 else {
