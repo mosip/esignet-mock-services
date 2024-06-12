@@ -55,7 +55,7 @@ public class MockHelperService {
         supportedKycAuthFormats.put("PIN", List.of("number"));
         supportedKycAuthFormats.put("BIO", List.of("encoded-json"));
         supportedKycAuthFormats.put("WLA", List.of("jwt"));
-        supportedKycAuthFormats.put("KBA", List.of("base64url-encoded-json"));
+        supportedKycAuthFormats.put("KBI", List.of("base64url-encoded-json"));
     }
 
 
@@ -140,8 +140,8 @@ public class MockHelperService {
                     kycAuthRequestDto.setBiometrics(authChallenge.getChallenge());
                 } else if (Objects.equals(authChallenge.getAuthFactorType(), "WLA")) {
                     kycAuthRequestDto.setTokens(List.of(authChallenge.getChallenge()));
-                } else if(Objects.equals(authChallenge.getAuthFactorType(),"KBA")){
-                    kycAuthRequestDto.setKba(authChallenge.getChallenge());
+                } else if(Objects.equals(authChallenge.getAuthFactorType(),"kbi")){
+                    kycAuthRequestDto.setKbi(authChallenge.getChallenge());
                 }
                 else {
                     throw new KycAuthException("invalid_auth_challenge");

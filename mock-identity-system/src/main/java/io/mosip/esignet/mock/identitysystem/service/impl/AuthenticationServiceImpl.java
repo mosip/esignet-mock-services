@@ -69,10 +69,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.esignet.mock.authenticator.ida.otp-channels}")
     private List<String> otpChannels;
 
-    @Value("#{${mosip.esignet.authenticator.auth-factor.kba.field-details}}")
+    @Value("#{${mosip.esignet.authenticator.auth-factor.kbi.field-details}}")
     private List<Map<String,String>> fieldDetailList;
 
-    @Value("${mosip.esignet.authenticator.auth-factor.kba.field-language}")
+    @Value("${mosip.esignet.authenticator.auth-factor.kbi.field-language}")
     private String fieldLang;
 
     ArrayList<String> trnHash = new ArrayList<>();
@@ -118,7 +118,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             authStatus = true; //TODO
         }
 
-        if(kycAuthRequestDto.getKba()!=null){
+        if(kycAuthRequestDto.getKbi()!=null){
             authStatus=validateKnowledgeBasedAuth(kycAuthRequestDto,identityData);
         }
 
@@ -214,10 +214,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private boolean validateKnowledgeBasedAuth(KycAuthRequestDto kycAuthRequestDto,IdentityData identityData){
         if(CollectionUtils.isEmpty(fieldDetailList) || StringUtils.isEmpty(fieldLang)){
-            log.error("KBA field details not configured");
+            log.error("KBI field details not configured");
             throw new MockIdentityException("auth-failed");
         }
-        String encodedChallenge=kycAuthRequestDto.getKba();
+        String encodedChallenge=kycAuthRequestDto.getKbi();
         try{
             byte[] decodedBytes = Base64.getUrlDecoder().decode(encodedChallenge);
             String challenge = new String(decodedBytes, StandardCharsets.UTF_8);
@@ -238,7 +238,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
             }
         }catch (Exception e){
-            log.error("Failed to decode KBA challenge or compare it with IdentityData", e);
+            log.error("Failed to decode KBI challenge or compare it with IdentityData", e);
             throw new MockIdentityException("auth-failed");
         }
         return true;
