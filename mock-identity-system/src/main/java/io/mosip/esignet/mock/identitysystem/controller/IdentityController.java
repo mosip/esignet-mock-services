@@ -2,6 +2,7 @@ package io.mosip.esignet.mock.identitysystem.controller;
 
 import javax.validation.Valid;
 
+import io.mosip.esignet.mock.identitysystem.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
-import io.mosip.esignet.mock.identitysystem.dto.IdentityStatus;
-import io.mosip.esignet.mock.identitysystem.dto.RequestWrapper;
-import io.mosip.esignet.mock.identitysystem.dto.ResponseWrapper;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
@@ -48,5 +45,17 @@ public class IdentityController {
 		response.setResponse(identityService.getIdentity(individualId));
 		response.setResponseTime(HelperUtil.getCurrentUTCDateTime());
 		return response;	
+	}
+
+	@PostMapping(value = "identity/add-verified-claim")
+	public ResponseWrapper<VerifiedClaimStatus> createVerifiedClaim(@Valid @RequestBody RequestWrapper<VerifiedClaimRequestDto> requestWrapper) throws MockIdentityException {
+		ResponseWrapper<VerifiedClaimStatus> response = new ResponseWrapper<>();
+		VerifiedClaimStatus verifiedClaimStatus = new VerifiedClaimStatus();
+		verifiedClaimStatus.setStatus("Verified Claim added successfully");
+		identityService.addVerifiedClaim(requestWrapper.getRequest());
+		response.setResponseTime(HelperUtil.getCurrentUTCDateTime());
+		response.setResponse(verifiedClaimStatus);
+		return response;
+
 	}
 }

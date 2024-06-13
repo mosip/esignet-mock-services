@@ -1,11 +1,14 @@
 package io.mosip.esignet.mock.identitysystem.util;
 
+import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
+import io.mosip.esignet.mock.identitysystem.dto.LanguageValue;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.kernel.core.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,6 +16,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static io.mosip.esignet.mock.identitysystem.util.Constants.UTC_DATETIME_PATTERN;
@@ -80,5 +84,25 @@ public class HelperUtil {
         IntStream.range(1, StringUtils.split(email, '@')[0].length() + 1).filter(i -> i % 3 != 0)
                 .forEach(i -> maskedEmail.setCharAt(i - 1, 'X'));
         return maskedEmail.toString();
+    }
+
+    public static String getIdentityDataFieldValue(IdentityData identityData, String challengeField, String fieldLang) {
+        try{
+            Field field = identityData.getClass().getDeclaredField(challengeField);
+            field.setAccessible(true);
+            Object fieldValue = field.get(identityData);
+            if(fieldValue instanceof List){
+                List<LanguageValue> languageValues = (List<LanguageValue>) fieldValue;
+                for(LanguageValue languageValue:languageValues){
+                    if(languageValue.getLanguage().equals(fieldLang)){
+                        return languageValue.getValue();
+                    }
+                }
+            }
+            return (String) fieldValue;
+        }catch (NoSuchFieldException | IllegalAccessException e){
+            log.error("Field not found in IdentityData : {}", challengeField);
+            throw new MockIdentityException("field_not_found");
+        }
     }
 }
