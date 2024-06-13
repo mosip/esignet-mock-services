@@ -19,15 +19,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdentityServiceTest {
-
-    @Mock
-    AuthRepository authRepository;
 
     @Mock
     VerifiedClaimRepository verifiedClaimRepository;
@@ -67,7 +62,7 @@ public class IdentityServiceTest {
     }
 
     @Test
-    public void addVerifiedClaim_withInValidIndividualId_thenPass() throws Exception {
+    public void addVerifiedClaim_withInValidIndividualId_thenFail()  {
         VerifiedClaimRequestDto requestDto = new VerifiedClaimRequestDto();
         requestDto.setTrustFramework("trust_framework");
         requestDto.setClaim("claim");
