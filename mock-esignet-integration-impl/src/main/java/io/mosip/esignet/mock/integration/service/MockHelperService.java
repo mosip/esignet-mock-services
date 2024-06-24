@@ -2,6 +2,7 @@ package io.mosip.esignet.mock.integration.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.esignet.api.dto.*;
+import io.mosip.esignet.api.dto.claim.ClaimMetadata;
 import io.mosip.esignet.api.exception.KycAuthException;
 import io.mosip.esignet.api.exception.SendOtpException;
 import io.mosip.esignet.api.util.ErrorConstants;
@@ -195,7 +196,7 @@ public class MockHelperService {
                 for(VerificationDetail verificationDetail : claim.getVerificationDetails()){
                     ClaimMetadata claimMetadata = new ClaimMetadata();
                     claimMetadata.setTrustFramework(verificationDetail.getTrustFramework());
-                    //verificationCompletedOn expect long value but we have string
+                    //verificationCompletedOn expect long value, but we have string
                     //claimMetadata.setVerificationCompletedOn(verificationDetail.getDateTime());
                     claimMetadataList.add(claimMetadata);
                 }

@@ -7,6 +7,7 @@ package io.mosip.esignet.mock.integration.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.esignet.api.dto.*;
+import io.mosip.esignet.api.dto.claim.ClaimMetadata;
 import io.mosip.esignet.api.exception.KycAuthException;
 import io.mosip.esignet.api.exception.KycExchangeException;
 import io.mosip.esignet.api.exception.SendOtpException;
@@ -159,7 +160,7 @@ public class MockAuthenticationService implements Authenticator {
         log.info("Started to build kyc-exchange request with transactionId : {} && clientId : {}",
                 kycExchangeDto.getTransactionId(), clientId);
         try {
-            VerifiedKycExchangeRequestDto verifiedKycExchangeRequestDto = buildVerifiedKycExchanegeRequestDto(kycExchangeDto);
+            VerifiedKycExchangeRequestDto verifiedKycExchangeRequestDto = buildVerifiedKycExchangeRequestDto(kycExchangeDto);
 
             //set signature header, body and invoke kyc exchange endpoint
             String requestBody = objectMapper.writeValueAsString(verifiedKycExchangeRequestDto);
@@ -191,7 +192,7 @@ public class MockAuthenticationService implements Authenticator {
         throw new KycExchangeException("mock-ida-005", "Failed to build kyc data");
     }
 
-    private VerifiedKycExchangeRequestDto buildVerifiedKycExchanegeRequestDto(VerifiedKycExchangeDto verifiedKycExchangeDto){
+    private VerifiedKycExchangeRequestDto buildVerifiedKycExchangeRequestDto(VerifiedKycExchangeDto verifiedKycExchangeDto){
         VerifiedKycExchangeRequestDto verifiedKycExchangeRequestDto = new VerifiedKycExchangeRequestDto();
         verifiedKycExchangeRequestDto.setRequestDateTime(MockHelperService.getUTCDateTime());
         verifiedKycExchangeRequestDto.setTransactionId(verifiedKycExchangeDto.getTransactionId());

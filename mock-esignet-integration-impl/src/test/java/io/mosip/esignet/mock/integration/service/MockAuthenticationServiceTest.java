@@ -1,9 +1,9 @@
 package io.mosip.esignet.mock.integration.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.esignet.api.dto.ClaimMetadata;
 import io.mosip.esignet.api.dto.KycExchangeResult;
 import io.mosip.esignet.api.dto.VerifiedKycExchangeDto;
+import io.mosip.esignet.api.dto.claim.ClaimMetadata;
 import io.mosip.esignet.api.exception.KycExchangeException;
 import io.mosip.esignet.api.util.ErrorConstants;
 import io.mosip.esignet.mock.integration.dto.KycExchangeResponseDto;
@@ -45,7 +45,7 @@ public class MockAuthenticationServiceTest {
         dto.setAcceptedClaims(Arrays.asList("name", "gender"));
         dto.setClaimsLocales(new String[]{"eng", "hin"});
 
-        Map<String,ClaimMetadata> verifiedClaims = new HashMap<>();
+        Map<String, ClaimMetadata> verifiedClaims = new HashMap<>();
         ClaimMetadata claimMetadata = new ClaimMetadata();
         claimMetadata.setTrustFramework("PWD");
         claimMetadata.setAssuranceLevel("assuranceLevel");
