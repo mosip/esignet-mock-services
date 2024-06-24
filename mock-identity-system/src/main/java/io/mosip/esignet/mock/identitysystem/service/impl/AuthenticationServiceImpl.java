@@ -266,7 +266,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             authStatus = true; //TODO
         }
 
-        if(kycAuthRequestDto.getKba()!=null){
+        if(kycAuthRequestDto.getKbi()!=null){
             authStatus=validateKnowledgeBasedAuth(kycAuthRequestDto,identityData);
         }
 
