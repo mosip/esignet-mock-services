@@ -123,7 +123,7 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void kycAuth2_withValidKbaChallenge_thenPass() throws Exception {
+    public void kycAuth2_withValidKbiChallenge_thenPass() throws Exception {
 
         List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
                 ,Map.of("id","fullName","type","text","format","")
@@ -143,7 +143,7 @@ public class AuthenticationServiceImplTest {
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
-        kycAuthRequestDto.setKba("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
+        kycAuthRequestDto.setKbi("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
         kycAuthRequestDto.setIndividualId("individualId");
         kycAuthRequestDto.setTransactionId("transactionId");
 
@@ -204,7 +204,7 @@ public class AuthenticationServiceImplTest {
 
 
     @Test
-    public void kycAuth2_withValidKbaChallenge_and_withOutVerifiedClaim_thenPass() throws Exception {
+    public void kycAuth2_withValidKbiChallenge_and_withOutVerifiedClaim_thenPass() throws Exception {
 
         List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
                 ,Map.of("id","fullName","type","text","format","")
@@ -224,7 +224,7 @@ public class AuthenticationServiceImplTest {
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
-        kycAuthRequestDto.setKba("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
+        kycAuthRequestDto.setKbi("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
         kycAuthRequestDto.setIndividualId("individualId");
         kycAuthRequestDto.setTransactionId("transactionId");
 
