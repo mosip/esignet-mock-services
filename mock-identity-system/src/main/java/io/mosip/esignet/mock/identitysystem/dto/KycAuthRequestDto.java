@@ -13,7 +13,7 @@ public class KycAuthRequestDto {
     private String otp;
     private String pin;
     private String biometrics;
-    private String kba;
+    private String kbi;
     private List<String> tokens;
 
 }
