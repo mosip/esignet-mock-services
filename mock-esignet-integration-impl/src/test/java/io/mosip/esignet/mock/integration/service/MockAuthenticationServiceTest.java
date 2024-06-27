@@ -3,7 +3,8 @@ package io.mosip.esignet.mock.integration.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.esignet.api.dto.KycExchangeResult;
 import io.mosip.esignet.api.dto.VerifiedKycExchangeDto;
-import io.mosip.esignet.api.dto.claim.ClaimMetadata;
+import io.mosip.esignet.api.dto.claim.FilterCriteria;
+import io.mosip.esignet.api.dto.claim.VerificationFilter;
 import io.mosip.esignet.api.exception.KycExchangeException;
 import io.mosip.esignet.api.util.ErrorConstants;
 import io.mosip.esignet.mock.integration.dto.KycExchangeResponseDto;
@@ -22,9 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MockAuthenticationServiceTest {
@@ -45,23 +44,35 @@ public class MockAuthenticationServiceTest {
         dto.setAcceptedClaims(Arrays.asList("name", "gender"));
         dto.setClaimsLocales(new String[]{"eng", "hin"});
 
-        Map<String, ClaimMetadata> verifiedClaims = new HashMap<>();
-        ClaimMetadata claimMetadata = new ClaimMetadata();
-        claimMetadata.setTrustFramework("PWD");
-        claimMetadata.setAssuranceLevel("assuranceLevel");
-        verifiedClaims.put("address",claimMetadata);
 
-        ClaimMetadata claimMetadata1 = new ClaimMetadata();
-        claimMetadata1.setTrustFramework("PWD");
-        claimMetadata1.setAssuranceLevel("assuranceLevel");
-        verifiedClaims.put("gender",claimMetadata1);
 
-        ClaimMetadata claimMetadata2= new ClaimMetadata();
-        claimMetadata2.setTrustFramework("Income-tax");
-        claimMetadata2.setAssuranceLevel("assuranceLevel4");
-        verifiedClaims.put("email",claimMetadata2);
+        Map<String, List<VerificationFilter>> acceptedVerifiedClaims=new HashMap<>();
 
-        dto.setAcceptedVerifiedClaims(verifiedClaims);
+        List<VerificationFilter> verificationFilterList1 = new ArrayList<>();
+        VerificationFilter verificationFilter= new VerificationFilter();
+        FilterCriteria trustFramework = new FilterCriteria();
+        trustFramework.setValue("PWD");
+        verificationFilter.setTrust_framework(trustFramework);
+
+        VerificationFilter verificationFilter2= new VerificationFilter();
+        FilterCriteria trustFramework2 = new FilterCriteria();
+        trustFramework2.setValue("PWD");
+        verificationFilter2.setTrust_framework(trustFramework2);
+        verificationFilterList1.add(verificationFilter2);
+        verificationFilterList1.add(verificationFilter2);
+
+
+        List<VerificationFilter> verificationFilterList3 = new ArrayList<>();
+        VerificationFilter verificationFilter3= new VerificationFilter();
+        FilterCriteria trustFramework3 = new FilterCriteria();
+        trustFramework3.setValue("Income-tax");
+        verificationFilter3.setTrust_framework(trustFramework3);
+        verificationFilterList3.add(verificationFilter3);
+
+        acceptedVerifiedClaims.put("name", verificationFilterList1);
+        acceptedVerifiedClaims.put("email", verificationFilterList3);
+
+        dto.setAcceptedVerifiedClaims(acceptedVerifiedClaims);
         KycExchangeResponseDto kycExchangeResponseDto = new KycExchangeResponseDto();
         kycExchangeResponseDto.setKyc("responseKyc");
         ResponseWrapper responseWrapper = new ResponseWrapper();
@@ -88,23 +99,28 @@ public class MockAuthenticationServiceTest {
         dto.setAcceptedClaims(Arrays.asList("name", "gender"));
         dto.setClaimsLocales(new String[]{"eng", "hin"});
 
-        Map<String, ClaimMetadata> verifiedClaims = new HashMap<>();
-        ClaimMetadata claimMetadata = new ClaimMetadata();
-        claimMetadata.setTrustFramework("PWD");
-        claimMetadata.setAssuranceLevel("assuranceLevel");
-        verifiedClaims.put("address", claimMetadata);
 
-        ClaimMetadata claimMetadata1 = new ClaimMetadata();
-        claimMetadata1.setTrustFramework("PWD");
-        claimMetadata1.setAssuranceLevel("assuranceLevel");
-        verifiedClaims.put("gender", claimMetadata1);
+        Map<String, List<VerificationFilter>> acceptedVerifiedClaims=new HashMap<>();
+        List<VerificationFilter> verificationFilters= new ArrayList<>();
+        VerificationFilter verificationFilter= new VerificationFilter();
+        FilterCriteria trustFramework = new FilterCriteria();
+        trustFramework.setValue("PWD");
+        verificationFilter.setTrust_framework(trustFramework);
 
-        ClaimMetadata claimMetadata2 = new ClaimMetadata();
-        claimMetadata2.setTrustFramework("Income-tax");
-        claimMetadata2.setAssuranceLevel("assuranceLevel4");
-        verifiedClaims.put("email", claimMetadata2);
+        verificationFilters.add(verificationFilter);
 
-        dto.setAcceptedVerifiedClaims(verifiedClaims);
+        acceptedVerifiedClaims.put("name", verificationFilters);
+
+        List<VerificationFilter> verificationFilters2= new ArrayList<>();
+        VerificationFilter verificationFilter2= new VerificationFilter();
+        FilterCriteria trustFramework2 = new FilterCriteria();
+        trustFramework.setValue("Income-tax");
+        verificationFilter2.setTrust_framework(trustFramework2);
+        verificationFilters.add(verificationFilter2);
+
+        acceptedVerifiedClaims.put("email", verificationFilters2);
+
+        dto.setAcceptedVerifiedClaims(acceptedVerifiedClaims);
         ResponseWrapper responseWrapper = new ResponseWrapper();
         responseWrapper.setResponse(null);
         ResponseEntity<ResponseWrapper<KycExchangeResponseDto>> responseEntity = new ResponseEntity(responseWrapper, HttpStatus.OK);

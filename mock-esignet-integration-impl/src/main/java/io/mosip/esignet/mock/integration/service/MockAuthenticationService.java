@@ -7,7 +7,7 @@ package io.mosip.esignet.mock.integration.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.esignet.api.dto.*;
-import io.mosip.esignet.api.dto.claim.ClaimMetadata;
+import io.mosip.esignet.api.dto.claim.VerificationFilter;
 import io.mosip.esignet.api.exception.KycAuthException;
 import io.mosip.esignet.api.exception.KycExchangeException;
 import io.mosip.esignet.api.exception.SendOtpException;
@@ -201,23 +201,26 @@ public class MockAuthenticationService implements Authenticator {
         verifiedKycExchangeRequestDto.setClaimLocales(Arrays.asList(verifiedKycExchangeDto.getClaimsLocales()));
 
         Map<String, Object> acceptedClaims = new HashMap<>();
-        //set essential unverified claims
+        //setting essential unverified claims
         for(String claim : verifiedKycExchangeDto.getAcceptedClaims()) {
             Map<String,Boolean> essential = new HashMap<>();
             essential.put("essential",true);
             acceptedClaims.put(claim,essential);
         }
 
-        //set essential verified claims
-        Map<String, ClaimMetadata> acceptedVerifiedClaimsMap = verifiedKycExchangeDto.getAcceptedVerifiedClaims();
+        //setting essential verified claims
+        Map<String, List<VerificationFilter>> acceptedVerifiedClaims = verifiedKycExchangeDto.getAcceptedVerifiedClaims();
         //segregating claims based on trust framework
         Map<String,List<String>> trustFrameworkClaimsMap = new HashMap<>();
-        for (String claim : acceptedVerifiedClaimsMap.keySet()) {
-            ClaimMetadata claimMetadata = acceptedVerifiedClaimsMap.get(claim);
-            if(trustFrameworkClaimsMap.containsKey(claimMetadata.getTrustFramework())){
-                trustFrameworkClaimsMap.get(claimMetadata.getTrustFramework()).add(claim);
-            }else{
-                trustFrameworkClaimsMap.put(claimMetadata.getTrustFramework(),new ArrayList<>(List.of(claim)));
+        for (String claim : acceptedVerifiedClaims.keySet()) {
+            List<VerificationFilter> verificationFilterList = acceptedVerifiedClaims.get(claim);
+            for(VerificationFilter verificationFilter: verificationFilterList){
+                String trustFramework = verificationFilter.getTrust_framework().getValue();
+                if(trustFrameworkClaimsMap.containsKey(trustFramework)){
+                    trustFrameworkClaimsMap.get(trustFramework).add(claim);
+                }else{
+                    trustFrameworkClaimsMap.put(trustFramework,new ArrayList<>(List.of(claim)));
+                }
             }
         }
         List<Map<String,Object>> verifiedClaimsList = new ArrayList<>();

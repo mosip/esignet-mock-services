@@ -5,11 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.esignet.api.dto.AuthChallenge;
 import io.mosip.esignet.api.dto.KycAuthDto;
 import io.mosip.esignet.api.dto.KycAuthResult;
+import io.mosip.esignet.api.dto.claim.VerificationDetail;
 import io.mosip.esignet.api.exception.KycAuthException;
 import io.mosip.esignet.api.util.ErrorConstants;
-import io.mosip.esignet.mock.integration.dto.AvailableClaim;
 import io.mosip.esignet.mock.integration.dto.KycAuthResponseDtoV2;
-import io.mosip.esignet.mock.integration.dto.VerificationDetail;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -84,19 +83,18 @@ public class MockHelperServiceTest {
         supportedKycAuthFormats.put("KBA", List.of("base64url-encoded-json"));
 
         ReflectionTestUtils.setField(mockHelperService, "kycAuthUrl", "http://localhost:8080/kyc/auth");
-        //ReflectionTestUtils.setField(mockHelperService, "supportedKycAuthFormats",supportedKycAuthFormats);
         ReflectionTestUtils.setField(mockHelperService, "objectMapper", new ObjectMapper());
 
         ResponseWrapper<KycAuthResponseDtoV2> responseWrapper = new ResponseWrapper<>();
         KycAuthResponseDtoV2 response = new KycAuthResponseDtoV2();
 
-        AvailableClaim availableClaim = new AvailableClaim();
-        availableClaim.setClaim("name");
+        Map<String,List<VerificationDetail>> claimMetaData=new HashMap<>();
+
         VerificationDetail verificationDetail = new VerificationDetail();
-        verificationDetail.setDateTime("2020-01-01T00:00:00");
-        verificationDetail.setTrustFramework("PWD");
-        availableClaim.setVerificationDetails(List.of(verificationDetail));
-        response.setAvailableClaims(List.of(availableClaim));
+        verificationDetail.setTrust_framework("test_trust_framework");
+        claimMetaData.put("name",List.of(verificationDetail));
+
+        response.setClaimMetaData(claimMetaData);
 
         response.setAuthStatus(true);
         response.setKycToken("test_token");
@@ -136,7 +134,6 @@ public class MockHelperServiceTest {
         supportedKycAuthFormats.put("KBA", List.of("base64url-encoded-json"));
 
         ReflectionTestUtils.setField(mockHelperService, "kycAuthUrl", "http://localhost:8080/kyc/auth");
-        //ReflectionTestUtils.setField(mockHelperService, "supportedKycAuthFormats",supportedKycAuthFormats);
         ReflectionTestUtils.setField(mockHelperService, "objectMapper", new ObjectMapper());
 
         ResponseWrapper<KycAuthResponseDtoV2> responseWrapper = new ResponseWrapper<>();

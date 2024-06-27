@@ -1,3 +1,8 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.mosip.esignet.mock.identitysystem.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -123,7 +128,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .collect(Collectors.groupingBy(VerifiedClaim::getClaim));
         }
 
-        List<ClaimMetadata> claimMetadataList = new ArrayList<>();
+        Map<String,List<VerificationDetail>> claimMetaDataMap = new HashMap<>();
         try{
             for(String oidcClaim : oidcClaimsMapping.keySet()){
 
@@ -137,12 +142,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         for (VerifiedClaim verifiedClaim : verifiedClaimsList) {
                             VerificationDetail verificationDetail = new VerificationDetail();
                             verificationDetail.setDateTime(verifiedClaim.getVerifiedDateTime().format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
-                            verificationDetail.setTrustFramework(verifiedClaim.getTrustFramework());
+                            verificationDetail.setTrust_framework(verifiedClaim.getTrustFramework());
                             verificationDetailList.add(verificationDetail);
                         }
                     }
-                    claimMetadata.setVerificationDetails(verificationDetailList);
-                    claimMetadataList.add(claimMetadata);
+                    claimMetaDataMap.put(oidcClaimsMapping.get(oidcClaim),verificationDetailList);
                 }
             }
         }catch (Exception e){
@@ -154,7 +158,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         kycAuthResponseDtoV2.setAuthStatus(authStatus);
         kycAuthResponseDtoV2.setKycToken(kycAuth.getKycToken());
         kycAuthResponseDtoV2.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
-        kycAuthResponseDtoV2.setClaimMetadataList(claimMetadataList);
+        kycAuthResponseDtoV2.setClaimMetaData(claimMetaDataMap);
         return kycAuthResponseDtoV2;
     }
 
@@ -421,7 +425,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     List<Map<String,Object>> verifyingClaimsList = (List)acceptedClaims.get("verified_claims");
                     for (Map<String,Object> verifyingClaimMap : verifyingClaimsList) {
                         Map<String,Object> verification = new HashMap<>();//Verification Response
-                        Map<String,Object> claims = new HashMap<>();//Cliams Response
+                        Map<String,Object> claims = new HashMap<>();//Claims Response
 
                         Map<String,Object> verificationClaims = (Map)verifyingClaimMap.get("claims");
                         String trustFramework=(String)((Map) verifyingClaimMap.get("verification")).get("trust_framework");
@@ -444,8 +448,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                     }
                                     else if(value!=null){
                                         claims.put(key,value);
-                                    }else{
-                                        claims.put(key,"");
                                     }
                                 }
                             }
@@ -464,8 +466,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         kyc.putAll(getKycValuesV2(locales, claim, languageValues, singleLanguage));
                     }else if(value!=null){
                         kyc.put(claim,value);
-                    }else {
-                        kyc.put(claim,"");
                     }
                 }
             }

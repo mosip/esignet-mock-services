@@ -1,8 +1,12 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.mosip.esignet.mock.integration.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.esignet.api.dto.*;
-import io.mosip.esignet.api.dto.claim.ClaimMetadata;
 import io.mosip.esignet.api.exception.KycAuthException;
 import io.mosip.esignet.api.exception.SendOtpException;
 import io.mosip.esignet.api.util.ErrorConstants;
@@ -127,7 +131,7 @@ public class MockHelperService {
         }
     }
 
-    public KycAuthResult doKycAuthMock(String relyingPartyId, String clientId, KycAuthDto kycAuthDto,boolean claimsMetadataRequired)
+    public KycAuthResult doKycAuthMock(String relyingPartyId, String clientId, KycAuthDto kycAuthDto,boolean isClaimsMetadataRequired)
             throws KycAuthException {
         try {
             KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
@@ -168,7 +172,7 @@ public class MockHelperService {
             if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
                 ResponseWrapper<KycAuthResponseDtoV2> responseWrapper = responseEntity.getBody();
                 if (responseWrapper.getResponse() != null && responseWrapper.getResponse().isAuthStatus() && responseWrapper.getResponse().getKycToken() != null) {
-                    return buildKycAuthResult(responseWrapper.getResponse(),claimsMetadataRequired);
+                    return buildKycAuthResult(responseWrapper.getResponse(), isClaimsMetadataRequired);
                 }
                 log.error("Error response received from IDA, Errors: {}", responseWrapper.getErrors());
                 throw new KycAuthException(CollectionUtils.isEmpty(responseWrapper.getErrors()) ?
@@ -189,20 +193,8 @@ public class MockHelperService {
         kycAuthResult.setKycToken(response.getKycToken());
         kycAuthResult.setPartnerSpecificUserToken(response.getPartnerSpecificUserToken());
 
-        if(claimsMetadataRequired && !CollectionUtils.isEmpty(response.getAvailableClaims())){
-            Map<String,List<ClaimMetadata>> claimMetadataMap = new HashMap<>();
-            for(AvailableClaim claim : response.getAvailableClaims()){
-                List<ClaimMetadata> claimMetadataList = new ArrayList<>();
-                for(VerificationDetail verificationDetail : claim.getVerificationDetails()){
-                    ClaimMetadata claimMetadata = new ClaimMetadata();
-                    claimMetadata.setTrustFramework(verificationDetail.getTrustFramework());
-                    //verificationCompletedOn expect long value, but we have string
-                    //claimMetadata.setVerificationCompletedOn(verificationDetail.getDateTime());
-                    claimMetadataList.add(claimMetadata);
-                }
-                claimMetadataMap.put(claim.getClaim(),claimMetadataList);
-            }
-            kycAuthResult.setClaimsMetadata(claimMetadataMap);
+        if(claimsMetadataRequired && !CollectionUtils.isEmpty(response.getClaimMetaData())){
+            kycAuthResult.setClaimsMetadata(response.getClaimMetaData());
         }
         return kycAuthResult;
     }
