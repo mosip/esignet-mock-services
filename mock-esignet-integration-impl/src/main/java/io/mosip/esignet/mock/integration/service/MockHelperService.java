@@ -44,8 +44,6 @@ public class MockHelperService {
     @Value("${mosip.esignet.mock.authenticator.kyc-auth-url}")
     private String kycAuthUrl;
 
-    @Value("${mosip.esignet.mock.authenticator.kyc-auth-url}")
-    private String kycAuthUrlV2;
     @Value("${mosip.esignet.mock.authenticator.ida.otp-channels}")
     private List<String> otpChannels;
     @Autowired
@@ -160,6 +158,7 @@ public class MockHelperService {
             }
 
             //set signature header, body and invoke kyc auth endpoint
+            //TODO WE can use isClaimsMetadataRequired to decide on which version of kyc-auth to call
             String requestBody = objectMapper.writeValueAsString(kycAuthRequestDto);
             RequestEntity requestEntity = RequestEntity
                     .post(UriComponentsBuilder.fromUriString(kycAuthUrl).pathSegment(relyingPartyId, clientId).build().toUri())
@@ -172,7 +171,7 @@ public class MockHelperService {
             if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
                 ResponseWrapper<KycAuthResponseDtoV2> responseWrapper = responseEntity.getBody();
                 if (responseWrapper.getResponse() != null && responseWrapper.getResponse().isAuthStatus() && responseWrapper.getResponse().getKycToken() != null) {
-                    return buildKycAuthResult(responseWrapper.getResponse(), isClaimsMetadataRequired);
+                    return buildKycAuthResult(responseWrapper.getResponse());
                 }
                 log.error("Error response received from IDA, Errors: {}", responseWrapper.getErrors());
                 throw new KycAuthException(CollectionUtils.isEmpty(responseWrapper.getErrors()) ?
@@ -188,14 +187,12 @@ public class MockHelperService {
         throw new KycAuthException(ErrorConstants.AUTH_FAILED);
     }
 
-    private KycAuthResult buildKycAuthResult(KycAuthResponseDtoV2 response,boolean claimsMetadataRequired) {
+    private KycAuthResult buildKycAuthResult(KycAuthResponseDtoV2 response) {
         KycAuthResult kycAuthResult = new KycAuthResult();
         kycAuthResult.setKycToken(response.getKycToken());
         kycAuthResult.setPartnerSpecificUserToken(response.getPartnerSpecificUserToken());
+        kycAuthResult.setClaimsMetadata(response.getClaimMetaData());
 
-        if(claimsMetadataRequired && !CollectionUtils.isEmpty(response.getClaimMetaData())){
-            kycAuthResult.setClaimsMetadata(response.getClaimMetaData());
-        }
         return kycAuthResult;
     }
 
