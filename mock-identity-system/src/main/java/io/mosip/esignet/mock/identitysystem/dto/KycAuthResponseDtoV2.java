@@ -13,6 +13,5 @@ import java.util.Map;
 @Data
 public class KycAuthResponseDtoV2 extends KycAuthResponseDto{
 
-    private List<ClaimMetadata> ClaimMetadataList;
     private Map<String,List<VerificationDetail>> claimMetaData;
 }

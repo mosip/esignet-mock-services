@@ -8,10 +8,10 @@ package io.mosip.esignet.mock.identitysystem.service.impl;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
-import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,10 +75,25 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	@Override
+	public JsonNode getIdentityInJsonNode(String individualId) throws MockIdentityException {
+		Optional<MockIdentity> mockIdentity = identityRepository.findById(individualId);
+		if (!mockIdentity.isPresent()) {
+			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
+		}
+		try {
+			return objectmapper.readTree(mockIdentity.get().getIdentityJson());
+		} catch (JsonProcessingException e) {
+			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
+		}
+	}
+
+
+
+	@Override
 	public void addVerifiedClaim(VerifiedClaimRequestDto verifiedClaimRequestDto) throws MockIdentityException {
 		VerifiedClaim verifiedClaim =null;
-		IdentityData identity = getIdentity(verifiedClaimRequestDto.getIndividualId());
-		Object fieldValue= HelperUtil.getIdentityDataFieldValue(identity, verifiedClaimRequestDto.getClaim(),fieldLang);
+		JsonNode identity = getIdentityInJsonNode(verifiedClaimRequestDto.getIndividualId());
+		Object fieldValue= HelperUtil.getIdentityDataValue(identity, verifiedClaimRequestDto.getClaim(),fieldLang);
 		if(fieldValue==null){
 			throw new MockIdentityException(ErrorConstants.INVALID_CLAIM);
 		}

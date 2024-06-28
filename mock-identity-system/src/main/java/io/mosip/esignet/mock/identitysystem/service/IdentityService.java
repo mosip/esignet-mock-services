@@ -5,6 +5,7 @@
  */
 package io.mosip.esignet.mock.identitysystem.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
@@ -16,4 +17,6 @@ public interface IdentityService {
 	public IdentityData getIdentity(String individualId) throws MockIdentityException;
 
     public  void addVerifiedClaim(VerifiedClaimRequestDto request) throws MockIdentityException;
+
+	public JsonNode getIdentityInJsonNode(String individualId) throws MockIdentityException;
 }
