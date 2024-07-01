@@ -54,7 +54,7 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void kycAuth_withValidKbaChallenge_thenPass() {
+    public void kycAuth_withValidKbiChallenge_thenPass() {
 
         List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
                 ,Map.of("id","fullName","type","text","format","")
@@ -64,7 +64,7 @@ public class AuthenticationServiceImplTest {
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
-        kycAuthRequestDto.setKba("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
+        kycAuthRequestDto.setKbi("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
         kycAuthRequestDto.setIndividualId("individualId");
         kycAuthRequestDto.setTransactionId("transactionId");
 
@@ -83,7 +83,7 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void kycAuth_withInCorrectKbaChallenge_thenFail() {
+    public void kycAuth_withInCorrectKbiChallenge_thenFail() {
 
         List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","")
                 ,Map.of("id","fullName","type","text","format","")
@@ -92,7 +92,7 @@ public class AuthenticationServiceImplTest {
         ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
-        kycAuthRequestDto.setKba("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIiwiZG9iIjoiMTk4Ny0xMS0yNSJ9");
+        kycAuthRequestDto.setKbi("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIiwiZG9iIjoiMTk4Ny0xMS0yNSJ9");
         kycAuthRequestDto.setIndividualId("individualId");
         kycAuthRequestDto.setTransactionId("transactionId");
 
@@ -111,7 +111,7 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void kycAuth_withInValidKbaChallenge_thenFail() {
+    public void kycAuth_withInValidKbiChallenge_thenFail() {
 
         List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","")
                 ,Map.of("id","fullName","type","text","format","")
@@ -121,7 +121,7 @@ public class AuthenticationServiceImplTest {
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
-        kycAuthRequestDto.setKba("xsTmFtZSI6IlNpZG0aCBLIiwiZG9iIjoiMTk4Ny0xMS0yNSJ9");
+        kycAuthRequestDto.setKbi("xsTmFtZSI6IlNpZG0aCBLIiwiZG9iIjoiMTk4Ny0xMS0yNSJ9");
         kycAuthRequestDto.setIndividualId("individualId");
         kycAuthRequestDto.setTransactionId("transactionId");
 
@@ -414,7 +414,7 @@ public class AuthenticationServiceImplTest {
 
 
     @Test
-    public void kycAuth2_withValidKbaChallenge_thenPass() throws Exception {
+    public void kycAuth2_withValidKbiChallenge_thenPass() throws Exception {
 
         List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
                 ,Map.of("id","fullName","type","text","format","")
@@ -434,7 +434,7 @@ public class AuthenticationServiceImplTest {
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
-        kycAuthRequestDto.setKba("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
+        kycAuthRequestDto.setKbi("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
         kycAuthRequestDto.setIndividualId("individualId");
         kycAuthRequestDto.setTransactionId("transactionId");
 
@@ -494,7 +494,7 @@ public class AuthenticationServiceImplTest {
 
 
     @Test
-    public void kycAuth2_withValidKbaChallenge_and_withOutVerifiedClaim_thenPass() throws Exception {
+    public void kycAuth2_withValidKbiChallenge_and_withOutVerifiedClaim_thenPass() throws Exception {
 
         List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
                 ,Map.of("id","fullName","type","text","format","")
@@ -514,7 +514,7 @@ public class AuthenticationServiceImplTest {
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
         KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
-        kycAuthRequestDto.setKba("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
+        kycAuthRequestDto.setKbi("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
         kycAuthRequestDto.setIndividualId("individualId");
         kycAuthRequestDto.setTransactionId("transactionId");
 
