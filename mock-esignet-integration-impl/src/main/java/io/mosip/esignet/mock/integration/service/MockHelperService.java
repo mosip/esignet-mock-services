@@ -1,3 +1,8 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.mosip.esignet.mock.integration.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -5,8 +10,7 @@ import io.mosip.esignet.api.dto.*;
 import io.mosip.esignet.api.exception.KycAuthException;
 import io.mosip.esignet.api.exception.SendOtpException;
 import io.mosip.esignet.api.util.ErrorConstants;
-import io.mosip.esignet.mock.integration.dto.KycAuthRequestDto;
-import io.mosip.esignet.mock.integration.dto.KycAuthResponseDto;
+import io.mosip.esignet.mock.integration.dto.*;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.signature.dto.JWTSignatureRequestDto;
 import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
@@ -39,6 +43,7 @@ public class MockHelperService {
     private String sendOtpUrl;
     @Value("${mosip.esignet.mock.authenticator.kyc-auth-url}")
     private String kycAuthUrl;
+
     @Value("${mosip.esignet.mock.authenticator.ida.otp-channels}")
     private List<String> otpChannels;
     @Autowired
@@ -124,7 +129,7 @@ public class MockHelperService {
         }
     }
 
-    public KycAuthResult doKycAuthMock(String relyingPartyId, String clientId, KycAuthDto kycAuthDto)
+    public KycAuthResult doKycAuthMock(String relyingPartyId, String clientId, KycAuthDto kycAuthDto,boolean isClaimsMetadataRequired)
             throws KycAuthException {
         try {
             KycAuthRequestDto kycAuthRequestDto = new KycAuthRequestDto();
@@ -153,20 +158,20 @@ public class MockHelperService {
             }
 
             //set signature header, body and invoke kyc auth endpoint
+            //TODO WE can use isClaimsMetadataRequired to decide on which version of kyc-auth to call
             String requestBody = objectMapper.writeValueAsString(kycAuthRequestDto);
             RequestEntity requestEntity = RequestEntity
                     .post(UriComponentsBuilder.fromUriString(kycAuthUrl).pathSegment(relyingPartyId, clientId).build().toUri())
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .body(requestBody);
-            ResponseEntity<ResponseWrapper<KycAuthResponseDto>> responseEntity = restTemplate.exchange(requestEntity,
+            ResponseEntity<ResponseWrapper<KycAuthResponseDtoV2>> responseEntity = restTemplate.exchange(requestEntity,
                     new ParameterizedTypeReference<>() {
                     });
 
             if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
-                ResponseWrapper<KycAuthResponseDto> responseWrapper = responseEntity.getBody();
+                ResponseWrapper<KycAuthResponseDtoV2> responseWrapper = responseEntity.getBody();
                 if (responseWrapper.getResponse() != null && responseWrapper.getResponse().isAuthStatus() && responseWrapper.getResponse().getKycToken() != null) {
-                    return new KycAuthResult(responseEntity.getBody().getResponse().getKycToken(),
-                            responseEntity.getBody().getResponse().getPartnerSpecificUserToken());
+                    return buildKycAuthResult(responseWrapper.getResponse());
                 }
                 log.error("Error response received from IDA, Errors: {}", responseWrapper.getErrors());
                 throw new KycAuthException(CollectionUtils.isEmpty(responseWrapper.getErrors()) ?
@@ -180,6 +185,15 @@ public class MockHelperService {
                     clientId, e);
         }
         throw new KycAuthException(ErrorConstants.AUTH_FAILED);
+    }
+
+    private KycAuthResult buildKycAuthResult(KycAuthResponseDtoV2 response) {
+        KycAuthResult kycAuthResult = new KycAuthResult();
+        kycAuthResult.setKycToken(response.getKycToken());
+        kycAuthResult.setPartnerSpecificUserToken(response.getPartnerSpecificUserToken());
+        kycAuthResult.setClaimsMetadata(response.getClaimMetaData());
+
+        return kycAuthResult;
     }
 
     private boolean isKycAuthFormatSupported(String authFactorType, String kycAuthFormat) {

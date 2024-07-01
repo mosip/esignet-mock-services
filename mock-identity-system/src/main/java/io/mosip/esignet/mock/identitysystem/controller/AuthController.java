@@ -1,6 +1,12 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.mosip.esignet.mock.identitysystem.controller;
 
 import io.mosip.esignet.mock.identitysystem.dto.*;
+import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -45,6 +51,20 @@ public class AuthController {
                                                                @RequestBody @NotNull @Valid KycExchangeRequestDto kycExchangeRequestDto) {
         ResponseWrapper<KycExchangeResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, kycExchangeRequestDto));
+        return responseWrapper;
+    }
+
+    @PostMapping(path = "v2/kyc-exchange/{relyingPartyId}/{clientId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWrapper<KycExchangeResponseDto> kycExchangeV2(@PathVariable @NotBlank String relyingPartyId,
+                                                               @PathVariable @NotBlank String clientId,
+                                                               @RequestBody @NotNull @Valid KycExchangeRequestDtoV2 kycExchangeRequestDtoV2) {
+        ResponseWrapper<KycExchangeResponseDto> responseWrapper = new ResponseWrapper<>();
+        try {
+            responseWrapper.setResponse(authenticationService.kycExchangeV2(relyingPartyId, clientId, kycExchangeRequestDtoV2));
+        } catch (MockIdentityException ex) {
+            throw ex;
+        }
         return responseWrapper;
     }
 
