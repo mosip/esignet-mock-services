@@ -105,7 +105,6 @@
 
 	<modules>
 		<module>mock-identity-system</module>
-		<module>mock-esignet-integration-impl</module>
 	</modules>
 
 	<profiles>
