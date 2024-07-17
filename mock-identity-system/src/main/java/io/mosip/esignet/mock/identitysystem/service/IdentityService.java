@@ -18,5 +18,5 @@ public interface IdentityService {
 
     public  void addVerifiedClaim(VerifiedClaimRequestDto request) throws MockIdentityException;
 
-	public JsonNode getIdentityInJsonNode(String individualId) throws MockIdentityException;
+	public JsonNode getIdentityV2(String individualId) throws MockIdentityException;
 }

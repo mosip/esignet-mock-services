@@ -74,7 +74,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityInJsonNode(Mockito.anyString())).thenReturn(jsonNode);
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(jsonNode);
 
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
@@ -102,7 +102,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityInJsonNode(Mockito.anyString())).thenReturn(jsonNode);
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(jsonNode);
 
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
@@ -131,7 +131,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityInJsonNode(Mockito.anyString())).thenReturn(jsonNode);
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(jsonNode);
         try{
             authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthRequestDto);
         }catch (MockIdentityException e){
@@ -237,7 +237,7 @@ public class AuthenticationServiceImplTest {
                                     Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(kycAuthOptional);
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
-        Mockito.when(identityService.getIdentityInJsonNode(Mockito.anyString())).thenReturn(jsonNode);
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(jsonNode);
 
         VerifiedClaim verifiedClaim = new VerifiedClaim();
         verifiedClaim.setTrustFramework("pwd");
@@ -298,7 +298,7 @@ public class AuthenticationServiceImplTest {
         Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(Mockito.any(),
                 Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(kycAuthOptional);
 
-        Mockito.when(identityService.getIdentityInJsonNode(Mockito.anyString())).thenReturn(null);
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(null);
 
         try{
             authenticationService.kycExchangeV2("relyingPartyId", "clientId", kycExchangeRequestDtoV2);
@@ -402,7 +402,7 @@ public class AuthenticationServiceImplTest {
                 Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(kycAuthOptional);
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
-        Mockito.when(identityService.getIdentityInJsonNode(Mockito.anyString())).thenReturn(jsonNode);
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(jsonNode);
 
         Mockito.when(verifiedClaimRepository.findByIndividualIdAndActive(Mockito.anyString(),Mockito.anyBoolean())).thenReturn(Optional.empty());
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
@@ -454,7 +454,7 @@ public class AuthenticationServiceImplTest {
         identityData.setDateOfBirth("1987/11/25");
         identityData.setEmail("email@gmail.com");
 
-        Mockito.when(identityService.getIdentityInJsonNode(Mockito.anyString())).thenReturn(jsonNode);
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(jsonNode);
 
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
@@ -534,7 +534,7 @@ public class AuthenticationServiceImplTest {
         identityData.setDateOfBirth("1987/11/25");
         identityData.setEmail("email@gmail.com");
 
-        Mockito.when(identityService.getIdentityInJsonNode(Mockito.anyString())).thenReturn(jsonNode);
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(jsonNode);
 
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 

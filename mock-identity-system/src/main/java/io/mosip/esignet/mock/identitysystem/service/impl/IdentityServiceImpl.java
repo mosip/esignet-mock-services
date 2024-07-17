@@ -75,7 +75,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	@Override
-	public JsonNode getIdentityInJsonNode(String individualId) throws MockIdentityException {
+	public JsonNode getIdentityV2(String individualId) throws MockIdentityException {
 		Optional<MockIdentity> mockIdentity = identityRepository.findById(individualId);
 		if (!mockIdentity.isPresent()) {
 			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
@@ -92,7 +92,7 @@ public class IdentityServiceImpl implements IdentityService {
 	@Override
 	public void addVerifiedClaim(VerifiedClaimRequestDto verifiedClaimRequestDto) throws MockIdentityException {
 		VerifiedClaim verifiedClaim =null;
-		JsonNode identity = getIdentityInJsonNode(verifiedClaimRequestDto.getIndividualId());
+		JsonNode identity = getIdentityV2(verifiedClaimRequestDto.getIndividualId());
 		Object fieldValue= HelperUtil.getIdentityDataValue(identity, verifiedClaimRequestDto.getClaim(),fieldLang);
 		if(fieldValue==null){
 			throw new MockIdentityException(ErrorConstants.INVALID_CLAIM);

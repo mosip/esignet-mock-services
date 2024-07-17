@@ -96,10 +96,11 @@ public class HelperUtil {
        if(jsonNode.has(field)){
            Object fieldValue = jsonNode.get(field);
            if(fieldValue instanceof ArrayNode){
-               List<LanguageValue> languageValues = getLanguageValuesList((ArrayNode) fieldValue);
-               for(LanguageValue languageValue:languageValues){
-                   if(languageValue.getLanguage().equals(fieldLang)){
-                       return languageValue.getValue();
+               for (JsonNode node : (ArrayNode)fieldValue) {
+                   String language = node.get("language").asText();
+                   String value = node.get("value").asText();
+                   if(language.equals(fieldLang)){
+                       return value;
                    }
                }
            }else

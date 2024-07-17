@@ -10,6 +10,6 @@ import lombok.Data;
 @Data
 public class VerificationDetail {
 
-    String trust_framework;
+    String trustFramework;
     String dateTime;
 }

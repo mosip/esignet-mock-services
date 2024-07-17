@@ -98,7 +98,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public KycAuthResponseDto kycAuth(String relyingPartyId, String clientId, KycAuthRequestDto kycAuthRequestDto) throws MockIdentityException {
         //TODO validate relying party Id and client Id
 
-        JsonNode identityData = identityService.getIdentityInJsonNode(kycAuthRequestDto.getIndividualId());
+        JsonNode identityData = identityService.getIdentityV2(kycAuthRequestDto.getIndividualId());
         if (identityData == null) {
             throw new MockIdentityException("invalid_individual_id");
         }
@@ -117,7 +117,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public KycAuthResponseDtoV2 kycAuthV2(String relyingPartyId, String clientId, KycAuthRequestDto kycAuthRequestDto) {
 
-        JsonNode identityData = identityService.getIdentityInJsonNode(kycAuthRequestDto.getIndividualId());
+        JsonNode identityData = identityService.getIdentityV2(kycAuthRequestDto.getIndividualId());
         Boolean authStatus=doKycAuthentication(kycAuthRequestDto,identityData);
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = verifiedClaimRepository.findByIndividualIdAndActive(kycAuthRequestDto.getIndividualId(), true);
@@ -143,7 +143,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         for (VerifiedClaim verifiedClaim : verifiedClaimsList) {
                             VerificationDetail verificationDetail = new VerificationDetail();
                             verificationDetail.setDateTime(verifiedClaim.getVerifiedDateTime().format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
-                            verificationDetail.setTrust_framework(verifiedClaim.getTrustFramework());
+                            verificationDetail.setTrustFramework(verifiedClaim.getTrustFramework());
                             verificationDetailList.add(verificationDetail);
                         }
                     }
@@ -301,7 +301,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if (kycAuthRequestDto.getPin() != null) {
-            authStatus = kycAuthRequestDto.getPin().equals(HelperUtil.getIdentityDataValue(identityData,"pin","eng"));
+            authStatus = kycAuthRequestDto.getPin().equals(HelperUtil.getIdentityDataValue(identityData,"pin",defaultLanguage));
             if (!authStatus)
                 throw new MockIdentityException("auth_failed");
         }
@@ -404,7 +404,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private Map<String, Object> buildKycDataBasedOnPolicyV2(String individualId, Map<String, Object> acceptedClaims, List<String> locales)  {
         Map<String, Object> kyc = new HashMap<>();
-        JsonNode identityData = identityService.getIdentityInJsonNode(individualId);
+        JsonNode identityData = identityService.getIdentityV2(individualId);
         if (identityData == null) {
             throw new MockIdentityException("mock-ida-001");
         }
