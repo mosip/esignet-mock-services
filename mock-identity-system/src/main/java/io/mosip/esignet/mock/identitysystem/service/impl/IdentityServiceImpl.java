@@ -27,7 +27,7 @@ import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256
 @Service
 public class IdentityServiceImpl implements IdentityService {
 
-	@Value("${mosip.mock.ida.kba.default.field-language}")
+	@Value("${mosip.mock.ida.kbi.default.field-language}")
 	private String fieldLang;
 	
 	@Autowired
