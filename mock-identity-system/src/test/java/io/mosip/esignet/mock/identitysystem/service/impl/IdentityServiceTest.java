@@ -5,7 +5,6 @@ import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.entity.MockIdentity;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
-import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
 import io.mosip.esignet.mock.identitysystem.repository.IdentityRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
@@ -41,6 +40,7 @@ public class IdentityServiceTest {
     @Test
     public void addVerifiedClaim_withValidDetails_thenPass() throws Exception {
         ReflectionTestUtils.setField(identityService,"fieldLang","eng");
+        ReflectionTestUtils.setField(identityService,"objectmapper",new ObjectMapper());
         VerifiedClaimRequestDto requestDto = new VerifiedClaimRequestDto();
         requestDto.setTrustFramework("trust_framework");
         requestDto.setClaim("email");
@@ -56,8 +56,6 @@ public class IdentityServiceTest {
         mockIdentity.setIdentityJson("{\"individualId\":\"8267411571\",\"pin\":\"111111\",\"fullName\":[{\"language\":\"fra\",\"value\":\"Siddharth K Mansour\"},{\"language\":\"ara\",\"value\":\"تتگلدكنسَزقهِقِفل دسييسيكدكنوڤو\"},{\"language\":\"eng\",\"value\":\"Siddharth K Mansour\"}],\"email\":\"siddhartha.km@gmail.com\",\"phone\":\"+919427357934\"}");
         Mockito.when(verifiedClaimRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
         Mockito.when(identityRepository.findById(Mockito.anyString())).thenReturn(Optional.of(mockIdentity));
-        Mockito.when(objectMapper.readValue(Mockito.anyString(),Mockito.eq(IdentityData.class))).thenReturn(identityData);
-
         identityService.addVerifiedClaim(requestDto);
     }
 

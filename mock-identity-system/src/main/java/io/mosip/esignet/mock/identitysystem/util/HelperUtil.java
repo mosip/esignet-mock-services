@@ -1,6 +1,12 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.mosip.esignet.mock.identitysystem.util;
 
-import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.mosip.esignet.mock.identitysystem.dto.LanguageValue;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.kernel.core.util.StringUtils;
@@ -8,13 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -86,23 +92,33 @@ public class HelperUtil {
         return maskedEmail.toString();
     }
 
-    public static String getIdentityDataFieldValue(IdentityData identityData, String challengeField, String fieldLang) {
-        try{
-            Field field = identityData.getClass().getDeclaredField(challengeField);
-            field.setAccessible(true);
-            Object fieldValue = field.get(identityData);
-            if(fieldValue instanceof List){
-                List<LanguageValue> languageValues = (List<LanguageValue>) fieldValue;
-                for(LanguageValue languageValue:languageValues){
-                    if(languageValue.getLanguage().equals(fieldLang)){
-                        return languageValue.getValue();
-                    }
-                }
-            }
-            return (String) fieldValue;
-        }catch (NoSuchFieldException | IllegalAccessException e){
-            log.error("Field not found in IdentityData : {}", challengeField);
-            throw new MockIdentityException("field_not_found");
+    public static String getIdentityDataValue(JsonNode jsonNode, String field, String fieldLang) {
+       if(jsonNode.has(field)){
+           Object fieldValue = jsonNode.get(field);
+           if(fieldValue instanceof ArrayNode){
+               for (JsonNode node : (ArrayNode)fieldValue) {
+                   String language = node.get("language").asText();
+                   String value = node.get("value").asText();
+                   if(language.equals(fieldLang)){
+                       return value;
+                   }
+               }
+           }else
+            return jsonNode.get(field).asText();
+       }
+       return null;
+    }
+
+    public static List<LanguageValue> getLanguageValuesList(ArrayNode fieldValue){
+        List<LanguageValue> languageValues=new ArrayList<>();
+        for (JsonNode node : fieldValue) {
+            String language = node.get("language").asText();
+            String value = node.get("value").asText();
+            LanguageValue languageValue = new LanguageValue();
+            languageValue.setLanguage(language);
+            languageValue.setValue(value);
+            languageValues.add(languageValue);
         }
+        return languageValues;
     }
 }
