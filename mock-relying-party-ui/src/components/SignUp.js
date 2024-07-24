@@ -33,7 +33,7 @@ export default function SignUp({ i18nKeyPrefix = "signup" }) {
       prompt: clientDetails.prompt,
       max_age: clientDetails.max_age,
       ui_locales: i18n.language,
-      claims: JSON.parse(decodeURI(clientDetails.userProfileClaims)),
+      claims: JSON.parse(decodeURIComponent(clientDetails.userProfileClaims)),
     };
 
     window.SignInWithEsignetButton?.init({

@@ -78,7 +78,7 @@ export default function Registration({
       prompt: clientDetails.prompt,
       max_age: clientDetails.max_age,
       ui_locales: i18n.language,
-      claims: JSON.parse(decodeURI(clientDetails.registrationClaims)),
+      claims: JSON.parse(decodeURIComponent(clientDetails.registrationClaims)),
     };
 
     window.SignInWithEsignetButton?.init({
