@@ -207,6 +207,7 @@
     "invalid_state": "Transaction Found in Invalid State.",
     "authorization_failed_msg": "Authorization Failed",
     "consent_request_rejected": "Consent Request Rejected",
-    "transaction_timeout": "The transaction has timed out. Please try again"
+    "transaction_timeout": "The transaction has timed out. Please try again",
+    "consent_rejected": "We’re sorry! Your login was unsuccessful as consent was not shared."
   }
 }
