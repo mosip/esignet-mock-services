@@ -13,6 +13,8 @@ import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 public interface IdentityService {
 
 	public void addIdentity(IdentityData mockAuthDataRequest) throws MockIdentityException;
+
+	public void updateIdentity(IdentityData mockAuthDataRequest) throws MockIdentityException;
 	
 	public IdentityData getIdentity(String individualId) throws MockIdentityException;
 
