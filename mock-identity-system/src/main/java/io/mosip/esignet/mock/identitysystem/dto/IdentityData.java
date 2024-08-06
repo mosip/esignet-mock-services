@@ -12,12 +12,14 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import io.mosip.esignet.mock.identitysystem.validator.IdData;
 import lombok.Data;
 
 @Data
 @IdData
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IdentityData {
 	
 	@NotBlank(message = ErrorConstants.INVALID_INDIVIDUAL_ID)
