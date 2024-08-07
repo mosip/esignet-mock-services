@@ -208,6 +208,7 @@
     "authorization_failed_msg": "Authorization Failed",
     "consent_request_rejected": "Consent Request Rejected",
     "transaction_timeout": "The transaction has timed out. Please try again",
-    "consent_rejected": "We’re sorry! Your login was unsuccessful as consent was not shared."
+    "consent_rejected": "We’re sorry! Your login was unsuccessful as consent was not shared.",
+    "incompatible_browser": "We’re sorry! Please upgrade to the latest version of the browser & try again."
   }
 }
