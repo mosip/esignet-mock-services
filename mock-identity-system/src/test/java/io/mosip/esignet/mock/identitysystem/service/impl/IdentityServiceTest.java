@@ -18,6 +18,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,9 +31,6 @@ public class IdentityServiceTest {
     @Mock
     IdentityRepository identityRepository;
 
-    @Mock
-    ObjectMapper objectMapper;
-
     @InjectMocks
     IdentityServiceImpl identityService;
 
@@ -40,12 +39,15 @@ public class IdentityServiceTest {
     @Test
     public void addVerifiedClaim_withValidDetails_thenPass() throws Exception {
         ReflectionTestUtils.setField(identityService,"fieldLang","eng");
-        ReflectionTestUtils.setField(identityService,"objectmapper",new ObjectMapper());
+        ReflectionTestUtils.setField(identityService,"objectMapper",new ObjectMapper());
+
+        List<VerifiedClaimRequestDto> verifiedClaimRequestDtoList=new ArrayList<>();
         VerifiedClaimRequestDto requestDto = new VerifiedClaimRequestDto();
         requestDto.setTrustFramework("trust_framework");
         requestDto.setClaim("email");
         requestDto.setIndividualId("123456");
         requestDto.setVerifiedDateTime(LocalDateTime.now());
+        verifiedClaimRequestDtoList.add(requestDto);
 
         IdentityData identityData = new IdentityData();
         identityData.setEmail("email@gmail.com");
@@ -56,21 +58,22 @@ public class IdentityServiceTest {
         mockIdentity.setIdentityJson("{\"individualId\":\"8267411571\",\"pin\":\"111111\",\"fullName\":[{\"language\":\"fra\",\"value\":\"Siddharth K Mansour\"},{\"language\":\"ara\",\"value\":\"تتگلدكنسَزقهِقِفل دسييسيكدكنوڤو\"},{\"language\":\"eng\",\"value\":\"Siddharth K Mansour\"}],\"email\":\"siddhartha.km@gmail.com\",\"phone\":\"+919427357934\"}");
         Mockito.when(verifiedClaimRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
         Mockito.when(identityRepository.findById(Mockito.anyString())).thenReturn(Optional.of(mockIdentity));
-        identityService.addVerifiedClaim(requestDto);
+        identityService.addVerifiedClaim(verifiedClaimRequestDtoList);
     }
 
     @Test
     public void addVerifiedClaim_withInValidIndividualId_thenFail()  {
+        List<VerifiedClaimRequestDto> verifiedClaimRequestDtoList=new ArrayList<>();
         VerifiedClaimRequestDto requestDto = new VerifiedClaimRequestDto();
         requestDto.setTrustFramework("trust_framework");
         requestDto.setClaim("claim");
         requestDto.setIndividualId("123456");
         requestDto.setVerifiedDateTime(LocalDateTime.now());
-
+        verifiedClaimRequestDtoList.add(requestDto);
         Mockito.when(identityRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
 
         try{
-            identityService.addVerifiedClaim(requestDto);
+            identityService.addVerifiedClaim(verifiedClaimRequestDtoList);
         }catch (MockIdentityException e){
             Assert.assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID,e.getErrorCode());
         }
