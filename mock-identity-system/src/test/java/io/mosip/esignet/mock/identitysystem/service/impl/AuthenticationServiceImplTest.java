@@ -314,7 +314,7 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void testKycExchange_BuildKycDataFailure() {
+    public void kycExchange_invalidKycData_thenFail() {
         ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
         ReflectionTestUtils.setField(authenticationService,"encryptKyc",false);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
