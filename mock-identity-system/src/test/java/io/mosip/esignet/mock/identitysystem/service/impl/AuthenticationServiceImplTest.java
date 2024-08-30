@@ -1,5 +1,6 @@
 package io.mosip.esignet.mock.identitysystem.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -26,6 +27,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.lang.reflect.InvocationTargetException;
 
+import static org.mockito.ArgumentMatchers.eq;
+
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticationServiceImplTest {
 
@@ -43,6 +46,9 @@ public class AuthenticationServiceImplTest {
 
     @InjectMocks
     AuthenticationServiceImpl authenticationService;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     private JsonNode jsonNode=null;
 
@@ -227,6 +233,114 @@ public class AuthenticationServiceImplTest {
         }catch(MockIdentityException e) {
             Assert.assertEquals("no_email_mobile_found", e.getMessage());
         }
+    }
+
+    @Test
+    public void kycExchange_withValidDetails_thenPass() throws MockIdentityException, JsonProcessingException {
+        ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
+        ReflectionTestUtils.setField(authenticationService,"encryptKyc",false);
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
+        String relyingPartyId = "relyingPartyId";
+        String clientId = "clientId";
+
+        KycExchangeRequestDto kycExchangeRequestDto=new KycExchangeRequestDto();
+        kycExchangeRequestDto.setKycToken("kycToken");
+        kycExchangeRequestDto.setIndividualId("individualId");
+        kycExchangeRequestDto.setTransactionId("transactionId");
+        kycExchangeRequestDto.setClaimLocales(Arrays.asList("en","fr"));
+        kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender"));
+
+        kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
+
+        KycAuth kycAuth=new KycAuth();
+        kycAuth.setResponseTime(LocalDateTime.now().minusSeconds(2));
+        kycAuth.setPartnerSpecificUserToken("token");
+
+        IdentityData identityData=new IdentityData();
+        JWTSignatureResponseDto jwtSignatureResponseDto=new JWTSignatureResponseDto();
+        jwtSignatureResponseDto.setJwtSignedData("signedData");
+
+        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
+                Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(Optional.of(kycAuth));
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityData);
+        Mockito.when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("payload");
+        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
+
+        KycExchangeResponseDto response = authenticationService.kycExchange(relyingPartyId, clientId, kycExchangeRequestDto);
+        Assert.assertNotNull(response);
+        Assert.assertEquals("signedData", response.getKyc());
+    }
+
+    @Test
+    public void kycExchange_invalidToken_thenFail() {
+        String relyingPartyId = "relyingPartyId";
+        String clientId = "clientId";
+        KycExchangeRequestDto kycExchangeRequestDto=new KycExchangeRequestDto();
+        MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
+            authenticationService.kycExchange(relyingPartyId, clientId, kycExchangeRequestDto);
+        });
+        Assert.assertEquals("mock-ida-006", exception.getMessage());
+    }
+
+    @Test
+    public void kycExchange_expiredTransaction_thenFail() {
+        ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
+        ReflectionTestUtils.setField(authenticationService,"encryptKyc",false);
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
+        String relyingPartyId = "relyingPartyId";
+        String clientId = "clientId";
+
+        KycExchangeRequestDto kycExchangeRequestDto=new KycExchangeRequestDto();
+        kycExchangeRequestDto.setKycToken("kycToken");
+        kycExchangeRequestDto.setIndividualId("individualId");
+        kycExchangeRequestDto.setTransactionId("transactionId");
+        kycExchangeRequestDto.setClaimLocales(Arrays.asList("en","fr"));
+        kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender"));
+
+        kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
+
+        KycAuth kycAuth=new KycAuth();
+        kycAuth.setResponseTime(LocalDateTime.now().minusSeconds(70));
+        kycAuth.setPartnerSpecificUserToken("token");
+
+        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
+                        Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(Optional.of(kycAuth));
+        MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
+            authenticationService.kycExchange(relyingPartyId, clientId, kycExchangeRequestDto);
+        });
+        Assert.assertEquals("mock-ida-007", exception.getMessage());
+    }
+
+    @Test
+    public void testKycExchange_BuildKycDataFailure() {
+        ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
+        ReflectionTestUtils.setField(authenticationService,"encryptKyc",false);
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
+        String relyingPartyId = "relyingPartyId";
+        String clientId = "clientId";
+
+        KycExchangeRequestDto kycExchangeRequestDto=new KycExchangeRequestDto();
+        kycExchangeRequestDto.setKycToken("kycToken");
+        kycExchangeRequestDto.setIndividualId("individualId");
+        kycExchangeRequestDto.setTransactionId("transactionId");
+        kycExchangeRequestDto.setClaimLocales(Arrays.asList("en","fr"));
+        kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender"));
+
+        kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
+
+        KycAuth kycAuth=new KycAuth();
+        kycAuth.setResponseTime(LocalDateTime.now().minusSeconds(2));
+        kycAuth.setPartnerSpecificUserToken("token");
+
+        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
+                        Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(Optional.of(kycAuth));
+        MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
+            authenticationService.kycExchange(relyingPartyId, clientId, kycExchangeRequestDto);
+        });
+        Assert.assertEquals("mock-ida-008", exception.getMessage());
     }
 
     @Test
