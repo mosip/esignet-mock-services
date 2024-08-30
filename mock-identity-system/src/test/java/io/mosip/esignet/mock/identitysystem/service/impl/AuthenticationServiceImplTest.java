@@ -140,6 +140,96 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
+    public void sendOtp_validIndividualIdAndOtpChannels_thenPass() throws MockIdentityException {
+        ReflectionTestUtils.setField(authenticationService,"otpChannels",Arrays.asList("email","phone"));
+        String relyingPartyId = "relyingPartyId";
+        String clientId = "clientId";
+        String individualId = "individualId";
+        SendOtpDto sendOtpDto=new SendOtpDto();
+        sendOtpDto.setIndividualId("individualId");
+        sendOtpDto.setOtpChannels(Arrays.asList("email","phone"));
+        sendOtpDto.setTransactionId("transactionId");
+        IdentityData identityData=new IdentityData();
+        identityData.setIndividualId("individualId");
+        identityData.setEmail("test@email.com");
+        identityData.setPhone("1234567890");
+
+        Mockito.when(identityService.getIdentity(individualId)).thenReturn(identityData);
+        SendOtpResult result = authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals(sendOtpDto.getTransactionId(), result.getTransactionId());
+        Assert.assertEquals("XXXXXX7890", result.getMaskedMobile());
+    }
+
+    @Test
+    public void sendOtp_invalidIndividualId_thenFail() {
+        String relyingPartyId = "relyingPartyId";
+        String clientId = "clientId";
+        String individualId = "invalidId";
+        SendOtpDto sendOtpDto=new SendOtpDto();
+        sendOtpDto.setIndividualId(individualId);
+        Mockito.when(identityService.getIdentity(individualId)).thenReturn(null);
+        MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
+            authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
+        });
+        Assert.assertEquals("invalid_individual_id", exception.getMessage());
+    }
+
+    @Test
+    public void sendOtp_invalidOtpChannels_thenFail() {
+        ReflectionTestUtils.setField(authenticationService,"otpChannels",Arrays.asList("email","phone"));
+        String relyingPartyId = "relyingPartyId";
+        String clientId = "clientId";
+        String individualId = "individualId";
+        SendOtpDto sendOtpDto=new SendOtpDto();
+        sendOtpDto.setIndividualId("individualId");
+        List<String> otpChannels = new ArrayList<>();
+        otpChannels.add(null);
+
+        sendOtpDto.setOtpChannels(otpChannels);
+        sendOtpDto.setTransactionId("transactionId");
+        IdentityData identityData=new IdentityData();
+        identityData.setIndividualId("individualId");
+        identityData.setEmail("test@email.com");
+        identityData.setPhone("1234567890");
+
+        Mockito.when(identityService.getIdentity(individualId)).thenReturn(identityData);
+
+        MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
+            authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
+        });
+        Assert.assertEquals("invalid_otp_channel", exception.getMessage());
+    }
+
+    @Test
+    public void sendOtp_noEmailOrMobileFound_thenFail() {
+        ReflectionTestUtils.setField(authenticationService,"otpChannels",Arrays.asList("email","phone"));
+        String relyingPartyId = "relyingPartyId";
+        String clientId = "clientId";
+        String individualId = "individualId";
+
+        SendOtpDto sendOtpDto=new SendOtpDto();
+        sendOtpDto.setIndividualId("individualId");
+        List<String> otpChannels = new ArrayList<>();
+        otpChannels.add("email");
+        otpChannels.add("phone");
+
+        sendOtpDto.setOtpChannels(otpChannels);
+        sendOtpDto.setTransactionId("transactionId");
+        IdentityData identityData=new IdentityData();
+        identityData.setIndividualId("individualId");
+        identityData.setEmail(null);
+        identityData.setPhone(null);
+        Mockito.when(identityService.getIdentity(individualId)).thenReturn(identityData);
+        try {
+            authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
+        }catch(MockIdentityException e) {
+            Assert.assertEquals("no_email_mobile_found", e.getMessage());
+        }
+    }
+
+    @Test
     public void kycExchangeV2_withDetail_thenPass()  {
         Map<String,String> oidcClaimsMap=new HashMap<>();
         oidcClaimsMap.put("name", "name");
