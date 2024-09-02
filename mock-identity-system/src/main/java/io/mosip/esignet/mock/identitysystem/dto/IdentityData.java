@@ -65,6 +65,6 @@ public class IdentityData {
 
 	String locale;
 
-	Password password;
+	String password;
 
 }
