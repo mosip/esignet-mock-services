@@ -81,7 +81,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.mock.ida.kyc.encrypt:false}")
     private boolean encryptKyc;
     
-    @Value("${mosip.signup.mock.hash-algo:MD5}")
+    @Value("${mosip.mock.ida.hash-algo:MD5}")
     private String cryptoAlgo;
 
     @Value("${mosip.mock.ida.kyc.default-language:eng}")
