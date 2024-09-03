@@ -397,8 +397,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         KycAuth kycAuth = new KycAuth(kycToken, psut, LocalDateTime.now(ZoneOffset.UTC), Valid.ACTIVE, transactionId,
                 individualId);
-        if (kycAuth == null)
-            throw new MockIdentityException("mock-ida-005");
         return authRepository.save(kycAuth);
     }
 
@@ -446,7 +444,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                         Object fieldValue = identityData.get(key);
                                         if(fieldValue instanceof ArrayNode){
                                             List<LanguageValue> languageValues=HelperUtil.getLanguageValuesList((ArrayNode)fieldValue);
-                                            claims.putAll(getKycValuesV2(locales, key, languageValues, singleLanguage));
+                                            claims.putAll(getKycValues(locales, key, languageValues, singleLanguage));
                                         }else if(fieldValue!=null) {
                                             claims.put(key, identityData.get(key).asText());
                                         }
@@ -467,7 +465,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         Object fieldValue = identityData.get(key);
                         if(fieldValue instanceof ArrayNode){
                             List<LanguageValue> languageValues=HelperUtil.getLanguageValuesList((ArrayNode)fieldValue);
-                            kyc.putAll(getKycValuesV2(locales, key, languageValues, singleLanguage));
+                            kyc.putAll(getKycValues(locales, key, languageValues, singleLanguage));
                         }else if(fieldValue!=null){
                             kyc.put(key, identityData.get(key).asText());
                         }
@@ -600,32 +598,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (values == null) {
             return Collections.emptyMap();
         }
-        for (String locale : locales) {
-            return values.stream()
-                    .filter(v -> v.getLanguage().equalsIgnoreCase(locale) || v.getLanguage().startsWith(locale))
-                    .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, v -> v.getValue()));
-        }
-        return Collections.emptyMap();
-    }
-
-    private boolean isClaimAvailable(String claim, JsonNode identityData) throws Exception {
-        return HelperUtil.getIdentityDataValue(identityData,claim,fieldLang)!=null;
-    }
-
-    private Map<String, Object> getKycValuesV2(List<String> locales, String claimName, List<LanguageValue> values, boolean isSingleLanguage) {
-        if (values == null) {
-            return Collections.emptyMap();
-        }
         Map<String,Object> map=new HashMap<>();
-        for (String locale : locales){
-
-            map.putAll(values.stream()
+        for (String locale : locales) {
+             map.putAll(values.stream()
                     .filter(v -> v.getLanguage().equalsIgnoreCase(locale) || v.getLanguage().startsWith(locale))
                     .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, v -> v.getValue())));
         }
         return map;
     }
 
+    private boolean isClaimAvailable(String claim, JsonNode identityData) throws Exception {
+        return HelperUtil.getIdentityDataValue(identityData,claim,fieldLang)!=null;
+    }
 
     public boolean isSupportedOtpChannel(String channel) {
         return channel != null && otpChannels.contains(channel.toLowerCase());
