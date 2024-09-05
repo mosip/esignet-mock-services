@@ -10,12 +10,7 @@ import javax.validation.Valid;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
@@ -38,6 +33,20 @@ public class IdentityController {
 		IdentityStatus identityStatus = new IdentityStatus();
 		identityService.addIdentity(requestWrapper.getRequest());
 		identityStatus.setStatus("mock identity data created successfully");
+		response.setResponse(identityStatus);
+		response.setResponseTime(HelperUtil.getCurrentUTCDateTime());
+		return response;
+	}
+
+	@PutMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public ResponseWrapper<IdentityStatus> updateIdentity
+			(@Valid @RequestBody RequestWrapper<IdentityData> requestWrapper) throws MockIdentityException {
+
+		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
+		IdentityStatus identityStatus = new IdentityStatus();
+		identityService.updateIdentity(requestWrapper.getRequest());
+		identityStatus.setStatus("mock Identity data updated successfully");
 		response.setResponse(identityStatus);
 		response.setResponseTime(HelperUtil.getCurrentUTCDateTime());
 		return response;

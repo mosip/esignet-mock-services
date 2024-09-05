@@ -9,8 +9,6 @@ package io.mosip.esignet.mock.identitysystem.dto;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
@@ -26,16 +24,17 @@ public class IdentityData {
 	String individualId;
 
 	String pin;
-	
-	List<LanguageValue> name;
 
-	@Size(min = 1, message = ErrorConstants.INVALID_FULLNAME)
+  List<LanguageValue> name;
+
 	List<LanguageValue> fullName;
-	
+
+	String preferredLang;
+
 	List<LanguageValue> givenName;
 
 	List<LanguageValue> familyName;
-	
+
 	List<LanguageValue> middleName;
 
 	List<LanguageValue> nickName;
@@ -63,9 +62,9 @@ public class IdentityData {
 	String email;
 
 	String phone;
-	
+
 	String zoneInfo;
-	
+
 	String locale;
 
 	String password;
