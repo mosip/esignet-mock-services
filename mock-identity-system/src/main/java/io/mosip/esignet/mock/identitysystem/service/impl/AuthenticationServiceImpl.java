@@ -24,16 +24,20 @@ import io.mosip.kernel.signature.dto.JWTSignatureRequestDto;
 import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
 import io.mosip.kernel.signature.service.SignatureService;
 import lombok.extern.slf4j.Slf4j;
+
 import org.jose4j.jwe.ContentEncryptionAlgorithmIdentifiers;
 import org.jose4j.jwe.JsonWebEncryption;
 import org.jose4j.jwe.KeyManagementAlgorithmIdentifiers;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -76,6 +80,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${mosip.mock.ida.kyc.encrypt:false}")
     private boolean encryptKyc;
+    
+    @Value("${mosip.mock.ida.hash-algo:MD5}")
+    private String cryptoAlgo;
 
     @Value("${mosip.mock.ida.kyc.default-language:eng}")
     private String defaultLanguage;
@@ -314,6 +321,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             authStatus=validateKnowledgeBasedAuth(kycAuthRequestDto,identityData);
         }
 
+        if(kycAuthRequestDto.getPassword()!=null){
+            authStatus=validatePasswordAuth(kycAuthRequestDto,identityData);
+        }
+
         if (!CollectionUtils.isEmpty(kycAuthRequestDto.getTokens())) {
             authStatus = !StringUtils.isEmpty(kycAuthRequestDto.getTokens().get(0));
             if (!authStatus)
@@ -352,6 +363,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new MockIdentityException("auth-failed");
         }
         return true;
+    }
+
+    private boolean validatePasswordAuth(KycAuthRequestDto kycAuthRequestDto,JsonNode identityData){
+        String password=kycAuthRequestDto.getPassword();
+        String passwordHash = identityData.get("password").asText();
+        return checkPassword(password,passwordHash);
     }
 
     private String signKyc(Map<String, Object> kyc) throws JsonProcessingException {
@@ -397,8 +414,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         KycAuth kycAuth = new KycAuth(kycToken, psut, LocalDateTime.now(ZoneOffset.UTC), Valid.ACTIVE, transactionId,
                 individualId);
-        if (kycAuth == null)
-            throw new MockIdentityException("mock-ida-005");
         return authRepository.save(kycAuth);
     }
 
@@ -446,7 +461,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                         Object fieldValue = identityData.get(key);
                                         if(fieldValue instanceof ArrayNode){
                                             List<LanguageValue> languageValues=HelperUtil.getLanguageValuesList((ArrayNode)fieldValue);
-                                            claims.putAll(getKycValuesV2(locales, key, languageValues, singleLanguage));
+                                            claims.putAll(getKycValues(locales, key, languageValues, singleLanguage));
                                         }else if(fieldValue!=null) {
                                             claims.put(key, identityData.get(key).asText());
                                         }
@@ -467,7 +482,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         Object fieldValue = identityData.get(key);
                         if(fieldValue instanceof ArrayNode){
                             List<LanguageValue> languageValues=HelperUtil.getLanguageValuesList((ArrayNode)fieldValue);
-                            kyc.putAll(getKycValuesV2(locales, key, languageValues, singleLanguage));
+                            kyc.putAll(getKycValues(locales, key, languageValues, singleLanguage));
                         }else if(fieldValue!=null){
                             kyc.put(key, identityData.get(key).asText());
                         }
@@ -600,32 +615,39 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (values == null) {
             return Collections.emptyMap();
         }
-        for (String locale : locales) {
-            return values.stream()
-                    .filter(v -> v.getLanguage().equalsIgnoreCase(locale) || v.getLanguage().startsWith(locale))
-                    .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, v -> v.getValue()));
-        }
-        return Collections.emptyMap();
-    }
-
-    private boolean isClaimAvailable(String claim, JsonNode identityData) throws Exception {
-        return HelperUtil.getIdentityDataValue(identityData,claim,fieldLang)!=null;
-    }
-
-    private Map<String, Object> getKycValuesV2(List<String> locales, String claimName, List<LanguageValue> values, boolean isSingleLanguage) {
-        if (values == null) {
-            return Collections.emptyMap();
-        }
         Map<String,Object> map=new HashMap<>();
-        for (String locale : locales){
-
-            map.putAll(values.stream()
+        for (String locale : locales) {
+             map.putAll(values.stream()
                     .filter(v -> v.getLanguage().equalsIgnoreCase(locale) || v.getLanguage().startsWith(locale))
                     .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, v -> v.getValue())));
         }
         return map;
     }
+    
+    private boolean checkPassword(String password, String passwordHash) {
+    	try 
+	    {
+		  MessageDigest md = MessageDigest.getInstance(cryptoAlgo);
+		  md.update(password.getBytes(StandardCharsets.UTF_8));
+		  byte[] bytes = md.digest();
 
+	      // This bytes[] has bytes in decimal format. Convert it to hexadecimal format
+	      StringBuilder sb = new StringBuilder();
+	      for (int i = 0; i < bytes.length; i++) {
+	        sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+	      }
+
+	      // Get complete hashed password in hex format
+	      return passwordHash.equals(sb.toString());
+	    } catch (NoSuchAlgorithmException e) {
+	      e.printStackTrace();
+	    }
+	  return false;
+    }
+
+    private boolean isClaimAvailable(String claim, JsonNode identityData) throws Exception {
+        return HelperUtil.getIdentityDataValue(identityData,claim,fieldLang)!=null;
+    }
 
     public boolean isSupportedOtpChannel(String channel) {
         return channel != null && otpChannels.contains(channel.toLowerCase());

@@ -15,6 +15,7 @@ public class KycAuthRequestDto {
 
     private String transactionId;
     private String individualId;
+    private String password;
     private String otp;
     private String pin;
     private String biometrics;

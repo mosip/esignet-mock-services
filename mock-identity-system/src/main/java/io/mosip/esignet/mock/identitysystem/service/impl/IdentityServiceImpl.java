@@ -62,6 +62,21 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	@Override
+	public void updateIdentity(IdentityData identityData) throws MockIdentityException {
+		if (!identityRepository.findById(identityData.getIndividualId()).isPresent()) {
+			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
+		}
+		MockIdentity mockIdentity = new MockIdentity();
+		try {
+			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(identityData));
+		} catch (JsonProcessingException e) {
+			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
+		}
+		mockIdentity.setIndividualId(identityData.getIndividualId());
+		identityRepository.save(mockIdentity);
+	}
+
+	@Override
 	public IdentityData getIdentity(String individualId) throws MockIdentityException {
 		Optional<MockIdentity> mockIdentity = identityRepository.findById(individualId);
 		if (!mockIdentity.isPresent()) {
