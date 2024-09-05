@@ -10,6 +10,8 @@ import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 
+import java.util.List;
+
 public interface IdentityService {
 
 	public void addIdentity(IdentityData mockAuthDataRequest) throws MockIdentityException;
@@ -18,7 +20,7 @@ public interface IdentityService {
 	
 	public IdentityData getIdentity(String individualId) throws MockIdentityException;
 
-    public  void addVerifiedClaim(VerifiedClaimRequestDto request) throws MockIdentityException;
+    public  void addVerifiedClaim(List<VerifiedClaimRequestDto> request) throws MockIdentityException;
 
 	public JsonNode getIdentityV2(String individualId) throws MockIdentityException;
 }

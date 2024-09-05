@@ -6,6 +6,8 @@
 package io.mosip.esignet.mock.identitysystem.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,7 +38,7 @@ public class IdentityServiceImpl implements IdentityService {
 	private String fieldLang;
 	
 	@Autowired
-	ObjectMapper objectmapper;
+	ObjectMapper objectMapper;
 
 	@Autowired
 	IdentityRepository identityRepository;
@@ -51,7 +53,7 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		MockIdentity mockIdentity = new MockIdentity();
 		try {
-			mockIdentity.setIdentityJson(objectmapper.writeValueAsString(identityData));
+			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(identityData));
 		} catch (JsonProcessingException e) {
 			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
 		}
@@ -66,7 +68,7 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		MockIdentity mockIdentity = new MockIdentity();
 		try {
-			mockIdentity.setIdentityJson(objectmapper.writeValueAsString(identityData));
+			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(identityData));
 		} catch (JsonProcessingException e) {
 			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
 		}
@@ -82,7 +84,7 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		IdentityData identityData = new IdentityData();
 		try {
-			identityData = objectmapper.readValue(mockIdentity.get().getIdentityJson(), IdentityData.class);
+			identityData = objectMapper.readValue(mockIdentity.get().getIdentityJson(), IdentityData.class);
 		} catch (JsonProcessingException e) {
 			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
 		}
@@ -96,7 +98,7 @@ public class IdentityServiceImpl implements IdentityService {
 			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
 		}
 		try {
-			return objectmapper.readTree(mockIdentity.get().getIdentityJson());
+			return objectMapper.readTree(mockIdentity.get().getIdentityJson());
 		} catch (JsonProcessingException e) {
 			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
 		}
@@ -105,27 +107,33 @@ public class IdentityServiceImpl implements IdentityService {
 
 
 	@Override
-	public void addVerifiedClaim(VerifiedClaimRequestDto verifiedClaimRequestDto) throws MockIdentityException {
+	public void addVerifiedClaim(List<VerifiedClaimRequestDto> verifiedClaimRequestDtoList) throws MockIdentityException {
 		VerifiedClaim verifiedClaim =null;
-		JsonNode identity = getIdentityV2(verifiedClaimRequestDto.getIndividualId());
-		Object fieldValue= HelperUtil.getIdentityDataValue(identity, verifiedClaimRequestDto.getClaim(),fieldLang);
-		if(fieldValue==null){
-			throw new MockIdentityException(ErrorConstants.INVALID_CLAIM);
+		JsonNode identity = getIdentityV2(verifiedClaimRequestDtoList.get(0).getIndividualId());
+		List<VerifiedClaim> verifiedClaimList= new ArrayList<>();
+
+		for(VerifiedClaimRequestDto verifiedClaimRequestDto: verifiedClaimRequestDtoList){
+			Object fieldValue= HelperUtil.getIdentityDataValue(identity, verifiedClaimRequestDto.getClaim(),fieldLang);
+			if(fieldValue==null){
+				throw new MockIdentityException(ErrorConstants.INVALID_CLAIM);
+			}
+			String idHash= HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, verifiedClaimRequestDto.getIndividualId()+
+					verifiedClaimRequestDto.getTrustFramework().toLowerCase()+ verifiedClaimRequestDto.getClaim());
+			Optional<VerifiedClaim> verifiedClaimOptional=verifiedClaimRepository.findById(idHash);
+			if(verifiedClaimOptional.isPresent()){
+				throw new MockIdentityException(ErrorConstants.CLAIM_ALREADY_EXISTS);
+			}
+			verifiedClaim = new VerifiedClaim();
+			verifiedClaim.setId(idHash);
+			verifiedClaim.setClaim(verifiedClaimRequestDto.getClaim());
+			verifiedClaim.setIndividualId(verifiedClaimRequestDto.getIndividualId());
+			verifiedClaim.setVerifiedDateTime(verifiedClaimRequestDto.getVerifiedDateTime());
+			verifiedClaim.setTrustFramework(verifiedClaimRequestDto.getTrustFramework());
+			verifiedClaim.setCrDateTime(LocalDateTime.now());
+			verifiedClaim.setActive(true);
+			verifiedClaimList.add(verifiedClaim);
 		}
-		String idHash= HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, verifiedClaimRequestDto.getIndividualId()+ verifiedClaimRequestDto.getTrustFramework().toLowerCase()+ verifiedClaimRequestDto.getClaim());
-		Optional<VerifiedClaim> verifiedClaimOptional=verifiedClaimRepository.findById(idHash);
-		if(verifiedClaimOptional.isPresent()){
-			throw new MockIdentityException(ErrorConstants.CLAIM_ALREADY_EXISTS);
-		}
-		verifiedClaim = new VerifiedClaim();
-		verifiedClaim.setId(idHash);
-		verifiedClaim.setClaim(verifiedClaimRequestDto.getClaim());
-		verifiedClaim.setIndividualId(verifiedClaimRequestDto.getIndividualId());
-		verifiedClaim.setVerifiedDateTime(verifiedClaimRequestDto.getVerifiedDateTime());
-		verifiedClaim.setTrustFramework(verifiedClaimRequestDto.getTrustFramework());
-		verifiedClaim.setCrDateTime(LocalDateTime.now());
-		verifiedClaim.setActive(true);
-		verifiedClaimRepository.save(verifiedClaim);
+		verifiedClaimRepository.saveAll(verifiedClaimList);
 	}
 
 }

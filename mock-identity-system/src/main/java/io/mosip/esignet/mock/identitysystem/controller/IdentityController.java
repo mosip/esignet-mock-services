@@ -16,6 +16,8 @@ import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/")
@@ -62,7 +64,7 @@ public class IdentityController {
 	}
 
 	@PostMapping(value = "identity/add-verified-claim")
-	public ResponseWrapper<VerifiedClaimStatus> createVerifiedClaim(@Valid @RequestBody RequestWrapper<VerifiedClaimRequestDto> requestWrapper) throws MockIdentityException {
+	public ResponseWrapper<VerifiedClaimStatus> createVerifiedClaim(@Valid @RequestBody RequestWrapper<List<VerifiedClaimRequestDto>> requestWrapper) throws MockIdentityException {
 		ResponseWrapper<VerifiedClaimStatus> response = new ResponseWrapper<>();
 		VerifiedClaimStatus verifiedClaimStatus = new VerifiedClaimStatus();
 		verifiedClaimStatus.setStatus("Verified Claim added successfully");
