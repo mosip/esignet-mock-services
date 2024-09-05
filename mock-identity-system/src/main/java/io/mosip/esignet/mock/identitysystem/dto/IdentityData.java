@@ -25,7 +25,7 @@ public class IdentityData {
 
 	String pin;
 
-	List<LanguageValue> name;
+  List<LanguageValue> name;
 
 	List<LanguageValue> fullName;
 
