@@ -5,10 +5,10 @@
  */
 package io.mosip.esignet.mock.identitysystem.dto;
 
-
 import lombok.Data;
 
 import java.util.List;
+
 
 @Data
 public class KycAuthRequestDto {
@@ -21,5 +21,4 @@ public class KycAuthRequestDto {
     private String biometrics;
     private String kbi;
     private List<String> tokens;
-
 }

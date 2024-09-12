@@ -7,11 +7,8 @@ package io.mosip.esignet.mock.identitysystem.dto;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class ClaimMetadata {
+public class KycAuthRequestDtoV2 extends KycAuthRequestDto {
 
-    String claim;
-    List<VerificationDetail> verificationDetails;
+    private boolean claimMetadataRequired;
 }

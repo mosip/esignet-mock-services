@@ -10,10 +10,12 @@ import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Data
-@Entity
+@Entity(name = "VerifiedClaim")
+@Table(name = "verified_claim", schema = "mockidentitysystem")
 public class VerifiedClaim {
 
     @Id
@@ -29,8 +31,8 @@ public class VerifiedClaim {
     @Column(name = "trust_framework")
     private String trustFramework;
 
-    @Column(name = "verified_datetime")
-    private LocalDateTime verifiedDateTime;
+    @Column(name = "detail")
+    private String detail;
 
     @Column(name="cr_dtimes")
     private LocalDateTime crDateTime;
@@ -38,6 +40,6 @@ public class VerifiedClaim {
     @Column(name = "upd_dtimes")
     private LocalDateTime updDateTime;
 
-    @Column(name = "active")
-    private Boolean active;
+    @Column(name = "is_active")
+    private Boolean isActive;
 }

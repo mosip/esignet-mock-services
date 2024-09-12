@@ -5,11 +5,13 @@
  */
 package io.mosip.esignet.mock.identitysystem.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotEmpty;
+import java.util.Map;
 
 
 @Data
@@ -18,12 +20,9 @@ public class VerifiedClaimRequestDto {
     @NotBlank(message = ErrorConstants.INVALID_INDIVIDUAL_ID)
     private String individualId;
 
-    @NotBlank(message = ErrorConstants.INVALID_CLAIM)
-    private String claim;
+    @NotEmpty(message = ErrorConstants.INVALID_REQUEST)
+    private Map<String, JsonNode> verificationDetail;
 
-    @NotBlank(message = ErrorConstants.INVALID_TRUST_FRAMEWORK)
-    private String trustFramework;
-
-    private LocalDateTime verifiedDateTime;
+    private boolean active;
 
 }

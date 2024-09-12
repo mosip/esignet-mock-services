@@ -6,7 +6,6 @@
 package io.mosip.esignet.mock.identitysystem.controller;
 
 import io.mosip.esignet.mock.identitysystem.dto.*;
-import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,17 +29,17 @@ public class AuthController {
                                                        @PathVariable @NotBlank String relyingPartyId,
                                                        @PathVariable @NotBlank String clientId) {
         ResponseWrapper<KycAuthResponseDto> responseWrapper = new ResponseWrapper<>();
-        responseWrapper.setResponse(authenticationService.kycAuth(relyingPartyId, clientId, kycAuthRequestDto));
+        responseWrapper.setResponse(authenticationService.kycAuth(relyingPartyId, clientId, new KycAuthDto(kycAuthRequestDto)));
         return responseWrapper;
     }
 
     @PostMapping(path = "v2/kyc-auth/{relyingPartyId}/{clientId}",
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseWrapper<KycAuthResponseDtoV2> kycAuthV2(@RequestBody @NotNull @Valid KycAuthRequestDto kycAuthRequestDto,
+    public ResponseWrapper<KycAuthResponseDto> kycAuthV2(@RequestBody @NotNull @Valid KycAuthRequestDtoV2 kycAuthRequestDtoV2,
                                                        @PathVariable @NotBlank String relyingPartyId,
                                                        @PathVariable @NotBlank String clientId) {
-        ResponseWrapper<KycAuthResponseDtoV2> responseWrapper = new ResponseWrapper<>();
-        responseWrapper.setResponse(authenticationService.kycAuthV2(relyingPartyId, clientId, kycAuthRequestDto));
+        ResponseWrapper<KycAuthResponseDto> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setResponse(authenticationService.kycAuth(relyingPartyId, clientId, new KycAuthDto(kycAuthRequestDtoV2)));
         return responseWrapper;
     }
 
@@ -50,7 +49,7 @@ public class AuthController {
                                                                @PathVariable @NotBlank String clientId,
                                                                @RequestBody @NotNull @Valid KycExchangeRequestDto kycExchangeRequestDto) {
         ResponseWrapper<KycExchangeResponseDto> responseWrapper = new ResponseWrapper<>();
-        responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, kycExchangeRequestDto));
+        responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto, null)));
         return responseWrapper;
     }
 
@@ -60,11 +59,8 @@ public class AuthController {
                                                                @PathVariable @NotBlank String clientId,
                                                                @RequestBody @NotNull @Valid KycExchangeRequestDtoV2 kycExchangeRequestDtoV2) {
         ResponseWrapper<KycExchangeResponseDto> responseWrapper = new ResponseWrapper<>();
-        try {
-            responseWrapper.setResponse(authenticationService.kycExchangeV2(relyingPartyId, clientId, kycExchangeRequestDtoV2));
-        } catch (MockIdentityException ex) {
-            throw ex;
-        }
+        responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDtoV2,
+                kycExchangeRequestDtoV2.getAcceptedClaimDetail())));
         return responseWrapper;
     }
 

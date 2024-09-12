@@ -25,7 +25,7 @@ public class IdentityData {
 
 	String pin;
 
-  List<LanguageValue> name;
+    List<LanguageValue> name;
 
 	List<LanguageValue> fullName;
 
@@ -56,8 +56,6 @@ public class IdentityData {
 	List<LanguageValue> country;
 
 	String encodedPhoto;
-
-	BiometricData individualBiometrics;
 
 	String email;
 

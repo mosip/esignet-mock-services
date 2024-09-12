@@ -1,3 +1,8 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.mosip.esignet.mock.identitysystem.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -8,10 +13,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +63,6 @@ public class IdentityControllerTest {
 		identityRequest.setDateOfBirth("20021990");
 		identityRequest.setEncodedPhoto("testencodedphoto");
 		identityRequest.setGender(Arrays.asList(langValue));
-		identityRequest.setIndividualBiometrics(new BiometricData());
 		identityRequest.setLocality(Arrays.asList(langValue));
 		identityRequest.setPostalCode("12011");
 		identityRequest.setPin("1289001");
@@ -110,19 +114,23 @@ public class IdentityControllerTest {
 	@Test
 	public void addVerifiedClaims_withValidDetails_returnSuccessResponse() throws Exception {
 
-		RequestWrapper<List<VerifiedClaimRequestDto>> requestWrapper = new RequestWrapper<List<VerifiedClaimRequestDto>>();
+		RequestWrapper<VerifiedClaimRequestDto> requestWrapper = new RequestWrapper<VerifiedClaimRequestDto>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
 
-		List<VerifiedClaimRequestDto> verifiedClaimRequestDtoList=new ArrayList<>();
-		VerifiedClaimRequestDto verifiedClaimRequestDto = new VerifiedClaimRequestDto();
-		verifiedClaimRequestDto.setClaim("testClaim");
+		VerifiedClaimRequestDto verifiedClaimRequestDto = new  VerifiedClaimRequestDto();
+		verifiedClaimRequestDto.setActive(true);
 		verifiedClaimRequestDto.setIndividualId("123456789");
-		verifiedClaimRequestDto.setTrustFramework("testTrustFramework");
-        verifiedClaimRequestDtoList.add(verifiedClaimRequestDto);
-		requestWrapper.setRequest(verifiedClaimRequestDtoList);
+		Map<String, JsonNode> verificationDetail = new HashMap<>();
 
-		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDtoList);
+		ObjectNode emailVerification = objectMapper.createObjectNode();
+		emailVerification.put("trust_framework", "testTrustFramework");
+		verificationDetail.put("testClaim", emailVerification);
+		verifiedClaimRequestDto.setVerificationDetail(verificationDetail);
+
+		requestWrapper.setRequest(verifiedClaimRequestDto);
+
+		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDto);
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
 
 		mockMvc.perform(post("/identity/add-verified-claim").content(objectMapper.writeValueAsString(requestWrapper))
@@ -132,23 +140,24 @@ public class IdentityControllerTest {
 
 	@Test
 	public void addVerifiedClaim_withInvalidClaim_returnErrorResponse() throws  Exception {
-		RequestWrapper<List<VerifiedClaimRequestDto>> requestWrapper = new RequestWrapper<List<VerifiedClaimRequestDto>>();
+		RequestWrapper<VerifiedClaimRequestDto> requestWrapper = new RequestWrapper<VerifiedClaimRequestDto>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
 
-		List<VerifiedClaimRequestDto> verifiedClaimRequestDtoList=new ArrayList<>();
-		VerifiedClaimRequestDto verifiedClaimRequestDto = new VerifiedClaimRequestDto();
-		verifiedClaimRequestDto.setTrustFramework("testTrustFramework");
+		VerifiedClaimRequestDto verifiedClaimRequestDto = new  VerifiedClaimRequestDto();
+		verifiedClaimRequestDto.setActive(true);
 		verifiedClaimRequestDto.setIndividualId("123456789");
-		verifiedClaimRequestDto.setClaim(null);
-		verifiedClaimRequestDtoList.add(verifiedClaimRequestDto);
-		requestWrapper.setRequest(verifiedClaimRequestDtoList);
+		Map<String, JsonNode> verificationDetail = new HashMap<>();
+		verifiedClaimRequestDto.setVerificationDetail(verificationDetail);
 
-		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDtoList);
+		requestWrapper.setRequest(verifiedClaimRequestDto);
+
+		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDto);
+
 		mockMvc.perform(post("/identity/add-verified-claim").content(objectMapper.writeValueAsString(requestWrapper))
 						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.errors").isNotEmpty())
-				.andExpect(jsonPath("$.errors[0].errorCode").value(ErrorConstants.INVALID_CLAIM));
+				.andExpect(jsonPath("$.errors[0].errorCode").value(ErrorConstants.INVALID_REQUEST));
 	}
 
 }

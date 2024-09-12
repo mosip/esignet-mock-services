@@ -6,8 +6,9 @@
 package io.mosip.esignet.mock.identitysystem.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.ZoneOffset;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,6 +16,7 @@ import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,14 +30,19 @@ import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.IdentityRepository;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
+import org.springframework.util.StringUtils;
 
 import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256;
 
+@Slf4j
 @Service
 public class IdentityServiceImpl implements IdentityService {
 
 	@Value("${mosip.mock.ida.kbi.default.field-language}")
 	private String fieldLang;
+
+	@Value("#{${mosip.mock.ida.identity-openid-claims-mapping}}")
+	private Map<String,String> oidcClaimsMapping;
 	
 	@Autowired
 	ObjectMapper objectMapper;
@@ -107,33 +114,43 @@ public class IdentityServiceImpl implements IdentityService {
 
 
 	@Override
-	public void addVerifiedClaim(List<VerifiedClaimRequestDto> verifiedClaimRequestDtoList) throws MockIdentityException {
-		VerifiedClaim verifiedClaim =null;
-		JsonNode identity = getIdentityV2(verifiedClaimRequestDtoList.get(0).getIndividualId());
-		List<VerifiedClaim> verifiedClaimList= new ArrayList<>();
+	public void addVerifiedClaim(VerifiedClaimRequestDto verifiedClaimRequestDto) throws MockIdentityException {
+		JsonNode identity = getIdentityV2(verifiedClaimRequestDto.getIndividualId());
 
-		for(VerifiedClaimRequestDto verifiedClaimRequestDto: verifiedClaimRequestDtoList){
-			Object fieldValue= HelperUtil.getIdentityDataValue(identity, verifiedClaimRequestDto.getClaim(),fieldLang);
+        for(Entry<String, JsonNode> entry : verifiedClaimRequestDto.getVerificationDetail().entrySet()){
+			Object fieldValue = HelperUtil.getIdentityDataValue(identity, entry.getKey(), fieldLang);
 			if(fieldValue==null){
+				log.error("Verification data is not allowed for the claim with no data : {}", entry.getKey());
 				throw new MockIdentityException(ErrorConstants.INVALID_CLAIM);
 			}
+
+			String trustFramework = entry.getValue().get("trust_framework").asText();
+			if(StringUtils.isEmpty(trustFramework))
+				throw new MockIdentityException(ErrorConstants.INVALID_REQUEST);
+
 			String idHash= HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, verifiedClaimRequestDto.getIndividualId()+
-					verifiedClaimRequestDto.getTrustFramework().toLowerCase()+ verifiedClaimRequestDto.getClaim());
-			Optional<VerifiedClaim> verifiedClaimOptional=verifiedClaimRepository.findById(idHash);
-			if(verifiedClaimOptional.isPresent()){
-				throw new MockIdentityException(ErrorConstants.CLAIM_ALREADY_EXISTS);
+					trustFramework.toLowerCase() + entry.getKey());
+
+			String oidcClaimName = oidcClaimsMapping.getOrDefault(entry.getKey(), entry.getKey());
+			Optional<VerifiedClaim> result = verifiedClaimRepository.findById(idHash);
+			VerifiedClaim verifiedClaim;
+			if(result.isEmpty()) {
+				verifiedClaim = new VerifiedClaim();
+				verifiedClaim.setId(idHash);
+				verifiedClaim.setClaim(oidcClaimName);
+				verifiedClaim.setIndividualId(verifiedClaimRequestDto.getIndividualId());
+				verifiedClaim.setTrustFramework(trustFramework);
+				verifiedClaim.setCrDateTime(LocalDateTime.now(ZoneOffset.UTC));
 			}
-			verifiedClaim = new VerifiedClaim();
-			verifiedClaim.setId(idHash);
-			verifiedClaim.setClaim(verifiedClaimRequestDto.getClaim());
-			verifiedClaim.setIndividualId(verifiedClaimRequestDto.getIndividualId());
-			verifiedClaim.setVerifiedDateTime(verifiedClaimRequestDto.getVerifiedDateTime());
-			verifiedClaim.setTrustFramework(verifiedClaimRequestDto.getTrustFramework());
-			verifiedClaim.setCrDateTime(LocalDateTime.now());
-			verifiedClaim.setActive(true);
-			verifiedClaimList.add(verifiedClaim);
+			else {
+				verifiedClaim = result.get();
+			}
+
+			verifiedClaim.setDetail(entry.getValue().toString());
+			verifiedClaim.setUpdDateTime(LocalDateTime.now(ZoneOffset.UTC));
+			verifiedClaim.setIsActive(verifiedClaimRequestDto.isActive());
+			verifiedClaimRepository.save(verifiedClaim);
 		}
-		verifiedClaimRepository.saveAll(verifiedClaimList);
 	}
 
 }
