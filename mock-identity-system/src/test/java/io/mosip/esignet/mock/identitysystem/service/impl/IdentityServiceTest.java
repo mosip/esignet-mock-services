@@ -1,7 +1,14 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.mosip.esignet.mock.identitysystem.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.entity.MockIdentity;
@@ -10,6 +17,7 @@ import io.mosip.esignet.mock.identitysystem.repository.IdentityRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,10 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -38,26 +43,38 @@ public class IdentityServiceTest {
     @Mock
     IdentityRepository identityRepository;
 
-    @Mock
-    ObjectMapper objectMapper;
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @InjectMocks
     IdentityServiceImpl identityService;
 
+    @Before
+    public void setup() {
+        ReflectionTestUtils.setField(identityService, "fieldLang", "eng");
+        ReflectionTestUtils.setField(identityService, "objectMapper", objectMapper);
+
+        Map<String, String> mapping = new HashMap<>();
+        mapping.put("fullName", "name");
+        mapping.put("email", "email");
+        mapping.put("phone", "phone");
+        mapping.put("gender", "gender");
+        ReflectionTestUtils.setField(identityService, "oidcClaimsMapping", mapping);
+    }
+
 
 
     @Test
-    public void addVerifiedClaim_withValidDetails_thenPass() throws Exception {
-        ReflectionTestUtils.setField(identityService, "fieldLang", "eng");
-        ReflectionTestUtils.setField(identityService, "objectMapper", new ObjectMapper());
+    public void addVerifiedClaim_withValidDetails_thenPass() {
 
-        List<VerifiedClaimRequestDto> verifiedClaimRequestDtoList=new ArrayList<>();
-        VerifiedClaimRequestDto requestDto = new VerifiedClaimRequestDto();
-        requestDto.setTrustFramework("trust_framework");
-        requestDto.setClaim("email");
-        requestDto.setIndividualId("123456");
-        requestDto.setVerifiedDateTime(LocalDateTime.now());
-        verifiedClaimRequestDtoList.add(requestDto);
+        VerifiedClaimRequestDto verifiedClaimRequestDto = new  VerifiedClaimRequestDto();
+        verifiedClaimRequestDto.setActive(true);
+        verifiedClaimRequestDto.setIndividualId("123456");
+        Map<String, JsonNode> verificationDetail = new HashMap<>();
+
+        ObjectNode emailVerification = objectMapper.createObjectNode();
+        emailVerification.put("trust_framework", "trust_framework");
+        verificationDetail.put("email", emailVerification);
+        verifiedClaimRequestDto.setVerificationDetail(verificationDetail);
 
         IdentityData identityData = new IdentityData();
         identityData.setEmail("email@gmail.com");
@@ -68,22 +85,25 @@ public class IdentityServiceTest {
         mockIdentity.setIdentityJson("{\"individualId\":\"8267411571\",\"pin\":\"111111\",\"fullName\":[{\"language\":\"fra\",\"value\":\"Siddharth K Mansour\"},{\"language\":\"ara\",\"value\":\"تتگلدكنسَزقهِقِفل دسييسيكدكنوڤو\"},{\"language\":\"eng\",\"value\":\"Siddharth K Mansour\"}],\"email\":\"siddhartha.km@gmail.com\",\"phone\":\"+919427357934\"}");
         Mockito.when(verifiedClaimRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
         Mockito.when(identityRepository.findById(Mockito.anyString())).thenReturn(Optional.of(mockIdentity));
-        identityService.addVerifiedClaim(verifiedClaimRequestDtoList);
+        identityService.addVerifiedClaim(verifiedClaimRequestDto);
     }
 
     @Test
     public void addVerifiedClaim_withInValidIndividualId_thenFail()  {
-        List<VerifiedClaimRequestDto> verifiedClaimRequestDtoList=new ArrayList<>();
-        VerifiedClaimRequestDto requestDto = new VerifiedClaimRequestDto();
-        requestDto.setTrustFramework("trust_framework");
-        requestDto.setClaim("claim");
-        requestDto.setIndividualId("123456");
-        requestDto.setVerifiedDateTime(LocalDateTime.now());
-        verifiedClaimRequestDtoList.add(requestDto);
+        VerifiedClaimRequestDto verifiedClaimRequestDto = new  VerifiedClaimRequestDto();
+        verifiedClaimRequestDto.setActive(true);
+        verifiedClaimRequestDto.setIndividualId("123456");
+        Map<String, JsonNode> verificationDetail = new HashMap<>();
+
+        ObjectNode emailVerification = objectMapper.createObjectNode();
+        emailVerification.put("trust_framework", "trust_framework");
+        verificationDetail.put("claim", emailVerification);
+        verifiedClaimRequestDto.setVerificationDetail(verificationDetail);
+
         Mockito.when(identityRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
 
         try{
-            identityService.addVerifiedClaim(verifiedClaimRequestDtoList);
+            identityService.addVerifiedClaim(verifiedClaimRequestDto);
         }catch (MockIdentityException e){
             Assert.assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID,e.getErrorCode());
         }
@@ -96,21 +116,8 @@ public class IdentityServiceTest {
         identityData.setEmail("email@gmail.com");
         identityData.setEncodedPhoto("encodedPhoto");
         when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.empty());
-        when(objectMapper.writeValueAsString(identityData)).thenReturn("{}");
         identityService.addIdentity(identityData);
         verify(identityRepository).save(any(MockIdentity.class));
-    }
-
-    @Test
-    public void addIdentity_throwsJsonProcessingException_thenFail() throws JsonProcessingException {
-        IdentityData identityData = new IdentityData();
-        identityData.setEmail("email@gmail.com");
-        identityData.setEncodedPhoto("encodedPhoto");
-        when(objectMapper.writeValueAsString(identityData)).thenThrow(JsonProcessingException.class);
-        MockIdentityException exception = assertThrows(MockIdentityException.class, () -> {
-            identityService.addIdentity(identityData);
-        });
-        assertEquals(ErrorConstants.JSON_PROCESSING_ERROR, exception.getMessage());
     }
 
     @Test
@@ -123,7 +130,6 @@ public class IdentityServiceTest {
         mockIdentity.setIdentityJson("{\"individualId\":\"8267411571\",\"pin\":\"111111\",\"fullName\":[{\"language\":\"fra\",\"value\":\"Siddharth K Mansour\"},{\"language\":\"ara\",\"value\":\"تتگلدكنسَزقهِقِفل دسييسيكدكنوڤو\"},{\"language\":\"eng\",\"value\":\"Siddharth K Mansour\"}],\"email\":\"siddhartha.km@gmail.com\",\"phone\":\"+919427357934\"}");
         mockIdentity.setIdentityJson("{}");
         when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(mockIdentity));
-        when(objectMapper.readValue(mockIdentity.getIdentityJson(), IdentityData.class)).thenReturn(identityData);
         IdentityData result = identityService.getIdentity(identityData.getIndividualId());
 
         assertEquals(identityData.getIndividualId(), result.getIndividualId());
@@ -138,20 +144,5 @@ public class IdentityServiceTest {
             identityService.getIdentity(identityData.getIndividualId());
         });
         assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID, exception.getMessage());
-    }
-
-    @Test
-    public void getIdentity_throwsJsonProcessingException_thenFail() throws JsonProcessingException {
-        IdentityData identityData = new IdentityData();
-        identityData.setEmail("email@gmail.com");
-        identityData.setEncodedPhoto("encodedPhoto");
-        MockIdentity mockIdentity = new MockIdentity();
-        when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(mockIdentity));
-        when(objectMapper.readValue(mockIdentity.getIdentityJson(), IdentityData.class)).thenThrow(JsonProcessingException.class);
-        MockIdentityException exception = assertThrows(MockIdentityException.class, () -> {
-            identityService.getIdentity(identityData.getIndividualId());
-        });
-
-        assertEquals(ErrorConstants.JSON_PROCESSING_ERROR, exception.getMessage());
     }
 }

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.entity.KycAuth;
@@ -18,6 +19,7 @@ import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
+import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.signature.dto.JWTSignatureRequestDto;
@@ -28,10 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jose4j.jwe.ContentEncryptionAlgorithmIdentifiers;
 import org.jose4j.jwe.JsonWebEncryption;
 import org.jose4j.jwe.KeyManagementAlgorithmIdentifiers;
-import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -41,13 +41,12 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static io.mosip.esignet.mock.identitysystem.util.Constants.APPLICATION_ID;
-import static io.mosip.esignet.mock.identitysystem.util.Constants.UTC_DATETIME_PATTERN;
 import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256;
 
 
@@ -82,7 +81,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private boolean encryptKyc;
     
     @Value("${mosip.mock.ida.hash-algo:MD5}")
-    private String cryptoAlgo;
+    private String hashAlgorithm;
 
     @Value("${mosip.mock.ida.kyc.default-language:eng}")
     private String defaultLanguage;
@@ -102,133 +101,86 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     ArrayList<String> trnHash = new ArrayList<>();
 
     @Override
-    public KycAuthResponseDto kycAuth(String relyingPartyId, String clientId, KycAuthRequestDto kycAuthRequestDto) throws MockIdentityException {
+    public KycAuthResponseDto kycAuth(String relyingPartyId, String clientId, KycAuthDto kycAuthDto) throws MockIdentityException {
         //TODO validate relying party Id and client Id
 
-        JsonNode identityData = identityService.getIdentityV2(kycAuthRequestDto.getIndividualId());
+        JsonNode identityData = identityService.getIdentityV2(kycAuthDto.getIndividualId());
         if (identityData == null) {
-            throw new MockIdentityException("invalid_individual_id");
+            throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
         }
-        Boolean authStatus=doKycAuthentication(kycAuthRequestDto,identityData);
+        Boolean authStatus=doKycAuthentication(kycAuthDto,identityData);
 
-        KycAuth kycAuth = saveKycAuthTransaction(kycAuthRequestDto.getTransactionId(), relyingPartyId,
-                kycAuthRequestDto.getIndividualId());
+        KycAuth kycAuth = saveKycAuthTransaction(kycAuthDto.getTransactionId(), relyingPartyId,
+                kycAuthDto.getIndividualId());
 
         KycAuthResponseDto kycAuthResponseDto = new KycAuthResponseDto();
         kycAuthResponseDto.setAuthStatus(authStatus);
         kycAuthResponseDto.setKycToken(kycAuth.getKycToken());
         kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
+
+        if(kycAuthDto.isClaimMetadataRequired()) {
+            kycAuthResponseDto.setClaimMetadata(getVerifiedClaimMetadata(kycAuthDto.getIndividualId(), identityData));
+        }
+
         return kycAuthResponseDto;
     }
 
+    private Map<String,List<JsonNode>> getVerifiedClaimMetadata(String individualId, JsonNode identityData) {
+        Optional<List<VerifiedClaim>> result = verifiedClaimRepository.findByIndividualIdAndIsActive(individualId, true);
+        Map<String, List<VerifiedClaim>> verifiedClaims = result.map(claims -> claims.stream()
+                .collect(Collectors.groupingBy(VerifiedClaim::getClaim))).orElseGet(HashMap::new);
+
+        Map<String,List<JsonNode>> claimMetadataMap = new HashMap<>();
+        for(String fieldId : oidcClaimsMapping.keySet()) {
+            if(identityData.hasNonNull(fieldId)) {
+                List<JsonNode> verificationList = new ArrayList<>();
+                for(VerifiedClaim verifiedClaim : verifiedClaims.getOrDefault(oidcClaimsMapping.get(fieldId), Collections.emptyList())) {
+                    try {
+                        verificationList.add(objectMapper.readTree(verifiedClaim.getDetail()));
+                    } catch (Exception e) {
+                        log.error("Failed to process the verification data : {}", verifiedClaim.getDetail(), e);
+                    }
+                }
+                claimMetadataMap.put(oidcClaimsMapping.getOrDefault(fieldId, fieldId), verificationList);
+            }
+        }
+        return claimMetadataMap;
+    }
+
     @Override
-    public KycAuthResponseDtoV2 kycAuthV2(String relyingPartyId, String clientId, KycAuthRequestDto kycAuthRequestDto) {
+    public KycExchangeResponseDto kycExchange(String relyingPartyId, String clientId, KycExchangeDto kycExchangeDto) throws MockIdentityException {
+        //TODO validate relying party Id and client Id
+        Optional<KycAuth> result = authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId
+                (kycExchangeDto.getKycToken(), Valid.ACTIVE, kycExchangeDto.getTransactionId(),
+                        kycExchangeDto.getIndividualId());
 
-        JsonNode identityData = identityService.getIdentityV2(kycAuthRequestDto.getIndividualId());
-        Boolean authStatus=doKycAuthentication(kycAuthRequestDto,identityData);
+        if (!result.isPresent())
+            throw new MockIdentityException("mock-ida-006");
 
-        Optional<List<VerifiedClaim>> verifiedClaimsOptional = verifiedClaimRepository.findByIndividualIdAndActive(kycAuthRequestDto.getIndividualId(), true);
-
-        Map<String, List<VerifiedClaim>> verifiedClaims=new HashMap<>();
-        if (verifiedClaimsOptional.isPresent()) {
-            // Group verified claims
-            verifiedClaims = verifiedClaimsOptional.get().stream()
-                    .collect(Collectors.groupingBy(VerifiedClaim::getClaim));
+        LocalDateTime savedTime = result.get().getResponseTime();
+        long seconds = savedTime.until(kycExchangeDto.getRequestDateTime(), ChronoUnit.SECONDS);
+        if (seconds < 0 || seconds > transactionTimeoutInSecs) {
+            result.get().setValidity(Valid.EXPIRED);
+            authRepository.save(result.get());
+            throw new MockIdentityException("mock-ida-007");
         }
 
-        Map<String,List<VerificationDetail>> claimMetaDataMap = new HashMap<>();
-        try{
-            for(String oidcClaim : oidcClaimsMapping.keySet()){
-
-                if(isClaimAvailable(oidcClaim,identityData)){
-                    ClaimMetadata claimMetadata = new ClaimMetadata();
-                    claimMetadata.setClaim(oidcClaimsMapping.get(oidcClaim));
-                    List<VerificationDetail> verificationDetailList = new ArrayList<>();
-                    if(verifiedClaims.containsKey(oidcClaim)){
-                        List<VerifiedClaim> verifiedClaimsList = verifiedClaims.get(oidcClaim);
-
-                        for (VerifiedClaim verifiedClaim : verifiedClaimsList) {
-                            VerificationDetail verificationDetail = new VerificationDetail();
-                            verificationDetail.setDateTime(verifiedClaim.getVerifiedDateTime().format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
-                            verificationDetail.setTrustFramework(verifiedClaim.getTrustFramework());
-                            verificationDetailList.add(verificationDetail);
-                        }
+        try {
+            if(kycExchangeDto.getAcceptedClaimDetail() == null) { kycExchangeDto.setAcceptedClaimDetail(new HashMap<>()); }
+            if(kycExchangeDto.getAcceptedClaims() != null) {
+                for(String acceptedClaim : kycExchangeDto.getAcceptedClaims()) {
+                    if(!kycExchangeDto.getAcceptedClaimDetail().containsKey(acceptedClaim)) {
+                        kycExchangeDto.getAcceptedClaimDetail().put(acceptedClaim, null);
                     }
-                    claimMetaDataMap.put(oidcClaimsMapping.get(oidcClaim),verificationDetailList);
                 }
             }
-        }catch (Exception e){
-            log.error("Authentication failed {} ",e);
-        }
-        KycAuth kycAuth = saveKycAuthTransaction(kycAuthRequestDto.getTransactionId(), relyingPartyId,
-                kycAuthRequestDto.getIndividualId());
-        KycAuthResponseDtoV2 kycAuthResponseDtoV2 = new KycAuthResponseDtoV2();
-        kycAuthResponseDtoV2.setAuthStatus(authStatus);
-        kycAuthResponseDtoV2.setKycToken(kycAuth.getKycToken());
-        kycAuthResponseDtoV2.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
-        kycAuthResponseDtoV2.setClaimMetaData(claimMetaDataMap);
-        return kycAuthResponseDtoV2;
-    }
 
-
-
-    @Override
-    public KycExchangeResponseDto kycExchangeV2(String relyingPartyId, String clientId, KycExchangeRequestDtoV2 kycExchangeRequestDtoV2){
-        //TODO validate relying party Id and client Id
-        Optional<KycAuth> result = authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId
-                (kycExchangeRequestDtoV2.getKycToken(), Valid.ACTIVE, kycExchangeRequestDtoV2.getTransactionId(),
-                        kycExchangeRequestDtoV2.getIndividualId());
-
-        if (!result.isPresent())
-            throw new MockIdentityException("mock-ida-006");
-
-        LocalDateTime savedTime = result.get().getResponseTime();
-        long seconds = savedTime.until(kycExchangeRequestDtoV2.getRequestDateTime(), ChronoUnit.SECONDS);
-        if (seconds < 0 || seconds > transactionTimeoutInSecs) {
-            result.get().setValidity(Valid.EXPIRED);
-            authRepository.save(result.get());
-            throw new MockIdentityException("mock-ida-007");
-        }
-
-        try {
-            Map<String, Object> kyc = buildKycDataBasedOnPolicyV2(kycExchangeRequestDtoV2.getIndividualId(),
-                    kycExchangeRequestDtoV2.getAcceptedClaims(), kycExchangeRequestDtoV2.getClaimLocales());
-            kyc.put("sub", result.get().getPartnerSpecificUserToken());
-
-            result.get().setValidity(Valid.PROCESSED);
-            authRepository.save(result.get());
-
-            String finalKyc = this.encryptKyc ? getJWE(relyingPartyId, signKyc(kyc)) : signKyc(kyc);
-            KycExchangeResponseDto kycExchangeResponseDto = new KycExchangeResponseDto();
-            kycExchangeResponseDto.setKyc(finalKyc);
-            return kycExchangeResponseDto;
-        } catch (Exception ex) {
-            log.error("Failed to build kyc data", ex);
-            throw new MockIdentityException("mock-ida-008");
-        }
-    }
-
-    @Override
-    public KycExchangeResponseDto kycExchange(String relyingPartyId, String clientId, KycExchangeRequestDto kycExchangeRequestDto) throws MockIdentityException {
-        //TODO validate relying party Id and client Id
-        Optional<KycAuth> result = authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId
-                (kycExchangeRequestDto.getKycToken(), Valid.ACTIVE, kycExchangeRequestDto.getTransactionId(),
-                        kycExchangeRequestDto.getIndividualId());
-
-        if (!result.isPresent())
-            throw new MockIdentityException("mock-ida-006");
-
-        LocalDateTime savedTime = result.get().getResponseTime();
-        long seconds = savedTime.until(kycExchangeRequestDto.getRequestDateTime(), ChronoUnit.SECONDS);
-        if (seconds < 0 || seconds > transactionTimeoutInSecs) {
-            result.get().setValidity(Valid.EXPIRED);
-            authRepository.save(result.get());
-            throw new MockIdentityException("mock-ida-007");
-        }
-
-        try {
-            Map<String, Object> kyc = buildKycDataBasedOnPolicy(kycExchangeRequestDto.getIndividualId(),
-                    kycExchangeRequestDto.getAcceptedClaims(), kycExchangeRequestDto.getClaimLocales());
+            JsonNode identityData = identityService.getIdentityV2(kycExchangeDto.getIndividualId());
+            if (identityData == null) {
+                throw new MockIdentityException("mock-ida-001");
+            }
+            Map<String, Object> kyc = buildKycDataBasedOnPolicy(kycExchangeDto.getIndividualId(), identityData,
+                    kycExchangeDto.getAcceptedClaimDetail(), kycExchangeDto.getClaimLocales());
             kyc.put("sub", result.get().getPartnerSpecificUserToken());
 
             result.get().setValidity(Valid.PROCESSED);
@@ -283,21 +235,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new SendOtpResult(sendOtpDto.getTransactionId(), maskedEmailId, maskedMobile);
     }
 
-    private Boolean doKycAuthentication(KycAuthRequestDto kycAuthRequestDto,JsonNode identityData){
+    private Boolean doKycAuthentication(KycAuthDto kycAuthDto, JsonNode identityData){
         boolean authStatus=false;
-        if (kycAuthRequestDto.getOtp() != null) {
+        if (kycAuthDto.getOtp() != null) {
             //check if the trn is available and active
-            if (StringUtils.isEmpty(kycAuthRequestDto.getTransactionId())) {
+            if (StringUtils.isEmpty(kycAuthDto.getTransactionId())) {
                 log.error("Invalid transaction Id");
                 throw new MockIdentityException("invalid_transaction_id");
             }
 
             var trn_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
-                    String.format(kycAuthRequestDto.getTransactionId(), kycAuthRequestDto.getIndividualId(), OTP_VALUE));
+                    String.format(kycAuthDto.getTransactionId(), kycAuthDto.getIndividualId(), OTP_VALUE));
 
             var isValid = trnHash.contains(trn_hash);
             if (isValid) {
-                authStatus = kycAuthRequestDto.getOtp().equals(OTP_VALUE);
+                authStatus = kycAuthDto.getOtp().equals(OTP_VALUE);
                 if (authStatus)
                     trnHash.remove(trn_hash);
                 else
@@ -307,38 +259,38 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
         }
 
-        if (kycAuthRequestDto.getPin() != null) {
-            authStatus = kycAuthRequestDto.getPin().equals(HelperUtil.getIdentityDataValue(identityData,"pin",defaultLanguage));
+        if (kycAuthDto.getPin() != null) {
+            authStatus = kycAuthDto.getPin().equals(HelperUtil.getIdentityDataValue(identityData,"pin",defaultLanguage));
             if (!authStatus)
                 throw new MockIdentityException("auth_failed");
         }
 
-        if (kycAuthRequestDto.getBiometrics() != null) {
+        if (kycAuthDto.getBiometrics() != null) {
             authStatus = true; //TODO
         }
 
-        if(kycAuthRequestDto.getKbi()!=null){
-            authStatus=validateKnowledgeBasedAuth(kycAuthRequestDto,identityData);
+        if(kycAuthDto.getKbi()!=null){
+            authStatus=validateKnowledgeBasedAuth(kycAuthDto,identityData);
         }
 
-        if(kycAuthRequestDto.getPassword()!=null){
-            authStatus=validatePasswordAuth(kycAuthRequestDto,identityData);
+        if(kycAuthDto.getPassword()!=null){
+            authStatus=validatePasswordAuth(kycAuthDto,identityData);
         }
 
-        if (!CollectionUtils.isEmpty(kycAuthRequestDto.getTokens())) {
-            authStatus = !StringUtils.isEmpty(kycAuthRequestDto.getTokens().get(0));
+        if (!CollectionUtils.isEmpty(kycAuthDto.getTokens())) {
+            authStatus = !StringUtils.isEmpty(kycAuthDto.getTokens().get(0));
             if (!authStatus)
                 throw new MockIdentityException("auth_failed");
         }
         return authStatus;
     }
 
-    private boolean validateKnowledgeBasedAuth(KycAuthRequestDto kycAuthRequestDto,JsonNode identityData){
+    private boolean validateKnowledgeBasedAuth(KycAuthDto kycAuthDto, JsonNode identityData){
         if(CollectionUtils.isEmpty(fieldDetailList) || StringUtils.isEmpty(fieldLang)){
             log.error("KBI field details not configured");
             throw new MockIdentityException("auth-failed");
         }
-        String encodedChallenge=kycAuthRequestDto.getKbi();
+        String encodedChallenge= kycAuthDto.getKbi();
         try{
             byte[] decodedBytes = Base64.getUrlDecoder().decode(encodedChallenge);
             String challenge = new String(decodedBytes, StandardCharsets.UTF_8);
@@ -365,10 +317,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return true;
     }
 
-    private boolean validatePasswordAuth(KycAuthRequestDto kycAuthRequestDto,JsonNode identityData){
-        String password=kycAuthRequestDto.getPassword();
-        String passwordHash = identityData.get("password").asText();
-        return checkPassword(password,passwordHash);
+    private boolean validatePasswordAuth(KycAuthDto kycAuthDto, JsonNode identityData){
+        String passwordHash = identityData.hasNonNull("password") ? identityData.get("password").asText() : null;
+        return passwordHash != null && passwordHash.equals(generateHash(kycAuthDto.getPassword()));
     }
 
     private String signKyc(Map<String, Object> kyc) throws JsonProcessingException {
@@ -417,193 +368,64 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return authRepository.save(kycAuth);
     }
 
-    private Map<String, Object> buildKycDataBasedOnPolicyV2(String individualId, Map<String, Object> acceptedClaims, List<String> locales)  {
+    private Map<String, Object> buildKycDataBasedOnPolicy(String individualId, JsonNode identityData, Map<String, JsonNode> claims, List<String> locales) {
         Map<String, Object> kyc = new HashMap<>();
-        JsonNode identityData = identityService.getIdentityV2(individualId);
-        if (identityData == null) {
-            throw new MockIdentityException("mock-ida-001");
-        }
-
-        Optional<List<VerifiedClaim>> verifiedClaimOptional = verifiedClaimRepository.findByIndividualIdAndActive(individualId, true);
-
         if (CollectionUtils.isEmpty(locales)) {
             locales = Arrays.asList(defaultLanguage);
         }
-        boolean singleLanguage = locales.size() == 1;
-        try{
-            for(String claim: acceptedClaims.keySet()){
 
-                if(claim.equals("verified_claims")){
-                    if (verifiedClaimOptional.isEmpty() || verifiedClaimOptional.get().isEmpty()){
-                        continue;
-                    }
-                    JSONArray verifiedClaims = new JSONArray();
-                    List<Map<String,Object>> verifyingClaimsList = (List)acceptedClaims.get("verified_claims");
-                    for (Map<String,Object> verifyingClaimMap : verifyingClaimsList) {
-                        Map<String,Object> verification = new HashMap<>();//Verification Response
-                        Map<String,Object> claims = new HashMap<>();//Claims Response
+        for (Map.Entry<String, JsonNode> claimDetail : claims.entrySet()) {
 
-                        Map<String,Object> verificationClaims = (Map)verifyingClaimMap.get("claims");
-                        String trustFramework=(String)((Map) verifyingClaimMap.get("verification")).get("trust_framework");
-                        List<VerifiedClaim> verifiedClaimsList=null;
-                        if(trustFramework==null){
-                            verifiedClaimsList=verifiedClaimOptional.get();
-                        }else{
-                            verifiedClaimsList = getFrameworkVerifiedClaim(verifiedClaimOptional.get(),trustFramework);
-                        }
-                        verification.put("trust_framework",trustFramework);
-                        for (Map.Entry<String, Object> entry : verificationClaims.entrySet()) {
-                            validateOidcClaims(entry.getKey());
-                            String key = getIdentityName(entry.getKey());
-                            for(VerifiedClaim verifiedClaim:verifiedClaimsList){
-                                if(verifiedClaim.getClaim().equals(key)){
-                                    if(identityData.has(key)){
-                                        Object fieldValue = identityData.get(key);
-                                        if(fieldValue instanceof ArrayNode){
-                                            List<LanguageValue> languageValues=HelperUtil.getLanguageValuesList((ArrayNode)fieldValue);
-                                            claims.putAll(getKycValues(locales, key, languageValues, singleLanguage));
-                                        }else if(fieldValue!=null) {
-                                            claims.put(key, identityData.get(key).asText());
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        Map<String,Object> verificationObject = new HashMap<>();
-                        verificationObject.put("verification",verification);
-                        verificationObject.put("claims",claims);
-                        verifiedClaims.add(verificationObject);
-                    }
-                    kyc.put("verified_claims",verifiedClaims);
-                }else{
-                    validateOidcClaims(claim);
-                    String key=getIdentityName(claim);
-                    if(identityData.has(key)){
-                        Object fieldValue = identityData.get(key);
-                        if(fieldValue instanceof ArrayNode){
-                            List<LanguageValue> languageValues=HelperUtil.getLanguageValuesList((ArrayNode)fieldValue);
-                            kyc.putAll(getKycValues(locales, key, languageValues, singleLanguage));
-                        }else if(fieldValue!=null){
-                            kyc.put(key, identityData.get(key).asText());
+            Optional<Map.Entry<String, String>> keyMappingEntry = oidcClaimsMapping.entrySet().stream().filter(entry -> entry.getValue().equals(claimDetail.getKey()) ).findFirst();
+
+            switch (claimDetail.getKey()) {
+                case "verified_claims":
+                    if(claimDetail.getValue().isArray()) {
+                        Iterator<JsonNode> itr = claimDetail.getValue().iterator();
+                        while(itr.hasNext()) {
+                            Map<String, Object> result = getVerificationDetail(individualId, itr.next(), identityData, locales);
+                            if(result.isEmpty())
+                                continue;
+
+                            List<Object> list = (List<Object>) kyc.getOrDefault("verified_claims", new ArrayList<Object>());
+                            list.add(result);
                         }
                     }
-                }
-            }
-        }catch (Exception e) {
-            log.error("Failed to build kyc data", e);
-            throw new MockIdentityException("mock-ida-008");
-        }
-        return kyc;
-    }
-
-    private List<VerifiedClaim> getFrameworkVerifiedClaim(List<VerifiedClaim> verifiedClaimList, String trustFramework) {
-        return verifiedClaimList.stream().filter(verifiedClaim -> verifiedClaim.getTrustFramework().
-                equals(trustFramework)).collect(Collectors.toList());
-    }
-
-    private String getIdentityName(String oidcName) {
-        for (String key : oidcClaimsMapping.keySet()) {
-            if (oidcClaimsMapping.get(key).equals(oidcName)) {
-                return key;
-            }
-        }
-        return oidcName;
-    }
-
-    private void validateOidcClaims(String claim){
-        //validate claims against the oidcClaimsMapping
-        for (String key: oidcClaimsMapping.keySet()) {
-            if(oidcClaimsMapping.get(key).equals(claim)){
-                return;
-            }
-        }
-        log.error("Invalid Claim {}",claim);
-        throw new MockIdentityException("invalid_claim");
-    }
-
-    private Map<String, Object> buildKycDataBasedOnPolicy(String individualId, List<String> claims, List<String> locales) {
-        Map<String, Object> kyc = new HashMap<>();
-        IdentityData identityData = identityService.getIdentity(individualId);
-        if (identityData == null) {
-            throw new MockIdentityException("mock-ida-001");
-        }
-
-        if (CollectionUtils.isEmpty(locales)) {
-            locales = Arrays.asList(defaultLanguage);
-        }
-        boolean singleLanguage = locales.size() == 1;
-        for (String claim : claims) {
-            switch (claim) {
-                case "name":
-                	if (identityData.getName() != null) {
-                		kyc.putAll(getKycValues(locales, "name", identityData.getName(), singleLanguage));
-                        break;
-                	} else if (identityData.getFullName() != null) {
-                		kyc.putAll(getKycValues(locales, "name", identityData.getFullName(), singleLanguage));
-                        break;
-                	}
-                case "middle_name":
-                    kyc.putAll(getKycValues(locales, "middle_name", identityData.getMiddleName(), singleLanguage));
-                    break;
-                case "given_name":
-                    kyc.putAll(getKycValues(locales, "given_name", identityData.getGivenName(), singleLanguage));
-                    break;
-                case "family_name":
-                    kyc.putAll(getKycValues(locales, "family_name", identityData.getFamilyName(), singleLanguage));
-                    break;
-                case "nickname":
-                    kyc.putAll(getKycValues(locales, "nickname", identityData.getNickName(), singleLanguage));
-                    break;
-                case "preferred_username":
-                    kyc.putAll(getKycValues(locales, "name", identityData.getPreferredUsername(), singleLanguage));
-                    break;
-                case "birthdate":
-                    if (identityData.getDateOfBirth() != null) {
-                        kyc.put("birthdate", identityData.getDateOfBirth());
+                    else {
+                        Map<String, Object> result = getVerificationDetail(individualId, claimDetail.getValue(), identityData, locales);
+                        kyc.put("verified_claims", result);
                     }
                     break;
-                case "gender":
-                    kyc.putAll(getKycValues(locales, "gender", identityData.getGender(), singleLanguage));
-                    break;
-                case "email":
-                    if (identityData.getEmail() != null) {
-                        kyc.put("email", identityData.getEmail());
-                    }
-                    break;
-                case "phone_number":
-                    if (identityData.getPhone() != null) {
-                        kyc.put("phone_number", identityData.getPhone());
-                    }
-                    break;
+
                 case "address":
                     Map<String, Object> addressValues = new HashMap<>();
-                    addressValues.putAll(getKycValues(locales, "street_address", identityData.getStreetAddress(), singleLanguage));
-                    addressValues.putAll(getKycValues(locales, "locality", identityData.getLocality(), singleLanguage));
-                    addressValues.putAll(getKycValues(locales, "region", identityData.getRegion(), singleLanguage));
-                    if (identityData.getPostalCode() != null) {
-                        addressValues.put("postal_code", identityData.getPostalCode());
+                    addressValues.putAll(getKycValues(locales, "street_address", HelperUtil.getLanguageValuesList((ArrayNode) identityData.get("streetAddress")),
+                            claimDetail.getValue()));
+                    addressValues.putAll(getKycValues(locales, "locality", HelperUtil.getLanguageValuesList((ArrayNode) identityData.get("locality")),
+                            claimDetail.getValue()));
+                    addressValues.putAll(getKycValues(locales, "region", HelperUtil.getLanguageValuesList((ArrayNode) identityData.get("region")),
+                            claimDetail.getValue()));
+                    addressValues.putAll(getKycValues(locales, "country", HelperUtil.getLanguageValuesList((ArrayNode) identityData.get("country")),
+                            claimDetail.getValue()));
+                    if (identityData.hasNonNull("postalCode")) {
+                        addressValues.put("postal_code", identityData.get("postalCode").asText());
                     }
-                    addressValues.putAll(getKycValues(locales, "country", identityData.getCountry(), singleLanguage));
                     kyc.put("address", addressValues);
                     break;
-                case "zoneinfo":
-                    if (identityData.getZoneInfo() != null) {
-                        kyc.put("zoneinfo", identityData.getZoneInfo());
+
+                default:
+
+                    if(keyMappingEntry.isEmpty() || !identityData.hasNonNull(keyMappingEntry.get().getKey())) { break; }
+
+                    if(identityData.get(keyMappingEntry.get().getKey()).isArray()) {
+                        List<LanguageValue> languageValues = HelperUtil.getLanguageValuesList((ArrayNode) identityData.get(keyMappingEntry.get().getKey()));
+                        kyc.putAll(getKycValues(locales, keyMappingEntry.get().getValue(), languageValues, claimDetail.getValue()));
                     }
-                    break;
-                case "locale":
-                    if (identityData.getLocale() != null) {
-                        kyc.put("picture", identityData.getLocale());
-                    }
-                    break;
-                case "picture":
-                    if (identityData.getEncodedPhoto() != null) {
-                        kyc.put("picture", identityData.getEncodedPhoto());
-                    }
-                    break;
-                case "individual_id":
-                    if (identityData.getIndividualId() != null) {
-                        kyc.put("individual_id", identityData.getIndividualId());
+                    else {
+                        String value = identityData.get(keyMappingEntry.get().getKey()).asText();
+                        if (isClaimMatchingValueOrValuesCriteria(value, claimDetail.getValue())) {
+                            kyc.put(claimDetail.getKey(), value);
+                        }
                     }
                     break;
             }
@@ -611,42 +433,72 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return kyc;
     }
 
-    private Map<String, Object> getKycValues(List<String> locales, String claimName, List<LanguageValue> values, boolean isSingleLanguage) {
+    private Map<String, Object> getKycValues(List<String> locales, String claimName, List<LanguageValue> values, JsonNode requestedClaimDetail) {
         if (values == null) {
             return Collections.emptyMap();
         }
+        boolean isSingleLanguage = locales.size() == 1;
         Map<String,Object> map=new HashMap<>();
         for (String locale : locales) {
              map.putAll(values.stream()
-                    .filter(v -> v.getLanguage().equalsIgnoreCase(locale) || v.getLanguage().startsWith(locale))
-                    .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, v -> v.getValue())));
+                        .filter(v -> v.getLanguage().equalsIgnoreCase(locale) || v.getLanguage().startsWith(locale))
+                        .filter(v -> isClaimMatchingValueOrValuesCriteria(v.getValue(), requestedClaimDetail) )
+                        .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, LanguageValue::getValue)));
         }
         return map;
     }
-    
-    private boolean checkPassword(String password, String passwordHash) {
-    	try 
-	    {
-		  MessageDigest md = MessageDigest.getInstance(cryptoAlgo);
-		  md.update(password.getBytes(StandardCharsets.UTF_8));
-		  byte[] bytes = md.digest();
 
-	      // This bytes[] has bytes in decimal format. Convert it to hexadecimal format
-	      StringBuilder sb = new StringBuilder();
-	      for (int i = 0; i < bytes.length; i++) {
-	        sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-	      }
-
-	      // Get complete hashed password in hex format
-	      return passwordHash.equals(sb.toString());
-	    } catch (NoSuchAlgorithmException e) {
-	      e.printStackTrace();
-	    }
-	  return false;
+    private boolean isClaimMatchingValueOrValuesCriteria(String claimValue, JsonNode requestedClaimDetail) {
+        return requestedClaimDetail == null ||
+                ( requestedClaimDetail.hasNonNull("value") ? claimValue.equals(requestedClaimDetail.get("value").asText()) :
+                        ( !requestedClaimDetail.hasNonNull("values") || StreamSupport.stream(requestedClaimDetail.get("values").spliterator(), false)
+                                .anyMatch(node -> node.asText().equals(claimValue)) ) );
     }
 
-    private boolean isClaimAvailable(String claim, JsonNode identityData) throws Exception {
-        return HelperUtil.getIdentityDataValue(identityData,claim,fieldLang)!=null;
+    private Map<String,Object> getVerificationDetail(String individualId, JsonNode requestedVerificationMetadata, JsonNode identityData, List<String> locales) {
+        if (requestedVerificationMetadata == null) {
+            return Collections.emptyMap();
+        }
+
+        ObjectNode matchedVerificationDetail = objectMapper.createObjectNode();
+        Map<String, JsonNode> matchedVerifiedClaims = new HashMap<>();
+        JsonNode requestedVerification = requestedVerificationMetadata.get("verification");
+        JsonNode requestedVerifiedClaims = requestedVerificationMetadata.get("claims");
+        Iterator<Map.Entry<String, JsonNode>> it = requestedVerifiedClaims.fields();
+        while (it.hasNext()) {
+            Map.Entry<String, JsonNode> entry = it.next();
+            Optional<List<VerifiedClaim>> result = verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(individualId, entry.getKey(), true);
+            if(result.isEmpty()) { continue; }
+
+            Optional<VerifiedClaim> matchedEntry = result.get().stream().
+                    filter(vc -> isClaimMatchingValueOrValuesCriteria(vc.getTrustFramework(), requestedVerification.get("trust_framework"))).findFirst();
+            if(matchedEntry.isPresent()) {
+                matchedVerificationDetail.put("trust_framework", matchedEntry.get().getTrustFramework());
+                matchedVerificationDetail.put("time", String.valueOf(matchedEntry.get().getUpdDateTime()));//TODO need to format
+                matchedVerifiedClaims.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        if(matchedVerifiedClaims.isEmpty() || matchedVerificationDetail.isEmpty())
+            return Collections.emptyMap();
+
+        Map<String,Object> result = new HashMap<>();
+        result.put("verification", matchedVerificationDetail);
+        Map<String, Object> kyc = buildKycDataBasedOnPolicy(individualId, identityData, matchedVerifiedClaims, locales);
+        result.put("claims", kyc);
+        return result;
+    }
+    
+    private String generateHash(String password) {
+    	try 
+	    {
+		  MessageDigest md = MessageDigest.getInstance(hashAlgorithm);
+		  md.update(password.getBytes(StandardCharsets.UTF_8));
+		  return Base64.getEncoder().encodeToString(md.digest());
+	    } catch (NoSuchAlgorithmException e) {
+	      log.error("Failed to generate hash", e);
+	    }
+	    return null;
     }
 
     public boolean isSupportedOtpChannel(String channel) {

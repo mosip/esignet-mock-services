@@ -1,8 +1,13 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.mosip.esignet.mock.identitysystem.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.esignet.mock.identitysystem.dto.*;
-import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
+import io.mosip.esignet.mock.identitysystem.service.impl.AuthenticationServiceImpl;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
@@ -27,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AuthControllerTest {
 
     @MockBean
-    private AuthenticationService authenticationService;
+    private AuthenticationServiceImpl authenticationService;
 
     @Autowired
     MockMvc mockMvc;
@@ -51,9 +56,9 @@ public class AuthControllerTest {
 
     @Test
     public void kycAuthV2_withValidDetails_thenPass() throws Exception {
-        KycAuthRequestDto requestDto = new KycAuthRequestDto();
-        KycAuthResponseDtoV2 responseDtoV2 = new KycAuthResponseDtoV2();
-        when(authenticationService.kycAuthV2(any(), any(), any())).thenReturn(responseDtoV2);
+        KycAuthRequestDtoV2 requestDto = new KycAuthRequestDtoV2();
+        KycAuthResponseDto responseDto = new KycAuthResponseDto();
+        when(authenticationService.kycAuth(any(), any(), any())).thenReturn(responseDto);
         mockMvc.perform(post("/v2/kyc-auth/relyingPartyId/clientId")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(requestDto)))
@@ -77,7 +82,7 @@ public class AuthControllerTest {
     public void kycExchangeV2_withValidDetails_thenPass() throws Exception {
         KycExchangeRequestDtoV2 requestDtoV2 = new KycExchangeRequestDtoV2();
         KycExchangeResponseDto responseDto = new KycExchangeResponseDto();
-        when(authenticationService.kycExchangeV2(any(), any(), any())).thenReturn(responseDto);
+        when(authenticationService.kycExchange(any(), any(), any())).thenReturn(responseDto);
         mockMvc.perform(post("/v2/kyc-exchange/relyingPartyId/clientId")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(requestDtoV2)))

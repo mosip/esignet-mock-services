@@ -20,7 +20,7 @@ public interface IdentityService {
 	
 	public IdentityData getIdentity(String individualId) throws MockIdentityException;
 
-    public  void addVerifiedClaim(List<VerifiedClaimRequestDto> request) throws MockIdentityException;
+    public  void addVerifiedClaim(VerifiedClaimRequestDto request) throws MockIdentityException;
 
 	public JsonNode getIdentityV2(String individualId) throws MockIdentityException;
 }
