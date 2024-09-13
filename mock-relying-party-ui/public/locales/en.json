@@ -1,4 +1,26 @@
 {
+  "simRegistrationCompleted": {
+    "welcome_msg": "Welcome",
+    "loading_msg": "Loading! Please wait...",
+    "profile_picture": "profile picture",
+    "telecom_msg": "Please click on the button below to initiate the eSIM activation process",
+    "please_visit_our": "Please visit our",
+    "esim_website": "e-SIM website",
+    "for_next_steps": "for the next steps.",
+    "initiate_activation": "Initiate Activation",
+    "refuel_your_digital_life": "Refuel your digital life",
+    "1.5gb/day": "1.5 GB/day",
+    "2gb/day": "2 GB/day",
+    "unlimited_calls_and_messages": "Unlimited calls and SMS",
+    "best_value_plan": "Best value plan",
+    "unlimted_calls": "Talk to your loved ones for hours with unlimited voice calls",
+    "surf_internet": "Surf internet, enjoy social media, or connect with friends online",
+    "view_more": "View More",
+    "go_for_unlimited_entertainment": "Go for unlimited entertainment",
+    "contents_available": "Watch 900+ TV channels, stream content in more than 16 languages, and much more on the FastLine app.",
+    "explore": "Explore",
+    "sign_out": "Sign Out"
+  },
   "background": {
     "home": "Home",
     "polices": "Polices",
@@ -12,7 +34,12 @@
     "recovered": "Recovered",
     "active": "Active",
     "registration": "Registration",
-    "language": "Language"
+    "language": "Language",
+    "prepaid": "Prepaid",
+    "postpaid": "Postpaid",
+    "new_sim_connection": "New Sim Connection",
+    "explore": "Explore",
+    "help": "Help"
   },
   "login": {
     "sign_in_with_health_portal": "Sign In to the Health portal",
@@ -22,9 +49,7 @@
     "or": "OR",
     "sign_in_with": "Sign In with eSignet",
     "dont_have_existing_account": "Don't have an existing account?",
-    "sign_up_here": "Sign Up here",
-    "logged_out": "User Logout",
-    "session_expired": "Session Expired"
+    "sign_up_here": "Sign Up here"
   },
   "signup": {
     "sign_up_with_health_portal": "Sign Up to the Health portal",
@@ -104,24 +129,9 @@
     "name": "Name",
     "application_number": "Application Number",
     "appointment_details": "Appointment Details",
-    "appointment_confirmation_date":"4th March 2023",
+    "appointment_confirmation_date": "4th March 2023",
     "home": "Home",
     "location": "# 45/2, Colombia Asia, Marathahalli - Sarjapur Rd, Opposite Iblur, Bellandur, Bengaluru, Karnataka-560102"
-  },
-  "registration": {
-    "child_registration": "User Registration",
-    "full_name": "Full Name",
-    "gender": "Gender",
-    "date_of_birth": "Date of birth",
-    "city": "City",
-    "address": "Address",
-    "fetch_details": "Fetch details from eSignet",
-    "register": "Register",
-    "loading_msg": "Loading! Please wait...",
-    "phone_number": "Phone number",
-    "email_address": "Email Address",
-    "show_raw_user_info": "Show raw user info",
-    "hide_raw_user_info": "Hide raw user info"
   },
   "profileui": {
     "current_medication": "Current Medication",
@@ -137,6 +147,23 @@
     "dailydoseage_1": "1 Pill(s) daily",
     "dr_alexander_kalish": "Dr Alexander Kalish",
     "endocrin": "Endocrinologist"
+  },
+  "registration": {
+    "child_registration": "User Registration",
+    "full_name": "Full Name",
+    "gender": "Gender",
+    "date_of_birth": "Date of birth",
+    "city": "City",
+    "address": "Address",
+    "fetch_details": "Fetch details from eSignet",
+    "register": "Register",
+    "loading_msg": "Loading! Please wait...",
+    "phone_number": "Phone number",
+    "email_address": "Email Address",
+    "show_raw_user_info": "Show raw user info",
+    "hide_raw_user_info": "Hide raw user info",
+    "new_sim": "Looking for a New SIM?",
+    "register_for_sim": "Register for e-SIM Using National ID"
   },
   "errors": {
     "sign_in_failed": "Authentication failed! Try sign in with eSignet",
