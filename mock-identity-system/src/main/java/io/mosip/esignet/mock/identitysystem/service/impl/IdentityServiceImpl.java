@@ -5,6 +5,7 @@
  */
 package io.mosip.esignet.mock.identitysystem.service.impl;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
@@ -16,6 +17,7 @@ import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
+import io.mosip.kernel.core.util.HMACUtils2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,24 +62,34 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		MockIdentity mockIdentity = new MockIdentity();
 		try {
+			if(identityData.getPassword() != null) {
+				identityData.setPassword(HMACUtils2.digestAsPlainText(identityData.getPassword().getBytes()));
+			}
 			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(identityData));
 		} catch (JsonProcessingException e) {
 			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
-		}
-		mockIdentity.setIndividualId(identityData.getIndividualId());
+		} catch (NoSuchAlgorithmException e) {
+			throw new MockIdentityException(ErrorConstants.UNKNOWN_ERROR);
+        }
+        mockIdentity.setIndividualId(identityData.getIndividualId());
 		identityRepository.save(mockIdentity);
 	}
 
 	@Override
 	public void updateIdentity(IdentityData identityData) throws MockIdentityException {
-		if (!identityRepository.findById(identityData.getIndividualId()).isPresent()) {
+		if (identityRepository.findById(identityData.getIndividualId()).isEmpty()) {
 			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
 		}
 		MockIdentity mockIdentity = new MockIdentity();
 		try {
+			if(identityData.getPassword() != null) {
+				identityData.setPassword(HMACUtils2.digestAsPlainText(identityData.getPassword().getBytes()));
+			}
 			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(identityData));
 		} catch (JsonProcessingException e) {
 			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
+		} catch (NoSuchAlgorithmException e) {
+			throw new MockIdentityException(ErrorConstants.UNKNOWN_ERROR);
 		}
 		mockIdentity.setIndividualId(identityData.getIndividualId());
 		identityRepository.save(mockIdentity);
@@ -86,7 +98,7 @@ public class IdentityServiceImpl implements IdentityService {
 	@Override
 	public IdentityData getIdentity(String individualId) throws MockIdentityException {
 		Optional<MockIdentity> mockIdentity = identityRepository.findById(individualId);
-		if (!mockIdentity.isPresent()) {
+		if (mockIdentity.isEmpty()) {
 			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
 		}
 		IdentityData identityData = new IdentityData();
@@ -101,7 +113,7 @@ public class IdentityServiceImpl implements IdentityService {
 	@Override
 	public JsonNode getIdentityV2(String individualId) throws MockIdentityException {
 		Optional<MockIdentity> mockIdentity = identityRepository.findById(individualId);
-		if (!mockIdentity.isPresent()) {
+		if (mockIdentity.isEmpty()) {
 			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
 		}
 		try {
