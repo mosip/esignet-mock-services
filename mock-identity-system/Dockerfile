@@ -66,6 +66,8 @@ ENV loader_path_env=${loader_path}
 
 ADD configure_start.sh configure_start.sh
 
+ADD ../hsm/client.zip client.zip
+
 ADD target/mock-identity-system-*.jar  mock-identity-system.jar
 
 ## install packages, create user and change permissions of file inside working dir
