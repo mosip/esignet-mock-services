@@ -21,6 +21,7 @@ import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
+import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.signature.dto.JWTSignatureRequestDto;
 import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
@@ -36,7 +37,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -319,7 +319,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private boolean validatePasswordAuth(KycAuthDto kycAuthDto, JsonNode identityData){
         String passwordHash = identityData.hasNonNull("password") ? identityData.get("password").asText() : null;
-        return passwordHash != null && passwordHash.equals(generateHash(kycAuthDto.getPassword()));
+        try {
+            return passwordHash != null && passwordHash.equals(HMACUtils2.digestAsPlainText(kycAuthDto.getPassword().getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            log.error("Failed to decode PWD challenge or compare it with IdentityData", e);
+            throw new MockIdentityException("auth-failed");
+        }
     }
 
     private String signKyc(Map<String, Object> kyc) throws JsonProcessingException {
@@ -487,18 +492,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Map<String, Object> kyc = buildKycDataBasedOnPolicy(individualId, identityData, matchedVerifiedClaims, locales);
         result.put("claims", kyc);
         return result;
-    }
-    
-    private String generateHash(String password) {
-    	try 
-	    {
-		  MessageDigest md = MessageDigest.getInstance(hashAlgorithm);
-		  md.update(password.getBytes(StandardCharsets.UTF_8));
-		  return Base64.getEncoder().encodeToString(md.digest());
-	    } catch (NoSuchAlgorithmException e) {
-	      log.error("Failed to generate hash", e);
-	    }
-	    return null;
     }
 
     public boolean isSupportedOtpChannel(String channel) {
