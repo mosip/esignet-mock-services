@@ -66,8 +66,6 @@ ENV loader_path_env=${loader_path}
 
 ADD configure_start.sh configure_start.sh
 
-ADD ../hsm/client.zip client.zip
-
 ADD target/mock-identity-system-*.jar  mock-identity-system.jar
 
 ## install packages, create user and change permissions of file inside working dir
@@ -79,6 +77,7 @@ RUN apt-get -y update \
 && echo "%sudo ALL=(ALL) NOPASSWD:/home/${container_user}/${hsm_local_dir}/install.sh" >> /etc/sudoers \
 && mkdir -p ${loader_path} \
 && chmod +x configure_start.sh \
+&& wget https://raw.githubusercontent.com/mosip/artifactory-ref-impl/master/artifacts/src/hsm/client.zip -O client.zip \
 && chown -R ${container_user}:${container_user} /home/${container_user}
 
 # select container user for all tasks
