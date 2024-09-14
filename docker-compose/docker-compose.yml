@@ -13,16 +13,15 @@ services:
 
 
   mock-identity-system:
-    build:
-      context: ../mock-identity-system
-      dockerfile: Dockerfile
+    image: 'mosipdev/mock-identity-system:develop'
     user: root
     ports:
       - 8082:8082
     environment:
       - container_user=mosip
-      - active_profile_env=default
-      - mosip.mockidentitysystem.database.hostname=database
-      - db.dbuser.password=postgres
+      - active_profile_env=local
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/mosip_mockidentitysystem?currentSchema=mockidentitysystem
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
     depends_on:
       - database
