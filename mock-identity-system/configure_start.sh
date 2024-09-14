@@ -43,9 +43,11 @@ if [ "$active_profile_env" != "local" ]; then
   echo "Attempting to install"
   cd ./$DIR_NAME && chmod +x install.sh && sudo ./install.sh
   echo "Installation complete"
-  cd $work_dir
-
-  exec "$@"
 else
   echo "*** HSM Client installation is ignored in local profile ***"
 fi
+
+
+cd $work_dir
+
+exec "$@"
