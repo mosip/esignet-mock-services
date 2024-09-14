@@ -13,7 +13,9 @@ services:
 
 
   mock-identity-system:
-    image: 'mosipdev/mock-identity-system:develop'
+    build:
+      context: ../mock-identity-system
+      dockerfile: Dockerfile
     user: root
     ports:
       - 8082:8082
