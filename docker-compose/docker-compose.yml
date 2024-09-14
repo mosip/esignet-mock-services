@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  database:
+    image: 'postgres:latest'
+    ports:
+      - 5455:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+  mock-identity-system:
+    build:
+      context: ../mock-identity-system
+      dockerfile: Dockerfile
+    user: root
+    ports:
+      - 8082:8082
+    environment:
+      - container_user=mosip
+      - active_profile_env=default
+      - mosip.mockidentitysystem.database.hostname=database
+      - db.dbuser.password=postgres
+    depends_on:
+      - database
