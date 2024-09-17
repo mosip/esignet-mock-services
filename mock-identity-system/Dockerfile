@@ -9,9 +9,6 @@ ARG active_profile
 # can be passed during Docker build as build time environment for config server URL
 ARG spring_config_url
 
-# can be passed during Docker build as build time environment for glowroot
-ARG is_glowroot
-
 # can be passed during Docker build as build time environment for artifactory URL
 ARG hsm_client_zip_url
 
@@ -37,11 +34,9 @@ ENV spring_config_label_env=${spring_config_label}
 # environment variable to pass spring configuration url, at docker runtime
 ENV spring_config_url_env=${spring_config_url}
 
-# environment variable to pass glowroot, at docker runtime
-ENV is_glowroot_env=${is_glowroot}
-
 # environment variable to pass hsm client zip url, at docker runtime
 ENV hsm_client_zip_url_env=${hsm_client_zip_url}
+ENV hsm_local_dir_env=${hsm_local_dir}
 
 # can be passed during Docker build as build time environment for label.
 LABEL source=${SOURCE}
@@ -82,12 +77,4 @@ EXPOSE 9010
 
 ENTRYPOINT [ "./configure_start.sh" ]
 
-CMD if [ "$is_glowroot_env" = "present" ]; then \
-    wget -q --show-progress "${artifactory_url_env}"/artifactory/libs-release-local/io/mosip/testing/glowroot.zip ; \
-    unzip glowroot.zip ; \
-    rm -rf glowroot.zip ; \
-    sed -i 's/<service_name>/mock-identity-system/g' glowroot/glowroot.properties ; \
-    java -jar -javaagent:glowroot/glowroot.jar -Dloader.path="${loader_path_env}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" mock-identity-system.jar ; \
-    else \
-    java -jar -Dloader.path="${loader_path_env}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" mock-identity-system.jar ; \
-    fi
+CMD java -jar -Dloader.path="${loader_path_env}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" mock-identity-system.jar
