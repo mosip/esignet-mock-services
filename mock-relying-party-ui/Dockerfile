@@ -54,7 +54,7 @@ EXPOSE 443
 FROM nginx
 
 # can be passed during Docker build as build time environment for artifactory URL
-ARG artifactory_url
+ARG i18n_url
 
 # can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user=mosip
@@ -69,7 +69,7 @@ ARG COMMIT_ID
 ARG BUILD_TIME
 
 # environment variable to pass artifactory url, at docker runtime
-ENV artifactory_url_env=${artifactory_url}
+ENV i18n_url_env=${i18n_url}
 
 ENV nginx_dir=/usr/share/nginx
 
