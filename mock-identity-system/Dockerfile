@@ -13,10 +13,7 @@ ARG spring_config_url
 ARG is_glowroot
 
 # can be passed during Docker build as build time environment for artifactory URL
-ARG artifactory_url
-
-# can be passed during Docker build as build time environment for hsm client zip file path
-ARG hsm_client_zip_path
+ARG hsm_client_zip_url
 
 # can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user=mosip
@@ -43,11 +40,8 @@ ENV spring_config_url_env=${spring_config_url}
 # environment variable to pass glowroot, at docker runtime
 ENV is_glowroot_env=${is_glowroot}
 
-# environment variable to pass artifactory url, at docker runtime
-ENV artifactory_url_env=${artifactory_url}
-
-# environment variable to pass hsm client zip file path, at docker runtime
-ENV hsm_zip_file_path=${hsm_client_zip_path}
+# environment variable to pass hsm client zip url, at docker runtime
+ENV hsm_client_zip_url_env=${hsm_client_zip_url}
 
 # can be passed during Docker build as build time environment for label.
 LABEL source=${SOURCE}
