@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mock-relying-party-service:
     image: 'mosipdev/mock-relying-party-service:develop'
