@@ -109,6 +109,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
         }
         Boolean authStatus=doKycAuthentication(kycAuthDto,identityData);
+        if(!authStatus) {
+            KycAuthResponseDto kycAuthResponseDto = new KycAuthResponseDto();
+            kycAuthResponseDto.setAuthStatus(authStatus);
+            return kycAuthResponseDto;
+        }
 
         KycAuth kycAuth = saveKycAuthTransaction(kycAuthDto.getTransactionId(), relyingPartyId,
                 kycAuthDto.getIndividualId());

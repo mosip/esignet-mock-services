@@ -77,15 +77,22 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Override
 	public void updateIdentity(IdentityData identityData) throws MockIdentityException {
-		if (identityRepository.findById(identityData.getIndividualId()).isEmpty()) {
+		Optional<MockIdentity> result = identityRepository.findById(identityData.getIndividualId());
+		if (result.isEmpty()) {
 			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
 		}
-		MockIdentity mockIdentity = new MockIdentity();
+		MockIdentity mockIdentity = result.get();
 		try {
 			if(identityData.getPassword() != null) {
 				identityData.setPassword(HMACUtils2.digestAsPlainText(identityData.getPassword().getBytes()));
 			}
-			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(identityData));
+			String requestedUpdateJsonString = objectMapper.writeValueAsString(identityData);
+			Map<String, Object> requestedUpdate = objectMapper.readValue(requestedUpdateJsonString, Map.class);
+			requestedUpdate.entrySet().removeIf(entry -> entry.getValue() == null);
+
+			Map<String, Object> persisted = objectMapper.readValue(mockIdentity.getIdentityJson(), Map.class);
+			persisted.putAll(requestedUpdate);
+			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(persisted));
 		} catch (JsonProcessingException e) {
 			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
 		} catch (NoSuchAlgorithmException e) {
