@@ -52,7 +52,7 @@ service:
 
 image:
   registry: docker.io
-  repository: mosipqa/mock-identity-system
+  repository: mosipdev/mock-identity-system
   tag: develop
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -240,14 +240,45 @@ updateStrategy:
 ##   - name: FOO
 ##     value: "bar"
 ##
-extraEnvVars: []
+extraEnvVars:
+  - name: DATABASE_HOST
+    valueFrom:
+      configMapKeyRef:
+        name: mockid-postgres-config
+        key: database-host
+  - name: DATABASE_PORT
+    valueFrom:
+      configMapKeyRef:
+        name: mockid-postgres-config
+        key: database-port
+  - name: DATABASE_NAME
+    valueFrom:
+      configMapKeyRef:
+        name: mockid-postgres-config
+        key: database-name
+  - name: DATABASE_USERNAME
+    valueFrom:
+      configMapKeyRef:
+        name: mockid-postgres-config
+        key: database-username
+  - name: DB_DBUSER_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: db-common-secrets
+        key: db-dbuser-password
+  - name: SOFTHSM_MOCK_IDENTITY_SYSTEM_SECURITY_PIN
+    valueFrom:
+      secretKeyRef:
+        name: mockid-softhsm
+        key: security-pin
+  - name: hsm_local_dir_name
+    value: hsm-client
+  - name: MOSIP_ESIGNET_MOCK_SUPPORTED_FIELDS
+    value: individualId,password
 
 ## ConfigMap with extra environment variables that used
 ##
 extraEnvVarsCM:
-  - global
-  - config-server-share
-  - artifactory-share
   - softhsm-mock-identity-system-share
 
 ## Secret with extra environment variables
