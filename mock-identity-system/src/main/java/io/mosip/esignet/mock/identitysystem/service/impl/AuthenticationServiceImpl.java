@@ -74,7 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private VerifiedClaimRepository verifiedClaimRepository;
 
-    @Value("${mosip.mock.ida.kyc.transaction-timeout-secs:60}")
+    @Value("${mosip.mock.ida.kyc.transaction-timeout-secs:180}")
     private int transactionTimeoutInSecs;
 
     @Value("${mosip.mock.ida.kyc.encrypt:false}")
@@ -399,6 +399,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
                             List<Object> list = (List<Object>) kyc.getOrDefault("verified_claims", new ArrayList<Object>());
                             list.add(result);
+                            kyc.put("verified_claims", list);
                         }
                     }
                     else {

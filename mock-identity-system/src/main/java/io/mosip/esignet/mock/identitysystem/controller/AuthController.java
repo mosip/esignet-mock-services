@@ -7,6 +7,7 @@ package io.mosip.esignet.mock.identitysystem.controller;
 
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
+import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public class AuthController {
                                                        @PathVariable @NotBlank String clientId) {
         ResponseWrapper<KycAuthResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.kycAuth(relyingPartyId, clientId, new KycAuthDto(kycAuthRequestDto)));
+        responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
         return responseWrapper;
     }
 
@@ -40,6 +42,7 @@ public class AuthController {
                                                        @PathVariable @NotBlank String clientId) {
         ResponseWrapper<KycAuthResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.kycAuth(relyingPartyId, clientId, new KycAuthDto(kycAuthRequestDtoV2)));
+        responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
         return responseWrapper;
     }
 
@@ -50,6 +53,7 @@ public class AuthController {
                                                                @RequestBody @NotNull @Valid KycExchangeRequestDto kycExchangeRequestDto) {
         ResponseWrapper<KycExchangeResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto, null)));
+        responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
         return responseWrapper;
     }
 
@@ -61,6 +65,7 @@ public class AuthController {
         ResponseWrapper<KycExchangeResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDtoV2,
                 kycExchangeRequestDtoV2.getAcceptedClaimDetail())));
+        responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
         return responseWrapper;
     }
 
@@ -71,6 +76,7 @@ public class AuthController {
                                                   @Valid @RequestBody SendOtpDto sendOtpDto) {
         ResponseWrapper<SendOtpResult> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto));
+        responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
         return responseWrapper;
     }
 }
