@@ -410,13 +410,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
                 case "address":
                     Map<String, Object> addressValues = new HashMap<>();
-                    addressValues.putAll(getKycValues(locales, "street_address", HelperUtil.getLanguageValuesList((ArrayNode) identityData.get("streetAddress")),
+                    addressValues.putAll(getKycValues(locales, "street_address", HelperUtil.getLanguageValuesList(identityData.get("streetAddress")),
                             claimDetail.getValue()));
-                    addressValues.putAll(getKycValues(locales, "locality", HelperUtil.getLanguageValuesList((ArrayNode) identityData.get("locality")),
+                    addressValues.putAll(getKycValues(locales, "locality", HelperUtil.getLanguageValuesList(identityData.get("locality")),
                             claimDetail.getValue()));
-                    addressValues.putAll(getKycValues(locales, "region", HelperUtil.getLanguageValuesList((ArrayNode) identityData.get("region")),
+                    addressValues.putAll(getKycValues(locales, "region", HelperUtil.getLanguageValuesList(identityData.get("region")),
                             claimDetail.getValue()));
-                    addressValues.putAll(getKycValues(locales, "country", HelperUtil.getLanguageValuesList((ArrayNode) identityData.get("country")),
+                    addressValues.putAll(getKycValues(locales, "country", HelperUtil.getLanguageValuesList( identityData.get("country")),
                             claimDetail.getValue()));
                     if (identityData.hasNonNull("postalCode")) {
                         addressValues.put("postal_code", identityData.get("postalCode").asText());
@@ -429,7 +429,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     if(keyMappingEntry.isEmpty() || !identityData.hasNonNull(keyMappingEntry.get().getKey())) { break; }
 
                     if(identityData.get(keyMappingEntry.get().getKey()).isArray()) {
-                        List<LanguageValue> languageValues = HelperUtil.getLanguageValuesList((ArrayNode) identityData.get(keyMappingEntry.get().getKey()));
+                        List<LanguageValue> languageValues = HelperUtil.getLanguageValuesList( identityData.get(keyMappingEntry.get().getKey()));
                         kyc.putAll(getKycValues(locales, keyMappingEntry.get().getValue(), languageValues, claimDetail.getValue()));
                     }
                     else {

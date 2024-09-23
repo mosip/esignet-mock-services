@@ -7,6 +7,7 @@ package io.mosip.esignet.mock.identitysystem.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import io.mosip.esignet.mock.identitysystem.dto.LanguageValue;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.kernel.core.util.StringUtils;
@@ -22,6 +23,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -109,9 +111,11 @@ public class HelperUtil {
        return null;
     }
 
-    public static List<LanguageValue> getLanguageValuesList(ArrayNode fieldValue){
+    public static List<LanguageValue> getLanguageValuesList(JsonNode fieldValue){
+        if(fieldValue == null || !fieldValue.isArray())
+            return Collections.emptyList();
         List<LanguageValue> languageValues=new ArrayList<>();
-        for (JsonNode node : fieldValue) {
+        for (JsonNode node : (ArrayNode)fieldValue) {
             String language = node.get("language").asText();
             String value = node.get("value").asText();
             LanguageValue languageValue = new LanguageValue();
