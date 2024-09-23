@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="159" height="159" viewBox="0 0 159 159">
+  <defs>
+    <filter id="Rectangle_6853" x="0" y="0" width="159" height="159" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="7.5" result="blur"/>
+      <feFlood flood-opacity="0.059"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="success_message_icon" transform="translate(22.599 20.099)">
+    <g transform="matrix(1, 0, 0, 1, -22.6, -20.1)" filter="url(#Rectangle_6853)">
+      <rect id="Rectangle_6853-2" data-name="Rectangle 6853" width="114" height="114" rx="57" transform="translate(22.5 19.5)" fill="#fff"/>
+    </g>
+    <rect id="Rectangle_6846" data-name="Rectangle 6846" width="102" height="102" rx="51" transform="translate(5.901 5.401)" fill="rgba(62,147,18,0.12)"/>
+    <g id="success_icon" transform="translate(42.777 45.657)">
+      <g id="Group_57086" data-name="Group 57086">
+        <path id="check_circle_FILL0_wght400_GRAD0_opsz48" d="M16.9,28.315,34.845,10.37,31.928,7.516,16.9,22.545,9.29,14.936,6.437,17.789ZM20.641,16.774Z" transform="translate(-6.437 -7.516)" fill="#4b9d20"/>
+      </g>
+    </g>
+  </g>
+</svg>
