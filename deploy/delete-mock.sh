@@ -8,15 +8,14 @@ fi
 
 Deleting_All() {
   MOCK_NS=mockid
-  SOFTHSM_NS=softhsm
   NS=esignet
   while true; do
       read -p "Are you sure you want to delete esignet mock service helm charts?(Y/n) " yn
       if [[ $yn = "Y" ]] || [[ $yn = "y" ]];
         then
-          helm -n $NS delete mock-relying-party-service
-          helm -n $NS delete mock-relying-party-ui
-          helm -n $MOCK_NS delete mock-identity-system
+          helm -n $NS delete mock-relying-party-service || true
+          helm -n $NS delete mock-relying-party-ui || true
+          helm -n $MOCK_NS delete mock-identity-system || true
           break
         else
           break
