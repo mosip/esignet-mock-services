@@ -10,13 +10,13 @@ fi
 function Restarting_All() {
   NS=esignet
   MOCK_NS=mockid
-  kubectl -n $NS rollout restart deploy mock-relying-party-service mock-relying-party-ui
+  kubectl -n $NS rollout restart deploy mock-relying-party-service mock-relying-party-ui || true
 
-  kubectl -n $MOCK_NS rollout restart deploy mock-identity-system
+  kubectl -n $MOCK_NS rollout restart deploy mock-identity-system || true
 
-  kubectl -n $NS get deploy mock-identity-system mock-relying-party-service mock-relying-party-ui -o name |  xargs -n1 -t  kubectl -n $NS rollout status
+  kubectl -n $NS get deploy mock-identity-system mock-relying-party-service mock-relying-party-ui -o name |  xargs -n1 -t  kubectl -n $NS rollout status || true
 
-  kubectl -n $MOCK_NS get deploy mock-identity-system -o name |  xargs -n1 -t  kubectl -n $NS rollout status
+  kubectl -n $MOCK_NS get deploy mock-identity-system -o name |  xargs -n1 -t  kubectl -n $NS rollout status || true
 
   echo Retarted mock relying party service & mock relying party ui & mock identity service
   return 0

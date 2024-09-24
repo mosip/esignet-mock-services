@@ -1,25 +1,26 @@
-image:
-  registry: docker.io
-  repository: mosipdev/mock-relying-party-service
-  tag: develop
+## Uncomment required parms added with single '#' when needed.
+#image:
+#  registry: docker.io
+#  repository: mosipdev/mock-relying-party-service
+#  tag: develop
 
-mock_relying_party_service:
-  host: ''
-  mountDir: ""  # path inside docker
-  healthCheckUrl:
-  mock_relying_party_serviceMountDIr: /home/mosip/oidc/
-  puburl:
-  privurl:
-  ESIGNET_SERVICE_URL: http://esignet.namespace/v1/esignet
-  ESIGNET_AUD_URL: https://esignet.sandbox.xyz.net/v1/esignet/oauth/v2/token
-  USERINFO_RESPONSE_TYPE: jwt
+#mock_relying_party_service:
+#  host: ''
+#  mountDir: ""  # path inside docker
+#  healthCheckUrl:
+#  mock_relying_party_serviceMountDIr: /home/mosip/oidc/
+#  puburl:
+#  privurl:
+#  ESIGNET_SERVICE_URL: http://esignet.namespace/v1/esignet
+#  ESIGNET_AUD_URL: https://esignet.sandbox.xyz.net/v1/esignet/oauth/v2/token
+#  USERINFO_RESPONSE_TYPE: jwt
 
-extraEnvVars: []
+#extraEnvVars: []
 
 ## ConfigMap with extra environment variables
 ##
-extraEnvVarsCM: []
+#extraEnvVarsCM: []
 
 ## Secret with extra environment variables
 ##
-extraEnvVarsSecret: []
+#extraEnvVarsSecret: []
