@@ -67,8 +67,8 @@ public class IdentityController {
 	public ResponseWrapper<VerifiedClaimStatus> createVerifiedClaim(@Valid @RequestBody RequestWrapper<VerifiedClaimRequestDto> requestWrapper) throws MockIdentityException {
 		ResponseWrapper<VerifiedClaimStatus> response = new ResponseWrapper<>();
 		VerifiedClaimStatus verifiedClaimStatus = new VerifiedClaimStatus();
-		verifiedClaimStatus.setStatus("Verified Claim added successfully");
 		identityService.addVerifiedClaim(requestWrapper.getRequest());
+		verifiedClaimStatus.setStatus("Verified Claim added successfully");
 		response.setResponseTime(HelperUtil.getCurrentUTCDateTime());
 		response.setResponse(verifiedClaimStatus);
 		return response;

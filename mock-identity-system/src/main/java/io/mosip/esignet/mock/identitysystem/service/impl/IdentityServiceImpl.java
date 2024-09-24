@@ -77,15 +77,22 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Override
 	public void updateIdentity(IdentityData identityData) throws MockIdentityException {
-		if (identityRepository.findById(identityData.getIndividualId()).isEmpty()) {
+		Optional<MockIdentity> result = identityRepository.findById(identityData.getIndividualId());
+		if (result.isEmpty()) {
 			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
 		}
-		MockIdentity mockIdentity = new MockIdentity();
+		MockIdentity mockIdentity = result.get();
 		try {
 			if(identityData.getPassword() != null) {
 				identityData.setPassword(HMACUtils2.digestAsPlainText(identityData.getPassword().getBytes()));
 			}
-			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(identityData));
+			String requestedUpdateJsonString = objectMapper.writeValueAsString(identityData);
+			Map<String, Object> requestedUpdate = objectMapper.readValue(requestedUpdateJsonString, Map.class);
+			requestedUpdate.entrySet().removeIf(entry -> entry.getValue() == null);
+
+			Map<String, Object> persisted = objectMapper.readValue(mockIdentity.getIdentityJson(), Map.class);
+			persisted.putAll(requestedUpdate);
+			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(persisted));
 		} catch (JsonProcessingException e) {
 			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
 		} catch (NoSuchAlgorithmException e) {
@@ -130,8 +137,7 @@ public class IdentityServiceImpl implements IdentityService {
 		JsonNode identity = getIdentityV2(verifiedClaimRequestDto.getIndividualId());
 
         for(Entry<String, JsonNode> entry : verifiedClaimRequestDto.getVerificationDetail().entrySet()){
-			Object fieldValue = HelperUtil.getIdentityDataValue(identity, entry.getKey(), fieldLang);
-			if(fieldValue==null){
+			if(!identity.hasNonNull(entry.getKey()) || (identity.get(entry.getKey()).isArray() &&  identity.get(entry.getKey()).isEmpty())){
 				log.error("Verification data is not allowed for the claim with no data : {}", entry.getKey());
 				throw new MockIdentityException(ErrorConstants.INVALID_CLAIM);
 			}
@@ -153,6 +159,7 @@ public class IdentityServiceImpl implements IdentityService {
 				verifiedClaim.setIndividualId(verifiedClaimRequestDto.getIndividualId());
 				verifiedClaim.setTrustFramework(trustFramework);
 				verifiedClaim.setCrDateTime(LocalDateTime.now(ZoneOffset.UTC));
+				verifiedClaim.setCreatedBy("mock-user");
 			}
 			else {
 				verifiedClaim = result.get();
