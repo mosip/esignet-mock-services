@@ -93,6 +93,8 @@ jobs:
             SERVICE_NAME: 'mock-relying-party-service'
           - SERVICE_LOCATION: 'mock-relying-party-ui'
             SERVICE_NAME: 'mock-relying-party-ui'
+          - SERVICE_LOCATION: 'mock-farmer-portal-ui'
+            SERVICE_NAME: 'mock-farmer-portal-ui'  
       fail-fast: false
     name: ${{ matrix.SERVICE_NAME }}
     uses: mosip/kattu/.github/workflows/docker-build.yml@master
