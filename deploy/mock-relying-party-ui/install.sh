@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installs all esignet helm charts
+# Installs esignet mock-relying-party ui
 ## Usage: ./install.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then

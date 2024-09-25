@@ -1,5 +1,5 @@
 #!/bin/bash
-# Restart the esignet services
+# Restart the esignet mock identity services
 
 if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1

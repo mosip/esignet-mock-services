@@ -1,5 +1,5 @@
 #!/bin/bash
-# Uninstalls mock-relying-party-service and mock-relying-party-ui
+# Uninstalls esignet mock services.
 ## Usage: ./delete.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then
