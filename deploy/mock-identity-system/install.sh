@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installs all esignet helm charts
+# Installs esignet mock identity helm chart
 ## Usage: ./install.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then
@@ -19,6 +19,18 @@ function installing_mock-identity-system() {
 
   echo Istio label
   kubectl label ns $NS istio-injection=enabled --overwrite
+
+  while true; do
+    read -p "Do you want to install mock identity service? (y/n): " response
+    if [[ "$response" == "y" || "$response" == "Y" ]]; then
+      break
+    elif [[ "$response" == "n" || "$response" == "N" ]]; then
+      exit
+    else
+      echo "Not a correct response. Please respond with y (yes) or n (no)."
+    fi
+  done
+
 
   while true; do
     read -p "Is Prometheus Service Monitor Operator deployed in the k8s cluster? (y/n): " response
