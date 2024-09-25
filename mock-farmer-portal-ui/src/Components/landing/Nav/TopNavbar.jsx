@@ -100,7 +100,7 @@ export default function TopNavbar({hideTabs}) {
           </UlWrapper>}
           {!hideTabs && <UlWrapperRight className="flexNullCenter">           
             <li className="semiBold font15 pointer flexCenter">
-              <a className="radius8 lightBg" href="https://esignet.collab.mosip.net/authorize?nonce=ere973eieljznge2311&state=eree2311&client_id=_UgkpFCOsqoxsbLfywjXFuVRYZaHeYK6l0GmxMg3Rg8&redirect_uri=http://localhost:3000/agroveritas/farmerRegistration&scope=openid profile&response_type=code&acr_values=mosip:idp:acr:password%20mosip:idp:acr:generated-code%20mosip:idp:acr:biometrics%20mosip:idp:acr:linked-wallet&claims=%7B%22userinfo%22:%7B%22name%22:%7B%22essential%22:false%7D,%22phone_number%22:%7B%22essential%22:true%7D%7D,%22id_token%22:%7B%7D%7D&claims_locales=en&display=page&state=consent&ui_locales=en-GB" style={{ padding: "10px 15px" }}>
+              <a className="radius8 lightBg" href="https://esignet.collab.mosip.net/authorize?nonce=ere973eieljznge2311&state=eree2311&client_id=_UgkpFCOsqoxsbLfywjXFuVRYZaHeYK6l0GmxMg3Rg8&redirect_uri=https://agroveritas-farmer-portal.collab.mosip.net/agroveritas/farmerRegistration&scope=openid profile&response_type=code&acr_values=mosip:idp:acr:password%20mosip:idp:acr:generated-code%20mosip:idp:acr:biometrics%20mosip:idp:acr:linked-wallet&claims=%7B%22userinfo%22:%7B%22name%22:%7B%22essential%22:false%7D,%22phone_number%22:%7B%22essential%22:true%7D%7D,%22id_token%22:%7B%7D%7D&claims_locales=en&display=page&state=consent&ui_locales=en-GB" style={{ padding: "10px 15px" }}>
                 Get Started
               </a>
             </li> 
