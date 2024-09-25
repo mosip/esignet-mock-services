@@ -1,5 +1,5 @@
 #!/bin/bash
-# Restart the esignet services
+# Restarts esignet mock-relying-party service
 
 if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1

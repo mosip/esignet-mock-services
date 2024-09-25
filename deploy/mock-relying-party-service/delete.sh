@@ -1,5 +1,5 @@
 #!/bin/bash
-# Uninstalls all esignet helm charts
+# Uninstalls esignet mock-relying-party service
 ## Usage: ./delete.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installs and initialises pre-requisites for esignet mock service helm charts
+# Installs and initialises pre-requisites for esignet mock identity service helm charts
 ## Usage: ./install.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then
@@ -31,6 +31,6 @@ function installing_All() {
   cd postgres
   ./init_db.sh
 
-  echo All esignet mock services deployed sucessfully.
+  echo All esignet mock identity services pre-requisites deployed sucessfully.
   return 0
 }
