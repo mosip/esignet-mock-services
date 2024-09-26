@@ -17,7 +17,7 @@ export default function Projects() {
   return (
     <Wrapper id="projects">
       <div className="whiteBg">
-        <div className="container">
+        <div className="w-full max-w-[1220px] mx-auto p-5">
           <HeaderInfo>
             <h1 className="font40 extraBold">Testimonials</h1>
             <p className="font13">
@@ -37,7 +37,6 @@ export default function Projects() {
 
 const Wrapper = styled.section`
   width: 100%;
-  height:50rem;
 `;
 const HeaderInfo = styled.div`
   @media (max-width: 860px) {

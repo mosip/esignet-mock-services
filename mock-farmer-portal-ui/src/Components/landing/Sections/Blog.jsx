@@ -9,7 +9,7 @@ export default function Blog() {
   return (
     <Wrapper id="blog">
       <div className="greyBg">
-        <div className="container">
+        <div className="container mb-10">
           <HeaderInfo>
             <h1 className="font40 extraBold add-padding-top">Benefits</h1>
             <p className="font13">
@@ -51,7 +51,6 @@ export default function Blog() {
 const Wrapper = styled.section`
   width: 100%;
   padding-top: 20px;
-  height:48rem;
 `;
 const HeaderInfo = styled.div`
   @media (max-width: 860px) {

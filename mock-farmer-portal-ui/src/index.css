@@ -423,6 +423,7 @@ body {
 
 .greyBg {
   background-color: #707070;
+  padding-bottom: 20px;
 }
 
 .whiteBg {
@@ -439,7 +440,7 @@ li.semiBold>a:hover {
 
 .greyBg {
   background-color: #F8F8F8;
-  height: 500px;
+  /* height: 500px; */
 }
 
 .box-height {
@@ -718,7 +719,8 @@ li.semiBold>a:hover {
 
 @media only screen and (min-width:48em) {
   .container {
-    width: 46rem
+    width: 48rem;
+    padding:0 10px;
   }
 
   .col-sm,
@@ -1214,7 +1216,7 @@ li.semiBold>a:hover {
 
   .col-lg-6 {
     -ms-flex-preferred-size: 50%;
-    flex-basis: 50%;
+    /* flex-basis: 50%; */
     max-width: 50%
   }
 

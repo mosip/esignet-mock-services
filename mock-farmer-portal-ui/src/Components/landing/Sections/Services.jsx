@@ -14,38 +14,44 @@ import HeaderImage from "../../../assets/img/farmer.jpg";
 export default function Services() {
   return (
     <Wrapper id="services">
-      <div className="whiteBg" style={{ padding: "60px 0" }}>
-      <div className="row">
-      <div className="col-md-2 col-lg-2">
-      </div>
-      <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-          <HeaderInfo>
-            <h1 className="font40 extraBold">Introduction</h1>
-            <p className="font13">
-              Welcome to the AgroVeritas Authority Farmer Registration Portal! We are committed to helping farmers across the country gain easier access to resources, financial aid, government schemes, and agricultural certifications. Register today to become a part of the AgroVeritas community and obtain your Farmer ID, a credential that opens the door to numerous opportunities designed to improve your agricultural success and livelihood.
-              <br />
-              Through our simple registration process, you will be able to:
-              <br />
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 32 33" fill="none">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M16 32.5C24.8366 32.5 32 25.3366 32 16.5C32 7.66344 24.8366 0.5 16 0.5C7.16344 0.5 0 7.66344 0 16.5C0 25.3366 7.16344 32.5 16 32.5ZM15.6318 20.3961L21.8379 13.9961L20.4021 12.6039L14.8858 18.2926L11.5695 15.1357L10.1905 16.5843L14.2245 20.4243L14.9421 21.1074L15.6318 20.3961Z" fill="#1EB53A"/>
-              </svg>&nbsp;&nbsp;Create a verified Farmer ID.
-              <br />
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 32 33" fill="none">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M16 32.5C24.8366 32.5 32 25.3366 32 16.5C32 7.66344 24.8366 0.5 16 0.5C7.16344 0.5 0 7.66344 0 16.5C0 25.3366 7.16344 32.5 16 32.5ZM15.6318 20.3961L21.8379 13.9961L20.4021 12.6039L14.8858 18.2926L11.5695 15.1357L10.1905 16.5843L14.2245 20.4243L14.9421 21.1074L15.6318 20.3961Z" fill="#1EB53A"/>
-              </svg>&nbsp;&nbsp;Access government schemes and subsidies.
-              <br />
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 32 33" fill="none">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M16 32.5C24.8366 32.5 32 25.3366 32 16.5C32 7.66344 24.8366 0.5 16 0.5C7.16344 0.5 0 7.66344 0 16.5C0 25.3366 7.16344 32.5 16 32.5ZM15.6318 20.3961L21.8379 13.9961L20.4021 12.6039L14.8858 18.2926L11.5695 15.1357L10.1905 16.5843L14.2245 20.4243L14.9421 21.1074L15.6318 20.3961Z" fill="#1EB53A"/>
-              </svg>&nbsp;&nbsp;Free Consulting With Expert Saving Money.
-            </p>
-          </HeaderInfo>
+      <div className="whiteBg max-[1000px]:px-[100px] py-[60px]">
+        <div className="row">
+          <div className="col-md-2 col-lg-2">
+          </div>
+          <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <HeaderInfo>
+              <h1 className="text-[#29501C] font-semibold text-[60px]">Introduction</h1>
+              <div className="font13 mb-10">
+                <p className="text-[20px] text-[#666666]">Welcome to the AgroVeritas Authority Farmer Registration Portal! We are committed to helping farmers across the country gain easier access to resources, financial aid, government schemes, and agricultural certifications. Register today to become a part of the AgroVeritas community and obtain your Farmer ID, a credential that opens the door to numerous opportunities designed to improve your agricultural success and livelihood.</p>
+                <br />
+               <p> Through our simple registration process, you will be able to:</p>
+                <br />
+                <span className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 32 33" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M16 32.5C24.8366 32.5 32 25.3366 32 16.5C32 7.66344 24.8366 0.5 16 0.5C7.16344 0.5 0 7.66344 0 16.5C0 25.3366 7.16344 32.5 16 32.5ZM15.6318 20.3961L21.8379 13.9961L20.4021 12.6039L14.8858 18.2926L11.5695 15.1357L10.1905 16.5843L14.2245 20.4243L14.9421 21.1074L15.6318 20.3961Z" fill="#1EB53A" />
+                  </svg>&nbsp;&nbsp;Create a verified Farmer ID.
+                </span>
+                <br />
+                <span className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 32 33" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M16 32.5C24.8366 32.5 32 25.3366 32 16.5C32 7.66344 24.8366 0.5 16 0.5C7.16344 0.5 0 7.66344 0 16.5C0 25.3366 7.16344 32.5 16 32.5ZM15.6318 20.3961L21.8379 13.9961L20.4021 12.6039L14.8858 18.2926L11.5695 15.1357L10.1905 16.5843L14.2245 20.4243L14.9421 21.1074L15.6318 20.3961Z" fill="#1EB53A" />
+                  </svg>&nbsp;&nbsp;Access government schemes and subsidies.
+                </span>
+                <br />
+                <span className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 32 33" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M16 32.5C24.8366 32.5 32 25.3366 32 16.5C32 7.66344 24.8366 0.5 16 0.5C7.16344 0.5 0 7.66344 0 16.5C0 25.3366 7.16344 32.5 16 32.5ZM15.6318 20.3961L21.8379 13.9961L20.4021 12.6039L14.8858 18.2926L11.5695 15.1357L10.1905 16.5843L14.2245 20.4243L14.9421 21.1074L15.6318 20.3961Z" fill="#1EB53A" />
+                  </svg>&nbsp;&nbsp;Free Consulting With Expert Saving Money.
+                </span>
+              </div>
+            </HeaderInfo>
+          </div>
+          <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <ImageWrapper>
+              <Img src={HeaderImage} alt="office" />
+            </ImageWrapper>
+          </div>
         </div>
-        <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-          <ImageWrapper>
-            <Img src={HeaderImage} alt="office"/>
-          </ImageWrapper>
-      </div>
-      </div>
       </div>
     </Wrapper>
   );
@@ -53,7 +59,6 @@ export default function Services() {
 
 const Wrapper = styled.section`
   width: 100%;
-  height:50rem;
 `;
 const ServiceBoxRow = styled.div`
   @media (max-width: 860px) {
