@@ -29,7 +29,7 @@ export default function TestimonialSlider() {
     ],
   };
   return (
-    <div className="flex space-x-3 w-full">
+    <div className="flex space-x-3 w-full max-[767px]:flex-col mt-4">
       {/* <Slider {...settings}> */}
         <LogoWrapper className="flexCenter">
           <TestimonialBox
