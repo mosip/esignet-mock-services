@@ -9,36 +9,24 @@ Currently supports below endpoints
 * get-identity 
 * kyc-auth
 * kyc-exchange
+* Add verification metadata for every user claim
 
 Below authentication factors are supported:
 * PIN
 * OTP
 * BIO
+* PWD
+* WLA
 
 ## Local setup of mock-identity-system
 
-1. Create a "mosip_mockidentitysystem" database.
-2. Run all the scripts under db_scripts/mosip_mockidentitysystem/ddl folder.
-3. Run the below 2 insert statements:
-   
-    > INSERT INTO mockidentitysystem.key_policy_def(APP_ID,KEY_VALIDITY_DURATION,PRE_EXPIRE_DAYS,ACCESS_ALLOWED,IS_ACTIVE,CR_BY,CR_DTIMES) VALUES ('ROOT', 1095, 50, 'NA', true, 'mosipadmin', now());
-   
-    > INSERT INTO mockidentitysystem.key_policy_def(APP_ID,KEY_VALIDITY_DURATION,PRE_EXPIRE_DAYS,ACCESS_ALLOWED,IS_ACTIVE,CR_BY,CR_DTIMES) VALUES ('MOCK_AUTHENTICATION_SERVICE', 1095, 50, 'NA', true, 'mosipadmin', now()); 
+1. Run [docker-compose.yml](../docker-compose/docker-compose.yml)
 
-4. Cross-check DB connection details in application-local.properties file
-5. Now build the service with below command
-    
-    > mvn clean install -Dgpg.skip=true
-
-6. Locate the mock-identity-system jar under target folder, run the below command to start the service.
-    
-    > java -jar mock-identity-system.jar
-
-7. Once the service is started successfully, we should be able to access service swagger-ui with below URL:
+2. Once the service is started successfully, we should be able to access service swagger-ui with below URL:
 
     > http://localhost:8082/v1/mock-identity-system/swagger-ui.html
 
-8. Add an identity using below request:
+3. Add an identity using below request:
     
     > curl -X 'POST' \
    'http://localhost:8082/v1/mock-identity-system/identity' \
@@ -51,8 +39,8 @@ Below authentication factors are supported:
 
 
 ## Databases
-Refer to [SQL scripts](db_scripts).
+Refer to [SQL scripts](../db_scripts)
 
 ## License
-This project is licensed under the terms of [Mozilla Public License 2.0](LICENSE).
+This project is licensed under the terms of [Mozilla Public License 2.0](../LICENSE).
 
