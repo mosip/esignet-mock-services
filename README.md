@@ -1,5 +1,5 @@
-# esignet-mock-services
-Repository contains mock implementation of auth for e-signet
+# eSignet mock implementations
+Repository contains mock implementations for eSignet. Only for non-production use.
 
 ## Installing in k8s cluster using helm
 ### Pre-requisites
