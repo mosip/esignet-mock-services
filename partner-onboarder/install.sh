@@ -91,7 +91,7 @@ function installing_onboarder() {
 
     echo "Istio label"
     kubectl label ns $NS istio-injection=disabled --overwrite
-    helm repo update
+#    helm repo update
 
     echo "Copy configmaps"
     COPY_UTIL=../deploy/copy_cm_func.sh
