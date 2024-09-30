@@ -13,13 +13,14 @@ Repository contains mock implementation of auth for e-signet
 
 ### Install Pe-req for mock identity service
 * Install `kubectl` and `helm` utilities.
-* Run `prereq-mockid.sh` to setup below mentioned pre-requisites for mock-identity-system.
+* Run `prereq.sh` to setup below mentioned pre-requisites for mock services.
   * Setup softhsm for mock-identity in `Softhsm` namespace.
   * Copy required `configmaps` and `secrets` to `mockid` namespace.
   * Initialise mock Identity DB. 
+  * Create empty secret for `client-private-key` and `jwe-userinfo-key` for mock relying party service.
   ```
   cd deploy
-  ./prereq-mockid.sh
+  ./prereq.sh
   ```
 ### Install esignet mock services
 * Install `kubectl` and `helm` utilities.
@@ -55,18 +56,5 @@ Repository contains mock implementation of auth for e-signet
   ./restart-mock.sh
   ```
 
-## Onboard esignet mock and relying party services
-* Run onboarder's [install.sh](partner-onboarder) script to exchange jwk certificates.
-### Configurational steps after onboarding is completed.
-*  Below mentioned onboarding steps are added after 1.2.0.1-b3
-   *  Onboarding the default demo-oidc partner
-
-
-### Onboarding the default demo-oidc partner
-*  After successfull partner onboarder run for demo-oidc partner , download html reports from `onboarder` bucket of object store .
-*  Get `CLIENT_ID` from  response body of  request `create-oidc-client` from the report **_demo-oidc.html_**
-*  Update deployment of `mock-relying-party-ui` in esignet namespace with `CLIENT_ID` value from last step .
-*  As per screenshot get the private and public key pair (shown as selected in the screenshot )from the response of the `get-jwks` request from the report **_demo-oidc.html_** 
-   ![](docs/images/get-jwks-details.PNG)
-*  Update the client-private-key stored within the secrets in the esignet namespace with the base64-encoded value derived from the keypair obtained in the previous step.
-*  Restart mock-relying-party-service pod
+## Partner onboarder
+* Perform Partner onboarding for esignet mock using [steps](partner-onboarder/README.md).
