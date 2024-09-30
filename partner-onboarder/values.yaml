@@ -1,3 +1,8 @@
+image:
+  registry: docker.io
+  repository: mosipdev/partner-onboarder
+  tag: MOSIP-35987
+
 onboarding:
   modules:
     - name: ida
@@ -16,7 +21,28 @@ onboarding:
       enabled: false
     - name: resident-oidc
       enabled: false
-    - name: demo-oidc
+    - name: mock-rp-oidc
       enabled: true
     - name: mimoto-keybinding
       enabled: false
+    - name: mimoto-oidc
+      enabled: false
+    - name: signup-oidc
+      enabled: false
+
+#  volumes:
+#    reports:
+#      enabled: true
+#      name: onboarder-reports
+#      storageClass: nfs-client
+#      accessModes:
+#        - ReadWriteMany
+#      size: 10Mi
+#      existingClaim:
+#      # Dir where config and keys are written inside container
+#      mountDir: "/home/mosip/reports"
+#      nfs:
+#        path: ''  # Dir within the nfs server where config repo is cloned/maintained locally.
+#        server: ''  # Ip address of nfs server.
+#  variables:
+#    push-reports-to-s3: true

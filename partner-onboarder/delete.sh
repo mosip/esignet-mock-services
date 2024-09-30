@@ -1,5 +1,5 @@
 #!/bin/bash
-# Uninstalls partner-onboarder helm
+# Uninstalls mock relying party OIDC helm
 ## Usage: ./delete.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then
@@ -9,10 +9,10 @@ fi
 function deleting_onboarder() {
   NS=esignet
   while true; do
-      read -p "Are you sure you want to delete all partner-onboarder ?(Y/n) " yn
-      if [ $yn = "Y" ]; then
-        echo Deleting esignet-demo-oidc-partner-onboarder helm
-        helm -n $NS delete esignet-demo-oidc-partner-onboarder
+      read -p "Are you sure you want to delete mock relying party OIDC helm ?(Y/n) " yn
+      if [[ $yn = "Y" ]] || [[ $yn = "y" ]] ; then
+        echo Deleting esignet-mock-rp-onboarder helm
+        helm -n $NS delete esignet-mock-rp-onboarder
         break
       fi
   done
