@@ -98,6 +98,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("#{${mosip.mock.ida.identity-openid-claims-mapping}}")
     private Map<String,String> oidcClaimsMapping;
 
+    @Value("${mosip.mock.ida.kyc.expose-individualID:false}")
+    private boolean exposeIndividualID;
+
     ArrayList<String> trnHash = new ArrayList<>();
 
     @Override
@@ -121,8 +124,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         KycAuthResponseDto kycAuthResponseDto = new KycAuthResponseDto();
         kycAuthResponseDto.setAuthStatus(authStatus);
         kycAuthResponseDto.setKycToken(kycAuth.getKycToken());
-        kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
-
+        if (exposeIndividualID) {
+            kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getIndividualId());
+        } else {
+            kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
+        }
         if(kycAuthDto.isClaimMetadataRequired()) {
             kycAuthResponseDto.setClaimMetadata(getVerifiedClaimMetadata(kycAuthDto.getIndividualId(), identityData));
         }
