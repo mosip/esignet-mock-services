@@ -96,7 +96,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: client-private-key
-                  name: mock-relying-party-service-secrets
+                  name: mock-relying-party-private-key-jwk
             - name: JWE_USERINFO_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
@@ -132,9 +132,6 @@ spec:
                   name: {{ . }}
               {{- end }}
               {{- end }}
-
-
-
           ports:
             - name: container-port
               containerPort: {{ .Values.containerPort }}
