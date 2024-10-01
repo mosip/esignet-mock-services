@@ -57,4 +57,4 @@ Repository contains mock implementation of auth for e-signet
   ```
 
 ## Partner onboarder
-* Perform Partner onboarding for esignet mock using [steps](partner-onboarder/README.md).
+* Perform Partner onboarding for esignet mock relying party using [steps](partner-onboarder/README.md) only if mosip-identity plugin is used.
