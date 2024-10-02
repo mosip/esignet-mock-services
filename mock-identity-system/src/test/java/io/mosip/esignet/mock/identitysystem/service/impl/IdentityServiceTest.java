@@ -31,8 +31,7 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdentityServiceTest {
@@ -115,9 +114,23 @@ public class IdentityServiceTest {
         IdentityData identityData = new IdentityData();
         identityData.setEmail("email@gmail.com");
         identityData.setEncodedPhoto("encodedPhoto");
+        identityData.setPassword("password");
         when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.empty());
         identityService.addIdentity(identityData);
         verify(identityRepository).save(any(MockIdentity.class));
+    }
+
+    @Test
+    public void addIdentity_withDuplicateDetails_thenFail() throws MockIdentityException {
+        IdentityData identityData = new IdentityData();
+        identityData.setEmail("email@gmail.com");
+        identityData.setEncodedPhoto("encodedPhoto");
+        when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(new MockIdentity()));
+        try{
+            identityService.addIdentity(identityData);
+        }catch (MockIdentityException e){
+            Assert.assertEquals(ErrorConstants.DUPLICATE_INDIVIDUAL_ID,e.getErrorCode());
+        }
     }
 
     @Test
@@ -145,4 +158,30 @@ public class IdentityServiceTest {
         });
         assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID, exception.getMessage());
     }
+
+    @Test
+    public void updateIdentity_withExistingIndividualId_thenPass() {
+        IdentityData identityData = new IdentityData();
+        identityData.setIndividualId("existing-id");
+        identityData.setPassword("new-password");
+        MockIdentity mockIdentity = new MockIdentity();
+        mockIdentity.setIndividualId("existing-id");
+        mockIdentity.setIdentityJson("{\"existingField\": \"value\"}");
+        when(identityRepository.findById("existing-id")).thenReturn(Optional.of(mockIdentity));
+        identityService.updateIdentity(identityData);
+        verify(identityRepository, times(1)).save(mockIdentity);
+        Assert.assertNotNull(mockIdentity.getIdentityJson());
+    }
+
+    @Test
+    public void updateIdentity_withNonExistingIndividualId_thenFail() {
+        IdentityData identityData = new IdentityData();
+        identityData.setIndividualId("non-existing-id");
+        when(identityRepository.findById("non-existing-id")).thenReturn(Optional.empty());
+        MockIdentityException exception = assertThrows(MockIdentityException.class, () -> {
+            identityService.updateIdentity(identityData);
+        });
+        assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID, exception.getErrorCode());
+    }
+
 }

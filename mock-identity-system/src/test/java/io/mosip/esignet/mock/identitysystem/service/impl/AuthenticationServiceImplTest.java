@@ -302,6 +302,56 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
+    public void kycExchange_withInValidJwe_thenFail() throws MockIdentityException, JsonProcessingException {
+        ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
+        ReflectionTestUtils.setField(authenticationService,"encryptKyc",true);
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
+        String relyingPartyId = "relyingPartyId";
+        String clientId = "clientId";
+
+        KycExchangeRequestDto kycExchangeRequestDto=new KycExchangeRequestDto();
+        kycExchangeRequestDto.setKycToken("kycToken");
+        kycExchangeRequestDto.setIndividualId("individualId");
+        kycExchangeRequestDto.setTransactionId("transactionId");
+        kycExchangeRequestDto.setClaimLocales(Arrays.asList("en","fr"));
+        kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender"));
+
+        kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
+
+        KycAuth kycAuth=new KycAuth();
+        kycAuth.setResponseTime(LocalDateTime.now().minusSeconds(2));
+        kycAuth.setPartnerSpecificUserToken("token");
+
+        ObjectNode identityData = objectMapper.createObjectNode();
+        identityData.put("gender", "Male");
+
+        ArrayNode arrayNode = objectMapper.createArrayNode();
+        ObjectNode fullNameEng = objectMapper.createObjectNode();
+        fullNameEng.put("value", "Test");
+        fullNameEng.put("language", "eng");
+        ObjectNode fullNameFra = objectMapper.createObjectNode();
+        fullNameFra.put("value", "Test_fra");
+        fullNameFra.put("language", "fra");
+        arrayNode.add(fullNameEng);
+        arrayNode.add(fullNameFra);
+        identityData.put("fullName", arrayNode);
+        JWTSignatureResponseDto jwtSignatureResponseDto=new JWTSignatureResponseDto();
+        jwtSignatureResponseDto.setJwtSignedData("signedData");
+
+        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
+                        Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(Optional.of(kycAuth));
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
+        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
+
+
+        MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
+            authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null));
+        });
+        Assert.assertEquals("mock-ida-008", exception.getMessage());
+    }
+
+    @Test
     public void kycExchange_invalidToken_thenFail() {
         String relyingPartyId = "relyingPartyId";
         String clientId = "clientId";
@@ -451,9 +501,12 @@ public class AuthenticationServiceImplTest {
         verifiedClaim3.put("claims", claims3);
 
         verifiedClaimsList.add(verifiedClaim3);
+        ObjectNode addressClaim = objectMapper.createObjectNode();
+        addressClaim.put("locality", NullNode.getInstance());
 
         // Add the list of verified claims to the outer map
         acceptedClaims.put("verified_claims", verifiedClaimsList);
+        acceptedClaims.put("address",addressClaim);
 
         kycExchangeRequestDtoV2.setAcceptedClaimDetail(acceptedClaims);
         kycExchangeRequestDtoV2.setClaimLocales(List.of("eng"));
