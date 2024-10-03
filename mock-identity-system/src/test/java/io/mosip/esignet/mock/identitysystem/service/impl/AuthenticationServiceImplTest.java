@@ -66,6 +66,7 @@ public class AuthenticationServiceImplTest {
         ObjectMapper objectMapper = new ObjectMapper();
         identityData = objectMapper.readTree(jsonIdentity);
         ReflectionTestUtils.setField(authenticationService, "objectMapper", objectMapper);
+        ReflectionTestUtils.setField(authenticationService,"psutField", "psut");
 
         oidcClaimsMap.put("fullName", "name");
         oidcClaimsMap.put("name", "name");
@@ -103,6 +104,37 @@ public class AuthenticationServiceImplTest {
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        Assert.assertTrue(kycAuthResponseDto.isAuthStatus());
+    }
+
+    @Test
+    public void kycAuth_withValidKbiChallengeCustomPSUTfield_thenPass() {
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
+        // set the PSUT field to contain the individualId instead
+        ReflectionTestUtils.setField(authenticationService,"psutField", "individualId");
+
+        KycAuthDto kycAuthDto = new KycAuthDto();
+        kycAuthDto.setKbi("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
+        kycAuthDto.setIndividualId("individualId");
+        kycAuthDto.setTransactionId("transactionId");
+
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        LanguageValue languageValue = new LanguageValue();
+        languageValue.setLanguage("eng");
+        languageValue.setValue("Siddharth K Mansour");
+        identityData.setFullName(List.of(languageValue));
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+
+        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+
+        KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        Assert.assertEquals("8267411571", kycAuthResponseDto.getPartnerSpecificUserToken());
         Assert.assertTrue(kycAuthResponseDto.isAuthStatus());
     }
 
