@@ -7,6 +7,7 @@ package io.mosip.esignet.mock.identitysystem.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -158,6 +159,20 @@ public class IdentityControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.errors").isNotEmpty())
 				.andExpect(jsonPath("$.errors[0].errorCode").value(ErrorConstants.INVALID_REQUEST));
+	}
+
+	@Test
+	public void updateIdentity_withValidIdentity_thenPass() throws Exception {
+		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
+		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+		requestWrapper.setRequest(identityRequest);
+
+		Mockito.doNothing().when(identityService).updateIdentity(identityRequest);
+
+		mockMvc.perform(put("/identity").content(objectMapper.writeValueAsString(requestWrapper))
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.response.status").value("mock Identity data updated successfully"));
 	}
 
 }
