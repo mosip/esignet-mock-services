@@ -8,7 +8,6 @@ package io.mosip.esignet.mock.identitysystem.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
@@ -98,8 +97,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("#{${mosip.mock.ida.identity-openid-claims-mapping}}")
     private Map<String,String> oidcClaimsMapping;
 
-    @Value("${mosip.mock.ida.kyc.expose-individualID:false}")
-    private boolean exposeIndividualID;
+    @Value("${mosip.mock.ida.kyc.psut.field:psut}")
+    private String psutField;
 
     ArrayList<String> trnHash = new ArrayList<>();
 
@@ -124,10 +123,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         KycAuthResponseDto kycAuthResponseDto = new KycAuthResponseDto();
         kycAuthResponseDto.setAuthStatus(authStatus);
         kycAuthResponseDto.setKycToken(kycAuth.getKycToken());
-        if (exposeIndividualID) {
-            kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getIndividualId());
-        } else {
+        if (psutField.equals("psut")) {
             kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
+        } else {
+            kycAuthResponseDto.setPartnerSpecificUserToken(HelperUtil.getIdentityDataValue(identityData, psutField, defaultLanguage));
         }
         if(kycAuthDto.isClaimMetadataRequired()) {
             kycAuthResponseDto.setClaimMetadata(getVerifiedClaimMetadata(kycAuthDto.getIndividualId(), identityData));
