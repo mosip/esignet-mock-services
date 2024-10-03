@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mockid-postgres-config
+  namespace: mockid
+  labels:
+    app: postgres
+data:
+  database-host: "esignet-postgres-postgresql.esignet"
+  database-port: "5432"
+  database-username: "mockidsystemuser"
+  database-name: "mosip_mockidentitysystem"

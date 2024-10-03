@@ -4,12 +4,12 @@
 databases:
   mosip_mockidentitysystem:
     enabled: true
-    host: "postgres-postgresql.postgres"
+    host: "esignet-postgres-postgresql.esignet"
     port: 5432
     su:
       user: postgres
       secret:
-        name: postgres-postgresql
+        name: esignet-postgres-postgresql
         key: postgres-password
     dml: 1
     branch: develop

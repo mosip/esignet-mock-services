@@ -1,23 +1,17 @@
 #!/bin/bash
-# Uninstalls all esignet helm charts
-## Usage: ./delete.sh [kubeconfig]
+# Restart esignet mock-relying-party ui
 
 if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
 fi
 
-function Deleting_mock-identity-system() {
+function Restarting_mock-relying-party-ui() {
   NS=esignet
-  while true; do
-      read -p "Are you sure you want to delete all mock-identity-system helm charts?(Y/n) " yn
-      if [ $yn = "Y" ]
-        then
-          helm -n $NS delete mock-identity-system
-          break
-        else
-          break
-      fi
-  done
+  kubectl -n $NS rollout restart deploy mock-relying-party-ui
+
+  kubectl -n $NS  get mock-relying-party-ui deploy -o name |  xargs -n1 -t  kubectl -n $NS rollout status
+
+  echo Retarted mock-relying-party-ui services
   return 0
 }
 
@@ -27,4 +21,4 @@ set -o errexit   ## set -e : exit the script if any statement returns a non-true
 set -o nounset   ## set -u : exit the script if you try to use an uninitialised variable
 set -o errtrace  # trace ERR through 'time command' and other functions
 set -o pipefail  # trace ERR through pipes
-Deleting_mock-identity-system   # calling function
+Restarting_mock-relying-party-ui  # calling function

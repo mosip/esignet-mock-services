@@ -1,0 +1,39 @@
+## Uncomment required parms added with single '#' when needed.
+#image:
+#  registry: docker.io
+#  repository: mosipdev/mock-relying-party-ui
+#  tag: develop
+
+## The url below is to access oidc API services.
+## CAUTION: Domain name to acess oidc UI must be secure/internal/over vpn.
+## Slash is important!
+#mock_relying_party_ui:
+#  mock_relying_party_ui_port: '5000'
+#  mock_relying_party_ui_service_host: 'healthservices.sandbox.xyz.net'
+#  ESIGNET_UI_BASE_URL: https://esignet.sandbox.xyz.net
+#  MOCK_RELYING_PARTY_SERVER_URL: https://healthservices.sandbox.xyz.net/mock-relying-party-service
+#  REDIRECT_URI: https://healthservices.sandbox.xyz.net/userprofile
+#  CLIENT_ID: 88Vjt34c5Twz1oJ
+#  ACRS: mosip:idp:acr:generated-code%20mosip:idp:acr:biometrics%20mosip:idp:acr:linked-wallet
+#  MOCK_RELYING_PARTY_SERVICE_INTERNAL_URL: http://mock-relying-party-service.esignet
+#  REDIRECT_URI_REGISTRATION: https://healthservices.sandbox.xyz.net/registration
+#  SIGN_IN_BUTTON_PLUGIN_URL: https://esignet.sandbox.xyz.net/plugins/sign-in-button-plugin.js
+#  DISPLAY: page
+#  PROMPT: consent
+#  GRANT_TYPE: authorization_code
+#  CLAIMS_LOCALES: en
+#  SCOPE_USER_PROFILE: openid profile
+#  CLAIMS_USER_PROFILE: '%7B%22userinfo%22:%7B%22given_name%22:%7B%22essential%22:true%7D,%22phone_number%22:%7B%22essential%22:false%7D,%22email%22:%7B%22essential%22:true%7D,%22picture%22:%7B%22essential%22:false%7D,%22gender%22:%7B%22essential%22:false%7D,%22birthdate%22:%7B%22essential%22:false%7D,%22address%22:%7B%22essential%22:false%7D%7D,%22id_token%22:%7B%7D%7D'
+#  CLAIMS_REGISTRATION: '%7B%22userinfo%22:%7B%22given_name%22:%7B%22essential%22:true%7D,%22phone_number%22:%7B%22essential%22:false%7D,%22email%22:%7B%22essential%22:true%7D,%22picture%22:%7B%22essential%22:false%7D,%22gender%22:%7B%22essential%22:false%7D,%22birthdate%22:%7B%22essential%22:false%7D,%22address%22:%7B%22essential%22:false%7D%7D,%22id_token%22:%7B%7D%7D'
+#  DEFAULT_LANG: en
+#  FALLBACK_LANG: '%7B%22label%22%3A%22English%22%2C%22value%22%3A%22en%22%7D'
+#  MOCK_RP_UI_PUBLIC_URL
+#extraEnvVars: []
+
+## ConfigMap with extra environment variables
+##
+#extraEnvVarsCM: []
+
+## Secret with extra environment variables
+##
+#extraEnvVarsSecret: []

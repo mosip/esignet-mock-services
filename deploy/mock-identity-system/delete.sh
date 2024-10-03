@@ -1,19 +1,21 @@
 #!/bin/bash
-# Uninstalls mock relying party OIDC helm
+# Uninstalls esignet mock identity helm chart
 ## Usage: ./delete.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
 fi
 
-function deleting_onboarder() {
-  NS=esignet
+function Deleting_mock-identity-system() {
+  NS=mockid
   while true; do
-      read -p "Are you sure you want to delete mock relying party OIDC helm ?(Y/n) " yn
-      if [[ $yn = "Y" ]] || [[ $yn = "y" ]] ; then
-        echo Deleting esignet-mock-rp-onboarder helm
-        helm -n $NS delete esignet-mock-rp-onboarder
-        break
+      read -p "Are you sure you want to delete all mock-identity-system helm charts?(Y/n) " yn
+      if [[ $yn = "Y" ]] || [[ $yn = "y" ]]
+        then
+          helm -n $NS delete mock-identity-system
+          break
+        else
+          break
       fi
   done
   return 0
@@ -25,4 +27,4 @@ set -o errexit   ## set -e : exit the script if any statement returns a non-true
 set -o nounset   ## set -u : exit the script if you try to use an uninitialised variable
 set -o errtrace  # trace ERR through 'time command' and other functions
 set -o pipefail  # trace ERR through pipes
-deleting_onboarder   # calling function
+Deleting_mock-identity-system   # calling function

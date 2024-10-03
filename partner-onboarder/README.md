@@ -1,7 +1,7 @@
 # Partner Onboarder
 
 ## Overview
-Loads certs for default partners for sandbox. Refer [mosip-onboarding repo](https://github.com/mosip/mosip-onboarding).
+Exchanges certificate for Mock Relying Party OIDC partner. Refer [mosip-onboarding repo](https://github.com/mosip/mosip-onboarding).
 
 ## Install 
 * Set `values.yaml` to run onboarder for specific modules.
@@ -10,10 +10,8 @@ Loads certs for default partners for sandbox. Refer [mosip-onboarding repo](http
 ./install.sh
 ```
 # Troubleshootings
-
-* After completion of the job, a very detailed `html report` is prepared and stored at https://onboarder.{sandbox_base_url}.mosip.net
-
-* The user can go and view the same for more information or response messages.
+* Once onboarder job is completed, detailed `html report` is prepared and stored at provided S3 bucket / NFS directory. 
+* Once onboarder helm installation is complted, please check the reports to confirm sucessfull onboarding.
 
 ### Commonly found issues 
 
@@ -28,6 +26,3 @@ Loads certs for default partners for sandbox. Refer [mosip-onboarding repo](http
  3. Upload of certificate will not be allowed to update other domain certificate
  
     Resolution: This is expected when you try to upload `ida-cred` certificate twice. It should only run once and if you see this error while uploading a second      time it can be ignored as the cert is already present.
-
-
-
