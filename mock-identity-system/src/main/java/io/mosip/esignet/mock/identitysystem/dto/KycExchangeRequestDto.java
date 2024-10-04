@@ -6,12 +6,14 @@
 package io.mosip.esignet.mock.identitysystem.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class KycExchangeRequestDto {
 
     private LocalDateTime requestDateTime;
