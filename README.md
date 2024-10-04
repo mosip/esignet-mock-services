@@ -58,3 +58,6 @@ Repository contains mock implementations for eSignet. Only for non-production us
 
 ## Partner onboarder
 * Perform Partner onboarding for esignet mock using [steps](partner-onboarder/README.md).
+
+## License
+This project is licensed under the terms of [Mozilla Public License 2.0](LICENSE).
