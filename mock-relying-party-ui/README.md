@@ -67,3 +67,6 @@ The application run on PORT=5000 by default.
   ```
   $ npm start
   ```
+
+## License
+This project is licensed under the terms of [Mozilla Public License 2.0](../LICENSE).
