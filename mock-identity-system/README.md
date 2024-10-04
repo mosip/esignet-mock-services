@@ -2,7 +2,7 @@
 
 ## About
 
-This is the mock implementation of IDA system.
+This is the mock implementation of MOSIP IDA system.
 
 Currently supports below endpoints
 * create-identity
