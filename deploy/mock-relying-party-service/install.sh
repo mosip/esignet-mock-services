@@ -26,7 +26,7 @@ function installing_mock-relying-party-service() {
   CHART_VERSION=0.10.0-develop
 
   echo Create $NS namespace
-  kubectl create ns $NS
+  kubectl create ns $NS || true
 
   echo Istio label
   kubectl label ns $NS istio-injection=enabled --overwrite
