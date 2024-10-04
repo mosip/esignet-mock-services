@@ -11,6 +11,7 @@ NS=mockid
 SOFTHSM_NS=softhsm
 SOFTHSM_CHART_VERSION=12.0.1
 
+kubectl create ns $NS || true
 
 function prereq_mockid () {
   echo Create $SOFTHSM_NS namespace
