@@ -42,3 +42,6 @@ The application run on PORT=8888.
   ```
   $ npm run devstart
   ```
+
+## License
+This project is licensed under the terms of [Mozilla Public License 2.0](../LICENSE).
