@@ -88,6 +88,63 @@ public class IdentityServiceTest {
     }
 
     @Test
+    public void addVerifiedClaim_withInvalidClaim_thenPass() {
+
+        VerifiedClaimRequestDto verifiedClaimRequestDto = new  VerifiedClaimRequestDto();
+        verifiedClaimRequestDto.setActive(true);
+        verifiedClaimRequestDto.setIndividualId("123456");
+        Map<String, JsonNode> verificationDetail = new HashMap<>();
+
+        ObjectNode emailVerification = objectMapper.createObjectNode();
+        emailVerification.put("trust_framework", "trust_framework");
+        verificationDetail.put("null", emailVerification);
+        verifiedClaimRequestDto.setVerificationDetail(verificationDetail);
+
+        IdentityData identityData = new IdentityData();
+        identityData.setEmail("email@gmail.com");
+        identityData.setEncodedPhoto("encodedPhoto");
+
+        MockIdentity mockIdentity = new MockIdentity();
+        mockIdentity.setIndividualId("123456");
+        mockIdentity.setIdentityJson("{\"individualId\":\"8267411571\",\"pin\":\"111111\",\"fullName\":[{\"language\":\"fra\",\"value\":\"Siddharth K Mansour\"},{\"language\":\"ara\",\"value\":\"تتگلدكنسَزقهِقِفل دسييسيكدكنوڤو\"},{\"language\":\"eng\",\"value\":\"Siddharth K Mansour\"}],\"email\":\"siddhartha.km@gmail.com\",\"phone\":\"+919427357934\"}");
+        Mockito.when(identityRepository.findById(Mockito.anyString())).thenReturn(Optional.of(mockIdentity));
+        try{
+            identityService.addVerifiedClaim(verifiedClaimRequestDto);
+        }catch (MockIdentityException e){
+            Assert.assertEquals(ErrorConstants.INVALID_CLAIM,e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void addVerifiedClaim_withInvalidTrustFramework_thenPass() {
+
+        VerifiedClaimRequestDto verifiedClaimRequestDto = new  VerifiedClaimRequestDto();
+        verifiedClaimRequestDto.setActive(true);
+        verifiedClaimRequestDto.setIndividualId("123456");
+        Map<String, JsonNode> verificationDetail = new HashMap<>();
+
+        ObjectNode emailVerification = objectMapper.createObjectNode();
+        emailVerification.put("trust_framework", " ");
+        verificationDetail.put("email", emailVerification);
+        verifiedClaimRequestDto.setVerificationDetail(verificationDetail);
+
+        IdentityData identityData = new IdentityData();
+        identityData.setEmail("email@gmail.com");
+        identityData.setEncodedPhoto("encodedPhoto");
+
+        MockIdentity mockIdentity = new MockIdentity();
+        mockIdentity.setIndividualId("123456");
+        mockIdentity.setIdentityJson("{\"individualId\":\"8267411571\",\"pin\":\"111111\",\"fullName\":[{\"language\":\"fra\",\"value\":\"Siddharth K Mansour\"},{\"language\":\"ara\",\"value\":\"تتگلدكنسَزقهِقِفل دسييسيكدكنوڤو\"},{\"language\":\"eng\",\"value\":\"Siddharth K Mansour\"}],\"email\":\"siddhartha.km@gmail.com\",\"phone\":\"+919427357934\"}");
+        Mockito.when(verifiedClaimRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
+        Mockito.when(identityRepository.findById(Mockito.anyString())).thenReturn(Optional.of(mockIdentity));
+        try{
+            identityService.addVerifiedClaim(verifiedClaimRequestDto);
+        }catch (MockIdentityException e){
+            Assert.assertEquals(ErrorConstants.INVALID_REQUEST,e.getErrorCode());
+        }
+    }
+
+    @Test
     public void addVerifiedClaim_withInValidIndividualId_thenFail()  {
         VerifiedClaimRequestDto verifiedClaimRequestDto = new  VerifiedClaimRequestDto();
         verifiedClaimRequestDto.setActive(true);
@@ -149,6 +206,23 @@ public class IdentityServiceTest {
     }
 
     @Test
+    public void getIdentity_withInValidIdentityJson_thenFail() throws MockIdentityException, JsonProcessingException {
+        IdentityData identityData = new IdentityData();
+        identityData.setEmail("email@gmail.com");
+        identityData.setEncodedPhoto("encodedPhoto");
+        MockIdentity mockIdentity = new MockIdentity();
+        mockIdentity.setIndividualId("123456");
+        mockIdentity.setIdentityJson("{ \\\"name\\\": \\\"John Doe, \\\"age\\\": 30 }");
+        when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(mockIdentity));
+        try {
+            identityService.getIdentity(identityData.getIndividualId());
+            Assert.fail();
+        }catch (MockIdentityException e){
+            Assert.assertEquals(ErrorConstants.JSON_PROCESSING_ERROR,e.getErrorCode());
+        }
+    }
+
+    @Test
     public void getIdentity_withInvalidId_thenFail() {
         IdentityData identityData = new IdentityData();
         identityData.setEmail("email@gmail.com");
@@ -171,6 +245,23 @@ public class IdentityServiceTest {
         identityService.updateIdentity(identityData);
         verify(identityRepository, times(1)).save(mockIdentity);
         Assert.assertNotNull(mockIdentity.getIdentityJson());
+    }
+
+    @Test
+    public void updateIdentity_withInvalidIdentityJson_thenFail() {
+        IdentityData identityData = new IdentityData();
+        identityData.setIndividualId("existing-id");
+        identityData.setPassword("new-password");
+        MockIdentity mockIdentity = new MockIdentity();
+        mockIdentity.setIndividualId("existing-id");
+        mockIdentity.setIdentityJson("{ \\\"name\\\": \\\"John Doe, \\\"age\\\": 30 }");
+        when(identityRepository.findById("existing-id")).thenReturn(Optional.of(mockIdentity));
+        try {
+            identityService.updateIdentity(identityData);
+            Assert.fail();
+        }catch (MockIdentityException e){
+            Assert.assertEquals(ErrorConstants.JSON_PROCESSING_ERROR,e.getErrorCode());
+        }
     }
 
     @Test
