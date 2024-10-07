@@ -88,7 +88,7 @@ public class IdentityServiceTest {
     }
 
     @Test
-    public void addVerifiedClaim_withInvalidClaim_thenPass() {
+    public void addVerifiedClaim_withInvalidClaim_thenFail() {
 
         VerifiedClaimRequestDto verifiedClaimRequestDto = new  VerifiedClaimRequestDto();
         verifiedClaimRequestDto.setActive(true);
@@ -116,7 +116,7 @@ public class IdentityServiceTest {
     }
 
     @Test
-    public void addVerifiedClaim_withInvalidTrustFramework_thenPass() {
+    public void addVerifiedClaim_withInvalidTrustFramework_thenFail() {
 
         VerifiedClaimRequestDto verifiedClaimRequestDto = new  VerifiedClaimRequestDto();
         verifiedClaimRequestDto.setActive(true);
