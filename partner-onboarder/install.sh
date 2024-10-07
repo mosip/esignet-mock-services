@@ -112,8 +112,9 @@ function installing_onboarder() {
       $ENABLE_INSECURE \
       -f values.yaml \
       --version $CHART_VERSION \
-      --debug --wait --wait-for-jobs
-    echo "Partner onboarded successfully and reports are moved to S3 or NFS"
+      --wait --wait-for-jobs
+    echo "Partner onboarder executed and reports are moved to S3 or NFS please check the same to make sure partner was onboarded sucessfully."
+    kubectl rollout restart deployment mock-relying-party-service -n esignet
     return 0
   fi
 }
