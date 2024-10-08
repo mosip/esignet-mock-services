@@ -108,6 +108,200 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
+    public void kycAuth_withInvalidIdentity_thenFail() {
+        KycAuthDto kycAuthDto = new KycAuthDto();
+        kycAuthDto.setKbi("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
+        kycAuthDto.setIndividualId("individualId");
+        kycAuthDto.setTransactionId("transactionId");
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(null);
+
+        try{
+            authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        }catch (MockIdentityException e){
+            Assert.assertEquals("invalid_individual_id",e.getMessage());
+        }
+    }
+
+    @Test
+    public void kycAuth_withoutSendOTPInvocation_thenFail() {
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
+
+        KycAuthDto kycAuthDto = new KycAuthDto();
+        kycAuthDto.setOtp("111111");
+        kycAuthDto.setIndividualId("individualId");
+        kycAuthDto.setTransactionId("transactionId");
+
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        LanguageValue languageValue = new LanguageValue();
+        languageValue.setLanguage("eng");
+        languageValue.setValue("Siddharth K Mansour");
+        identityData.setFullName(List.of(languageValue));
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        try{
+            authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        }catch (MockIdentityException e){
+            Assert.assertEquals("invalid_transaction",e.getMessage());
+        }
+    }
+
+    @Test
+    public void kycAuth_withSendOTPInvocation_thenPass() {
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
+        ReflectionTestUtils.setField(authenticationService,"otpChannels",Arrays.asList("email","phone"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
+        ReflectionTestUtils.setField(authenticationService,"trnHash",new ArrayList<>());
+
+        KycAuthDto kycAuthDto = new KycAuthDto();
+        kycAuthDto.setOtp("111111");
+        kycAuthDto.setIndividualId("individualId");
+        kycAuthDto.setTransactionId("transactionId");
+
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        identityData.setIndividualId("individualId");
+        identityData.setEmail("test@email.com");
+        identityData.setPhone("1234567890");
+        LanguageValue languageValue = new LanguageValue();
+        languageValue.setLanguage("eng");
+        languageValue.setValue("Siddharth K Mansour");
+        identityData.setFullName(List.of(languageValue));
+        SendOtpDto sendOtpDto=new SendOtpDto();
+        sendOtpDto.setIndividualId("individualId");
+        sendOtpDto.setOtpChannels(Arrays.asList("email","phone"));
+        sendOtpDto.setTransactionId("transactionId");
+
+        Mockito.when(identityService.getIdentity("individualId")).thenReturn(identityData);
+        authenticationService.sendOtp("relyingPartyId", "clientId", sendOtpDto);
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+        KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        Assert.assertTrue(kycAuthResponseDto.isAuthStatus());
+    }
+
+    @Test
+    public void kycAuth_withInValidTransactionId_thenFail() {
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
+
+        KycAuthDto kycAuthDto = new KycAuthDto();
+        kycAuthDto.setOtp("111111");
+        kycAuthDto.setIndividualId("individualId");
+        kycAuthDto.setTransactionId("");
+
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        LanguageValue languageValue = new LanguageValue();
+        languageValue.setLanguage("eng");
+        languageValue.setValue("Siddharth K Mansour");
+        identityData.setFullName(List.of(languageValue));
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        try{
+            authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        }catch (MockIdentityException e){
+            Assert.assertEquals("invalid_transaction_id",e.getMessage());
+        }
+    }
+
+    @Test
+    public void kycAuth_withValidPinChallenge_thenPass() {
+
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
+
+        KycAuthDto kycAuthDto = new KycAuthDto();
+        kycAuthDto.setPin("111111");
+        kycAuthDto.setIndividualId("individualId");
+        kycAuthDto.setTransactionId("transactionId");
+
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        LanguageValue languageValue = new LanguageValue();
+        languageValue.setLanguage("eng");
+        languageValue.setValue("Siddharth K Mansour");
+        identityData.setFullName(List.of(languageValue));
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+
+        KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        Assert.assertTrue(kycAuthResponseDto.isAuthStatus());
+    }
+
+    @Test
+    public void kycAuth_withValidBiometricsChallenge_thenPass() {
+
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
+
+        KycAuthDto kycAuthDto = new KycAuthDto();
+        kycAuthDto.setBiometrics("111111");
+        kycAuthDto.setTokens(new ArrayList<>());
+        kycAuthDto.setIndividualId("individualId");
+        kycAuthDto.setTransactionId("transactionId");
+
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        LanguageValue languageValue = new LanguageValue();
+        languageValue.setLanguage("eng");
+        languageValue.setValue("Siddharth K Mansour");
+        identityData.setFullName(List.of(languageValue));
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+
+        KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        Assert.assertTrue(kycAuthResponseDto.isAuthStatus());
+    }
+
+    @Test
+    public void kycAuth_withValidPwdChallenge_thenPass() {
+
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
+
+        KycAuthDto kycAuthDto = new KycAuthDto();
+        kycAuthDto.setPassword("Mosip@123");
+        kycAuthDto.setIndividualId("individualId");
+        kycAuthDto.setTransactionId("transactionId");
+
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        identityData.setPassword("Mosip@123");
+        LanguageValue languageValue = new LanguageValue();
+        languageValue.setLanguage("eng");
+        languageValue.setValue("Siddharth K Mansour");
+        identityData.setFullName(List.of(languageValue));
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+
+        KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        Assert.assertNotNull(kycAuthResponseDto);
+    }
+
+    @Test
     public void kycAuth_withValidKbiChallengeCustomPSUTfield_thenPass() {
         List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
                 ,Map.of("id","fullName","type","text","format","")
@@ -173,6 +367,31 @@ public class AuthenticationServiceImplTest {
                 ,Map.of("id","fullName","type","text","format","")
                 ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
         ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
+
+        KycAuthDto kycAuthDto = new KycAuthDto();
+        kycAuthDto.setKbi("xsTmFtZSI6IlNpZG0aCBLIiwiZG9iIjoiMTk4Ny0xMS0yNSJ9");
+        kycAuthDto.setIndividualId("individualId");
+        kycAuthDto.setTransactionId("transactionId");
+
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        LanguageValue languageValue = new LanguageValue();
+        languageValue.setLanguage("eng");
+        languageValue.setValue("Siddharth K Mansour");
+        identityData.setFullName(List.of(languageValue));
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        try{
+            authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        }catch (MockIdentityException e){
+            Assert.assertEquals("auth-failed",e.getMessage());
+        }
+    }
+
+    @Test
+    public void kycAuth_withEmptyKbiChallenge_thenFail() {
+
         ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
 
@@ -620,6 +839,116 @@ public class AuthenticationServiceImplTest {
         }catch (MockIdentityException e){
             Assert.assertEquals("mock-ida-008",e.getMessage());
         }
+    }
+
+    @Test
+    public void kycExchangeV2_withDetailAndMatchedClaims_thenPass() {
+        Map<String, String> oidcClaimsMap = new HashMap<>();
+        oidcClaimsMap.put("name", "name");
+        oidcClaimsMap.put("email", "email");
+        oidcClaimsMap.put("phone", "phone");
+        oidcClaimsMap.put("gender", "gender");
+        oidcClaimsMap.put("dateOfBirth", "birthdate");
+        oidcClaimsMap.put("encodedPhoto", "picture");
+        ReflectionTestUtils.setField(authenticationService, "oidcClaimsMapping", oidcClaimsMap);
+        ReflectionTestUtils.setField(authenticationService, "objectMapper", new ObjectMapper());
+
+        // Create an IdentityData object
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        LanguageValue languageValueName = new LanguageValue();
+        languageValueName.setLanguage("eng");
+        languageValueName.setValue("Siddharth K Mansour");
+        identityData.setName(List.of(languageValueName));
+
+        // Convert IdentityData to JsonNode
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode identityDataJsonNode = objectMapper.valueToTree(identityData);
+
+        KycExchangeDto kycExchangeRequestDtoV2 = new KycExchangeDto();
+        kycExchangeRequestDtoV2.setIndividualId("individualId");
+        kycExchangeRequestDtoV2.setTransactionId("transactionId");
+
+        Map<String, JsonNode> acceptedClaims = new HashMap<>();
+
+        ObjectNode birthdate = objectMapper.createObjectNode();
+        birthdate.put("essential", true);
+        acceptedClaims.put("birthdate", birthdate);
+
+        ObjectNode gender = objectMapper.createObjectNode();
+        gender.put("essential", false);
+        acceptedClaims.put("gender", gender);
+
+        // Create a list for verified claims
+        ArrayNode verifiedClaimsList = objectMapper.createArrayNode();
+
+        // First verified claim with matching trust framework
+        ObjectNode verifiedClaim1 = objectMapper.createObjectNode();
+        ObjectNode verification1 = objectMapper.createObjectNode();
+        verification1.put("trust_framework", "pwd");
+        verifiedClaim1.put("verification", verification1);
+
+        ObjectNode claims1 = objectMapper.createObjectNode();
+        claims1.put("email", NullNode.getInstance());
+        claims1.put("birthdate", NullNode.getInstance());
+        verifiedClaim1.put("claims", claims1);
+        verifiedClaimsList.add(verifiedClaim1);
+
+        // Set up the second verified claim that should not match
+        ObjectNode verifiedClaim2 = objectMapper.createObjectNode();
+        ObjectNode verification2 = objectMapper.createObjectNode();
+        verification2.put("trust_framework", "non_matching");
+        verifiedClaim2.put("verification", verification2);
+
+        ObjectNode claims2 = objectMapper.createObjectNode();
+        claims2.put("name", NullNode.getInstance());
+        claims2.put("email", NullNode.getInstance());
+        claims2.put("gender", NullNode.getInstance());
+        verifiedClaim2.put("claims", claims2);
+        verifiedClaimsList.add(verifiedClaim2);
+
+        // Add the list of verified claims to the outer map
+        acceptedClaims.put("verified_claims", verifiedClaimsList);
+        kycExchangeRequestDtoV2.setAcceptedClaimDetail(acceptedClaims);
+        kycExchangeRequestDtoV2.setClaimLocales(List.of("eng"));
+        kycExchangeRequestDtoV2.setRequestDateTime(LocalDateTime.now());
+
+        KycAuth kycAuth = new KycAuth();
+        kycAuth.setKycToken("kycToken");
+        kycAuth.setTransactionId("transactionId");
+        kycAuth.setIndividualId("individualId");
+        kycAuth.setPartnerSpecificUserToken("partnerSpecificUserToken");
+        kycAuth.setResponseTime(LocalDateTime.now());
+        Optional<KycAuth> kycAuthOptional = Optional.of(kycAuth);
+        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(Mockito.any(),
+                Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(kycAuthOptional);
+        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+
+        // Mock the identityService to return JsonNode
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityDataJsonNode);
+
+        VerifiedClaim verifiedClaim = new VerifiedClaim();
+        verifiedClaim.setTrustFramework("pwd");
+        verifiedClaim.setClaim("email");
+
+        VerifiedClaim verifiedClaim4 = new VerifiedClaim();
+        verifiedClaim4.setTrustFramework("pwd");
+        verifiedClaim4.setClaim("birthdate");
+
+        List<VerifiedClaim> verifiedClaimList = new ArrayList<>();
+        verifiedClaimList.add(verifiedClaim);
+        verifiedClaimList.add(verifiedClaim4);
+        Optional<List<VerifiedClaim>> verifiedClaimsOptional = Optional.of(verifiedClaimList);
+
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
+                .thenReturn(verifiedClaimsOptional);
+
+        JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
+        jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
+        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
+
+        KycExchangeResponseDto kycExchangeResponseDto = authenticationService.kycExchange("relyingPartyId", "clientId", kycExchangeRequestDtoV2);
+        Assert.assertEquals("jwtSignedData", kycExchangeResponseDto.getKyc());
     }
 
     @Test
