@@ -123,7 +123,7 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void kycAuth_withInvalidTrnHash_thenFail() {
+    public void kycAuth_withoutSendOTPInvocation_thenFail() {
         List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
                 ,Map.of("id","fullName","type","text","format","")
                 ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
@@ -148,6 +148,44 @@ public class AuthenticationServiceImplTest {
         }catch (MockIdentityException e){
             Assert.assertEquals("invalid_transaction",e.getMessage());
         }
+    }
+
+    @Test
+    public void kycAuth_withSendOTPInvocation_thenPass() {
+        List<Map<String,String>> fieldDetailList = List.of(Map.of("id","individualId","type","text","format","string")
+                ,Map.of("id","fullName","type","text","format","")
+                ,Map.of("id","dateOfBirth","type","date","format","yyyy-MM-dd"));
+        ReflectionTestUtils.setField(authenticationService,"otpChannels",Arrays.asList("email","phone"));
+        ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
+        ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
+        ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
+        ReflectionTestUtils.setField(authenticationService,"trnHash",new ArrayList<>());
+
+        KycAuthDto kycAuthDto = new KycAuthDto();
+        kycAuthDto.setOtp("111111");
+        kycAuthDto.setIndividualId("individualId");
+        kycAuthDto.setTransactionId("transactionId");
+
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        identityData.setIndividualId("individualId");
+        identityData.setEmail("test@email.com");
+        identityData.setPhone("1234567890");
+        LanguageValue languageValue = new LanguageValue();
+        languageValue.setLanguage("eng");
+        languageValue.setValue("Siddharth K Mansour");
+        identityData.setFullName(List.of(languageValue));
+        SendOtpDto sendOtpDto=new SendOtpDto();
+        sendOtpDto.setIndividualId("individualId");
+        sendOtpDto.setOtpChannels(Arrays.asList("email","phone"));
+        sendOtpDto.setTransactionId("transactionId");
+
+        Mockito.when(identityService.getIdentity("individualId")).thenReturn(identityData);
+        authenticationService.sendOtp("relyingPartyId", "clientId", sendOtpDto);
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+        KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
+        Assert.assertTrue(kycAuthResponseDto.isAuthStatus());
     }
 
     @Test
