@@ -6,13 +6,13 @@ if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
 fi
 
-NS=mockid
-CHART_VERSION=0.10.0-develop
-
-echo Create $NS namespace
-kubectl create ns $NS
-
 function installing_mock-identity-system() {
+  NS=mockid
+  CHART_VERSION=0.10.0-develop
+
+  echo Create $NS namespace
+  kubectl create ns $NS || true
+
   echo Istio label
   helm repo add mosip https://mosip.github.io/mosip-helm
   helm repo update
