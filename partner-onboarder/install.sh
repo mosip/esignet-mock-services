@@ -1,5 +1,5 @@
 #!/bin/bash
-# Onboards mock relying party OIDC helm
+# Installs mock relying party onboarder OIDC helm
 ## Usage: ./install.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then
@@ -21,7 +21,7 @@ if [ "$flag" = "n" ]; then
 fi
 
 NS=esignet
-CHART_VERSION=0.0.1-develop
+CHART_VERSION=1.5.0-es-develop
 
 echo Create $NS namespace
 kubectl create ns $NS || true
@@ -91,7 +91,7 @@ function installing_onboarder() {
 
     echo "Istio label"
     kubectl label ns $NS istio-injection=disabled --overwrite
-#    helm repo update
+    helm repo update
 
     echo "Copy configmaps"
     COPY_UTIL=../deploy/copy_cm_func.sh
@@ -101,12 +101,8 @@ function installing_onboarder() {
     $COPY_UTIL secret keycloak keycloak $NS
     $COPY_UTIL secret keycloak-client-secrets keycloak $NS
 
-    echo $NFS_OPTION
-    echo $S3_OPTION
-    echo $push_reports_to_s3
-
     echo "Onboarding Mock Relying Party OIDC client"
-    helm -n $NS install esignet-mock-rp-onboarder ../../mosip-onboarding/helm/partner-onboarder/ \
+    helm -n $NS install esignet-mock-rp-onboarder mosip/partner-onboarder \
       $NFS_OPTION \
       $S3_OPTION \
       --set onboarding.variables.push_reports_to_s3=$push_reports_to_s3 \
@@ -115,8 +111,10 @@ function installing_onboarder() {
       --set extraEnvVarsCM[2]=keycloak-host \
       $ENABLE_INSECURE \
       -f values.yaml \
-      --debug --wait --wait-for-jobs
-    echo "Partner onboarded successfully and reports are moved to S3 or NFS"
+      --version $CHART_VERSION \
+      --wait --wait-for-jobs
+    echo "Partner onboarder executed and reports are moved to S3 or NFS please check the same to make sure partner was onboarded sucessfully."
+    kubectl rollout restart deployment mock-relying-party-service -n esignet
     return 0
   fi
 }

@@ -8,9 +8,12 @@ fi
 
 ROOT_DIR=`pwd`
 NS=mockid
+ESIGNET_NS=esignet
 SOFTHSM_NS=softhsm
 SOFTHSM_CHART_VERSION=12.0.1
 
+kubectl create ns $NS || true
+kubectl create ns $ESIGNET_NS || true
 
 function prereq_mockid () {
   echo Create $SOFTHSM_NS namespace
@@ -38,10 +41,10 @@ function prereq_mockid () {
 
 function prereq_mockrp () {
   echo "Create secret for mock-relying-party-service-secrets and jwe-userinfo-private-key delete if exists"
-  kubectl -n $NS delete --ignore-not-found=true secrets mock-relying-party-private-key-jwk
-  kubectl -n $NS delete --ignore-not-found=true secrets jwe-userinfo-service-secrets
-  kubectl -n $NS create secret generic mock-relying-party-private-key-jwk --from-literal=client-private-key='' --dry-run=client -o yaml | kubectl apply -f -
-  kubectl -n $NS create secret generic jwe-userinfo-service-secrets --from-literal=JWE_USERINFO_PRIVATE_KEY='' --dry-run=client -o yaml | kubectl apply -f -
+  kubectl -n $ESIGNET_NS delete --ignore-not-found=true secrets mock-relying-party-private-key-jwk
+  kubectl -n $ESIGNET_NS delete --ignore-not-found=true secrets jwe-userinfo-service-secrets
+  kubectl -n $ESIGNET_NS create secret generic mock-relying-party-private-key-jwk --from-literal=client-private-key='' --dry-run=client -o yaml | kubectl apply -f -
+  kubectl -n $ESIGNET_NS create secret generic jwe-userinfo-service-secrets --from-literal=jwe-userinfo-private-key='' --dry-run=client -o yaml | kubectl apply -f -
   return 0
 }
 

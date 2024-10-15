@@ -6,26 +6,40 @@ if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
 fi
 
-NS=esignet
-CHART_VERSION=0.0.1-develop
-
-read -p "Please provide mock relying party ui domain (eg: healthservices.sandbox.xyz.net ) : " MOCK_UI_HOST
-
-if [ -z "$MOCK_UI_HOST" ]; then
-  echo "Mock relying party UI Host not provided; EXITING;"
-  exit 0;
-fi
-
-CHK_MOCK_UI_HOST=$( nslookup "$MOCK_UI_HOST" )
-if [ $? -gt 0 ]; then
-  echo "Mock relying party UI Host does not exists; EXITING;"
-  exit 0;
-fi
-
-echo Create $NS namespace
-kubectl create ns $NS
-
 function installing_mock-relying-party-ui() {
+
+  while true; do
+    read -p "Do you want to install mock relying party ui? (y/n): " response
+    if [[ "$response" == "y" || "$response" == "Y" ]]; then
+      break
+    elif [[ "$response" == "n" || "$response" == "N" ]]; then
+      exit
+    else
+      echo "Not a correct response. Please respond with y (yes) or n (no)."
+    fi
+  done
+
+  helm repo add mosip https://mosip.github.io/mosip-helm
+  helm repo update
+
+  NS=esignet
+  CHART_VERSION=0.10.0-develop
+
+  read -p "Please provide mock relying party ui domain (eg: healthservices.sandbox.xyz.net ) : " MOCK_UI_HOST
+  if [ -z "$MOCK_UI_HOST" ]; then
+    echo "Mock relying party UI Host not provided; EXITING;"
+    exit 1;
+  fi
+
+  CHK_MOCK_UI_HOST=$( nslookup "$MOCK_UI_HOST" )
+  if [ $? -gt 0 ]; then
+    echo "Mock relying party UI Host does not exists; EXITING;"
+    exit 1;
+  fi
+
+  echo Create $NS namespace
+  kubectl create ns $NS || true
+
   echo Istio label
   kubectl label ns $NS istio-injection=enabled --overwrite
 
