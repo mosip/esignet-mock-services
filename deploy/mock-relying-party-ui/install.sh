@@ -30,6 +30,13 @@ function installing_mock-relying-party-ui() {
     echo "Mock relying party UI Host not provided; EXITING;"
     exit 1;
   fi
+
+  CHK_MOCK_UI_HOST=$(nslookup "$MOCK_UI_HOST" > /dev/null 2>&1)
+  if [ $? -ne 0 ]; then
+    echo "Mock relying party UI Host does not exist; EXITING;"
+    exit 1
+  fi
+  
   echo Create $NS namespace
   kubectl create ns $NS || true
 
