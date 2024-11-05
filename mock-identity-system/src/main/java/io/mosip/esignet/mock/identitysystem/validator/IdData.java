@@ -23,4 +23,6 @@ public @interface IdData {
 
 	Class<? extends Payload>[] payload() default {};
 
+	String action() default "CREATE";
+
 }

@@ -69,6 +69,8 @@ public class IdentityControllerTest {
 		identityRequest.setPin("1289001");
 		identityRequest.setRegion(Arrays.asList(langValue));
 		identityRequest.setFullName(Arrays.asList(langValue));
+		identityRequest.setGivenName(Arrays.asList(langValue));
+		identityRequest.setFamilyName(Arrays.asList(langValue));
 		identityRequest.setStreetAddress(Arrays.asList(langValue));
 		identityRequest.setPhone("9090909090");
 	}
