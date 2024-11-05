@@ -19,6 +19,7 @@ import java.util.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.mosip.esignet.mock.identitysystem.dto.*;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -102,7 +103,7 @@ public class IdentityControllerTest {
 		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.errors").isNotEmpty())
-				.andExpect(jsonPath("$.errors[0].errorCode").value(ErrorConstants.INVALID_INDIVIDUAL_ID));
+				.andExpect(jsonPath("$.errors[*].errorCode").value(Matchers.containsInAnyOrder(ErrorConstants.INVALID_REQUEST, ErrorConstants.INVALID_INDIVIDUAL_ID)));
 	}
 	
 	@Test
