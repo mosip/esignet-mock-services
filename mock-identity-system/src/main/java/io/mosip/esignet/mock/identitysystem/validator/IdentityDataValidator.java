@@ -23,8 +23,18 @@ import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 @Component
 public class IdentityDataValidator implements ConstraintValidator<IdData, IdentityData> {
 
-	@Value("#{T(java.util.Arrays).asList('${mosip.esignet.mock.supported-fields:}')}")
-	private List<String> supportedFields;
+	@Value("#{T(java.util.Arrays).asList('${mosip.mock.identity.create.required.fields:}')}")
+	private List<String> createRequiredFields;
+
+	@Value("#{T(java.util.Arrays).asList('${mosip.mock.identity.update.required.fields:}')}")
+	private List<String> updateRequiredFields;
+
+	private String action;
+
+	@Override
+	public void initialize(IdData constraintAnnotation) {
+		this.action = constraintAnnotation.action();
+	}
 
 	@Override
 	public boolean isValid(IdentityData value, ConstraintValidatorContext context) {
@@ -37,7 +47,7 @@ public class IdentityDataValidator implements ConstraintValidator<IdData, Identi
 
 		fields.values().removeIf(Objects::isNull);
 
-		return fields.keySet().containsAll(supportedFields);
+		return fields.keySet().containsAll(this.action.equals("UPDATE") ? updateRequiredFields : createRequiredFields);
 	}
 
 }

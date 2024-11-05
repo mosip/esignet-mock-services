@@ -29,7 +29,7 @@ public class IdentityController {
 	@PostMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> createIdentity
-	(@Valid @RequestBody RequestWrapper<IdentityData> requestWrapper) throws MockIdentityException {
+	(@Valid @RequestBody RequestWrapper<CreateIdentity> requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();
@@ -43,7 +43,7 @@ public class IdentityController {
 	@PutMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> updateIdentity
-			(@Valid @RequestBody RequestWrapper<IdentityData> requestWrapper) throws MockIdentityException {
+			(@Valid @RequestBody RequestWrapper<UpdateIdentity> requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();
