@@ -384,6 +384,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private Map<String, Object> buildKycDataBasedOnPolicy(String individualId, JsonNode identityData, Map<String, JsonNode> claims, List<String> locales) {
+        log.info("Accepted claim details {} for locales : {}", claims, locales);
         Map<String, Object> kyc = new HashMap<>();
         if (CollectionUtils.isEmpty(locales)) {
             locales = Arrays.asList(defaultLanguage);
@@ -392,6 +393,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         for (Map.Entry<String, JsonNode> claimDetail : claims.entrySet()) {
 
             Optional<Map.Entry<String, String>> keyMappingEntry = oidcClaimsMapping.entrySet().stream().filter(entry -> entry.getValue().equals(claimDetail.getKey()) ).findFirst();
+            log.info("Mapping for claim {} is found : {}", claimDetail.getKey(), keyMappingEntry.isPresent());
 
             switch (claimDetail.getKey()) {
                 case "verified_claims":
