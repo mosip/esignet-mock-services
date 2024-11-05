@@ -119,7 +119,7 @@ const decodeUserInfoResponse = async (userInfoResponse) => {
       }
     }
   }
-
+  console.log("userInfoResponse", response);
   return await new jose.decodeJwt(response);
 };
 
