@@ -89,6 +89,34 @@ function installing_onboarder() {
       fi
     done
 
+    while true; do
+      read -p "Is esignet deployed with default plugins? (y/n): " esignet_ans
+      if [[ "$esignet_ans" == "y" || "$esignet_ans" == "Y" ]]; then
+        while true; do
+          read -p "Please confirm with y for MOSIP ID plugins (y/n): " mosipid_ans
+          if [[ "$mosipid_ans" == "y" || "$mosipid_ans" == "Y" ]]; then
+            mosipid="true"
+            MOSIPID_OPTION="--set onboarding.variables.mosipid=$mosipid"
+            break
+          elif [[ "$mosipid_ans" == "n" || "$mosipid_ans" == "N" ]]; then
+            mosipid="false"
+            MOSIPID_OPTION="--set onboarding.variables.mosipid=$mosipid"
+            break
+          else
+            echo "Invalid response for MOSIP ID plugins. Please respond with y or n."
+          fi
+        done
+        break
+      elif [[ "$esignet_ans" == "n" || "$esignet_ans" == "N" ]]; then
+        mosipid="false"
+        MOSIPID_OPTION="--set onboarding.variables.mosipid=$mosipid"
+        break
+      else
+        echo "Invalid response for esignet. Please respond with y or n."
+      fi
+    done
+    echo "Helm option: $MOSIPID_OPTION"
+
     echo "Istio label"
     kubectl label ns $NS istio-injection=disabled --overwrite
     helm repo update
