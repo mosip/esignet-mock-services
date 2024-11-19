@@ -133,6 +133,7 @@ function installing_onboarder() {
     helm -n $NS install esignet-mock-rp-onboarder mosip/partner-onboarder \
       $NFS_OPTION \
       $S3_OPTION \
+      $MOSIPID_OPTION \
       --set onboarding.variables.push_reports_to_s3=$push_reports_to_s3 \
       --set extraEnvVarsCM[0]=esignet-global \
       --set extraEnvVarsCM[1]=keycloak-env-vars \
