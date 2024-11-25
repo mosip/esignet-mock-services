@@ -55,12 +55,40 @@ public class IdentityControllerTest {
 	@Before
 	public void init() {
 		identityRequest = new IdentityData();
-		identityRequest.setIndividualId("123456789");
+		identityRequest.setIndividualId("+855826741183");
 		identityRequest.setEmail("test@gmail.com");
+
+		List<LanguageValue> nameList=new ArrayList<>();
+		LanguageValue engLangValue= new LanguageValue();
+		engLangValue.setValue("Siddharth K Mansour");
+		engLangValue.setLanguage("eng");
+		LanguageValue arabicLangValue= new LanguageValue();
+		arabicLangValue.setLanguage("ara");
+		arabicLangValue.setValue("سيدارت ك منصور");
+		nameList.add(engLangValue);
+		nameList.add(arabicLangValue);
+		identityRequest.setFullName(nameList);
+		identityRequest.setName(nameList);
+		identityRequest.setFamilyName(nameList);
+		identityRequest.setGivenName(nameList);
+		identityRequest.setPreferredUsername(nameList);
+		identityRequest.setNickName(nameList);
+		identityRequest.setPreferredUsername(nameList);
+		identityRequest.setMiddleName(nameList);
+
+		LanguageValue mockLang = new LanguageValue();
+		mockLang.setLanguage("eng");
+		mockLang.setValue("mock");
+		identityRequest.setGender(Arrays.asList(mockLang));
+		identityRequest.setStreetAddress(Arrays.asList(mockLang));
+		identityRequest.setLocality(Arrays.asList(mockLang));
+		identityRequest.setRegion(Arrays.asList(mockLang));
+
 		LanguageValue langValue = new LanguageValue();
 		langValue.setLanguage("eng");
 		langValue.setValue("ind");
 		identityRequest.setCountry(Arrays.asList(langValue));
+
 		identityRequest.setDateOfBirth("20021990");
 		identityRequest.setEncodedPhoto("testencodedphoto");
 		identityRequest.setGender(Arrays.asList(langValue));
@@ -71,6 +99,10 @@ public class IdentityControllerTest {
 		identityRequest.setFullName(Arrays.asList(langValue));
 		identityRequest.setStreetAddress(Arrays.asList(langValue));
 		identityRequest.setPhone("9090909090");
+		identityRequest.setPreferredLang("eng");
+		identityRequest.setZoneInfo("local");
+		identityRequest.setLocale("eng");
+		identityRequest.setPassword("mock-password");
 	}
 
 	@Test
@@ -105,6 +137,7 @@ public class IdentityControllerTest {
 	
 	@Test
 	public void getIdentity_withValidId_returnSuccessResponse() throws Exception {
+		identityRequest.setIndividualId("123456789");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
 
 		mockMvc.perform(get("/identity/{individualId}", "123456789")

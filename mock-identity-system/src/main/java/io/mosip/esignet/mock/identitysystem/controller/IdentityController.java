@@ -8,8 +8,10 @@ package io.mosip.esignet.mock.identitysystem.controller;
 import javax.validation.Valid;
 
 import io.mosip.esignet.mock.identitysystem.dto.*;
+import io.mosip.esignet.mock.identitysystem.validator.IdentitySchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
@@ -21,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/")
+@Validated
 public class IdentityController {
 
 	@Autowired
@@ -29,7 +32,7 @@ public class IdentityController {
 	@PostMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> createIdentity
-	(@Valid @RequestBody RequestWrapper<IdentityData> requestWrapper) throws MockIdentityException {
+	(@Valid @RequestBody @IdentitySchema(isCreate=true) RequestWrapper< IdentityData> requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();
@@ -43,7 +46,7 @@ public class IdentityController {
 	@PutMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> updateIdentity
-			(@Valid @RequestBody RequestWrapper<IdentityData> requestWrapper) throws MockIdentityException {
+			(@Valid @RequestBody @IdentitySchema(isCreate=false) RequestWrapper<IdentityData> requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();
