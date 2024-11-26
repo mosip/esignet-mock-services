@@ -118,16 +118,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         KycAuth kycAuth = saveKycAuthTransaction(kycAuthDto.getTransactionId(), relyingPartyId,
-                kycAuthDto.getIndividualId());
+                kycAuthDto.getIndividualId(), identityData);
 
         KycAuthResponseDto kycAuthResponseDto = new KycAuthResponseDto();
         kycAuthResponseDto.setAuthStatus(authStatus);
         kycAuthResponseDto.setKycToken(kycAuth.getKycToken());
-        if (psutField.equals("psut")) {
-            kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
-        } else {
-            kycAuthResponseDto.setPartnerSpecificUserToken(HelperUtil.getIdentityDataValue(identityData, psutField, defaultLanguage));
-        }
+        kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
         if(kycAuthDto.isClaimMetadataRequired()) {
             kycAuthResponseDto.setClaimMetadata(getVerifiedClaimMetadata(kycAuthDto.getIndividualId(), identityData));
         }
@@ -367,12 +363,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         throw new MockIdentityException("jwe-not-implemented");
     }
 
-    private KycAuth saveKycAuthTransaction(String transactionId, String relyingPartyId, String individualId) {
+    private KycAuth saveKycAuthTransaction(String transactionId, String relyingPartyId, String individualId, JsonNode identityData) {
         String kycToken = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, UUID.randomUUID().toString());
         String psut;
         try {
-            psut = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
-                    String.format(PSUT_FORMAT, individualId, relyingPartyId));
+            if (psutField.equals("psut")) {
+                psut = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, String.format(PSUT_FORMAT, individualId, relyingPartyId));
+            } else {
+                psut = HelperUtil.getIdentityDataValue(identityData, psutField, defaultLanguage);
+            }
         } catch (Exception e) {
             log.error("Failed to generate PSUT", e);
             throw new MockIdentityException("mock-ida-004");
