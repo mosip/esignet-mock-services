@@ -325,7 +325,9 @@ public class AuthenticationServiceImplTest {
         identityData.setFullName(List.of(languageValue));
         Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
 
-        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+        KycAuth kycAuth = new KycAuth();
+        kycAuth.setPartnerSpecificUserToken("8267411571");
+        Mockito.when(authRepository.save(Mockito.any())).thenReturn(kycAuth);
 
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         Assert.assertEquals("8267411571", kycAuthResponseDto.getPartnerSpecificUserToken());
