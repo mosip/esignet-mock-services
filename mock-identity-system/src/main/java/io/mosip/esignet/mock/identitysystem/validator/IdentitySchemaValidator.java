@@ -2,10 +2,7 @@ package io.mosip.esignet.mock.identitysystem.validator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
-import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.*;
 import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import io.mosip.esignet.mock.identitysystem.dto.RequestWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +24,11 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
     @Value("${mosip.mock.ida.identity.create.schema.url}")
     private String createSchemaUrl;
 
-    @Value("${mosip.mock.ida.identity.update.schema.url}")
-    private String updateSchemaUrl;
+    @Value("#{${mosip.mock.ida.identity.update.exempted.field}}")
+    private Set<String> exemptedField;
     private boolean isCreate;
 
-    private volatile JsonSchema cachedCreateSchema;
-
-    private volatile JsonSchema cachedUpdateSchema;
+    private volatile JsonSchema cachedSchema;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -54,47 +49,40 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
         RequestWrapper wrapper= (RequestWrapper) object;
         Object requestObject = wrapper.getRequest();
         if (!(requestObject instanceof IdentityData)) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("Invalid request object")
-                    .addPropertyNode("request")
-                    .addConstraintViolation();
             return false;
         }
         IdentityData identityData=(IdentityData) requestObject;
         JsonNode identityJsonNode = objectMapper.valueToTree(identityData);
-        Set<ValidationMessage> errors = isCreate
-                ? getCachedCreateSchema().validate(identityJsonNode)
-                : getCachedUpdateSchema().validate(identityJsonNode);
-
-        if (!errors.isEmpty()) {
-            log.error("Validation failed for claims: {}", errors);
+        Set<ValidationMessage> errors = getCachedSchema().validate(identityJsonNode);
+        boolean isValid=true;
+        if(!isCreate){
+            for(ValidationMessage validationMessage: errors){
+                String field=validationMessage.
+                        getInstanceLocation().getName(0);
+                // Ignore validation errors with code 1029 (null value) for exempted fields when validating updateIdentity
+                if(!validationMessage.getCode().equals("1029") || !exemptedField.contains(field)){
+                    isValid=false;
+                    break;
+                }
+            }
+        }
+        if (!isValid) {
+            log.error("Validation failed for IdentityData: {}", errors);
             return false;
         }
         return true;
     }
 
-    private JsonSchema getCachedCreateSchema()  {
-        if(cachedCreateSchema !=null ) return cachedCreateSchema;
+    private JsonSchema getCachedSchema()  {
+        if(cachedSchema !=null ) return cachedSchema;
         synchronized (this) {
-            if (cachedCreateSchema == null) {
+            if (cachedSchema == null) {
                 InputStream schemaResponse = getResource(createSchemaUrl);
                 JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
-                cachedCreateSchema = jsonSchemaFactory.getSchema(schemaResponse);
+                cachedSchema = jsonSchemaFactory.getSchema(schemaResponse);
             }
         }
-        return cachedCreateSchema;
-    }
-
-    private JsonSchema getCachedUpdateSchema()  {
-        if(cachedUpdateSchema !=null ) return cachedUpdateSchema;
-        synchronized (this) {
-            if (cachedUpdateSchema == null) {
-                InputStream schemaResponse = getResource(updateSchemaUrl);
-                JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
-                cachedUpdateSchema = jsonSchemaFactory.getSchema(schemaResponse);
-            }
-        }
-        return cachedUpdateSchema;
+        return cachedSchema;
     }
 
     private InputStream getResource(String url) {

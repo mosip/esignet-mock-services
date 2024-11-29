@@ -55,7 +55,7 @@ public class IdentityControllerTest {
 	@Before
 	public void init() {
 		identityRequest = new IdentityData();
-		identityRequest.setIndividualId("+855826741183");
+		identityRequest.setIndividualId("826741183");
 		identityRequest.setEmail("test@gmail.com");
 
 		List<LanguageValue> nameList=new ArrayList<>();

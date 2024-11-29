@@ -8,12 +8,10 @@
         "type": "object",
         "properties": {
           "language": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "value": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
         },
         "required": [
@@ -21,14 +19,13 @@
           "value"
         ],
         "additionalProperties": false
-      },
-      "nullable": true
+      }
     }
   },
   "properties": {
     "individualId": {
       "type": "string",
-      "pattern": "^\\+855\\d{9}$"
+      "pattern": "^[0-9]{5,19}$"
     },
     "fullName": {
       "allOf": [
@@ -47,6 +44,9 @@
     "name": {
       "allOf": [
         { "$ref": "#/$defs/langField" },
+        {
+          "nullable": true
+        },
         {
           "items": {
             "properties": {
@@ -202,53 +202,66 @@
     },
     "pin": {
       "type": "string",
-      "pattern": "\\S",
-      "nullable": true
+      "pattern": "\\S"
     },
     "preferredLang": {
-      "type": "string",
-      "nullable": true
+      "type": "string"
     },
     "dateOfBirth": {
       "type": "string",
-      "pattern": "\\S",
-      "nullable": true
+      "pattern": "\\S"
     },
     "postalCode": {
       "type": "string",
-      "pattern": "\\S",
-      "nullable": true
+      "pattern": "\\S"
     },
     "encodedPhoto": {
       "type": "string"
     },
     "email": {
       "type": "string",
-      "pattern": "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
-      "nullable": true
+      "pattern": "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
     },
     "phone": {
       "type": "string",
-      "pattern": "\\S",
-      "nullable": true
+      "pattern": "\\S"
     },
     "zoneInfo": {
-      "type": "string",
-      "nullable": true
+      "type": "string"
     },
     "locale": {
       "type": "string",
-      "pattern": "\\S",
-      "nullable": true
+      "pattern": "\\S"
     },
     "password": {
       "type": "string",
-      "pattern": "\\S",
-      "nullable": true
+      "pattern": "\\S"
     }
   },
   "required": [
-    "individualId"
+    "individualId",
+    "fullName",
+    "name",
+    "givenName",
+    "familyName",
+    "middleName",
+    "nickName",
+    "preferredUsername",
+    "gender",
+    "streetAddress",
+    "locality",
+    "region",
+    "country",
+    "pin",
+    "preferredLang",
+    "dateOfBirth",
+    "postalCode",
+    "encodedPhoto",
+    "email",
+    "phone",
+    "zoneInfo",
+    "locale",
+    "password"
   ],
   "additionalProperties": false
 }
