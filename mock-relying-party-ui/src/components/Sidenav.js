@@ -81,15 +81,14 @@ export default function Sidenav({
       getMessages();
       getUserDetails(authCode);
     };
+    getSearchParams();
     // hiding or showing the side nav
     // according to windows height
-    const handleResize = () => {
-      const { innerWidth: width } = window;
-      setShowMenu(width > 767);
-    };
+    const handleResize = () => setShowMenu(window.innerWidth > 767);
+    // initial call to handleResize
+    handleResize();
     // adding event listener for window resize
     window.addEventListener("resize", handleResize);
-    getSearchParams();
     // removing event listener for window resize
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -335,7 +334,7 @@ export default function Sidenav({
           + (showMenu ? "" : "hidden")}
         aria-label="Sidebar"
       >
-        <div className="h-full md:px-3 md:py-4">
+        <div className="md:px-3 md:py-4">
           <div className="hidden md:flex items-center justify-center col-start-1">
             <img src="images/doctor_logo.png" className="w-16 h-16 mx-4" />
             <span className="title-font text-1xl text-gray-900 font-medium">
@@ -349,9 +348,11 @@ export default function Sidenav({
               <div className="w-[58px] font-normal text-base/[18px]">Health Portal</div>
             </div>
             <div className="flex justify-end items-center">
-              <div className="p-1.5 m-2 before:content-['\2715'] cursor-pointer" onClick={() => setShowMenu(current => !current)}></div>
+              <div className="p-1.5 m-1.5 before:content-['\2715'] cursor-pointer" onClick={() => setShowMenu(current => !current)}></div>
             </div>
           </div>
+        </div>
+        <div className="h-full md:px-3 pb-[110px] overflow-scroll">
           <ul className="p-4 md:px-0 md:py-2">
             <li>
               <a
@@ -595,7 +596,7 @@ export default function Sidenav({
             </div>
           </ul>
         </div>
-        <div className="md:hidden w-full absolute bottom-0 border-t-2 p-4">
+        <div className="md:hidden w-full absolute bottom-0 border-t-2 p-4 bg-white z-10">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <img
