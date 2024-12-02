@@ -28,6 +28,7 @@ Repository contains mock implementations for eSignet. Only for non-production us
   ```
   export KUBECONFIG=path/to/kubeconfig.config
   ```
+
 * Execute installation script:
   ```
   ./instll-mock.sh
