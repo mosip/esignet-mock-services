@@ -27,6 +27,7 @@ export default function Sidenav({
   const [messagesInfo, setMessagesInfo] = useState([]);
   const [address, setAddress] = useState(null);
   const [emailAddress, setEmailAddress] = useState(null);
+  const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
 
   const navigateToLogin = (errorCode, errorDescription) => {
@@ -60,12 +61,12 @@ export default function Sidenav({
   }, [langOptions]);
 
   //Gets fired when changeLanguage got called.
-    i18n.on('languageChanged', function (lng) {
+  i18n.on('languageChanged', function (lng) {
     let lang = langOptions.find((option) => {
       return option.value === lng;
     });
     setSelectedLang(lang);
-    })
+  })
 
   useEffect(() => {
     const getSearchParams = async () => {
@@ -80,7 +81,17 @@ export default function Sidenav({
       getMessages();
       getUserDetails(authCode);
     };
+    // hiding or showing the side nav
+    // according to windows height
+    const handleResize = () => {
+      const { innerWidth: width } = window;
+      setShowMenu(width > 767);
+    };
+    // adding event listener for window resize
+    window.addEventListener("resize", handleResize);
     getSearchParams();
+    // removing event listener for window resize
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const getUserDetails = async (authCode) => {
@@ -130,7 +141,7 @@ export default function Sidenav({
     var messagesInfo = get_messages();
     setMessagesInfo(messagesInfo);
   };
-    const messagesCount = messagesInfo.messages?.length
+  const messagesCount = messagesInfo.messages?.length
 
   const getAddress = (userAddress) => {
     let address = "";
@@ -183,21 +194,165 @@ export default function Sidenav({
     return address.substring(0, address.length - 2);
   };
 
+  // new message component
+  const newMessageComponent = () => {
+    return <>
+      <p className="text-lg font-medium mb-4">
+        {t("new_messages")} <span className="">({messagesCount})</span>
+      </p>
+      {messagesInfo?.messages?.map((message, index) => {
+        const pastDate = new Date(
+          currentDate.getTime() - message["days"] * 24 * 60 * 60 * 1000
+        );
+        const formattedDate = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full' }).format(pastDate);
+        return (
+          <div
+            className=" bg-white overflow-auto border rounded border-gray-200 hover:bg-gray-100 shadow p-3 sm:p-4"
+            key={index}
+          >
+            <div className="flex ">
+              <img
+                className="w-8 h-8 rounded-full shadow-lg"
+                src="images/doctor_logo.png"
+                alt="Jese Leos image"
+              />
+
+              <div className="ml-3 mr-3">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {t(message["doctorName"])}
+                </p>
+                <p className="text-sm text-gray-500 truncate">
+                  {i18n.t(formattedDate)}
+                </p>
+
+                <p className="text-sm text-gray-500 truncate max-w-xs whitespace-pre-wrap">
+                  {t("hi")} {userInfo?.name} , {t(message["message"])}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="ml-auto -mx-1.5 -my-1.5  text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
+                data-dismiss-target="#toast-message-cta"
+                aria-label="Close"
+              >
+                <svg
+                  className="h-4 w-4 text-gray-500"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {" "}
+                  <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                  <circle cx="12" cy="12" r="1" />{" "}
+                  <circle cx="12" cy="19" r="1" />{" "}
+                  <circle cx="12" cy="5" r="1" />
+                </svg>{" "}
+              </button>
+            </div>
+          </div>
+        );
+      })}
+    </>;
+  };
+
+  // vaccination history component
+  const vaccinationHistoryComponent = () => {
+    return <>
+      <div className="w-full p-2 grid grid-cols-3 rounded bg-white border border-gray-200  shadow sm:p-2 m-1">
+        <div>
+          <p className=" text-lg font-medium ">{t("vaccinations")}</p>
+        </div>
+        <div className="col-end-5">
+          <a
+            href="#"
+            className=" text-sm text-gray-500 truncate hover:underline"
+          >
+            {t("vaccinations_history")}
+          </a>
+        </div>
+      </div>
+      <div className="w-full flex">
+        <table className="w-full p-4 mx-1 mb-4 table-auto whitespace-pre-wrap shadow-lg text-sm text-left text-gray-500">
+          <thead className="text-xs text-gray-700 uppercase bg-white">
+            <tr>
+              <th scope="col" className="p-3 sm:px-6">
+                <p>{t("vaccination_details")}</p>
+              </th>
+              <th scope="col" className="p-3 sm:px-6">
+                {t("date")}
+              </th>
+              <th scope="col" className="p-3 sm:px-6">
+                {t("vaccination_center")}
+              </th>
+              <th scope="col" className="p-3 sm:px-6">
+                {t("total_cost")}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {claimInfo?.claimproviders?.map((item, idx) => {
+              const pastDate = new Date(
+                currentDate.getTime() -
+                item["days"] * 24 * 60 * 60 * 1000
+              );
+              return (
+                <tr className="bg-white border-b" key={idx}>
+                  <th
+                    scope="row"
+                    className="sm:px-6 p-3 pr-2 font-medium text-gray-900 whitespace-nowrap"
+                  >
+                    <p className="text-xs">{t(item["vaccinationName"])}</p>
+                  </th>
+                  <td className="sm:px-6 py-3 px-2">
+                    <p>{pastDate.toLocaleDateString()}</p>
+                  </td>
+                  <td className="sm:px-6 py-3 px-2">
+                    <p>{t(item["vaccinationCenter"])}</p>
+                  </td>
+                  <th className="sm:px-6 p-3 pl-2">
+                    <p>{item["totalCost"]}</p>
+                  </th>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </>
+  };
+
   let el = (
     <>
       <aside
         id="default-sidebar"
-        className="fixed top-0 ltr:left-0 rtl:right-0 z-40 w-64 h-full overflow-hidden  transition-transform-translate-x-full shadow-md sm:translate-x-0  "
+        className={
+          "fixed top-0 ltr:left-0 rtl:right-0 z-40 bg-white md:w-64 w-full h-full overflow-hidden transition-transform-translate-x-full shadow-md sm:translate-x-0  "
+          + (showMenu ? "" : "hidden")}
         aria-label="Sidebar"
       >
-        <div className="h-full px-3 py-4">
-          <div className="flex items-center justify-center col-start-1">
+        <div className="h-full md:px-3 md:py-4">
+          <div className="hidden md:flex items-center justify-center col-start-1">
             <img src="images/doctor_logo.png" className="w-16 h-16 mx-4" />
             <span className="title-font text-1xl text-gray-900 font-medium">
               {t("health_portal")}
             </span>
           </div>
-          <ul className=" py-2">
+          <div className="flex md:hidden justify-between col-start-3 p-2 border-b-2">
+            <div className="flex justify-start">
+              <img src="images/menu_icon.png" alt="hamburger_menu" className="w-[18px] h-3 my-3.5 mx-[11px] cursor-pointer" onClick={() => setShowMenu(current => !current)} />
+              <img src="images/doctor_logo.png" alt="profile_logo" className="w-[38px] h-[38px] mx-2" />
+              <div className="w-[58px] font-normal text-base/[18px]">Health Portal</div>
+            </div>
+            <div className="flex justify-end items-center">
+              <div className="p-1.5 m-2 before:content-['\2715'] cursor-pointer" onClick={() => setShowMenu(current => !current)}></div>
+            </div>
+          </div>
+          <ul className="p-4 md:px-0 md:py-2">
             <li>
               <a
                 href="#"
@@ -241,7 +396,7 @@ export default function Sidenav({
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("search")}</span>
+                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("search")}</span>
               </a>
             </li>
             <li>
@@ -261,7 +416,7 @@ export default function Sidenav({
                   {" "}
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
-                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("messages")}</span>
+                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("messages")}</span>
               </a>
             </li>
             <li>
@@ -285,7 +440,7 @@ export default function Sidenav({
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />{" "}
                   <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
                 </svg>
-                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("reports")}</span>
+                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("reports")}</span>
               </a>
             </li>
             <li>
@@ -306,7 +461,7 @@ export default function Sidenav({
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />{" "}
                   <circle cx="12" cy="7" r="4" />
                 </svg>
-                                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("profile")}</span>
+                <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("profile")}</span>
               </a>
             </li>
             <li>
@@ -434,24 +589,62 @@ export default function Sidenav({
                     <path d="M11.5 3a17 17 0 0 0 0 18" />{" "}
                     <path d="M12.5 3a17 17 0 0 1 0 18" />
                   </svg>
-                                    <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("help")}</span>
+                  <span className="flex-1 ml-3 mr-3 whitespace-nowrap">{t("help")}</span>
                 </a>
               </li>
             </div>
           </ul>
         </div>
+        <div className="md:hidden w-full absolute bottom-0 border-t-2 p-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <img
+                alt={"profile_picture"}
+                className="h-10 w-10 ml-3 mr-3"
+                src={
+                  userInfo?.picture
+                    ? userInfo.picture
+                    : "User-Profile-Icon.png"
+                }
+              />
+              <div className="flex flex-col my-3 max-w-xs">
+                <p className="text-[#344054] truncate font-semibold text-sm" title={userInfo?.name}>
+                  {userInfo?.name}
+                </p>
+                <p className="text-[#475467] truncate font-normal text-sm" title={userInfo?.email}>
+                  {userInfo?.email}
+                </p>
+              </div>
+            </div>
+            <img
+              src="images/signout_icon.png"
+              alt="signout"
+              className="size-5 m-2 cursor-pointer"
+              onClick={(e) => {
+                localStorage.removeItem(userInfo_keyname);
+                navigateToLogin("logged_out", "User Logout");
+              }} />
+          </div>
+        </div>
       </aside>
-      <div className="flex justify-end col-start-3 mr-3 p-2">
-                <img src="images/language_icon.png" alt={t("language")} className="mr-2" />
-        <Select
-          styles={customStyles}
-          isSearchable={false}
-          className="appearance-none"
-          value={selectedLang}
-          options={langOptions}
-          placeholder="Language"
-          onChange={changeLanguageHandler}
-        />
+      <div className="flex justify-between md:justify-end col-start-3 md:mr-3 p-2 border-b-2 md:border-0">
+        <div className="flex justify-start md:hidden">
+          <img src="images/menu_icon.png" alt="hamburger_menu" className="w-[18px] h-3 my-3.5 mx-[11px] cursor-pointer" onClick={() => setShowMenu(current => !current)} />
+          <img src="images/doctor_logo.png" alt="profile_logo" className="w-[38px] h-[38px] mx-2" />
+          <div className="w-[58px] font-normal text-base/[18px]">Health Portal</div>
+        </div>
+        <div className="flex justify-end items-center">
+          <img src="images/language_icon.png" alt={t("language")} className="sm:mr-2 w-[38px] h-[38px]" />
+          <Select
+            styles={customStyles}
+            isSearchable={false}
+            className="appearance-none w-[125px]"
+            value={selectedLang}
+            options={langOptions}
+            placeholder="Language"
+            onChange={changeLanguageHandler}
+          />
+        </div>
       </div>
       {status === states.LOADING && (
         <div className="relative inset-52 flex justify-center items-center">
@@ -461,8 +654,8 @@ export default function Sidenav({
 
       {status === states.LOADED && (
         <>
-          <div className="p-4 ltr:sm:ml-64 rtl:sm:mr-64 overflow-auto bg-gray-50 font-sans bg-none">
-            <div className="flex flex-wrap justify-between items-center px-4 md:px-6 py-2.5">
+          <div className="p-4 ltr:md:ml-64 rtl:md:mr-64 overflow-auto bg-gray-50 font-sans bg-none">
+            <div className="flex flex-wrap justify-between items-center px-3 py-2.5">
               <a className="flex-1 items-center truncate">
                 <span className="self-center text-2xl font-semibold whitespace-nowrap">
                   {t("welcome")}, {userInfo?.name}
@@ -472,7 +665,7 @@ export default function Sidenav({
                 </p>
               </a>
 
-              <div className="flex items-center">
+              <div className="md:flex items-center hidden">
                 <div className="relative">
                   <div className="flex">
                     <img
@@ -485,7 +678,7 @@ export default function Sidenav({
                       }
                     />
                     <div className="flex my-3 max-w-xs">
-                                            <p className="text-gray-500 truncate bg-gray-50" title={userInfo?.name}>
+                      <p className="text-gray-500 truncate bg-gray-50" title={userInfo?.name}>
                         {userInfo?.name}
                       </p>
                     </div>
@@ -513,7 +706,7 @@ export default function Sidenav({
                   {isOpen && (
                     <div className="origin-top-left absolute ltr:right-0 rtl:left-0 max-w-xs shadow-lg">
                       <div className="flex flex-col px-1 py-1 rounded-md bg-white shadow-xs mt-2">
-                                                <a className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" title={emailAddress}>
+                        <a className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900" title={emailAddress}>
                           {t("email")}:&nbsp;
                           <span className="truncate">
                             {emailAddress?.split("@")[0]}
@@ -553,132 +746,16 @@ export default function Sidenav({
             <div className="p-1 ">
               <div className="flex">
                 <div className="flex flex-wrap w-full sm:w-30 md:w-30 p-1">
-                                    <div className="w-full">
-                                        {component}
-                                    </div>
-                  <div className="w-full p-2 grid grid-cols-3 rounded bg-white border border-gray-200  shadow sm:p-2 m-1">
-                    <div>
-                                            <p className=" text-lg font-medium ">{t("vaccinations")}</p>
-                    </div>
-                    <div className="col-end-5">
-                      <a
-                        href="#"
-                        className=" text-sm text-gray-500 truncate hover:underline"
-                      >
-                        {t("vaccinations_history")}
-                      </a>
-                    </div>
+                  <div className="w-full">
+                    {component}
                   </div>
-                  <div className="w-full flex">
-                    <table className="w-full p-4 mx-1 mb-4 table-auto whitespace-pre-wrap shadow-lg text-sm text-left text-gray-500">
-                      <thead className="text-xs text-gray-700 uppercase bg-white">
-                        <tr>
-                          <th scope="col" className="px-6 py-3">
-                            <p>{t("vaccination_details")}</p>
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            {t("date")}
-                          </th>
-                          <th scope="col" className="px-6 py-3">
-                            {t("vaccination_center")}
-                          </th>
-
-                          <th scope="col" className="px-6 py-3">
-                            {t("total_cost")}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {claimInfo?.claimproviders?.map((item, idx) => {
-                          const pastDate = new Date(
-                            currentDate.getTime() -
-                              item["days"] * 24 * 60 * 60 * 1000
-                          );
-                          return (
-                            <tr className="bg-white border-b" key={idx}>
-                              <th
-                                scope="row"
-                                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                              >
-                                                                <p className="text-xs">{t(item["vaccinationName"])}</p>
-                              </th>
-                              <td className="px-6 py-4">
-                                <p>{pastDate.toLocaleDateString()}</p>
-                              </td>
-                              <td className="px-6 py-4">
-                                <p>{t(item["vaccinationCenter"])}</p>
-                              </td>
-                              <th className="px-6 py-4">
-                                <p>{item["totalCost"]}</p>
-                              </th>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                  <div className="w-full p-2 md:hidden">
+                    {newMessageComponent()}
                   </div>
+                  {vaccinationHistoryComponent()}
                 </div>
-                <div className="w-full sm:w-1/2 md:w-30 p-2">
-                  <p className="text-lg font-medium mb-4">
-                                        {t("new_messages")} <span className="">({messagesCount})</span>
-                  </p>
-                  {messagesInfo?.messages?.map((message, index) => {
-                    const pastDate = new Date(
-                                            currentDate.getTime() - message["days"] * 24 * 60 * 60 * 1000
-                    );
-                                        const formattedDate = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full' }).format(pastDate);
-                    return (
-                      <div
-                        className=" bg-white overflow-auto border rounded border-gray-200 hover:bg-gray-100 shadow sm:p-4"
-                        key={index}
-                      >
-                        <div className="flex ">
-                          <img
-                            className="w-8 h-8 rounded-full shadow-lg"
-                            src="images/doctor_logo.png"
-                            alt="Jese Leos image"
-                          />
-
-                          <div className="ml-3 mr-3">
-                            <p className="text-sm font-medium text-gray-900 truncate">
-                              {t(message["doctorName"])}
-                            </p>
-                            <p className="text-sm text-gray-500 truncate">
-                              {i18n.t(formattedDate)}
-                            </p>
-
-                            <p className="text-sm text-gray-500 truncate max-w-xs whitespace-pre-wrap">
-                                                            {t("hi")} {userInfo?.name} , {t(message["message"])}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            className="ml-auto -mx-1.5 -my-1.5  text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
-                            data-dismiss-target="#toast-message-cta"
-                            aria-label="Close"
-                          >
-                            <svg
-                              className="h-4 w-4 text-gray-500"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              {" "}
-                              <path stroke="none" d="M0 0h24v24H0z" />{" "}
-                              <circle cx="12" cy="12" r="1" />{" "}
-                              <circle cx="12" cy="19" r="1" />{" "}
-                              <circle cx="12" cy="5" r="1" />
-                            </svg>{" "}
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
+                <div className="w-full sm:w-1/2 md:w-30 p-2 hidden md:block">
+                  {newMessageComponent()}
                 </div>
               </div>
             </div>
