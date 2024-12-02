@@ -26,17 +26,18 @@ function installing_mock-relying-party-ui() {
   CHART_VERSION=0.10.0-develop
 
   read -p "Please provide mock relying party ui domain (eg: healthservices.sandbox.xyz.net ) : " MOCK_UI_HOST
+  MOCK_UI_HOST=$(echo "$MOCK_UI_HOST" | xargs)  # Trim whitespace
   if [ -z "$MOCK_UI_HOST" ]; then
     echo "Mock relying party UI Host not provided; EXITING;"
-    exit 1;
-  fi
-
-  CHK_MOCK_UI_HOST=$(nslookup "$MOCK_UI_HOST" > /dev/null 2>&1)
-  if [ $? -ne 0 ]; then
-    echo "Mock relying party UI Host does not exist; EXITING;"
     exit 1
   fi
-  
+
+  # Check if the domain resolves successfully
+  nslookup "$MOCK_UI_HOST" > /dev/null 2>&1 || {
+    echo "Mock relying party UI Host does not exist; EXITING."
+    exit 1
+  }
+
   echo Create $NS namespace
   kubectl create ns $NS || true
 
