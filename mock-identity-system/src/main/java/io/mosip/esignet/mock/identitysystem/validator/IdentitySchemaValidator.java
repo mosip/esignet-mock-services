@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.io.IOException;
@@ -21,20 +23,21 @@ import java.util.Set;
 @Slf4j
 public class IdentitySchemaValidator implements ConstraintValidator<IdentitySchema, Object> {
 
-    @Value("${mosip.mock.ida.identity.create.schema.url}")
-    private String createSchemaUrl;
+    @Value("${mosip.mock.ida.identity.schema.url}")
+    private String identitySchemaUrl;
 
-    @Value("#{${mosip.mock.ida.identity.update.exempted.field}}")
-    private Set<String> exemptedField;
+    @Value("#{${mosip.mock.ida.update-identity.non-mandatory.fields}}")
+    private Set<String> nonMandatoryFieldsOnUpdate;
     private boolean isCreate;
 
-    private volatile JsonSchema cachedSchema;
+    private volatile JsonSchema schema;
 
     @Autowired
     ObjectMapper objectMapper;
 
     @Autowired
     ResourceLoader resourceLoader;
+
 
     @Override
     public void initialize(IdentitySchema constraintAnnotation) {
@@ -43,46 +46,59 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     @Override
     public boolean isValid(Object object, ConstraintValidatorContext context) {
+        context.disableDefaultConstraintViolation();
         if (!(object instanceof RequestWrapper)) {
+            context.buildConstraintViolationWithTemplate("Invalid request type")
+                    .addConstraintViolation();
             return false;
         }
         RequestWrapper wrapper= (RequestWrapper) object;
         Object requestObject = wrapper.getRequest();
         if (!(requestObject instanceof IdentityData)) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Invalid request object type").addConstraintViolation();
             return false;
         }
         IdentityData identityData=(IdentityData) requestObject;
         JsonNode identityJsonNode = objectMapper.valueToTree(identityData);
-        Set<ValidationMessage> errors = getCachedSchema().validate(identityJsonNode);
+        Set<ValidationMessage> errors = getSchema().validate(identityJsonNode);
         boolean isValid=true;
+        String errorName="";
         if(!isCreate){
             for(ValidationMessage validationMessage: errors){
                 String field=validationMessage.
                         getInstanceLocation().getName(0);
                 // Ignore validation errors with code 1029 (null value) for exempted fields when validating updateIdentity
-                if(!validationMessage.getCode().equals("1029") || !exemptedField.contains(field)){
+                if(!validationMessage.getCode().equals("1029") || !nonMandatoryFieldsOnUpdate.contains(field)){
+                    errorName="invalid_"+field.toLowerCase();
                     isValid=false;
                     break;
                 }
             }
+        }else if(!errors.isEmpty()){
+            isValid=false;
         }
         if (!isValid) {
+            context.disableDefaultConstraintViolation();
+            if(StringUtils.isEmpty(errorName))
+             errorName="invalid_"+errors.iterator().next().getInstanceLocation().getName(0).toLowerCase();
+            context.buildConstraintViolationWithTemplate(errorName)
+                    .addConstraintViolation();
             log.error("Validation failed for IdentityData: {}", errors);
             return false;
         }
         return true;
     }
-
-    private JsonSchema getCachedSchema()  {
-        if(cachedSchema !=null ) return cachedSchema;
+    private JsonSchema getSchema()  {
+        if(schema !=null ) return schema;
         synchronized (this) {
-            if (cachedSchema == null) {
-                InputStream schemaResponse = getResource(createSchemaUrl);
+            if (schema == null) {
+                InputStream schemaResponse = getResource(identitySchemaUrl);
                 JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
-                cachedSchema = jsonSchemaFactory.getSchema(schemaResponse);
+                schema = jsonSchemaFactory.getSchema(schemaResponse);
             }
         }
-        return cachedSchema;
+        return schema;
     }
 
     private InputStream getResource(String url) {

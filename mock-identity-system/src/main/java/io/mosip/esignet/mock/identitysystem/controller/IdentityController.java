@@ -5,12 +5,18 @@
  */
 package io.mosip.esignet.mock.identitysystem.controller;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 import io.mosip.esignet.mock.identitysystem.dto.*;
+import io.mosip.esignet.mock.identitysystem.dto.Error;
 import io.mosip.esignet.mock.identitysystem.validator.IdentitySchema;
+import io.mosip.kernel.core.exception.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +24,9 @@ import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -32,7 +40,7 @@ public class IdentityController {
 	@PostMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> createIdentity
-	(@Valid @RequestBody @IdentitySchema(isCreate=true) RequestWrapper< IdentityData> requestWrapper) throws MockIdentityException {
+	(@RequestBody @IdentitySchema(isCreate=true) RequestWrapper< IdentityData> requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();
@@ -46,7 +54,7 @@ public class IdentityController {
 	@PutMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> updateIdentity
-			(@Valid @RequestBody @IdentitySchema(isCreate=false) RequestWrapper<IdentityData> requestWrapper) throws MockIdentityException {
+			(@RequestBody @IdentitySchema(isCreate=false) RequestWrapper<IdentityData> requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();
@@ -76,5 +84,26 @@ public class IdentityController {
 		response.setResponse(verifiedClaimStatus);
 		return response;
 
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity handleMethodArgumentNotValidException(ConstraintViolationException ex) {
+		List<Error> errors = new ArrayList<>();
+		if(ex != null) {
+			Set<ConstraintViolation<?>> violations = ((ConstraintViolationException) ex).getConstraintViolations();
+			for(ConstraintViolation<?> cv : violations) {
+				errors.add(new Error(cv.getMessage(), cv.getPropertyPath().toString() + ": " + cv.getMessage()));
+			}
+			return new ResponseEntity<ResponseWrapper>(getResponseWrapper(errors), HttpStatus.OK);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(errors);
+	}
+
+	private ResponseWrapper getResponseWrapper(List<Error> errors) {
+		ResponseWrapper responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
+		responseWrapper.setErrors(errors);
+		return responseWrapper;
 	}
 }

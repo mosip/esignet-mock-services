@@ -30,7 +30,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
@@ -113,7 +112,6 @@ public class IdentityControllerTest {
 		requestWrapper.setRequest(identityRequest);
 
 		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
-
 		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.response.status").value("mock identity data created successfully"));
@@ -128,18 +126,41 @@ public class IdentityControllerTest {
 		requestWrapper.setRequest(identityRequest);
 
 		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
-
 		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.errors").isNotEmpty())
-				.andExpect(jsonPath("$.errors[0].errorCode").value(ErrorConstants.INVALID_INDIVIDUAL_ID));
+				.andExpect(jsonPath("$.errors[0].errorCode").value("invalid_individualid"));
+	}
+
+	@Test
+	public void createIdentity_withInvalidFullName_returnErrorResponse() throws Exception {
+		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
+		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+
+		List<LanguageValue> nameList=new ArrayList<>();
+		LanguageValue engLangValue= new LanguageValue();
+		engLangValue.setValue("Siddharth K سيدارت");
+		engLangValue.setLanguage("eng");
+		LanguageValue arabicLangValue= new LanguageValue();
+		arabicLangValue.setLanguage("ara");
+		arabicLangValue.setValue("سيدارت ك منصور");
+		nameList.add(engLangValue);
+		nameList.add(arabicLangValue);
+		identityRequest.setFullName(nameList);
+		requestWrapper.setRequest(identityRequest);
+
+		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
+		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors").isNotEmpty())
+				.andExpect(jsonPath("$.errors[0].errorCode").value("invalid_fullname"));
 	}
 	
 	@Test
 	public void getIdentity_withValidId_returnSuccessResponse() throws Exception {
 		identityRequest.setIndividualId("123456789");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
-
 		mockMvc.perform(get("/identity/{individualId}", "123456789")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.response.individualId").value("123456789"));
@@ -163,7 +184,6 @@ public class IdentityControllerTest {
 		verifiedClaimRequestDto.setVerificationDetail(verificationDetail);
 
 		requestWrapper.setRequest(verifiedClaimRequestDto);
-
 		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDto);
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
 
@@ -185,7 +205,6 @@ public class IdentityControllerTest {
 		verifiedClaimRequestDto.setVerificationDetail(verificationDetail);
 
 		requestWrapper.setRequest(verifiedClaimRequestDto);
-
 		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDto);
 
 		mockMvc.perform(post("/identity/add-verified-claim").content(objectMapper.writeValueAsString(requestWrapper))
@@ -202,10 +221,24 @@ public class IdentityControllerTest {
 		requestWrapper.setRequest(identityRequest);
 
 		Mockito.doNothing().when(identityService).updateIdentity(identityRequest);
-
 		mockMvc.perform(put("/identity").content(objectMapper.writeValueAsString(requestWrapper))
 						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.response.status").value("mock Identity data updated successfully"));
+	}
+
+	@Test
+	public void updateIdentity_withInValidIdentity_thenFail() throws Exception {
+		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
+		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+		identityRequest.setFullName(null);
+		requestWrapper.setRequest(identityRequest);
+
+		Mockito.doNothing().when(identityService).updateIdentity(identityRequest);
+		mockMvc.perform(put("/identity").content(objectMapper.writeValueAsString(requestWrapper))
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors").isNotEmpty())
+				.andExpect(jsonPath("$.errors[0].errorCode").value("invalid_fullname"));
 	}
 
 }
