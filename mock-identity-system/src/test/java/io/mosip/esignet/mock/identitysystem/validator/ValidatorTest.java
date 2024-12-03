@@ -74,19 +74,43 @@ public class ValidatorTest {
     }
 
     @Test
-    public void identityDataValidator_withSupportedFieldsPresent_thenPass() {
-        List<String> supportedFields = Arrays.asList("name", "email", "phone");
-        ReflectionTestUtils.setField(identityDataValidator, "supportedFields", supportedFields);
+    public void identityDataValidator_withValidInputForCreateAction_thenPass() {
+        List<String> supportedFields = Arrays.asList("fullName", "email", "phone");
+        ReflectionTestUtils.setField(identityDataValidator, "action", "CREATE");
+        ReflectionTestUtils.setField(identityDataValidator, "createRequiredFields", supportedFields);
         IdentityData identityData = new IdentityData();
         LanguageValue languageValue = new LanguageValue();
         languageValue.setLanguage("en");
         languageValue.setValue("John Doe");
 
-        identityData.setName(List.of(languageValue));
+        identityData.setFullName(List.of(languageValue));
         identityData.setEmail("john.doe@example.com");
         identityData.setPhone("1234567890");
+        identityData.setEncodedPhoto("encoded-photo");
 
         assertTrue(identityDataValidator.isValid(identityData, context));
+    }
+
+    @Test
+    public void identityDataValidator_withValidInputForUpdateAction_thenPass() {
+        List<String> supportedFields = Arrays.asList("individualId");
+        ReflectionTestUtils.setField(identityDataValidator, "action", "UPDATE");
+        ReflectionTestUtils.setField(identityDataValidator, "updateRequiredFields", supportedFields);
+        IdentityData identityData = new IdentityData();
+        identityData.setIndividualId("individualId");
+
+        assertTrue(identityDataValidator.isValid(identityData, context));
+    }
+
+    @Test
+    public void identityDataValidator_withInvalidInputForUpdateAction_thenFail() {
+        List<String> supportedFields = Arrays.asList("individualId", "email");
+        ReflectionTestUtils.setField(identityDataValidator, "action", "UPDATE");
+        ReflectionTestUtils.setField(identityDataValidator, "updateRequiredFields", supportedFields);
+        IdentityData identityData = new IdentityData();
+        identityData.setIndividualId("individualId");
+
+        assertFalse(identityDataValidator.isValid(identityData, context));
     }
 
 }
