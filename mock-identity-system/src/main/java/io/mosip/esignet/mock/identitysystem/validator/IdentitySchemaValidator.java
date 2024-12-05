@@ -46,49 +46,45 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     @Override
     public boolean isValid(Object object, ConstraintValidatorContext context) {
-        context.disableDefaultConstraintViolation();
         if (!(object instanceof RequestWrapper)) {
-            context.buildConstraintViolationWithTemplate("Invalid request type")
-                    .addConstraintViolation();
             return false;
         }
         RequestWrapper wrapper= (RequestWrapper) object;
         Object requestObject = wrapper.getRequest();
         if (!(requestObject instanceof IdentityData)) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("Invalid request object type").addConstraintViolation();
             return false;
         }
         IdentityData identityData=(IdentityData) requestObject;
         JsonNode identityJsonNode = objectMapper.valueToTree(identityData);
         Set<ValidationMessage> errors = getSchema().validate(identityJsonNode);
         boolean isValid=true;
-        String errorName="";
+        String errorCode="";
         if(!isCreate){
             for(ValidationMessage validationMessage: errors){
                 String field=validationMessage.
                         getInstanceLocation().getName(0);
                 // Ignore validation errors with code 1029 (null value) for exempted fields when validating updateIdentity
                 if(!validationMessage.getCode().equals("1029") || !nonMandatoryFieldsOnUpdate.contains(field)){
-                    errorName="invalid_"+field.toLowerCase();
+                    errorCode="invalid_"+field.toLowerCase();
                     isValid=false;
                     break;
                 }
             }
-        }else if(!errors.isEmpty()){
-            isValid=false;
+        }else{
+            isValid=errors.isEmpty();
         }
         if (!isValid) {
+            if(StringUtils.isEmpty(errorCode))
+                errorCode="invalid_"+errors.iterator().next().getInstanceLocation().getName(0).toLowerCase();
             context.disableDefaultConstraintViolation();
-            if(StringUtils.isEmpty(errorName))
-             errorName="invalid_"+errors.iterator().next().getInstanceLocation().getName(0).toLowerCase();
-            context.buildConstraintViolationWithTemplate(errorName)
+            context.buildConstraintViolationWithTemplate(errorCode)
                     .addConstraintViolation();
             log.error("Validation failed for IdentityData: {}", errors);
             return false;
         }
         return true;
     }
+
     private JsonSchema getSchema()  {
         if(schema !=null ) return schema;
         synchronized (this) {
