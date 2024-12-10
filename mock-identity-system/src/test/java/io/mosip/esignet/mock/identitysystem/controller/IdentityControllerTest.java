@@ -133,6 +133,22 @@ public class IdentityControllerTest {
 	}
 
 	@Test
+	public void createIdentity_withInvalidNameAndLocale_returnErrorResponse() throws Exception {
+		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
+		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+		identityRequest.setName(null);
+		identityRequest.setLocale(null);
+		requestWrapper.setRequest(identityRequest);
+
+		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
+		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors").isNotEmpty())
+				.andExpect(jsonPath("$.errors.size()").value(2));
+	}
+
+	@Test
 	public void createIdentity_withInvalidFullName_returnErrorResponse() throws Exception {
 		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);

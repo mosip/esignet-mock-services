@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -56,33 +56,35 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
         }
         IdentityData identityData=(IdentityData) requestObject;
         JsonNode identityJsonNode = objectMapper.valueToTree(identityData);
-        Set<ValidationMessage> errors = getSchema().validate(identityJsonNode);
-        boolean isValid=true;
-        String errorCode="";
-        if(!isCreate){
-            for(ValidationMessage validationMessage: errors){
-                String field=validationMessage.
-                        getInstanceLocation().getName(0);
-                // Ignore validation errors with code 1029 (null value) for exempted fields when validating updateIdentity
-                if(!validationMessage.getCode().equals("1029") || !nonMandatoryFieldsOnUpdate.contains(field)){
-                    errorCode="invalid_"+field.toLowerCase();
-                    isValid=false;
-                    break;
-                }
-            }
-        }else{
-            isValid=errors.isEmpty();
-        }
-        if (!isValid) {
-            if(StringUtils.isEmpty(errorCode))
-                errorCode="invalid_"+errors.iterator().next().getInstanceLocation().getName(0).toLowerCase();
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(errorCode)
-                    .addConstraintViolation();
-            log.error("Validation failed for IdentityData: {}", errors);
+        Set<ValidationMessage> validationErrors = validateIdentityData(identityJsonNode);
+
+        // Handle validation errors
+        if (!validationErrors.isEmpty()) {
+            addValidationErrorCode(validationErrors,context);
             return false;
         }
         return true;
+    }
+
+    private Set<ValidationMessage> validateIdentityData(JsonNode identityJsonNode) {
+        Set<ValidationMessage> errors = getSchema().validate(identityJsonNode);
+        // If not a create operation, filter out specific errors
+        if (!isCreate) {
+            // Ignore validation errors with code 1029 (null value) and for exempted fields when validating updateIdentity
+            errors = errors.stream()
+                    .filter(error -> !error.getCode().equals("1029") ||
+                            !nonMandatoryFieldsOnUpdate.contains(error.
+                                    getInstanceLocation().getName(0)))
+                    .collect(Collectors.toSet());
+        }
+        return errors;
+    }
+
+    private void addValidationErrorCode(Set<ValidationMessage> errors, ConstraintValidatorContext context) {
+        context.disableDefaultConstraintViolation();
+        errors.forEach(error->context.
+                buildConstraintViolationWithTemplate("invalid_"+error.getInstanceLocation().getName(0).toLowerCase())
+                .addConstraintViolation());
     }
 
     private JsonSchema getSchema()  {
