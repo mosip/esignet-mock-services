@@ -275,6 +275,12 @@ extraEnvVars:
     value: hsm-client
   - name: MOSIP_ESIGNET_MOCK_SUPPORTED_FIELDS
     value: individualId,password
+  - name: MOSIP_MOCK_IDENTITY_UPDATE_REQUIRED_FIELDS
+    value: individualId
+  - name: MOSIP_MOCK_IDENTITY_CREATE_REQUIRED_FIELDS
+    value: individualId,fullName,phone,password
+  - name: MOSIP_MOCK_IDA_KYC_PSUT_FIELD
+    value: individualId
 
 ## ConfigMap with extra environment variables that used
 ##
