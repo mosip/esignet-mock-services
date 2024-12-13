@@ -12,7 +12,7 @@ Repository contains mock implementations for eSignet. Only for non-production us
    |[mock-identity-softhsm](https://github.com/mosip/esignet/blob/v1.0.0/helm/install-all.sh) | 12.0.1-B2 |
 
 
-### Install Pe-req for mock services
+### Install Pe-requisites for mock services
 * Install `kubectl` and `helm` utilities.
 * Run `prereq.sh` to setup below mentioned pre-requisites for mock services.
   * Setup softhsm for mock-identity in `Softhsm` namespace.
