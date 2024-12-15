@@ -35,8 +35,6 @@ public class ValidatorTest {
 
     private static final String UTC_DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
-    @InjectMocks
-    private IdentityDataValidator identityDataValidator;
 
     @Test
     public void requestTimeValidator_withNullValue_thenFail() {
@@ -66,27 +64,6 @@ public class ValidatorTest {
         LocalDateTime now = LocalDateTime.now().minusSeconds(121);
         String validDate = now.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN));
         assertFalse(requestTimeValidator.isValid(validDate, context));
-    }
-
-    @Test
-    public void identityDataValidator_withNullValue_thenFail() {
-        assertFalse(identityDataValidator.isValid(null, context));
-    }
-
-    @Test
-    public void identityDataValidator_withSupportedFieldsPresent_thenPass() {
-        List<String> supportedFields = Arrays.asList("name", "email", "phone");
-        ReflectionTestUtils.setField(identityDataValidator, "supportedFields", supportedFields);
-        IdentityData identityData = new IdentityData();
-        LanguageValue languageValue = new LanguageValue();
-        languageValue.setLanguage("en");
-        languageValue.setValue("John Doe");
-
-        identityData.setName(List.of(languageValue));
-        identityData.setEmail("john.doe@example.com");
-        identityData.setPhone("1234567890");
-
-        assertTrue(identityDataValidator.isValid(identityData, context));
     }
 
 }

@@ -6,6 +6,7 @@ import com.networknt.schema.*;
 import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import io.mosip.esignet.mock.identitysystem.dto.RequestWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.jose4j.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -28,7 +29,8 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     @Value("#{${mosip.mock.ida.update-identity.non-mandatory.fields}}")
     private Set<String> nonMandatoryFieldsOnUpdate;
-    private boolean isCreate;
+
+    private String action;
 
     private volatile JsonSchema schema;
 
@@ -41,20 +43,16 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     @Override
     public void initialize(IdentitySchema constraintAnnotation) {
-        this.isCreate = constraintAnnotation.isCreate();
+        this.action = constraintAnnotation.action();
     }
 
     @Override
     public boolean isValid(Object object, ConstraintValidatorContext context) {
-        if (!(object instanceof RequestWrapper)) {
+
+        if (!(object instanceof IdentityData)) {
             return false;
         }
-        RequestWrapper wrapper= (RequestWrapper) object;
-        Object requestObject = wrapper.getRequest();
-        if (!(requestObject instanceof IdentityData)) {
-            return false;
-        }
-        IdentityData identityData=(IdentityData) requestObject;
+        IdentityData identityData=(IdentityData) object;
         JsonNode identityJsonNode = objectMapper.valueToTree(identityData);
         Set<ValidationMessage> validationErrors = validateIdentityData(identityJsonNode);
 
@@ -69,7 +67,7 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
     private Set<ValidationMessage> validateIdentityData(JsonNode identityJsonNode) {
         Set<ValidationMessage> errors = getSchema().validate(identityJsonNode);
         // If not a create operation, filter out specific errors
-        if (!isCreate) {
+        if (action.equals("UPDATE")) {
             // Ignore validation errors with code 1029 (null value) and for exempted fields when validating updateIdentity
             errors = errors.stream()
                     .filter(error -> !error.getCode().equals("1029") ||

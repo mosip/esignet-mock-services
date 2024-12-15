@@ -31,7 +31,6 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/")
-@Validated
 public class IdentityController {
 
 	@Autowired
@@ -40,7 +39,7 @@ public class IdentityController {
 	@PostMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> createIdentity
-	(@RequestBody @IdentitySchema(isCreate=true) RequestWrapper< IdentityData> requestWrapper) throws MockIdentityException {
+	(@RequestBody @Valid RequestWrapper<CreateIdentity> requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();
@@ -54,7 +53,7 @@ public class IdentityController {
 	@PutMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> updateIdentity
-			(@RequestBody @IdentitySchema(isCreate=false) RequestWrapper<IdentityData> requestWrapper) throws MockIdentityException {
+			(@RequestBody @Valid RequestWrapper<UpdateIdentity> requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();

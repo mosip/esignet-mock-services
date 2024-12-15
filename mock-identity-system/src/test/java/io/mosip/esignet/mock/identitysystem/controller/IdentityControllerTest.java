@@ -57,23 +57,23 @@ public class IdentityControllerTest {
 		identityRequest.setIndividualId("826741183");
 		identityRequest.setEmail("test@gmail.com");
 
-		List<LanguageValue> nameList=new ArrayList<>();
+		List<LanguageValue> preferredNameList =new ArrayList<>();
 		LanguageValue engLangValue= new LanguageValue();
 		engLangValue.setValue("Siddharth K Mansour");
 		engLangValue.setLanguage("eng");
 		LanguageValue arabicLangValue= new LanguageValue();
 		arabicLangValue.setLanguage("ara");
 		arabicLangValue.setValue("سيدارت ك منصور");
-		nameList.add(engLangValue);
-		nameList.add(arabicLangValue);
-		identityRequest.setFullName(nameList);
-		identityRequest.setName(nameList);
-		identityRequest.setFamilyName(nameList);
-		identityRequest.setGivenName(nameList);
-		identityRequest.setPreferredUsername(nameList);
-		identityRequest.setNickName(nameList);
-		identityRequest.setPreferredUsername(nameList);
-		identityRequest.setMiddleName(nameList);
+		preferredNameList.add(engLangValue);
+		preferredNameList.add(arabicLangValue);
+		identityRequest.setFullName(preferredNameList);
+		identityRequest.setPreferredUsername(preferredNameList);
+		identityRequest.setFamilyName(preferredNameList);
+		identityRequest.setGivenName(preferredNameList);
+		identityRequest.setPreferredUsername(preferredNameList);
+		identityRequest.setNickName(preferredNameList);
+		identityRequest.setPreferredUsername(preferredNameList);
+		identityRequest.setMiddleName(preferredNameList);
 
 		LanguageValue mockLang = new LanguageValue();
 		mockLang.setLanguage("eng");
@@ -96,6 +96,8 @@ public class IdentityControllerTest {
 		identityRequest.setPin("1289001");
 		identityRequest.setRegion(Arrays.asList(langValue));
 		identityRequest.setFullName(Arrays.asList(langValue));
+		identityRequest.setGivenName(Arrays.asList(langValue));
+		identityRequest.setFamilyName(Arrays.asList(langValue));
 		identityRequest.setStreetAddress(Arrays.asList(langValue));
 		identityRequest.setPhone("9090909090");
 		identityRequest.setPreferredLang("eng");
@@ -112,8 +114,9 @@ public class IdentityControllerTest {
 		requestWrapper.setRequest(identityRequest);
 
 		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
+
 		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.response.status").value("mock identity data created successfully"));
 	}
 
@@ -126,8 +129,9 @@ public class IdentityControllerTest {
 		requestWrapper.setRequest(identityRequest);
 
 		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
+
 		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.errors").isNotEmpty())
 				.andExpect(jsonPath("$.errors[0].errorCode").value("invalid_individualid"));
 	}
@@ -137,7 +141,7 @@ public class IdentityControllerTest {
 		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
-		identityRequest.setName(null);
+		identityRequest.setFullName(null);
 		identityRequest.setLocale(null);
 		requestWrapper.setRequest(identityRequest);
 
@@ -172,13 +176,14 @@ public class IdentityControllerTest {
 				.andExpect(jsonPath("$.errors").isNotEmpty())
 				.andExpect(jsonPath("$.errors[0].errorCode").value("invalid_fullname"));
 	}
-	
+
 	@Test
 	public void getIdentity_withValidId_returnSuccessResponse() throws Exception {
 		identityRequest.setIndividualId("123456789");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
+
 		mockMvc.perform(get("/identity/{individualId}", "123456789")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.response.individualId").value("123456789"));
 	}
 
@@ -200,6 +205,7 @@ public class IdentityControllerTest {
 		verifiedClaimRequestDto.setVerificationDetail(verificationDetail);
 
 		requestWrapper.setRequest(verifiedClaimRequestDto);
+
 		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDto);
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
 
@@ -221,6 +227,7 @@ public class IdentityControllerTest {
 		verifiedClaimRequestDto.setVerificationDetail(verificationDetail);
 
 		requestWrapper.setRequest(verifiedClaimRequestDto);
+
 		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDto);
 
 		mockMvc.perform(post("/identity/add-verified-claim").content(objectMapper.writeValueAsString(requestWrapper))
@@ -237,6 +244,7 @@ public class IdentityControllerTest {
 		requestWrapper.setRequest(identityRequest);
 
 		Mockito.doNothing().when(identityService).updateIdentity(identityRequest);
+
 		mockMvc.perform(put("/identity").content(objectMapper.writeValueAsString(requestWrapper))
 						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.response.status").value("mock Identity data updated successfully"));

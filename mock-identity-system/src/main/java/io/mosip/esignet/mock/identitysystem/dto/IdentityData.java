@@ -12,11 +12,9 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
-import io.mosip.esignet.mock.identitysystem.validator.IdData;
 import lombok.Data;
 
 @Data
-@IdData
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IdentityData {
 	
@@ -24,8 +22,6 @@ public class IdentityData {
 	String individualId;
 
 	String pin;
-
-    List<LanguageValue> name;
 
 	List<LanguageValue> fullName;
 

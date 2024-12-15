@@ -690,7 +690,7 @@ public class AuthenticationServiceImplTest {
         LanguageValue languageValueName = new LanguageValue();
         languageValueName.setLanguage("eng");
         languageValueName.setValue("Siddharth K Mansour");
-        identityData.setName(List.of(languageValueName));
+        identityData.setFullName(List.of(languageValueName));
 
 
 
@@ -859,7 +859,7 @@ public class AuthenticationServiceImplTest {
         LanguageValue languageValueName = new LanguageValue();
         languageValueName.setLanguage("eng");
         languageValueName.setValue("Siddharth K Mansour");
-        identityData.setName(List.of(languageValueName));
+        identityData.setFullName(List.of(languageValueName));
 
         // Convert IdentityData to JsonNode
         ObjectMapper objectMapper = new ObjectMapper();
@@ -968,7 +968,7 @@ public class AuthenticationServiceImplTest {
         LanguageValue languageValueName = new LanguageValue();
         languageValueName.setLanguage("eng");
         languageValueName.setValue("Siddharth K Mansour");
-        identityData.setName(List.of(languageValueName));
+        identityData.setFullName(List.of(languageValueName));
 
         KycExchangeRequestDtoV2 kycExchangeRequestDtoV2 = new KycExchangeRequestDtoV2();
         kycExchangeRequestDtoV2.setIndividualId("individualId");
@@ -1090,12 +1090,7 @@ public class AuthenticationServiceImplTest {
         languageValueFullName.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValueFullName));
 
-        LanguageValue languageValueName = new LanguageValue();
-        languageValueName.setLanguage("eng");
-        languageValueName.setValue("Siddharth");
-        identityData.setName(List.of(languageValueName));
-
-        identityData.setEncodedPhoto("encodedPhoto");
+         identityData.setEncodedPhoto("encodedPhoto");
         identityData.setDateOfBirth("1987/11/25");
         identityData.setEmail("email@gmail.com");
 
@@ -1159,11 +1154,6 @@ public class AuthenticationServiceImplTest {
         languageValueFullName.setLanguage("eng");
         languageValueFullName.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValueFullName));
-
-        LanguageValue languageValueName = new LanguageValue();
-        languageValueName.setLanguage("eng");
-        languageValueName.setValue("Siddharth");
-        identityData.setName(List.of(languageValueName));
 
         identityData.setEncodedPhoto("encodedPhoto");
         identityData.setDateOfBirth("1987/11/25");

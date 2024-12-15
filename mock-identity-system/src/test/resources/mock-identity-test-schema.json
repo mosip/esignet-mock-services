@@ -41,24 +41,6 @@
         }
       ]
     },
-    "name": {
-      "allOf": [
-        { "$ref": "#/$defs/langField" },
-        {
-          "nullable": true
-        },
-        {
-          "items": {
-            "properties": {
-              "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ\\s]{1,40}|[ء-ي\\s-٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ]{1,40})$"
-
-              }
-            }
-          }
-        }
-      ]
-    },
     "givenName": {
       "allOf": [
         { "$ref": "#/$defs/langField" },
@@ -241,7 +223,6 @@
   "required": [
     "individualId",
     "fullName",
-    "name",
     "givenName",
     "familyName",
     "middleName",
