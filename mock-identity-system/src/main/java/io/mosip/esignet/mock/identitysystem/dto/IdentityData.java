@@ -8,17 +8,13 @@ package io.mosip.esignet.mock.identitysystem.dto;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IdentityData {
-	
-	@NotBlank(message = ErrorConstants.INVALID_INDIVIDUAL_ID)
+
 	String individualId;
 
 	String pin;
