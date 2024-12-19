@@ -3,8 +3,19 @@
 const checkEmptyNullValue = (initialValue, defaultValue) =>
   initialValue && initialValue !== "" ? initialValue : defaultValue;
 
+const generateRandomString = (strLength = 16) => {
+  let result = '';
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (let i = 0; i < strLength; i++) {
+    const randomInd = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomInd);
+  }
+  return result;
+}
+
 const state = "eree2311";
-const nonce = "ere973eieljznge2311";
+const nonce = generateRandomString();
 const responseType = "code";
 const scopeUserProfile = checkEmptyNullValue(
   window._env_.SCOPE_USER_PROFILE,

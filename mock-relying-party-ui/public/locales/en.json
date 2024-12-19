@@ -236,9 +236,10 @@
     "consent_request_rejected": "Consent Request Rejected",
     "transaction_timeout": "The transaction has timed out. Please try again",
     "consent_rejected": "We’re sorry! Your login was unsuccessful as consent was not shared.",
+    "verification_incomplete": "Oops! We were unable to complete the eKYC verification.",
     "incompatible_browser": "We’re sorry! Please upgrade to the latest version of the browser & try again.",
     "ekyc_failed": "We’re sorry! Your eKYC verification could not be completed. Please try again later.",
-    "verification_incomplete": "We’re sorry! Your login was unsuccessful as consent was not shared.",
-    "identity_verification_failed": "eKYC verification failed. Please try again."
+    "identity_verification_failed": "eKYC verification failed. Please try again.",
+    "no_ekyc_provider": "Oops! The eKYC verification could not be completed because no eKYC provider was found. Please try again later."
   }
 }
