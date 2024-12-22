@@ -19,7 +19,6 @@ import java.util.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.mosip.esignet.mock.identitysystem.dto.*;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +30,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
@@ -56,12 +54,40 @@ public class IdentityControllerTest {
 	@Before
 	public void init() {
 		identityRequest = new IdentityData();
-		identityRequest.setIndividualId("123456789");
+		identityRequest.setIndividualId("826741183");
 		identityRequest.setEmail("test@gmail.com");
+
+		List<LanguageValue> preferredNameList =new ArrayList<>();
+		LanguageValue engLangValue= new LanguageValue();
+		engLangValue.setValue("Siddharth K Mansour");
+		engLangValue.setLanguage("eng");
+		LanguageValue arabicLangValue= new LanguageValue();
+		arabicLangValue.setLanguage("ara");
+		arabicLangValue.setValue("سيدارت ك منصور");
+		preferredNameList.add(engLangValue);
+		preferredNameList.add(arabicLangValue);
+		identityRequest.setFullName(preferredNameList);
+		identityRequest.setPreferredUsername(preferredNameList);
+		identityRequest.setFamilyName(preferredNameList);
+		identityRequest.setGivenName(preferredNameList);
+		identityRequest.setPreferredUsername(preferredNameList);
+		identityRequest.setNickName(preferredNameList);
+		identityRequest.setPreferredUsername(preferredNameList);
+		identityRequest.setMiddleName(preferredNameList);
+
+		LanguageValue mockLang = new LanguageValue();
+		mockLang.setLanguage("eng");
+		mockLang.setValue("mock");
+		identityRequest.setGender(Arrays.asList(mockLang));
+		identityRequest.setStreetAddress(Arrays.asList(mockLang));
+		identityRequest.setLocality(Arrays.asList(mockLang));
+		identityRequest.setRegion(Arrays.asList(mockLang));
+
 		LanguageValue langValue = new LanguageValue();
 		langValue.setLanguage("eng");
 		langValue.setValue("ind");
 		identityRequest.setCountry(Arrays.asList(langValue));
+
 		identityRequest.setDateOfBirth("20021990");
 		identityRequest.setEncodedPhoto("testencodedphoto");
 		identityRequest.setGender(Arrays.asList(langValue));
@@ -74,6 +100,10 @@ public class IdentityControllerTest {
 		identityRequest.setFamilyName(Arrays.asList(langValue));
 		identityRequest.setStreetAddress(Arrays.asList(langValue));
 		identityRequest.setPhone("9090909090");
+		identityRequest.setPreferredLang("eng");
+		identityRequest.setZoneInfo("local");
+		identityRequest.setLocale("eng");
+		identityRequest.setPassword("mock-password");
 	}
 
 	@Test
@@ -86,7 +116,7 @@ public class IdentityControllerTest {
 		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
 
 		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.response.status").value("mock identity data created successfully"));
 	}
 
@@ -101,17 +131,59 @@ public class IdentityControllerTest {
 		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
 
 		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.errors").isNotEmpty())
-				.andExpect(jsonPath("$.errors[*].errorCode").value(Matchers.containsInAnyOrder(ErrorConstants.INVALID_REQUEST, ErrorConstants.INVALID_INDIVIDUAL_ID)));
+				.andExpect(jsonPath("$.errors[0].errorCode").value("invalid_individualid"));
 	}
-	
+
+	@Test
+	public void createIdentity_withInvalidNameAndLocale_returnErrorResponse() throws Exception {
+		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
+		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+		identityRequest.setFullName(null);
+		identityRequest.setLocale(null);
+		requestWrapper.setRequest(identityRequest);
+
+		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
+		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors").isNotEmpty())
+				.andExpect(jsonPath("$.errors.size()").value(2));
+	}
+
+	@Test
+	public void createIdentity_withInvalidFullName_returnErrorResponse() throws Exception {
+		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
+		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+
+		List<LanguageValue> nameList=new ArrayList<>();
+		LanguageValue engLangValue= new LanguageValue();
+		engLangValue.setValue("Siddharth K سيدارت");
+		engLangValue.setLanguage("eng");
+		LanguageValue arabicLangValue= new LanguageValue();
+		arabicLangValue.setLanguage("ara");
+		arabicLangValue.setValue("سيدارت ك منصور");
+		nameList.add(engLangValue);
+		nameList.add(arabicLangValue);
+		identityRequest.setFullName(nameList);
+		requestWrapper.setRequest(identityRequest);
+
+		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
+		mockMvc.perform(post("/identity").content(objectMapper.writeValueAsString(requestWrapper))
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors").isNotEmpty())
+				.andExpect(jsonPath("$.errors[0].errorCode").value("invalid_fullname"));
+	}
+
 	@Test
 	public void getIdentity_withValidId_returnSuccessResponse() throws Exception {
+		identityRequest.setIndividualId("123456789");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
 
 		mockMvc.perform(get("/identity/{individualId}", "123456789")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.response.individualId").value("123456789"));
 	}
 
@@ -176,6 +248,21 @@ public class IdentityControllerTest {
 		mockMvc.perform(put("/identity").content(objectMapper.writeValueAsString(requestWrapper))
 						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.response.status").value("mock Identity data updated successfully"));
+	}
+
+	@Test
+	public void updateIdentity_withInValidIdentity_thenFail() throws Exception {
+		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
+		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
+		identityRequest.setFullName(null);
+		requestWrapper.setRequest(identityRequest);
+
+		Mockito.doNothing().when(identityService).updateIdentity(identityRequest);
+		mockMvc.perform(put("/identity").content(objectMapper.writeValueAsString(requestWrapper))
+						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors").isNotEmpty())
+				.andExpect(jsonPath("$.errors[0].errorCode").value("invalid_fullname"));
 	}
 
 }
