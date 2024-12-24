@@ -44,3 +44,20 @@ Refer to [SQL scripts](../db_scripts)
 ## License
 This project is licensed under the terms of [Mozilla Public License 2.0](../LICENSE).
 
+## Identity Schema Validation
+Mock-identity-system implements a JSON schema validation system for identity data.
+This validation ensures that the provided Identity data adhere to the defined schema.
+
+````
+ mosip.mock.ida.identity.schema.url=classpath:/mock-identity-schema.json
+ mosip.mock.ida.update-identity.non-mandatory.fields={"givenName","familyName","middleName","nickName","preferredUsername","gender","streetAddress","locality","region","country","pin","preferredLang","dateOfBirth","postalCode","encodedPhoto","email","phone","zoneInfo","locale","password"}
+````
+
+How It Works
+* For create operations:
+   1. The system validates all fields present in the identity data against the schema defined in mock-identity-schema.json.
+   2. All fields, including non-mandatory ones, are required.
+*  For update operations:
+   1. The system first validates all mandatory fields against the main schema.
+   2. Non-mandatory fields specified in mosip.mock.ida.update-identity.non-mandatory.fields are ignored during validation.
+   3. If the non-mandatory fields are present, they are validated against the  schema.
