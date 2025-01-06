@@ -50,7 +50,7 @@
 		<git-commit-id-plugin.version>3.0.1</git-commit-id-plugin.version>
 
 		<!-- Core -->
-		<spring-cloud-config.version>4.0.0</spring-cloud-config.version>
+		<spring-cloud-config.version>2.2.7.RELEASE</spring-cloud-config.version>
 		<spring-jms.version>5.0.16.RELEASE</spring-jms.version>
 
 
