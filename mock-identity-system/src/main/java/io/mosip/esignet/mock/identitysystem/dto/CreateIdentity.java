@@ -5,8 +5,8 @@
  */
 package io.mosip.esignet.mock.identitysystem.dto;
 
-import io.mosip.esignet.mock.identitysystem.validator.IdData;
+import io.mosip.esignet.mock.identitysystem.validator.IdentitySchema;
 
-@IdData(action = "CREATE")
+@IdentitySchema(action = "CREATE")
 public class CreateIdentity extends IdentityData {
 }
