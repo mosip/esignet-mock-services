@@ -61,7 +61,6 @@
   "required": [
     "individualId",
     "fullName",
-    "preferredLang",
     "phone",
     "password"
   ],
