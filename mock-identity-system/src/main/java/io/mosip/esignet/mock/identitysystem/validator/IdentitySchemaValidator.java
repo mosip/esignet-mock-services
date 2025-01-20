@@ -4,17 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.*;
 import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
-import io.mosip.esignet.mock.identitysystem.dto.RequestWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.jose4j.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
@@ -32,7 +32,8 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     private String action;
 
-    private volatile JsonSchema schema;
+    @NotNull
+    private JsonSchema schema;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -44,6 +45,13 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
     @Override
     public void initialize(IdentitySchema constraintAnnotation) {
         this.action = constraintAnnotation.action();
+    }
+
+    @PostConstruct
+    private void initSchema() {
+        InputStream schemaResponse = getResource(identitySchemaUrl);
+        JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
+        schema = jsonSchemaFactory.getSchema(schemaResponse);
     }
 
     @Override
@@ -65,7 +73,7 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
     }
 
     private Set<ValidationMessage> validateIdentityData(JsonNode identityJsonNode) {
-        Set<ValidationMessage> errors = getSchema().validate(identityJsonNode);
+        Set<ValidationMessage> errors = schema.validate(identityJsonNode);
         // If not a create operation, filter out specific errors
         if (action.equals("UPDATE")) {
             // Ignore validation errors with code 1029 (null value) and for exempted fields when validating updateIdentity
@@ -83,18 +91,6 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
         errors.forEach(error->context.
                 buildConstraintViolationWithTemplate("invalid_"+error.getInstanceLocation().getName(0).toLowerCase())
                 .addConstraintViolation());
-    }
-
-    private JsonSchema getSchema()  {
-        if(schema !=null ) return schema;
-        synchronized (this) {
-            if (schema == null) {
-                InputStream schemaResponse = getResource(identitySchemaUrl);
-                JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
-                schema = jsonSchemaFactory.getSchema(schemaResponse);
-            }
-        }
-        return schema;
     }
 
     private InputStream getResource(String url) {
