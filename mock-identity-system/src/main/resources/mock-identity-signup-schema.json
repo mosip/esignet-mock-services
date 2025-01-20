@@ -25,7 +25,7 @@
   "properties": {
     "individualId": {
       "type": "string",
-      "pattern": "^\\+855[1-9]\\d{7,8}$"
+      "pattern": "\\S"
     },
     "fullName": {
       "allOf": [
@@ -34,11 +34,11 @@
           "items": {
             "properties": {
               "value": {
-                "pattern": "^(?=\\S)[ក-\u17FF᧠-᧿ᨀ-\u1A9F ]{1,30}$"
+                "pattern": "^(?:[a-zA-Z\\s]{1,40}|[ក-\u17FF᧠-᧿ᨀ-\u1A9F ]{1,40})$"
               },
               "language": {
                 "type": "string",
-                "enum": ["khm"]
+                "enum": ["khm","eng"]
               }
             }
           }
@@ -47,11 +47,11 @@
     },
     "preferredLang": {
       "type": "string",
-      "enum": ["khm"]
+      "enum": ["khm","eng"]
     },
     "phone": {
       "type": "string",
-      "pattern": "^\\+855[1-9]\\d{7,8}$"
+      "pattern": "^\\+[1-9]\\d{8,13}$"
     },
     "password": {
       "type": "string",
