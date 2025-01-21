@@ -34,11 +34,11 @@
           "items": {
             "properties": {
               "value": {
-                "pattern": "^(?:[a-zA-Z\\s]{1,40}|[ក-\u17FF᧠-᧿ᨀ-\u1A9F ]{1,40})$"
+                "pattern": "^(?=.*[^\\s])^(?:[a-zA-ZÀ-ÿ\\s]{1,40}|[ء-ي\\s٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ]{1,40}|[ក-\u17FF᧠-᧿ᨀ-\u1A9F ]{1,40})$"
               },
               "language": {
                 "type": "string",
-                "enum": ["khm","eng"]
+                "enum": ["khm","eng","fra","ara"]
               }
             }
           }
@@ -46,8 +46,9 @@
       ]
     },
     "preferredLang": {
-      "type": "string",
-      "enum": ["khm","eng"]
+        "type": "string",
+        "enum": ["khm","eng","fra","ara"],
+        "nullable": true
     },
     "phone": {
       "type": "string",
