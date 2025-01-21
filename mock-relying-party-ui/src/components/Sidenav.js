@@ -205,7 +205,7 @@ export default function Sidenav({
 
   const verifiedIcon = (
     <img
-      className="w-4 h-4 rounded-full shadow-lg ml-1 relative top-[3px] hover:cursor-pointer"
+      className="w-5 h-5 rounded-full shadow-lg ml-1 relative top-[2px] hover:cursor-pointer"
       src="images/verification-symbol.svg"
       title="Verified"
     />
@@ -780,7 +780,7 @@ export default function Sidenav({
                       <div className="flex flex-col px-1 py-1 rounded-md bg-white shadow-xs mt-2">
                         {emailAddress && (
                           <a
-                            className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex"
+                            className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max"
                             title={emailAddress}
                           >
                             {t("email")}:&nbsp;
@@ -794,47 +794,47 @@ export default function Sidenav({
                             {userInfo?.verified_claims &&
                               getAllKeys(
                                 userInfo?.verified_claims[0].claims
-                              ).includes(userInfo?.emailAddress) &&
+                              ).includes("emailAddress") &&
                               verifiedIcon}
                           </a>
                         )}
                         {userInfo?.birthdate && (
-                          <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex">
+                          <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
                             {t("dob")}: {userInfo?.birthdate}
                             {userInfo?.verified_claims &&
                               getAllKeys(
                                 userInfo?.verified_claims[0].claims
-                              ).includes(userInfo?.birthdate) &&
+                              ).includes("birthdate") &&
                               verifiedIcon}
                           </a>
                         )}
                         {userInfo?.gender && (
-                          <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex">
+                          <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
                             {t("gender")}: {userInfo?.gender}
                             {userInfo?.verified_claims &&
                               getAllKeys(
                                 userInfo?.verified_claims[0].claims
-                              ).includes(userInfo?.gender) &&
+                              ).includes("gender") &&
                               verifiedIcon}
                           </a>
                         )}
                         {userInfo?.phone_number && (
-                          <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex">
+                          <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
                             {t("mobile_no")}: {userInfo?.phone_number}
                             {userInfo?.verified_claims &&
                               getAllKeys(
                                 userInfo?.verified_claims[0].claims
-                              ).includes(userInfo?.phone_number) &&
+                              ).includes("phone_number") &&
                               verifiedIcon}
                           </a>
                         )}
                         {address && (
-                          <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex">
+                          <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
                             {t("address")}: {address}
                             {userInfo?.verified_claims &&
                               getAllKeys(
                                 userInfo?.verified_claims[0].claims
-                              ).includes(address) &&
+                              ).includes("address") &&
                               verifiedIcon}
                           </a>
                         )}
