@@ -32,7 +32,6 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     private String action;
 
-    @NotNull
     private JsonSchema schema;
 
     @Autowired
