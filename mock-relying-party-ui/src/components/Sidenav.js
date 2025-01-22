@@ -205,7 +205,7 @@ export default function Sidenav({
 
   const verifiedIcon = (
     <img
-      className="w-5 h-5 rounded-full shadow-lg ml-1 relative top-[2px] hover:cursor-pointer"
+      className="w-5 h-5 rounded-full shadow-lg ml-1 relative top-[1px] hover:cursor-pointer"
       src="images/verification-symbol.svg"
       title="Verified"
     />
