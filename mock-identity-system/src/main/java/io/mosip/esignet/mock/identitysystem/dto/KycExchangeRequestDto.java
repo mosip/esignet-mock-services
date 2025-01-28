@@ -22,4 +22,5 @@ public class KycExchangeRequestDto {
     private String individualId;
     private List<String> acceptedClaims;
     private List<String> claimLocales;
+    private String respType;
 }
