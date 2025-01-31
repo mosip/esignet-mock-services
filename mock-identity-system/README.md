@@ -56,7 +56,6 @@ This validation ensures that the provided Identity data adhere to the defined sc
 How It Works
 * For create operations:
    1. The system validates all fields present in the identity data against the schema defined in mock-identity-schema.json.
-   2. All fields, including non-mandatory ones, are required.
 *  For update operations:
    1. The system first validates all mandatory fields against the main schema.
    2. Non-mandatory fields specified in mosip.mock.ida.update-identity.non-mandatory.fields are ignored during validation.
