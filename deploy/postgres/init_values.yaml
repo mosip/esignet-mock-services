@@ -14,50 +14,32 @@ databases:
     dml: 1
     branch: develop
 
-  mosip_esignet:
-    enabled: false
-
   mosip_master:
     enabled: false
 
-    mosip_audit:
-      enabled: false
+  mosip_audit:
+    enabled: false
 
-    mosip_keymgr:
-      enabled: false
+  mosip_keymgr:
+    enabled: false
 
-    mosip_kernel:
-      enabled: false
+  mosip_kernel:
+    enabled: false
 
-    mosip_idmap:
-      enabled: false
+  mosip_idmap:
+    enabled: false
 
-    mosip_prereg:
-      enabled: false
+  mosip_prereg:
+    enabled: false
 
-    mosip_idrepo:
-      enabled: false
+  mosip_idrepo:
+    enabled: false
 
-    mosip_ida:
-      enabled: false
+  mosip_ida:
+    enabled: false
 
-    mosip_credential:
-      enabled: false
+  mosip_credential:
+    enabled: false
 
-    mosip_regprc:
-      enabled: false
-
-    mosip_pms:
-      enabled: false
-
-    mosip_hotlist:
-      enabled: false
-
-    mosip_resident:
-      enabled: false
-
-    mosip_toolkit:
-      enabled: false
-
-    mosip_digitalcard:
-      enabled: false
+  mosip_regprc:
+    enabled: false
