@@ -43,12 +43,18 @@ databases:
 
   mosip_regprc:
     enabled: false
-    
-    mosip_pms:
+
+  mosip_pms:
+    enabled: false
+
+  mosip_hotlist:
     enabled: false
 
   mosip_resident:
     enabled: false
 
-  mosip_hotlist:
+  mosip_toolkit:
+    enabled: false
+
+  mosip_digitalcard:
     enabled: false
