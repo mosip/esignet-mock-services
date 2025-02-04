@@ -35,7 +35,7 @@ while true; do
         kubectl -n $NS delete --ignore-not-found=true secret db-common-secrets
 
         echo Copy Postgres secrets
-        ../copy_cm_func.sh secret esignet-postgres-postgresql esignet $NS
+        ../copy_cm_func.sh secret postgres-postgresql esignet $NS
 
         echo Initializing DB
         helm -n $NS install postgres-init-mockidentitysystem mosip/postgres-init -f init_values.yaml \

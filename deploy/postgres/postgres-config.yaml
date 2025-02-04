@@ -6,7 +6,7 @@ metadata:
   labels:
     app: postgres
 data:
-  database-host: "esignet-postgres-postgresql.esignet"
+  database-host: "postgres-postgresql.postgres"
   database-port: "5432"
   database-username: "mockidsystemuser"
   database-name: "mosip_mockidentitysystem"
