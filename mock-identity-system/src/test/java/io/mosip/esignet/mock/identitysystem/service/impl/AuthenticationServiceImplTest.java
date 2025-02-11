@@ -507,7 +507,6 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycExchange_withValidDetails_thenPass() throws MockIdentityException, JsonProcessingException {
         ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
-        ReflectionTestUtils.setField(authenticationService,"encryptKyc",false);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
         String relyingPartyId = "relyingPartyId";
         String clientId = "clientId";
@@ -518,6 +517,7 @@ public class AuthenticationServiceImplTest {
         kycExchangeRequestDto.setTransactionId("transactionId");
         kycExchangeRequestDto.setClaimLocales(Arrays.asList("en","fr"));
         kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender"));
+        kycExchangeRequestDto.setRespType("JWS");
 
         kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
 
@@ -555,7 +555,6 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycExchange_withInValidJwe_thenFail() throws MockIdentityException, JsonProcessingException {
         ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
-        ReflectionTestUtils.setField(authenticationService,"encryptKyc",true);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
         String relyingPartyId = "relyingPartyId";
         String clientId = "clientId";
@@ -566,6 +565,7 @@ public class AuthenticationServiceImplTest {
         kycExchangeRequestDto.setTransactionId("transactionId");
         kycExchangeRequestDto.setClaimLocales(Arrays.asList("en","fr"));
         kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender"));
+        kycExchangeRequestDto.setRespType("JWE");
 
         kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
 
@@ -616,7 +616,6 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycExchange_expiredTransaction_thenFail() {
         ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
-        ReflectionTestUtils.setField(authenticationService,"encryptKyc",false);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
         String relyingPartyId = "relyingPartyId";
         String clientId = "clientId";
@@ -627,6 +626,7 @@ public class AuthenticationServiceImplTest {
         kycExchangeRequestDto.setTransactionId("transactionId");
         kycExchangeRequestDto.setClaimLocales(Arrays.asList("en","fr"));
         kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender"));
+        kycExchangeRequestDto.setRespType("JWS");
 
         kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
 
@@ -646,7 +646,6 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycExchange_invalidKycData_thenFail() {
         ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
-        ReflectionTestUtils.setField(authenticationService,"encryptKyc",false);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
         String relyingPartyId = "relyingPartyId";
         String clientId = "clientId";
@@ -657,6 +656,7 @@ public class AuthenticationServiceImplTest {
         kycExchangeRequestDto.setTransactionId("transactionId");
         kycExchangeRequestDto.setClaimLocales(Arrays.asList("en","fr"));
         kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender"));
+        kycExchangeRequestDto.setRespType("JWS");
 
         kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
 
