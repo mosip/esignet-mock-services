@@ -31,7 +31,7 @@ Repository contains mock implementations for eSignet. Only for non-production us
   ```
 * Execute installation script:
   ```
-  ./instll-mock.sh
+  ./install-mock.sh
   ```
 * During installation of each module a prompt appears requesting information regarding the presence of a public domain and a valid SSL certificate on the server. 
   * Opt (y,Y) : In case the Domain is mapped publically and valid SSL certificate is present.
