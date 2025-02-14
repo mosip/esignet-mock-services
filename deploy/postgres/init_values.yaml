@@ -12,7 +12,7 @@ databases:
         name: postgres-postgresql
         key: postgres-password
     dml: 1
-    branch: v0.10.0
+    branch: v0.10.1
 
   mosip_master:
     enabled: false
@@ -44,7 +44,7 @@ databases:
   mosip_regprc:
     enabled: false
     
-    mosip_pms:
+  mosip_pms:
     enabled: false
 
   mosip_resident:

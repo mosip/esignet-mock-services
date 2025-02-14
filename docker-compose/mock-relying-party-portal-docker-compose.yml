@@ -1,6 +1,6 @@
 services:
   mock-relying-party-service:
-    image: 'mosipid/mock-relying-party-service:0.10.0'
+    image: 'mosipid/mock-relying-party-service:0.10.1'
     user: root
     ports:
       - 8888:8888
@@ -14,7 +14,7 @@ services:
 
 
   mock-relying-party-ui:
-    image: 'mosipid/mock-relying-party-ui:0.10.0'
+    image: 'mosipid/mock-relying-party-ui:0.10.1'
     user: root
     ports:
       - 3000:3000
