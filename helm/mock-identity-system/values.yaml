@@ -273,8 +273,6 @@ extraEnvVars:
         key: security-pin
   - name: hsm_local_dir_name
     value: hsm-client
-  - name: MOSIP_MOCK_IDENTITY_CREATE_REQUIRED_FIELDS
-    value: individualId,fullName,phone,password
 
 ## ConfigMap with extra environment variables that used
 ##
