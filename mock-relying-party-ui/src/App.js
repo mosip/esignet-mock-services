@@ -51,6 +51,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path={process.env.PUBLIC_URL + "/"} element={<LoginPage langOptions={langOptions} />} />
+          <Route path={process.env.PUBLIC_URL + "/callback"} element={<UserProfilePage langOptions={langOptions} />} />
           <Route path={process.env.PUBLIC_URL + "/signup"} element={<SignUpPage langOptions={langOptions} />} />
           <Route path={process.env.PUBLIC_URL + "/userprofile"} element={<UserProfilePage langOptions={langOptions} />} />
           <Route path={process.env.PUBLIC_URL + "/registration"} element={<RegistrationPage langOptions={langOptions} />} />

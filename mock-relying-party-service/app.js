@@ -19,6 +19,20 @@ app.post("/fetchUserInfo", async (req, res) => {
   }
 });
 
+app.get("/callback", async (req, res) => {
+  try {
+    const query = {
+      code:req.query.code,
+      client_id: "419258",
+      redirect_uri: "http://localhost:3000/callback",
+      grant_type:"authorization_code"
+    } 
+      res.send(await post_GetToken(query))
+  } catch (error) {
+    console.log(error)
+    res.status(500).send(error);
+  }
+});
 //PORT ENVIRONMENT VARIABLE
 const port = PORT;
 app.listen(port, () => console.log(`Listening on port ${port}..`));

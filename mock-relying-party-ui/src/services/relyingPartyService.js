@@ -1,8 +1,5 @@
 import axios from "axios";
-const baseUrl =
-  process.env.NODE_ENV === "development"
-    ? process.env.REACT_APP_MOCK_RELYING_PARTY_SERVER_URL
-    : window._env_.MOCK_RELYING_PARTY_SERVER_URL;
+const baseUrl = "/api"
 const fetchUserInfoEndPoint = "/fetchUserInfo";
 /**
  * Triggers /fetchUserInfo API on relying party server
@@ -24,7 +21,7 @@ const post_fetchUserInfo = async (
     redirect_uri: redirect_uri,
     grant_type: grant_type,
   };
-  const endpoint = baseUrl + fetchUserInfoEndPoint;
+  const endpoint = fetchUserInfoEndPoint;
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",

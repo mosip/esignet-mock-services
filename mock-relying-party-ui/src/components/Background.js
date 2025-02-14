@@ -20,7 +20,6 @@ export default function Background({
               <img
                 alt="util"
                 className="rtl:scale-x-[-1]"
-                src="images/illustartion.png"
               />
             </div>
             <div className="flex w-full justify-center mt-8">

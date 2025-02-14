@@ -3,8 +3,8 @@ const jose = require("jose");
 const { ESIGNET_SERVICE_URL, ESIGNET_AUD_URL, CLIENT_ASSERTION_TYPE, CLIENT_PRIVATE_KEY, USERINFO_RESPONSE_TYPE, JWE_USERINFO_PRIVATE_KEY } = require("./config");
 
 const baseUrl = ESIGNET_SERVICE_URL.trim();
-const getTokenEndPoint = "/oauth/v2/token";
-const getUserInfoEndPoint = "/oidc/userinfo";
+const getTokenEndPoint = "/v1/esignet/oauth/v2/token";
+const getUserInfoEndPoint = "/v1/esignet/oidc/userinfo";
 
 const alg = "RS256";
 const jweEncryAlgo = "RSA-OAEP-256";
@@ -32,6 +32,13 @@ const post_GetToken = async ({
     client_assertion_type: CLIENT_ASSERTION_TYPE,
     client_assertion: await generateSignedJwt(client_id),
   });
+  
+  console.log("*****************************")
+  console.log(request.code)
+  console.log(request)
+  console.log("*****************************")
+
+
   const endpoint = baseUrl + getTokenEndPoint;
   console.log(baseUrl)
   console.log(endpoint)
@@ -40,7 +47,6 @@ const post_GetToken = async ({
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
-  console.log(response.data)
   return response.data;
 };
 

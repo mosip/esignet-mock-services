@@ -64,7 +64,6 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
     <nav className="bg-white border-gray-500">
       <div className="flex items-center grid grid-cols-3 md:order-2 justify-center mb-2 mt-2">
         <div className="flex items-center justify-center col-start-2">
-          <img src="images/doctor_logo.png" className="w-16 h-16 mx-4" />
           <span className="title-font text-3xl text-gray-900 font-medium">
             {t("health_portal")}
           </span>
@@ -90,7 +89,7 @@ export default function NavHeader({ langOptions, i18nKeyPrefix = "background" })
                 <div key={nav.label}>
                   <a
                     href={process.env.PUBLIC_URL + nav.url}
-                    className="text-gray-900 text-white hover:underline"
+                    className="text-white-900 text-white hover:underline"
                     aria-current="page"
                   >
                     {t(nav.label)}
