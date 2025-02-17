@@ -7,7 +7,7 @@ if [ $# -ge 1 ] ; then
 fi
 
 NS=mockid
-CHART_VERSION=0.10.1
+CHART_VERSION=0.10.1-SNAPSHOT
 
 echo Create $NS namespace
 kubectl create ns $NS
