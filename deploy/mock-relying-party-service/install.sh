@@ -23,7 +23,7 @@ function installing_mock-relying-party-service() {
   helm repo update
 
   NS=esignet
-  CHART_VERSION=0.10.1
+  CHART_VERSION=0.10.1-SNAPSHOT
 
   echo Create $NS namespace
   kubectl create ns $NS || true
