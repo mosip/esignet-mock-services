@@ -75,7 +75,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${mosip.mock.ida.kyc.transaction-timeout-secs:180}")
     private int transactionTimeoutInSecs;
-    
+
+    @Value("${mosip.mock.ida.kyc.encrypt:false}")
+    private boolean encryptKyc;
+
     @Value("${mosip.mock.ida.hash-algo:MD5}")
     private String hashAlgorithm;
 
