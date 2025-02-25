@@ -91,6 +91,18 @@ public class AuthControllerTest {
     }
 
     @Test
+    public void kycExchangeV3_withValidDetails_thenPass() throws Exception {
+        KycExchangeRequestDtoV3 requestDtoV2 = new KycExchangeRequestDtoV3();
+        KycExchangeResponseDto responseDto = new KycExchangeResponseDto();
+        when(authenticationService.kycExchange(any(), any(), any())).thenReturn(responseDto);
+        mockMvc.perform(post("/v3/kyc-exchange/relyingPartyId/clientId")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(requestDtoV2)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response").exists());
+    }
+
+    @Test
     public void sendOtp_withValidDetails_thenPass() throws Exception {
         SendOtpDto sendOtpDto = new SendOtpDto();
         sendOtpDto.setTransactionId("validTransactionId");

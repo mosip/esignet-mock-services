@@ -507,7 +507,6 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycExchange_withValidDetails_thenPass() throws MockIdentityException, JsonProcessingException {
         ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
-        ReflectionTestUtils.setField(authenticationService,"encryptKyc",false);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
         String relyingPartyId = "relyingPartyId";
         String clientId = "clientId";
@@ -547,7 +546,7 @@ public class AuthenticationServiceImplTest {
         Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
         Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
 
-        KycExchangeResponseDto response = authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null));
+        KycExchangeResponseDto response = authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null,"JWS"));
         Assert.assertNotNull(response);
         Assert.assertEquals("signedData", response.getKyc());
     }
@@ -555,7 +554,6 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycExchange_withInValidJwe_thenFail() throws MockIdentityException, JsonProcessingException {
         ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
-        ReflectionTestUtils.setField(authenticationService,"encryptKyc",true);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
         String relyingPartyId = "relyingPartyId";
         String clientId = "clientId";
@@ -597,7 +595,7 @@ public class AuthenticationServiceImplTest {
 
 
         MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
-            authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null));
+            authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null,"JWE"));
         });
         Assert.assertEquals("mock-ida-008", exception.getMessage());
     }
@@ -608,7 +606,7 @@ public class AuthenticationServiceImplTest {
         String clientId = "clientId";
         KycExchangeRequestDto kycExchangeRequestDto=new KycExchangeRequestDto();
         MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
-            authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null));
+            authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null,"JWS"));
         });
         Assert.assertEquals("mock-ida-006", exception.getMessage());
     }
@@ -616,7 +614,6 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycExchange_expiredTransaction_thenFail() {
         ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
-        ReflectionTestUtils.setField(authenticationService,"encryptKyc",false);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
         String relyingPartyId = "relyingPartyId";
         String clientId = "clientId";
@@ -638,7 +635,7 @@ public class AuthenticationServiceImplTest {
                         Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(Optional.of(kycAuth));
         MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
-            authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null));
+            authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null,"JWS"));
         });
         Assert.assertEquals("mock-ida-007", exception.getMessage());
     }
@@ -646,7 +643,6 @@ public class AuthenticationServiceImplTest {
     @Test
     public void kycExchange_invalidKycData_thenFail() {
         ReflectionTestUtils.setField(authenticationService,"transactionTimeoutInSecs",60);
-        ReflectionTestUtils.setField(authenticationService,"encryptKyc",false);
         ReflectionTestUtils.setField(authenticationService,"objectMapper",objectMapper);
         String relyingPartyId = "relyingPartyId";
         String clientId = "clientId";
@@ -668,7 +664,7 @@ public class AuthenticationServiceImplTest {
                         Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(Optional.of(kycAuth));
         MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
-            authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null));
+            authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto,null,"JWS"));
         });
         Assert.assertEquals("mock-ida-008", exception.getMessage());
     }
@@ -1053,7 +1049,7 @@ public class AuthenticationServiceImplTest {
         jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
         Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
         KycExchangeResponseDto kycExchangeResponseDto = authenticationService.kycExchange("relyingPartyId", "clientId",
-                new KycExchangeDto(kycExchangeRequestDtoV2, acceptedClaims));
+                new KycExchangeDto(kycExchangeRequestDtoV2, acceptedClaims,"JWS"));
         Assert.assertEquals("jwtSignedData",kycExchangeResponseDto.getKyc());
     }
 

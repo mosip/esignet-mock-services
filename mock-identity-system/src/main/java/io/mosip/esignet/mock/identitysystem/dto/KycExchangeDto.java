@@ -19,8 +19,9 @@ public class KycExchangeDto {
     private List<String> acceptedClaims;
     private List<String> claimLocales;
     private Map<String, JsonNode> acceptedClaimDetail;
+    private String respType;
 
-    public KycExchangeDto(KycExchangeRequestDto kycExchangeRequestDto, Map<String, JsonNode> acceptedClaimDetail) {
+    public KycExchangeDto(KycExchangeRequestDto kycExchangeRequestDto, Map<String, JsonNode> acceptedClaimDetail,String respType) {
         this.requestDateTime = kycExchangeRequestDto.getRequestDateTime();
         this.transactionId = kycExchangeRequestDto.getTransactionId();
         this.kycToken = kycExchangeRequestDto.getKycToken();
@@ -28,5 +29,6 @@ public class KycExchangeDto {
         this.acceptedClaims = kycExchangeRequestDto.getAcceptedClaims();
         this.claimLocales = kycExchangeRequestDto.getClaimLocales();
         this.acceptedClaimDetail = acceptedClaimDetail;
+        this.respType=respType;
     }
 }
