@@ -41,7 +41,6 @@ const insertTravelPassData = async (data) => {
     )
     RETURNING *;
   `;
-  debugger;
   try {
     const result = await db.query(queryText, [
       uin,
