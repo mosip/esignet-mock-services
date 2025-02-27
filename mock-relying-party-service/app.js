@@ -47,7 +47,6 @@ app.post('/api/travel-pass', verifyJWT, async (req, res) => {
   if (!full_name || !country_of_origin || !country_of_destination) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
-  req.body.uin='2154189532';
   try {
     const result = await insertTravelPassData(req.body);
     res.status(201).json(result); // Return inserted data
