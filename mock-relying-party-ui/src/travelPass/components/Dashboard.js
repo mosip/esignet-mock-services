@@ -1,4 +1,4 @@
-import TravelPassHomePage from "./TravelPassHomePage";
+
 
 function Dashboard() {
   return (
@@ -15,7 +15,7 @@ function Dashboard() {
      
       <div className="absolute top-[76%] left-[-10%] w-[120%] h-[50%] bg-white transform -rotate-10 z-0"></div>
 
-      <TravelPassHomePage />
+  
     </div>
   );
 }
