@@ -31,13 +31,13 @@ const Navbar = () => {
             localStorage.setItem("isAuthenticated", "false");
         }
         if (id === 'home') {
-            navigator('/home');
+            navigator('/login');
         }
     };
 
     return (
-        <nav className="w-full bg-[#FFFFFF] px-20 h-[5.5rem] text-black flex items-center justify-between">
-            <img src='images\travel_pass_apply_title.png' />
+        <nav className="w-full bg-[#FFFFFF] px-20 h-[6rem] text-black flex items-center justify-between">
+            <img src='images/travel_pass_apply_title.png' className='text-[5.65rem]' />
             <div className="flex space-x-6 text-[#202020] ">
                 <div onClick={handleNavOptions} className="flex space-x-6">
                     <button id='home' className='cursor-pointer font-semibold'>Home</button>
@@ -62,7 +62,6 @@ const Navbar = () => {
                             </div>
                         )}
                     </div>
-
                 </div>
 
 
