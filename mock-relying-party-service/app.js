@@ -41,6 +41,7 @@ app.post('/api/travel-pass', verifyJWT, async (req, res) => {
     date_of_return,
     country_of_origin,
     country_of_destination,
+    axle_size,
   } = req.body;
 
   // Basic validation: technically all fields are needed

@@ -17,6 +17,7 @@ const insertTravelPassData = async (data) => {
     date_of_return,
     country_of_origin,
     country_of_destination,
+    axle_size,
   } = data;
 
   const queryText = `
@@ -34,10 +35,11 @@ const insertTravelPassData = async (data) => {
       date_of_departure,
       date_of_return,
       country_of_origin,
-      country_of_destination
+      country_of_destination,
+      axle_size
     )
     VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14 
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
     )
     RETURNING *;
   `;
@@ -56,7 +58,8 @@ const insertTravelPassData = async (data) => {
       date_of_departure,
       date_of_return,
       country_of_origin,
-      country_of_destination
+      country_of_destination,
+      axle_size,
     ]);
     return result.rows[0];
   } catch (error) {
