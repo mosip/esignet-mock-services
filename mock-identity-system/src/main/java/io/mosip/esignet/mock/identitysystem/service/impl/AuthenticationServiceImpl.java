@@ -18,6 +18,7 @@ import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
+import io.mosip.esignet.mock.identitysystem.util.CacheUtilService;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 import io.mosip.kernel.core.util.HMACUtils2;
@@ -73,6 +74,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private VerifiedClaimRepository verifiedClaimRepository;
 
+    @Autowired
+    private CacheUtilService cacheUtilService;
+
     @Value("${mosip.mock.ida.kyc.transaction-timeout-secs:180}")
     private int transactionTimeoutInSecs;
 
@@ -100,7 +104,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.mock.ida.kyc.psut.field:psut}")
     private String psutField;
 
-    ArrayList<String> trnHash = new ArrayList<>();
 
     @Override
     public KycAuthResponseDto kycAuth(String relyingPartyId, String clientId, KycAuthDto kycAuthDto) throws MockIdentityException {
@@ -241,7 +244,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var trn_token_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
                 String.format(sendOtpDto.getTransactionId(), sendOtpDto.getIndividualId(), OTP_VALUE));
 
-        trnHash.add(trn_token_hash);
+        cacheUtilService.setTransactionHash(trn_token_hash);
         return new SendOtpResult(sendOtpDto.getTransactionId(), maskedEmailId, maskedMobile);
     }
 
@@ -257,11 +260,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             var trn_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
                     String.format(kycAuthDto.getTransactionId(), kycAuthDto.getIndividualId(), OTP_VALUE));
 
-            var isValid = trnHash.contains(trn_hash);
+            var isValid = cacheUtilService.getTransactionHash(trn_hash);
             if (isValid) {
                 authStatus = kycAuthDto.getOtp().equals(OTP_VALUE);
                 if (authStatus)
-                    trnHash.remove(trn_hash);
+                    cacheUtilService.removeTransactionHash(trn_hash);
                 else
                     throw new MockIdentityException("auth_failed");
             } else {
