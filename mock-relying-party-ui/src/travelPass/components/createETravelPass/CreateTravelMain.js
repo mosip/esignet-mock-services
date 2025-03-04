@@ -19,7 +19,7 @@ function CreateTravelMain() {
     const [showUploadSection, setShowUploadSection] = useState(false);
     const [showPrevDetails, setShowPrevDetails] = useState(false);
     const [showCongratulation, setShowCongratulation] = useState(false);
-    const [revert,setRevert] = useState(false);
+    const [revert, setRevert] = useState(false);
 
     const SuccessMsg = () => {
         return (
@@ -161,18 +161,18 @@ function CreateTravelMain() {
             {showSuccesMsg && <SuccessMsg />}
             <div className="flex flex-col gap-y-[1.5rem] mx-[4.71rem] my-[2rem]">
                 <div className="bg-white h-[9.5rem] border border-[#E4E7EC] rounded-lg shadow-sm">
-                    <Stepper uploadStatus={showPrevDetails} previewStatus={showCongratulation} moveBack={revert}/>
+                    <Stepper uploadStatus={showPrevDetails} previewStatus={showCongratulation} moveBack={revert} />
                 </div>
                 {showUploadSection && !showPrevDetails &&
                     <UploadEinvoicePage
-                        userInfo={personalDetails}
+                        userInfo={userInfo}
                         goBack={goBackBtn}
                         setShowPrevDetails={setShowPrevDetails}
                     />
                 }
                 {showPrevDetails &&
                     <PreviewDetails
-                        personalDetails={personalDetails}
+                        personalDetails={userInfo}
                         identifications={identifications}
                         eInvoiceDetails={inVoiceDetails}
                         goBack={moveBackToUpload}

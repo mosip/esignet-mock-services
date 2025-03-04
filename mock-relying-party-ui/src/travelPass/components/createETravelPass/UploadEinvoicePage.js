@@ -45,32 +45,35 @@ function UploadEinvoicePage({ userInfo, goBack, setShowPrevDetails, setUploaded 
       </div>
       <hr className='h-[0.1rem] bg-[#D7D8E1]' />
       <div className='flex justify-between px-[2rem] py-[0.9rem]'>
-        <form className='flex flex-wrap w-[40rem] justify-around gap-y-3'>
-          <label className='h-[4.15rem] w-[18.5rem]'>
-            <p className='text-sm font-base'>Full Name<span className='text-sm text-red-600'>*</span></p>
-            <input disabled placeholder={userInfo.name} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
-          </label>
-          <label className='h-[4.15rem] w-[18.5rem]'>
-            <p className='text-sm font-base'>UIN(National ID)<span className='text-sm text-red-600'>*</span></p>
-            <input disabled placeholder={userInfo.uinId} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
-          </label>
-          <label className='h-[4.15rem] w-[18.5rem]'>
-            <p className='text-sm font-base'>Phone Number<span className='text-sm text-red-600'>*</span></p>
-            <input disabled placeholder={userInfo.phone_number} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
-          </label>
-          <label className='h-[4.15rem] w-[18.5rem]'>
-            <p className='text-sm font-base'>Gender<span className='text-sm text-red-600'>*</span></p>
-            <input disabled placeholder={userInfo.gender} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
-          </label>
-          <label className='h-[4.15rem] w-[18.5rem]'>
-            <p className='text-sm font-base'>Email Id<span className='text-sm text-red-600'>*</span></p>
-            <input disabled placeholder={userInfo.email} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
-          </label>
-          <label className='h-[4.15rem] w-[18.5rem]'>
-            <p className='text-sm font-base'>City<span className='text-sm text-red-600'>*</span></p>
-            <input disabled placeholder={userInfo.address.locality} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
-          </label>
-        </form>
+        {userInfo && (
+          <form className='flex flex-wrap w-[40rem] justify-around gap-y-3'>
+            <label className='h-[4.15rem] w-[18.5rem]'>
+              <p className='text-sm font-base'>Full Name<span className='text-sm text-red-600'>*</span></p>
+              <input disabled placeholder={userInfo.name} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
+            </label>
+            <label className='h-[4.15rem] w-[18.5rem]'>
+              <p className='text-sm font-base'>UIN(National ID)<span className='text-sm text-red-600'>*</span></p>
+              <input disabled placeholder={userInfo.uinId} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
+            </label>
+            <label className='h-[4.15rem] w-[18.5rem]'>
+              <p className='text-sm font-base'>Phone Number<span className='text-sm text-red-600'>*</span></p>
+              <input disabled placeholder={userInfo.phone_number} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
+            </label>
+            <label className='h-[4.15rem] w-[18.5rem]'>
+              <p className='text-sm font-base'>Gender<span className='text-sm text-red-600'>*</span></p>
+              <input disabled placeholder={userInfo.gender} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
+            </label>
+            <label className='h-[4.15rem] w-[18.5rem]'>
+              <p className='text-sm font-base'>Email Id<span className='text-sm text-red-600'>*</span></p>
+              <input disabled placeholder={userInfo.email} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
+            </label>
+            <label className='h-[4.15rem] w-[18.5rem]'>
+              <p className='text-sm font-base'>City<span className='text-sm text-red-600'>*</span></p>
+              <input disabled placeholder={userInfo.address.locality} className='bg-[#E8EBEC] p-[0.5rem] rounded-md text-xs w-[17rem]' />
+            </label>
+          </form>
+        )}
+
         <FileUploadingSection
           showUploadingBlock={showUploadingBlock}
           setShowUploadingBlock={setShowUploadingBlock}
