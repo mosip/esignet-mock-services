@@ -130,7 +130,6 @@ function CreateTravelMain() {
                 grant_type
             )
             setUserInfo(userInfo);
-
         } catch (errormsg) {
             setError({ errorCode: "", errorMsg: errormsg.message });
         }
@@ -168,6 +167,7 @@ function CreateTravelMain() {
                         userInfo={userInfo}
                         goBack={goBackBtn}
                         setShowPrevDetails={setShowPrevDetails}
+                        setRevert={setRevert}
                     />
                 }
                 {showPrevDetails &&
