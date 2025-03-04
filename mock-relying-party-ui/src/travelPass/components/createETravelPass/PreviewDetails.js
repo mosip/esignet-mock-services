@@ -72,7 +72,7 @@ function PreviewDetails({personalDetails, identifications, eInvoiceDetails, goBa
                         </div>
                         <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
                             <p className='text-[0.8rem] font-[600] text-[#666666]'>Truck License Plate Number</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.truckNumber}</p>
+                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.truck_license_plate_number}</p>
                         </div>
                         <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
                             <p className='text-[0.8rem] font-[600] text-[#666666]'>Cross-Border Entry/Exit Post</p>

@@ -1,13 +1,29 @@
-export default function Stepper() {
+import { useEffect, useState } from "react";
 
-    let steps = [{ id: "verifyTravellerId", title: "Verify Traveller National ID", description: "Lorem ipsum dolor sit amet consectetur", isActive: false, processCompleted: true, },
-    { id: "uploadEInvoice", title: "Upload E-Invoice", description: "Lorem ipsum dolor sit amet consectetur dolor sit", isActive: true, processCompleted: false },
-    { id: "previewDetails", title: "Preview Details", description: "Lorem ipsum dolor sit amet consectetur", isActive: false, processCompleted: false },
-    { id: "passIssued", title: "Travel Pass Issued", description: "Lorem ipsum dolor sit amet consecteturdolor sit", isActive: false, processCompleted: false },];
+export default function Stepper({ uploadStatus, previewStatus, moveBack }) {
+    const [uploaded, setUploaded] = useState(true);
+    const [previewed, setPreviewed] = useState(false);
 
-    const handleActiveTab = (e) => {
-        
-    };
+    useEffect(() => {
+        if (uploadStatus) {
+            setUploaded(false);
+            setPreviewed(false);
+        }
+        if (previewStatus) {
+            setPreviewed(true);
+        }
+        if (moveBack) {
+            setUploaded(true);
+            setPreviewed(false);
+        }
+    }, [uploadStatus, previewStatus, moveBack]);
+
+    let steps = [
+        { id: "verifyTravellerId", title: "Verify Traveller National ID", description: "Lorem ipsum dolor sit amet consectetur", isActive: false, processCompleted: true, },
+        { id: "uploadEInvoice", title: "Upload E-Invoice", description: "Lorem ipsum dolor sit amet consectetur dolor sit", isActive: uploaded, processCompleted: !uploaded },
+        { id: "previewDetails", title: "Preview Details", description: "Lorem ipsum dolor sit amet consectetur", isActive: !uploaded, processCompleted: previewed },
+        { id: "passIssued", title: "Travel Pass Issued", description: "Lorem ipsum dolor sit amet consecteturdolor sit", isActive: previewed, processCompleted: false }
+    ];
 
     return (
         <ol className="flex items-center justify-center">

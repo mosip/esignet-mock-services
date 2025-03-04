@@ -16,6 +16,10 @@ function LoginForm({ sentOtp }) {
     if (e.key === "Backspace") {
       setInputValue(inputValue.pop());
     }
+    if (e.key === "Enter") {
+      handleLogin();
+      e.preventDefault()
+    }
   };
 
   const handleLogin = () => {

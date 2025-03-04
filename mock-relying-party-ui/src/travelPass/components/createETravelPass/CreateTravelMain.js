@@ -19,6 +19,40 @@ function CreateTravelMain() {
     const [showUploadSection, setShowUploadSection] = useState(false);
     const [showPrevDetails, setShowPrevDetails] = useState(false);
     const [showCongratulation, setShowCongratulation] = useState(false);
+    const [revert,setRevert] = useState(false);
+
+    const SuccessMsg = () => {
+        return (
+            <div className={`flex justify-between items-center px-[7rem] bg-[#57A04B] h-[2.5rem] w-full shadow-sm absolute`}>
+                <p className="text-sm text-white font-semibold">
+                    Your details have been successfully fetched from the national ID using
+                    eSignet
+                </p>
+                <img
+                    src="images/close_icon.png"
+                    alt="closeIcon"
+                    className="cursor-pointer"
+                    onClick={closeSuccessTag}
+                />
+            </div>
+        );
+    };
+
+    const personalDetails = {
+        "sub": "w4bQCdfMNkR73MDaqlm0-BjhrXIh9iktJLKPxxwkQV4",
+        "birthdate": "1987/11/25",
+        "address": {
+            "locality": "yuanwee",
+            "street_address": "Slung",
+            "country": "Cmattey",
+            "region": "yuanwee",
+            "postal_code": "45009"
+        },
+        "gender": "Male",
+        "name": "Siddharth K Mansour",
+        "phone_number": "+919427357934",
+        "email": "siddhartha.km@gmail.com",
+    };
 
     const identifications = {
         "documentType": "National ID",
@@ -77,6 +111,9 @@ function CreateTravelMain() {
         };
         setShowUploadSection(true);
         getSearchParams();
+        setTimeout(() => {
+            setShowSuccesMsg(false);
+        }, 6000);
     }, []);
 
     const getUserDetails = async (authCode) => {
@@ -93,7 +130,7 @@ function CreateTravelMain() {
                 grant_type
             )
             setUserInfo(userInfo);
-            
+
         } catch (errormsg) {
             setError({ errorCode: "", errorMsg: errormsg.message });
         }
@@ -102,36 +139,14 @@ function CreateTravelMain() {
         setShowSuccesMsg(false);
     };
 
-    const SuccessMsg = () => {
-        return (
-            <div className={`flex justify-between items-center px-[7rem] bg-[#57A04B] h-[2.5rem] w-full shadow-sm absolute`}>
-                <p className="text-sm text-white font-semibold">
-                    Your details have been successfully fetched from the national ID using
-                    eSignet
-                </p>
-                <img
-                    src="images/close_icon.png"
-                    alt="closeIcon"
-                    className="cursor-pointer"
-                    onClick={closeSuccessTag}
-                />
-            </div>
-        );
-    };
-
-    useEffect(() => {
-        setTimeout(() => {
-            setShowSuccesMsg(false);
-        }, 6000);
-    });
-
     const goBackBtn = () => {
         navigate('/applyForTravelPass');
     };
 
-    const moveToUpload = () => {
+    const moveBackToUpload = () => {
         setShowUploadSection(true);
         setShowPrevDetails(false);
+        setRevert(true);
     };
 
     const onSubmit = () => {
@@ -146,21 +161,21 @@ function CreateTravelMain() {
             {showSuccesMsg && <SuccessMsg />}
             <div className="flex flex-col gap-y-[1.5rem] mx-[4.71rem] my-[2rem]">
                 <div className="bg-white h-[9.5rem] border border-[#E4E7EC] rounded-lg shadow-sm">
-                    <Stepper uploadStatus={showPrevDetails} previewStatus={showCongratulation} />
+                    <Stepper uploadStatus={showPrevDetails} previewStatus={showCongratulation} moveBack={revert}/>
                 </div>
-                {showUploadSection && !showPrevDetails && userInfo &&
+                {showUploadSection && !showPrevDetails &&
                     <UploadEinvoicePage
-                        userInfo={userInfo}
+                        userInfo={personalDetails}
                         goBack={goBackBtn}
                         setShowPrevDetails={setShowPrevDetails}
                     />
                 }
                 {showPrevDetails &&
                     <PreviewDetails
-                        personalDetails={userInfo}
+                        personalDetails={personalDetails}
                         identifications={identifications}
                         eInvoiceDetails={inVoiceDetails}
-                        goBack={moveToUpload}
+                        goBack={moveBackToUpload}
                         submitBtn={onSubmit}
                     />
                 }

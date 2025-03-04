@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FileUploadingSection from "./FileUploadingSection";
 
-function UploadEinvoicePage({ userInfo, goBack, setShowPrevDetails }) {
+function UploadEinvoicePage({ userInfo, goBack, setShowPrevDetails, setUploaded }) {
   const navigate = useNavigate();
   const [showUploadingBlock, setShowUploadingBlock] = useState(false);
   const [fileUploaded, setFileUploaded] = useState(false);

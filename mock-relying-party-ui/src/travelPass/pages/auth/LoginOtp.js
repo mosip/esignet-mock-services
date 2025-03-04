@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 
@@ -7,6 +7,13 @@ function LoginOtp() {
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [verify, setVerify] = useState(false);
     const [disableBtn, setDisableBtn] = useState(true);
+    const otpInputRef = useRef;
+
+    useEffect(() => {
+        if (otpInputRef.current) {
+            otpInputRef.current.focus();
+        }
+    }, []);
 
     const handleLogin = () => {
         localStorage.setItem("isAuthenticated", "true");
@@ -46,6 +53,9 @@ function LoginOtp() {
                 prevInput.focus();
             }
         }
+        if (e.key === "Enter") {
+            handleLogin();
+        }
     };
 
     const onClickBackArrow = () => {
@@ -54,14 +64,14 @@ function LoginOtp() {
 
     return (
         <div className="flex text-center justify-center px-6 text-cente bg-white">
-            <img src='images/background_pattern_decorative.png' className="h-[28rem]"/>
-            <div className="p-10 rounded-2xl fixed w-full max-w-lg text-center mt-10 space-y-8">
-                <div className=" flex h-[40px] w-[40px] rounded shadow place-self-center bg-white">
-                    <img src='images/mail_id_icon.png' className="m-auto" />
+            <img src='images/background_pattern_decorative.png' className="h-[23rem] w-[40%]" />
+            <div className="fixed p-10 rounded-2xl w-full max-w-lg text-center mt-2 space-y-9">
+                <div className=" flex h-[37px] w-[37px] rounded shadow place-self-center bg-white">
+                    <img src='images/mail_id_icon.png' className="m-auto h-[55%]" />
                 </div>
                 <div>
-                    <h2 className="text-3xl font-semibold text-[#101828]">Check your email</h2>
-                    <p className="text-[#475467] text-[15px] mt-3">We sent a OTP to your email</p>
+                    <h2 className="text-2xl font-semibold text-[#101828]">Check your email</h2>
+                    <p className="text-[#475467] text-[13px] font-semibold mt-3">We sent a OTP to your email</p>
                 </div>
                 {/* OTP Input Boxes */}
                 <div className="flex justify-center gap-4">
@@ -69,6 +79,7 @@ function LoginOtp() {
                         <div key={index} className="flex items-center">
                             <Input
                                 key={index}
+                                ref={otpInputRef}
                                 id={`otp-${index}`}
                                 type="text"
                                 value={digit}
@@ -76,7 +87,7 @@ function LoginOtp() {
                                 onChange={(e) => handleChange(e, index)}
                                 onKeyDown={(e) => handleKeyDown(e, index)}
                                 placeholder="0"
-                                className={`${digit ? "border-[#9E77ED] text-[#9E77ED]" : "border-[#D0D5DD] text-[#D0D5DD]"} w-[80px] h-[80px] text-center text-5xl font-[500] border-2 rounded-lg outline-none focus:border-[#9E77ED] focus:ring-2 focus:ring-[#9E77ED] focus:ring-offset-3 focus:ring-offset-white`}
+                                className={`${digit ? "border-[#9E77ED] text-[#9E77ED]" : "border-[#D0D5DD] text-[#D0D5DD]"} w-[58px] h-[65px] text-center text-4xl font-[500] border-2 rounded-lg outline-none focus:border-[#9E77ED] focus:ring-2 focus:ring-[#9E77ED] focus:ring-offset-3 focus:ring-offset-white`}
                             />
                             {index === 2 && <div className="ml-4 flex justify-center flex-col">
                                 <div className="h-[5px] w-4 bg-[#D0D5DD] font-bold"></div>
@@ -87,7 +98,7 @@ function LoginOtp() {
                 </div>
 
                 <button disabled={disableBtn} onClick={handleLogin}
-                    className={`px-4 py-2 ${verify ? 'bg-[#7F56D9] cursor-pointer' : 'bg-[#D0D5DD] cursor-default'} text-white text-lg mt-2 rounded-[6px] font-semibold w-[360px]`}
+                    className={`py-2 ${verify ? 'bg-[#7F56D9] cursor-pointer' : 'bg-[#D0D5DD] cursor-default'} text-white text-base rounded-[6px] font-semibold w-[360px]`}
                 >
                     Verify
                 </button>
