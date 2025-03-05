@@ -2,7 +2,7 @@ const express = require("express");
 const { PORT } = require("./config");
 const { post_GetToken, get_GetUserInfo } = require("./esignetService");
 const bodyParser = require('body-parser');
-const { insertTravelPassData } = require('./travelPassController');
+const { insertTruckPassData } = require('./truckpasscontroller');
 const { verifyJWT } = require('./auth');
 const app = express();
 
@@ -24,8 +24,8 @@ app.post("/fetchUserInfo", async (req, res) => {
   }
 });
 
-// travel-pass DB insert
-app.post('/api/travel-pass', verifyJWT, async (req, res) => {
+// truck-pass DB insert
+app.post('/api/truck-pass', verifyJWT, async (req, res) => {
   const {
     uin,
     full_name,
@@ -49,12 +49,12 @@ app.post('/api/travel-pass', verifyJWT, async (req, res) => {
     return res.status(400).json({ message: 'Missing required fields' });
   }
   try {
-    const result = await insertTravelPassData(req.body);
+    const result = await insertTruckPassData(req.body);
     res.status(201).json(result); // Return inserted data
   } catch (error) {
-    res.status(500).json({ message: 'Failed to insert travel pass data' });
-    console.log(error.stack);
-    console.log(error.message);
+    res.status(500).json({ message: 'failed to insert truck pass data' });
+    console.error(error.stack);
+    console.error(error.message);
   }
 });
 

@@ -1,7 +1,7 @@
 const db = require('./database');
 
-// Function to insert data into the travel_pass_data table
-const insertTravelPassData = async (data) => {
+// Function to insert data into the truck_pass_data table
+const insertTruckPassData = async (data) => {
   const {
     uin,
     full_name,
@@ -21,7 +21,7 @@ const insertTravelPassData = async (data) => {
   } = data;
 
   const queryText = `
-    INSERT INTO travel_pass_data (
+    INSERT INTO truck_pass_data (
       uin,
       full_name,
       phone_number,
@@ -65,10 +65,10 @@ const insertTravelPassData = async (data) => {
   } catch (error) {
     console.error("Failed executing query: ", queryText);
     console.error("Failed variables: ",data );
-    throw new Error('Error inserting travel pass data');
+    throw new Error('Error inserting truck pass data: ', error);
   }
 };
 
 module.exports = {
-  insertTravelPassData,
+  insertTruckPassData,
 };
