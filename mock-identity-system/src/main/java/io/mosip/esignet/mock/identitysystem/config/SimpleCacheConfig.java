@@ -7,6 +7,7 @@ package io.mosip.esignet.mock.identitysystem.config;
 
 import com.google.common.cache.CacheBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -17,23 +18,26 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@ConditionalOnProperty(value = "spring.cache.type", havingValue = "simple")
 @Configuration
 public class SimpleCacheConfig extends CachingConfigurerSupport {
-
-    @Value("${mosip.esignet.cache.size:200}")
+    @Value("${mosip.signup.cache.names}")
+    private String cacheName;
+    @Value("${mosip.signup.cache.size:200}")
     private long cacheMaxSize;
 
-    @Value("${mosip.esignet.cache.expire-in-seconds:600}")
-    private long cacheExpireInSeconds;
+    @Value("#{${mosip.signup.cache.expire-in-seconds}}")
+    private Map<String, Integer> cacheExpireInSeconds;
 
     @Bean
     @Override
     public CacheManager cacheManager() {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
         List<Cache> caches = new ArrayList<>();
-        caches.add(buildMapCache("trnHash"));
+        caches.add(buildMapCache(cacheName));
         cacheManager.setCaches(caches);
         return cacheManager;
     }
@@ -41,7 +45,7 @@ public class SimpleCacheConfig extends CachingConfigurerSupport {
     private ConcurrentMapCache buildMapCache(String name) {
         return new ConcurrentMapCache(name,
                 CacheBuilder.newBuilder()
-                        .expireAfterWrite(cacheExpireInSeconds, TimeUnit.SECONDS)
+                        .expireAfterWrite(cacheExpireInSeconds.getOrDefault(name,60), TimeUnit.SECONDS)
                         .maximumSize(cacheMaxSize)
                         .build()
                         .asMap(), true);

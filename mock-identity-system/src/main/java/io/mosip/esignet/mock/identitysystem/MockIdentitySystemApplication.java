@@ -7,7 +7,9 @@ package io.mosip.esignet.mock.identitysystem;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
+@EnableCaching
 @SpringBootApplication(scanBasePackages = "io.mosip.esignet.mock.identitysystem,"+
 		"io.mosip.kernel.crypto," +
 				"io.mosip.kernel.keymanager.hsm," +
