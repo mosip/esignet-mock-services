@@ -16,7 +16,8 @@ const verifyJWT = (req, res, next) => {
   }
   client.getSigningKey(decodedToken.header.kid).then((res) => {
     const signingKey = res.publicKey || res.rsaPublicKey;
-    let j = jwt.verify(token, signingKey);
+    const j = jwt.verify(token, signingKey);
+    // attach uin to the request body
     req.body.uin = j.sub
     next();
     // check the type of the data returned in JS and do the stuff

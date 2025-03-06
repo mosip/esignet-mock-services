@@ -27,7 +27,6 @@ app.post("/fetchUserInfo", async (req, res) => {
 // truck-pass DB insert
 app.post('/api/truck-pass', verifyJWT, async (req, res) => {
   const {
-    uin,
     full_name,
     phone_number,
     gender,
@@ -43,11 +42,24 @@ app.post('/api/truck-pass', verifyJWT, async (req, res) => {
     country_of_destination,
     axle_size,
   } = req.body;
-
+  const validations = ['gender', 'invoice_number', 'invoice_date',
+    'exporter_name', 'importer_name', 'truck_license_plate_number',
+    'cross_border_entry_exit_post', 'date_of_departure', 'date_of_return',
+    'country_of_origin', 'country_of_destination', 'axle_size'];
+  const defaults = ['female', 'INV-101-NYE', '06-03-2025', 'Acme Water Inc', 'Clearwater group',
+    'ABA-982-1535', 'South End Exit', '05-03-2025', '19-03-2025', 'Eden', 'Narnia', '4 axle'
+   ];
+   for (const [idx, item] of validations.entries()) {
+    if (!req.body[item]) {
+      req.body[item] = defaults[idx];
+      console.log('setting value at idx ', idx + ' as ' + defaults[idx]);
+    }
+   }
   // Basic validation: technically all fields are needed
-  if (!full_name || !country_of_origin || !country_of_destination) {
+  if (!full_name || !phone_number) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
+
   try {
     const result = await insertTruckPassData(req.body);
     res.status(201).json(result); // Return inserted data
