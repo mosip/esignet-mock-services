@@ -27,9 +27,6 @@ app.post("/fetchUserInfo", async (req, res) => {
 // truck-pass DB insert
 app.post('/api/truck-pass', verifyJWT, async (req, res) => {
   // Basic validation: technically all fields are needed
-  if (!full_name || !phone_number) {
-    return res.status(400).json({ message: 'Missing required fields' });
-  }
   const {
     full_name,
     phone_number,
@@ -59,7 +56,9 @@ app.post('/api/truck-pass', verifyJWT, async (req, res) => {
       console.log('setting value at idx ', idx + ' as ' + defaults[idx]);
     }
    }
-
+  if (!full_name || !phone_number) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
   try {
     const result = await insertTruckPassData(req.body);
     res.status(201).json(result); // Return inserted data
