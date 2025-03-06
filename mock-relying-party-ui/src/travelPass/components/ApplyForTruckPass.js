@@ -4,7 +4,7 @@ import clientDetails from '../../constants/clientDetails';
 import { useExternalScript } from "../../hooks/useExternalScript";
 
 
-function ApplyForTravelPass() {
+function ApplyForTruckPass() {
     const navigate = useNavigate();
     const signInButtonScript = window._env_.SIGN_IN_BUTTON_PLUGIN_URL;
     const state = useExternalScript(signInButtonScript);
@@ -46,11 +46,11 @@ function ApplyForTravelPass() {
         <div className='flex justify-center bg-[#F9F5FF] font-inter'>
             <div className='flex flex-col absolute mt-[1.1rem] gap-y-3'>
                 <h2 className='font-semibold text-[2rem] text-[#42307D] place-self-center'>
-                    Apply For TravelPass
+                    Apply For TruckPass
                 </h2>
                 <img scr='images/left_band_2.png' />
-                <div className='flex bg-white h-[28.6rem] w-[58.5rem] justify-between border items-center px-[1.8rem] mb-[1rem] rounded-xl shadow'>
-                    <img src='images/online_account_profile_icon.png' className='h-[15.25rem] mt-[1rem]' />
+                <div className='flex bg-white h-[29.6rem] w-[58.5rem] justify-around border items-center px-[1.8rem] mb-[1rem] rounded-xl shadow'>
+                    <img src='images/apply_truck_pass_icon.png' className='h-[65%] w-[39%] mt-[1rem]' />
                     <div className='flex-col flex justify-between w-[21rem] h-[21rem] text-[#514A6A]'>
                         <h4 className='text-md font-base'>The Travel Pass Portal enables company representatives to apply for travel passes to cross borders</h4>
                         <p className='text-sm font-base'>Follow this simple process:</p>
@@ -84,4 +84,4 @@ function ApplyForTravelPass() {
     )
 }
 
-export default ApplyForTravelPass;
+export default ApplyForTruckPass;

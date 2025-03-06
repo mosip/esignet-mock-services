@@ -36,20 +36,20 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="w-full bg-[#FFFFFF] px-20 h-[6rem] text-black flex items-center justify-between">
-            <img src='images/travel_pass_apply_title.png' className='text-[5.65rem]' />
+        <nav className="w-full bg-[#FFFFFF] md:px-[3%] h-[2rem] sm:h-[4rem] md:h-[4rem] lg:h-[5rem] lg:px-[4%] text-black flex items-center justify-between">
+            <img src='images/travel_pass_apply_title.png' />
             <div className="flex space-x-6 text-[#202020] ">
-                <div onClick={handleNavOptions} className="flex space-x-6">
-                    <button id='home' className='cursor-pointer font-semibold'>Home</button>
-                    <button id='help' className='cursor-pointer font-semibold'>Help</button>
+                <div onClick={handleNavOptions} className="flex space-x-6 items-center">
+                    <button id='home' className='cursor-pointer font-semibold text-sm lg:text-normal'>Home</button>
+                    <button id='help' className='cursor-pointer font-semibold text-sm lg:text-normal'>Help</button>
                     <div className="relative inline-block text-left" ref={langDropdownRef}>
                         <button
                             onClick={() => setDropdownOpen(!isDropdownOpen)}
-                            className="flex items-center rounded-lg font-semibold cursor-pointer"
+                            className="flex items-center rounded-lg font-semibold cursor-pointer text-sm lg:text-normal"
                         >
-                            <img src='images/globe_icon.png' alt='dropdown_icon' className='h-5 px-1' />
-                            {selectedLanguage.label}
-                            <img src='images/dropdown_icon.png' alt='dropdown_icon' className='h-1.5 px-1' />
+                            <img src='images/globe_icon.png' alt='dropdown_icon' className='md:h-[1rem] lg:h-[1.1rem] px-1' />
+                            
+                            <img src='images/dropdown_icon.png' alt='dropdown_icon' className='h-1.5 px-1 md:h-[0.4rem] lg:h-[0.5rem]' />
                         </button>
 
                         {isDropdownOpen && (

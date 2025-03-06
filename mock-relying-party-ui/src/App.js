@@ -8,18 +8,8 @@ import langConfigService from "./services/langConfigService";
 import Login from './travelPass/pages/auth/Login';
 import MainLayout from "./travelPass/pages/MainLayout";
 import Dashboard from "./travelPass/components/Dashboard";
-import ApplyForTravelPass from "./travelPass/components/ApplyForTravelPass";
-import CreateTravelMain from "./travelPass/components/createETravelPass/CreateTravelMain";
-
-
-import LoginPage from "./pages/Login";
-import UserProfilePage from "./pages/UserProfile";
-import SignUpPage from "./pages/SignUp";
-import RegistrationPage from "./pages/Registration";
-import BookAppointmentPage from "./pages/BookAppointment";
-import UploadEinvoicePage from "./travelPass/components/createETravelPass/UploadEinvoicePage";
-import PreviewDetails from "./travelPass/components/createETravelPass/PreviewDetails";
-import CongratulationsPopup from "./travelPass/components/createETravelPass/CongratulationsPopup";
+import ApplyForTruckPass from "./travelPass/components/ApplyForTruckPass";
+import CreateTruckMain from "./travelPass/components/createTruckPass/CreateTruckMain";
 
 function App() {
   const { i18n } = useTranslation();
@@ -64,8 +54,8 @@ function App() {
           <Route path="/" element={<Navigate to={process.env.PUBLIC_URL + "/login"} replace />} />
           <Route path={process.env.PUBLIC_URL + "/login"} element={<MainLayout> <Login /> </MainLayout>} />
           <Route path={process.env.PUBLIC_URL + "/dashboard"} element={<MainLayout> <Dashboard /> </MainLayout>} />
-          <Route path={process.env.PUBLIC_URL + "/applyForTravelPass"} element={<MainLayout> <ApplyForTravelPass /> </MainLayout>} />
-          <Route path={process.env.PUBLIC_URL + "/userprofile"} element={<MainLayout> <CreateTravelMain /> </MainLayout>} />
+          <Route path={process.env.PUBLIC_URL + "/applyForTruckPass"} element={<MainLayout> <ApplyForTruckPass /> </MainLayout>} />
+          <Route path={process.env.PUBLIC_URL + "/userprofile"} element={<MainLayout> <CreateTruckMain /> </MainLayout>} />
         </Routes>
       </BrowserRouter>
       <ToastContainer position="top-center" hideProgressBar={true} pauseOnHover={false} draggable={false} />

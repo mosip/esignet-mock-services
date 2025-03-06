@@ -17,7 +17,7 @@ function LoginOtp() {
 
     const handleLogin = () => {
         localStorage.setItem("isAuthenticated", "true");
-        navigate("/applyForTravelPass");
+        navigate("/applyForTruckPass");
     };
 
     const handleChange = (e, index) => {
