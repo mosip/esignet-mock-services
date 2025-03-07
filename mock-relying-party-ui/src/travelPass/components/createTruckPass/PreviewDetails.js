@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function PreviewDetails({personalDetails, identifications, eInvoiceDetails, goBack, submitBtn}) {
+function PreviewDetails({ personalDetails, identifications, eInvoiceDetails, goBack, submitBtn }) {
     const navigate = useNavigate();
 
     return (
@@ -51,51 +51,58 @@ function PreviewDetails({personalDetails, identifications, eInvoiceDetails, goBa
                     </div>
                 </div>
 
-                <div className='flex flex-col my-4'>
-                    <h1 className='font-semibold text-normal lg:text-lg mb-4 text-[#b87efa]'>(3) Invoice Details</h1>
-                    <div className='flex flex-wrap justify-between mr-[25rem] gap-y-4 w-full'>
-                        <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
-                            <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Invoice Number</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.inVoiceNumber}</p>
-                        </div>
-                        <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
-                            <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Invoice Date</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.invoiceDate}</p>
-                        </div>
-                        <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
-                            <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Exporter Name</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.expoterName}</p>
-                        </div>
-                        <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
-                            <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Importer Name</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.importerName}</p>
-                        </div>
-                        <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
-                            <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Truck License Plate Number</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.truck_license_plate_number}</p>
-                        </div>
-                        <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
-                            <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Cross-Border Entry/Exit Post</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.checkPostNumber}</p>
-                        </div>
-                        <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
-                            <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Date of Departure</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.depatureDate}</p>
-                        </div>
-                        <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
-                            <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Date of Return</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.returnDate}</p>
-                        </div>
-                        <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
-                            <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Country of Origin</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.originCountry}</p>
-                        </div>
-                        <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
-                            <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Country of Destination:</p>
-                            <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.destinationCountry}</p>
+                {eInvoiceDetails &&
+                    <div className='flex flex-col my-4'>
+                        <h1 className='font-semibold text-normal lg:text-lg mb-4 text-[#b87efa]'>(3) Invoice Details</h1>
+                        <div className='flex flex-wrap justify-between mr-[25rem] gap-y-4 w-full'>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Invoice Number</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.invoice_number}</p>
+                            </div>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Invoice Date</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.invoice_date}</p>
+                            </div>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Exporter</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.exporter_name}</p>
+                            </div>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Importer</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.importer_name}</p>
+                            </div>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Truck License Plate Number</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.truck_license_plate_number}</p>
+                            </div>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Cross-Border Entry/Exit Post</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.cross_border_entry_exit_post}</p>
+                            </div>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Date of Departure</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.date_of_departure}</p>
+                            </div>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Date of Return</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.date_of_return}</p>
+                            </div>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Country of Origin</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.country_of_origin}</p>
+                            </div>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Country of Destination:</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.country_of_destination}</p>
+                            </div>
+                            <div className='flex flex-col gap-y-[0.1rem] w-[48%]'>
+                                <p className='text-[0.7rem] lg:text-[0.8rem] font-[600] text-[#666666]'>Axle Size</p>
+                                <p className='text-[0.9rem] font-semibold text-[#000000]'>{eInvoiceDetails.axle_size}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+
             </div>
             <hr className='border' />
             <div className='flex place-self-end gap-x-4 m-[1.4rem] '>

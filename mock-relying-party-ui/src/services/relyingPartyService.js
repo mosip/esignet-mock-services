@@ -15,6 +15,7 @@ const uploadUserDetailsEndPoint = "/api/truck-pass";
  */
 
 /** Triggers /uploadDetails API on relying party server
+ * @param {string} uin uin
  * @param {string} full_name name
  * @param {string} phone_number ph_number
  * @returns decode/decrypted user information json
@@ -42,18 +43,19 @@ const post_fetchUserInfo = async (
 };
 
 const post_uploadDetails = async (
+  uin,
   full_name,
   phone_number
 ) => {
   let request = {
+    uin: uin,
     full_name: full_name,
     phone_number: phone_number,
   };
   const endpoint = baseUrl + uploadUserDetailsEndPoint;
   const response = await axios.post(endpoint, request, {
     headers: {
-      "Content-Type": "application/json",
-      "Authorization" : "Bearer " + window._env_.CLIENT_ID
+      "Content-Type": "application/json"
     },
   })
   return response.data;
