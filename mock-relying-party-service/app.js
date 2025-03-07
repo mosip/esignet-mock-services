@@ -3,11 +3,10 @@ const { PORT } = require("./config");
 const { post_GetToken, get_GetUserInfo } = require("./esignetService");
 const bodyParser = require('body-parser');
 const { insertTruckPassData } = require('./truckpasscontroller');
-const { verifyJWT } = require('./auth');
 const app = express();
 
 // Middleware
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Welcome to Mock Relying Party REST APIs!!");
@@ -25,9 +24,10 @@ app.post("/fetchUserInfo", async (req, res) => {
 });
 
 // truck-pass DB insert
-app.post('/api/truck-pass', verifyJWT, async (req, res) => {
+app.post('/api/truck-pass', async (req, res) => {
   // Basic validation: technically all fields are needed
   const {
+    uin,
     full_name,
     phone_number,
     gender,
@@ -56,16 +56,16 @@ app.post('/api/truck-pass', verifyJWT, async (req, res) => {
       console.log('setting value at idx ', idx + ' as ' + defaults[idx]);
     }
    }
-  if (!full_name || !phone_number) {
+  if (!full_name || !phone_number || !uin) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
   try {
     const result = await insertTruckPassData(req.body);
     res.status(201).json(result); // Return inserted data
   } catch (error) {
-    res.status(500).json({ message: 'failed to insert truck pass data' });
-    console.error(error.stack);
+    console.log("Error: " + error);
     console.error(error.message);
+    res.status(500).json({ message: 'failed to insert truck pass data' });
   }
 });
 
