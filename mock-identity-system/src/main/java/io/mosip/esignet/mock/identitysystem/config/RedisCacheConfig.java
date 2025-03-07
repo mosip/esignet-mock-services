@@ -15,7 +15,7 @@ import java.util.Map;
 @Configuration
 public class RedisCacheConfig {
 
-    @Value("#{${mosip.signup.cache.expire-in-seconds}}")
+    @Value("#{${mosip.mockidentitysystem.cache.expire-in-seconds}}")
     private Map<String, Integer> cacheNamesWithTTLMap;
 
     @Bean

@@ -24,12 +24,12 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnProperty(value = "spring.cache.type", havingValue = "simple")
 @Configuration
 public class SimpleCacheConfig extends CachingConfigurerSupport {
-    @Value("${mosip.signup.cache.names}")
+    @Value("${mosip.mockidentitysystem.cache.names}")
     private String cacheName;
-    @Value("${mosip.signup.cache.size:200}")
+    @Value("${mosip.mockidentitysystem.cache.size:200}")
     private long cacheMaxSize;
 
-    @Value("#{${mosip.signup.cache.expire-in-seconds}}")
+    @Value("#{${mosip.mockidentitysystem.cache.expire-in-seconds}}")
     private Map<String, Integer> cacheExpireInSeconds;
 
     @Bean
