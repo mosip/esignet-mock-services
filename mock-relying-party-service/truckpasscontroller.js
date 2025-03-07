@@ -21,7 +21,7 @@ const insertTruckPassData = async (data) => {
   } = data;
 
   const queryText = `
-    INSERT INTO truck_pass_data (
+    INSERT INTO certify.truck_pass_data (
       uin,
       full_name,
       phone_number,
