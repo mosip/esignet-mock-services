@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Stepper from "../../components/Stepper";
+import Stepper from "../Stepper";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import clientDetails from "../../../constants/clientDetails";
 import relyingPartyService from "../../../services/relyingPartyService";
@@ -8,9 +8,9 @@ import UploadEinvoicePage from "./UploadEinvoicePage";
 import PreviewDetails from "./PreviewDetails";
 import CongratulationsPopup from "./CongratulationsPopup";
 
-function CreateTravelMain() {
+function CreateTruckMain() {
     const [dataLoaded, setDataLoaded] = useState(true);
-    const [showSuccesMsg, setShowSuccesMsg] = useState(true);
+    const [showSuccesMsg, setShowSuccesMsg] = useState(false);
     const successMsgRef = useRef(null);
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
@@ -18,58 +18,30 @@ function CreateTravelMain() {
     const [error, setError] = useState({ errorCode: "", errorMsg: "" });
     const [showUploadSection, setShowUploadSection] = useState(false);
     const [showPrevDetails, setShowPrevDetails] = useState(false);
+    const [inVoiceDetails, setInVoiceDetails] = useState(null);
     const [showCongratulation, setShowCongratulation] = useState(false);
     const [revert, setRevert] = useState(false);
 
     const SuccessMsg = () => {
         return (
-            <div className={`flex justify-between items-center px-[7rem] bg-[#57A04B] h-[2.5rem] w-full shadow-sm absolute`}>
-                <p className="text-sm text-white font-semibold">
+            <div className={`flex justify-between items-center lg:px-[7rem] md:px-[2rem] bg-[#57A04B] lg:h-[2.5rem] md:h-[1.8rem] w-full shadow-sm absolute`}>
+                <p className="md:text-xs lg:text-sm text-white font-semibold">
                     Your details have been successfully fetched from the national ID using
                     eSignet
                 </p>
                 <img
                     src="images/close_icon.png"
                     alt="closeIcon"
-                    className="cursor-pointer"
+                    className="cursor-pointer md:h-[0.6rem] lg:[1rem]"
                     onClick={closeSuccessTag}
                 />
             </div>
         );
     };
 
-    const personalDetails = {
-        "sub": "w4bQCdfMNkR73MDaqlm0-BjhrXIh9iktJLKPxxwkQV4",
-        "birthdate": "1987/11/25",
-        "address": {
-            "locality": "yuanwee",
-            "street_address": "Slung",
-            "country": "Cmattey",
-            "region": "yuanwee",
-            "postal_code": "45009"
-        },
-        "gender": "Male",
-        "name": "Siddharth K Mansour",
-        "phone_number": "+919427357934",
-        "email": "siddhartha.km@gmail.com",
-    };
-
     const identifications = {
         "documentType": "National ID",
-        "uin": '7383637702'
-    };
-
-    const inVoiceDetails = {
-        "inVoiceNumber": "Myemail@gmail.com",
-        "invoiceDate": "16/02/2025",
-        "expoterName": "XYZ Exporter ",
-        "importerName": "ABC Importer",
-        "truckNumber": "XYZ 123 A 78",
-        "checkPostNumber": "Post Number 01",
-        "depatureDate": "17/02/2025",
-        "returnDate": "18/02/2025",
-        "originCountry": "India",
-        "destinationCountry": "Bhutan"
+        "uin": '7896853340'
     };
 
     const { post_fetchUserInfo } = {
@@ -130,16 +102,18 @@ function CreateTravelMain() {
                 grant_type
             )
             setUserInfo(userInfo);
+            { userInfo && setShowSuccesMsg(true) }
         } catch (errormsg) {
             setError({ errorCode: "", errorMsg: errormsg.message });
         }
     };
+
     const closeSuccessTag = () => {
         setShowSuccesMsg(false);
     };
 
     const goBackBtn = () => {
-        navigate('/applyForTravelPass');
+        navigate('/applyForTruckPass');
     };
 
     const moveBackToUpload = () => {
@@ -158,13 +132,15 @@ function CreateTravelMain() {
     return (
         <div className="flex flex-col bg-[#F9F5FF] w-full h-full font-inter">
             {showSuccesMsg && <SuccessMsg />}
-            <div className="flex flex-col gap-y-[1.5rem] mx-[4.71rem] my-[2rem]">
-                <div className="bg-white h-[9.5rem] border border-[#E4E7EC] rounded-lg shadow-sm">
+            <div className="flex flex-col gap-y-[1.5rem] md:mx-[1.5rem] md:my-[1.8rem] lg:mx-[4.71rem] lg:my-[2rem]">
+                <div className="bg-white md:h-[8rem] 2xl:h-[14rem] border border-[#E4E7EC] rounded-lg shadow-sm">
                     <Stepper uploadStatus={showPrevDetails} previewStatus={showCongratulation} moveBack={revert} />
                 </div>
+                {console.log(inVoiceDetails)}
                 {showUploadSection && !showPrevDetails &&
                     <UploadEinvoicePage
                         userInfo={userInfo}
+                        setInVoiceDetails={setInVoiceDetails}
                         goBack={goBackBtn}
                         setShowPrevDetails={setShowPrevDetails}
                         setRevert={setRevert}
@@ -187,4 +163,4 @@ function CreateTravelMain() {
     );
 }
 
-export default CreateTravelMain;
+export default CreateTruckMain;

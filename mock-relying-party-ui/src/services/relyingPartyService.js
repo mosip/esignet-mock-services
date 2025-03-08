@@ -4,6 +4,7 @@ const baseUrl =
     ? process.env.REACT_APP_MOCK_RELYING_PARTY_SERVER_URL
     : window._env_.MOCK_RELYING_PARTY_SERVER_URL;
 const fetchUserInfoEndPoint = "/fetchUserInfo";
+const uploadUserDetailsEndPoint = "/api/truck-pass";
 /**
  * Triggers /fetchUserInfo API on relying party server
  * @param {string} code auth code
@@ -12,6 +13,14 @@ const fetchUserInfoEndPoint = "/fetchUserInfo";
  * @param {string} grant_type grant_type
  * @returns decode/decrypted user information json
  */
+
+/** Triggers /uploadDetails API on relying party server
+ * @param {string} uin uin
+ * @param {string} full_name name
+ * @param {string} phone_number ph_number
+ * @returns decode/decrypted user information json
+ */
+
 const post_fetchUserInfo = async (
   code,
   client_id,
@@ -32,6 +41,26 @@ const post_fetchUserInfo = async (
   });
   return response.data;
 };
+
+const post_uploadDetails = async (
+  uin,
+  full_name,
+  phone_number
+) => {
+  let request = {
+    uin: uin,
+    full_name: full_name,
+    phone_number: phone_number,
+  };
+  const endpoint = baseUrl + uploadUserDetailsEndPoint;
+  const response = await axios.post(endpoint, request, {
+    headers: {
+      "Content-Type": "application/json"
+    },
+  })
+  return response.data;
+}
+
 
 const get_claimProvider = () => {
   return {
@@ -123,6 +152,7 @@ const get_nextAppointment = () => {
 };
 const relyingPartyService = {
   post_fetchUserInfo,
+  post_uploadDetails,
   get_claimProvider,
   get_currentMedications,
   get_messages,

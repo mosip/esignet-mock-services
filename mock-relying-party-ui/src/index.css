@@ -2,3 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+.SignInWithEsignet-module_softLogoBox__jj7aZ {
+    display: none !important;
+}
+
+.SignInWithEsignet-module_standardOutline__la5Rh {
+    background-color: #7F56D9 !important;
+    height: 36px !important;
+    border: none !important;
+}
+
+.SignInWithEsignet-module_softRectBox__hXT5v {
+    color: white !important;
+    text-align: 'center' !important;
+    padding: 0 28% !important;
+    font-size: 12px !important;
+}
