@@ -18,6 +18,7 @@ import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
+import io.mosip.esignet.mock.identitysystem.util.CacheUtilService;
 import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
 import io.mosip.kernel.signature.service.SignatureService;
 import org.junit.Assert;
@@ -35,6 +36,7 @@ import java.util.*;
 import java.lang.reflect.InvocationTargetException;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticationServiceImplTest {
@@ -50,6 +52,9 @@ public class AuthenticationServiceImplTest {
 
     @Mock
     SignatureService signatureService;
+
+    @Mock
+    CacheUtilService cacheUtilService;
 
     @InjectMocks
     AuthenticationServiceImpl authenticationService;
@@ -159,7 +164,6 @@ public class AuthenticationServiceImplTest {
         ReflectionTestUtils.setField(authenticationService, "fieldDetailList", fieldDetailList);
         ReflectionTestUtils.setField(authenticationService, "fieldLang", "eng");
         ReflectionTestUtils.setField(authenticationService,"objectMapper",new ObjectMapper());
-        ReflectionTestUtils.setField(authenticationService,"trnHash",new ArrayList<>());
 
         KycAuthDto kycAuthDto = new KycAuthDto();
         kycAuthDto.setOtp("111111");
@@ -184,6 +188,8 @@ public class AuthenticationServiceImplTest {
         authenticationService.sendOtp("relyingPartyId", "clientId", sendOtpDto);
         Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+        when(cacheUtilService.getTransactionHash(Mockito.anyString())).thenReturn(true);
+
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         Assert.assertTrue(kycAuthResponseDto.isAuthStatus());
     }
