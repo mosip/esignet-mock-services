@@ -52,7 +52,7 @@ public class AuthController {
                                                                @PathVariable @NotBlank String clientId,
                                                                @RequestBody @NotNull @Valid KycExchangeRequestDto kycExchangeRequestDto) {
         ResponseWrapper<KycExchangeResponseDto> responseWrapper = new ResponseWrapper<>();
-        responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto, null)));
+        responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto, null,"JWS")));
         responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
         return responseWrapper;
     }
@@ -64,7 +64,19 @@ public class AuthController {
                                                                @RequestBody @NotNull @Valid KycExchangeRequestDtoV2 kycExchangeRequestDtoV2) {
         ResponseWrapper<KycExchangeResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDtoV2,
-                kycExchangeRequestDtoV2.getAcceptedClaimDetail())));
+                kycExchangeRequestDtoV2.getAcceptedClaimDetail(),"JWS")));
+        responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
+        return responseWrapper;
+    }
+
+    @PostMapping(path = "v3/kyc-exchange/{relyingPartyId}/{clientId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWrapper<KycExchangeResponseDto> kycExchangeV3(@PathVariable @NotBlank String relyingPartyId,
+                                                                 @PathVariable @NotBlank String clientId,
+                                                                 @RequestBody @NotNull @Valid KycExchangeRequestDtoV3 kycExchangeRequestDtoV3) {
+        ResponseWrapper<KycExchangeResponseDto> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDtoV3, kycExchangeRequestDtoV3.getAcceptedClaimDetail(),
+                kycExchangeRequestDtoV3.getRespType())));
         responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
         return responseWrapper;
     }

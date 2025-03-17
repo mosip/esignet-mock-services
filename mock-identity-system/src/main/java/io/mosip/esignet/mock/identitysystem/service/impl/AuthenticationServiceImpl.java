@@ -82,7 +82,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${mosip.mock.ida.kyc.encrypt:false}")
     private boolean encryptKyc;
-    
+
     @Value("${mosip.mock.ida.hash-algo:MD5}")
     private String hashAlgorithm;
 
@@ -198,8 +198,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             result.get().setValidity(Valid.PROCESSED);
             authRepository.save(result.get());
-
-            String finalKyc = this.encryptKyc ? getJWE(relyingPartyId, signKyc(kyc)) : signKyc(kyc);
+            String finalKyc;
+            String userInfoResponseType = kycExchangeDto.getRespType();
+            finalKyc = "JWE".equals(userInfoResponseType) ? getJWE(relyingPartyId, signKyc(kyc)) : signKyc(kyc);
             KycExchangeResponseDto kycExchangeResponseDto = new KycExchangeResponseDto();
             kycExchangeResponseDto.setKyc(finalKyc);
             return kycExchangeResponseDto;
