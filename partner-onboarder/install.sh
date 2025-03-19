@@ -89,11 +89,32 @@ function installing_onboarder() {
       fi
     done
 
+    echo "Please select plugin details for esignet mock services..."
+    echo "1. esignet-mock-plugin.jar"
+    echo "2. mosip-identity-plugin.jar"
+    echo "3. any other custom plugin"
+    read -p "Enter the plugin number: " plugin_no
+      while true; do
+        if [[ "$plugin_no" == "1" ]]; then
+          mosipid_option="--set onboarding.variables.mosipid=false"
+          break
+        elif [[ "$plugin_no" == "2" ]]; then
+          mosipid_option="--set onboarding.variables.mosipid=true"
+          break
+        elif [[ "$plugin_no" == "3" ]]; then
+          echo "Default Onboarder only support onboarding against Mosip and mock Identity"
+          break
+        else
+          echo "please provide the correct plugin number (1 or 2 or 3)."
+        fi
+      done
+
     echo "Istio label"
     kubectl label ns $NS istio-injection=disabled --overwrite
     helm repo update
 
     echo "Copy configmaps"
+
     COPY_UTIL=../deploy/copy_cm_func.sh
     $COPY_UTIL configmap keycloak-env-vars keycloak $NS
     $COPY_UTIL configmap keycloak-host keycloak $NS
@@ -110,6 +131,7 @@ function installing_onboarder() {
       --set extraEnvVarsCM[1]=keycloak-env-vars \
       --set extraEnvVarsCM[2]=keycloak-host \
       $ENABLE_INSECURE \
+      $mosipid_option \
       -f values.yaml \
       --version $CHART_VERSION \
       --wait --wait-for-jobs
