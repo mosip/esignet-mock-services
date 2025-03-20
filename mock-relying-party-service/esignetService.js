@@ -86,6 +86,7 @@ const generateSignedJwt = async (clientId) => {
   const jwt = new jose.SignJWT(payload)
     .setProtectedHeader(header)
     .setIssuedAt()
+    .setJti(Math.random().toString(36).substring(2,7))
     .setExpirationTime(expirationTime)
     .sign(privateKey);
 
