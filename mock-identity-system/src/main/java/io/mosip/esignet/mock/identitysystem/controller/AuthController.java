@@ -8,7 +8,9 @@ package io.mosip.esignet.mock.identitysystem.controller;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +20,15 @@ import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/")
+@Slf4j
 public class AuthController {
 
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Value("${mosip.mockidentitysystem.response.delay:0}")
+    private int delayInMilliSecs;
 
     @PostMapping(path = "kyc-auth/{relyingPartyId}/{clientId}",
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -32,8 +38,11 @@ public class AuthController {
         ResponseWrapper<KycAuthResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.kycAuth(relyingPartyId, clientId, new KycAuthDto(kycAuthRequestDto)));
         responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
+        delayedResponse();
         return responseWrapper;
     }
+
+
 
     @PostMapping(path = "v2/kyc-auth/{relyingPartyId}/{clientId}",
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,6 +52,7 @@ public class AuthController {
         ResponseWrapper<KycAuthResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.kycAuth(relyingPartyId, clientId, new KycAuthDto(kycAuthRequestDtoV2)));
         responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
+        delayedResponse();
         return responseWrapper;
     }
 
@@ -54,6 +64,7 @@ public class AuthController {
         ResponseWrapper<KycExchangeResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto, null,"JWS")));
         responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
+        delayedResponse();
         return responseWrapper;
     }
 
@@ -66,6 +77,7 @@ public class AuthController {
         responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDtoV2,
                 kycExchangeRequestDtoV2.getAcceptedClaimDetail(),"JWS")));
         responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
+        delayedResponse();
         return responseWrapper;
     }
 
@@ -78,6 +90,7 @@ public class AuthController {
         responseWrapper.setResponse(authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDtoV3, kycExchangeRequestDtoV3.getAcceptedClaimDetail(),
                 kycExchangeRequestDtoV3.getRespType())));
         responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
+        delayedResponse();
         return responseWrapper;
     }
 
@@ -89,6 +102,15 @@ public class AuthController {
         ResponseWrapper<SendOtpResult> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto));
         responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
+        delayedResponse();
         return responseWrapper;
+    }
+
+    private void delayedResponse() {
+        try {
+            Thread.sleep(delayInMilliSecs);
+        } catch (InterruptedException e) {
+            log.error("Unable to induce the delay" + e.getMessage());
+        }
     }
 }
