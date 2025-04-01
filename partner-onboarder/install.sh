@@ -1,5 +1,6 @@
 #!/bin/bash
 # Installs mock relying party onboarder OIDC helm
+# Installs mock relying party onboarder OIDC helm
 ## Usage: ./install.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then
@@ -119,7 +120,7 @@ function installing_onboarder() {
 
     echo "Istio label"
     kubectl label ns $NS istio-injection=disabled --overwrite
-#    helm repo update
+    helm repo update
 
     echo "Copy configmaps"
     COPY_UTIL=../deploy/copy_cm_func.sh
@@ -131,6 +132,7 @@ function installing_onboarder() {
 
     echo "Onboarding Mock Relying Party OIDC client"
     helm -n $NS install esignet-mock-rp-onboarder mosip/partner-onboarder \
+    helm -n $NS install esignet-mock-rp-onboarder mosip/partner-onboarder \
       $NFS_OPTION \
       $S3_OPTION \
       $MOSIPID_OPTION \
@@ -140,6 +142,10 @@ function installing_onboarder() {
       --set extraEnvVarsCM[2]=keycloak-host \
       $ENABLE_INSECURE \
       -f values.yaml \
+      --version $CHART_VERSION \
+      --wait --wait-for-jobs
+    echo "Partner onboarder executed and reports are moved to S3 or NFS please check the same to make sure partner was onboarded sucessfully."
+    kubectl rollout restart deployment mock-relying-party-service -n esignet
       --version $CHART_VERSION \
       --wait --wait-for-jobs
     echo "Partner onboarder executed and reports are moved to S3 or NFS please check the same to make sure partner was onboarded sucessfully."

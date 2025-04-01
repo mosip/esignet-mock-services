@@ -91,7 +91,7 @@ else:
     create_or_update_secret(db_secret_name, namespace, "db-dbuser-password", password)
 
 # Handle postgres-password secret
-postgres_secret_name = "esignet-postgres-postgresql"
+postgres_secret_name = "postgres-postgresql"
 if secret_exists(postgres_secret_name, namespace):
     overwrite = input(f"Secret '{postgres_secret_name}' already exists in namespace '{namespace}'. Overwrite? (y/n): ")
     if overwrite.lower() == 'y':

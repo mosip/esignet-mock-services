@@ -56,6 +56,11 @@ function installing_mock-relying-party-service() {
     --set mock_relying_party_service.ESIGNET_AUD_URL="https://$ESIGNET_HOST/v1/esignet/oauth/v2/token" \
     --version $CHART_VERSION $ENABLE_INSECURE \
     -f values.yaml --wait
+  helm -n $NS install mock-relying-party-service mosip/mock-relying-party-service \
+    --set mock_relying_party_service.ESIGNET_SERVICE_URL="$ESIGNET_SERVICE_URL" \
+    --set mock_relying_party_service.ESIGNET_AUD_URL="https://$ESIGNET_HOST/v1/esignet/oauth/v2/token" \
+    --version $CHART_VERSION $ENABLE_INSECURE \
+    -f values.yaml --wait
 
   kubectl -n $NS get deploy mock-relying-party-service -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 

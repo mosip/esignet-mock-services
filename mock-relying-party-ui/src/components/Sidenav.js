@@ -28,6 +28,7 @@ export default function Sidenav({
   const [address, setAddress] = useState(null);
   const [emailAddress, setEmailAddress] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
 
   function getAllKeys(input) {
@@ -92,6 +93,15 @@ export default function Sidenav({
       getUserDetails(authCode);
     };
     getSearchParams();
+    // hiding or showing the side nav
+    // according to windows height
+    const handleResize = () => setShowMenu(window.innerWidth > 767);
+    // initial call to handleResize
+    handleResize();
+    // adding event listener for window resize
+    window.addEventListener("resize", handleResize);
+    // removing event listener for window resize
+    return () => window.removeEventListener("resize", handleResize);
     // hiding or showing the side nav
     // according to windows height
     const handleResize = () => setShowMenu(window.innerWidth > 767);
@@ -358,6 +368,8 @@ export default function Sidenav({
         }
         aria-label="Sidebar"
       >
+        <div className="md:px-3 md:py-4">
+          <div className="hidden md:flex items-center justify-center col-start-1">
         <div className="md:px-3 md:py-4">
           <div className="hidden md:flex items-center justify-center col-start-1">
             <img src="images/doctor_logo.png" className="w-16 h-16 mx-4" />
@@ -725,6 +737,8 @@ export default function Sidenav({
         <>
           <div className="p-4 ltr:md:ml-64 rtl:md:mr-64 overflow-auto bg-gray-50 font-sans bg-none">
             <div className="flex flex-wrap justify-between items-center px-3 py-2.5">
+          <div className="p-4 ltr:md:ml-64 rtl:md:mr-64 overflow-auto bg-gray-50 font-sans bg-none">
+            <div className="flex flex-wrap justify-between items-center px-3 py-2.5">
               <a className="flex-1 items-center truncate">
                 <span className="self-center text-2xl font-semibold whitespace-nowrap">
                   {t("welcome")}, {userInfo?.name}
@@ -734,6 +748,7 @@ export default function Sidenav({
                 </p>
               </a>
 
+              <div className="md:flex items-center hidden">
               <div className="md:flex items-center hidden">
                 <div className="relative">
                   <div className="flex">
@@ -861,7 +876,10 @@ export default function Sidenav({
                     {newMessageComponent()}
                   </div>
                   {vaccinationHistoryComponent()}
+                  {vaccinationHistoryComponent()}
                 </div>
+                <div className="w-full sm:w-1/2 md:w-30 p-2 hidden md:block">
+                  {newMessageComponent()}
                 <div className="w-full sm:w-1/2 md:w-30 p-2 hidden md:block">
                   {newMessageComponent()}
                 </div>
