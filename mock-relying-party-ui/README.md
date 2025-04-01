@@ -4,12 +4,9 @@ This react application is the UI for the mock relying party portal
 
 ## Overview
 
-This repository contains the reference implementation of a relying party's website that wants to use [MOSIP's
-This repository contains the reference implementation of a relying party's website that wants to use [MOSIP's Esignet (Identity Provider) services](https://github.com/mosip/esignet) to log in users into its portal.
+This repository contains the reference implementation of a relying party's portal to showcase the OIDC protocol based integration with eSignet.
 
-This portal uses [OpenID specs](https://openid.net/specs/openid-connect-core-1_0.html) to communicate with [MOSIP Esignet Services](https://github.com/mosip/esignet).
-
-This portal contains 2 pages.
+Mock relying party portal uses [OpenID specs](https://openid.net/specs/openid-connect-core-1_0.html) to communicate with [MOSIP Esignet Services](https://github.com/mosip/esignet). And this implementation contains 2 pages.
 
 1. **Home Page**: This page represents the login screen for the relying party's website. This page includes a button with the text, "Sign in with MOSIP". On the click this button, the user gets redirected to the MOSIP's Esignet Portal. The user now has to authenticate and provide consent to share information from MOSIP to relying party, on the Esignet portal.
 

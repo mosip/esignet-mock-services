@@ -39,6 +39,8 @@ function installing_mock-relying-party-ui() {
 
   echo Create $NS namespace
   kubectl create ns $NS || true
+  echo Create $NS namespace
+  kubectl create ns $NS || true
 
   echo Istio label
   kubectl label ns $NS istio-injection=enabled --overwrite

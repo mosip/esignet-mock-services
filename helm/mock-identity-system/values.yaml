@@ -273,8 +273,6 @@ extraEnvVars:
         key: security-pin
   - name: hsm_local_dir_name
     value: hsm-client
-  - name: MOSIP_ESIGNET_MOCK_SUPPORTED_FIELDS
-    value: individualId,password
 
 ## ConfigMap with extra environment variables that used
 ##
