@@ -104,6 +104,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.mock.ida.kyc.psut.field:psut}")
     private String psutField;
 
+    @Value("${mosip.mockid.discovery.issuer-id}")
+    private String issuerId;
+
 
     @Override
     public KycAuthResponseDto kycAuth(String relyingPartyId, String clientId, KycAuthDto kycAuthDto) throws MockIdentityException {
@@ -195,6 +198,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Map<String, Object> kyc = buildKycDataBasedOnPolicy(kycExchangeDto.getIndividualId(), identityData,
                     kycExchangeDto.getAcceptedClaimDetail(), kycExchangeDto.getClaimLocales());
             kyc.put("sub", result.get().getPartnerSpecificUserToken());
+            kyc.put("iss", issuerId);
+            kyc.put("aud", clientId);
 
             result.get().setValidity(Valid.PROCESSED);
             authRepository.save(result.get());
