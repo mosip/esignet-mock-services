@@ -2,6 +2,7 @@ mock-esignet-integration-impl/.idea/*
 mock-identity-system/target/*
 mock-esignet-integration-impl/target/*
 mock-identity-system/local.p12
+usecase-compass/target/*
 .idea
 helm/*/charts
 helm/*/Chart.lock
