@@ -394,6 +394,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             locales = Arrays.asList(defaultLanguage);
         }
 
+        List<String> claimsList = new ArrayList<>();
         for (Map.Entry<String, JsonNode> claimDetail : claims.entrySet()) {
 
             Optional<Map.Entry<String, String>> keyMappingEntry = oidcClaimsMapping.entrySet().stream().filter(entry -> entry.getValue().equals(claimDetail.getKey()) ).findFirst();
@@ -407,7 +408,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             Map<String, Object> result = getVerificationDetail(individualId, itr.next(), identityData, locales);
                             if(result.isEmpty())
                                 continue;
-
+                            claimsList = getVerifiedClaimList(claimDetail);
                             List<Object> list = (List<Object>) kyc.getOrDefault("verified_claims", new ArrayList<Object>());
                             list.add(result);
                             kyc.put("verified_claims", list);
@@ -420,6 +421,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     break;
 
                 case "address":
+                    if(claimsList.contains(claimDetail.getKey())){
+                        return kyc;
+                    }
                     Map<String, Object> addressValues = new HashMap<>();
                     addressValues.putAll(getKycValues(locales, "street_address", HelperUtil.getLanguageValuesList(identityData.get("streetAddress")),
                             claimDetail.getValue()));
@@ -436,7 +440,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     break;
 
                 default:
-
+                    if(claimsList.contains(claimDetail.getKey())){
+                        return kyc;
+                    }
                     if(keyMappingEntry.isEmpty() || !identityData.hasNonNull(keyMappingEntry.get().getKey())) { break; }
 
                     if(identityData.get(keyMappingEntry.get().getKey()).isArray()) {
@@ -449,10 +455,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             kyc.put(claimDetail.getKey(), value);
                         }
                     }
+
                     break;
             }
         }
         return kyc;
+    }
+
+    /**
+     * Claim list to hold the verified claims names
+     * @param claimDetail claimDetail
+     * @return claimsList
+     */
+    private List<String> getVerifiedClaimList(Map.Entry<String, JsonNode> claimDetail) {
+        List<String> claimsList = new ArrayList<>();
+        if(claimDetail.getKey()!=null && claimDetail.getValue()!=null){
+            for (JsonNode jsonNode : claimDetail.getValue()) {
+                JsonNode requestedVerifiedClaims = jsonNode.get("claims");
+                Iterator<Map.Entry<String, JsonNode>> it = requestedVerifiedClaims.fields();
+                while (it.hasNext()) {
+                    Map.Entry<String, JsonNode> entry = it.next();
+                    if(!claimsList.contains(entry.getKey())){
+                        claimsList.add(entry.getKey());
+                    }
+                }
+            }
+        }
+        return claimsList;
     }
 
     private Map<String, Object> getKycValues(List<String> locales, String claimName, List<LanguageValue> values, JsonNode requestedClaimDetail) {
