@@ -421,37 +421,38 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     break;
 
                 case "address":
-                    if(!claimsList.contains(claimDetail.getKey())){
-                        Map<String, Object> addressValues = new HashMap<>();
-                        addressValues.putAll(getKycValues(locales, "street_address", HelperUtil.getLanguageValuesList(identityData.get("streetAddress")),
-                                claimDetail.getValue()));
-                        addressValues.putAll(getKycValues(locales, "locality", HelperUtil.getLanguageValuesList(identityData.get("locality")),
-                                claimDetail.getValue()));
-                        addressValues.putAll(getKycValues(locales, "region", HelperUtil.getLanguageValuesList(identityData.get("region")),
-                                claimDetail.getValue()));
-                        addressValues.putAll(getKycValues(locales, "country", HelperUtil.getLanguageValuesList( identityData.get("country")),
-                                claimDetail.getValue()));
-                        if (identityData.hasNonNull("postalCode")) {
-                            addressValues.put("postal_code", identityData.get("postalCode").asText());
-                        }
-                        kyc.put("address", addressValues);
+                    if(claimsList.contains(claimDetail.getKey())){
+                        return kyc;
                     }
+                    Map<String, Object> addressValues = new HashMap<>();
+                    addressValues.putAll(getKycValues(locales, "street_address", HelperUtil.getLanguageValuesList(identityData.get("streetAddress")),
+                            claimDetail.getValue()));
+                    addressValues.putAll(getKycValues(locales, "locality", HelperUtil.getLanguageValuesList(identityData.get("locality")),
+                            claimDetail.getValue()));
+                    addressValues.putAll(getKycValues(locales, "region", HelperUtil.getLanguageValuesList(identityData.get("region")),
+                            claimDetail.getValue()));
+                    addressValues.putAll(getKycValues(locales, "country", HelperUtil.getLanguageValuesList( identityData.get("country")),
+                            claimDetail.getValue()));
+                    if (identityData.hasNonNull("postalCode")) {
+                        addressValues.put("postal_code", identityData.get("postalCode").asText());
+                    }
+                    kyc.put("address", addressValues);
                     break;
 
                 default:
+                    if(claimsList.contains(claimDetail.getKey())){
+                        return kyc;
+                    }
+                    if(keyMappingEntry.isEmpty() || !identityData.hasNonNull(keyMappingEntry.get().getKey())) { break; }
 
-                    if(!claimsList.contains(claimDetail.getKey())){
-                        if(keyMappingEntry.isEmpty() || !identityData.hasNonNull(keyMappingEntry.get().getKey())) { break; }
-
-                        if(identityData.get(keyMappingEntry.get().getKey()).isArray()) {
-                            List<LanguageValue> languageValues = HelperUtil.getLanguageValuesList( identityData.get(keyMappingEntry.get().getKey()));
-                            kyc.putAll(getKycValues(locales, keyMappingEntry.get().getValue(), languageValues, claimDetail.getValue()));
-                        }
-                        else {
-                            String value = identityData.get(keyMappingEntry.get().getKey()).asText();
-                            if (isClaimMatchingValueOrValuesCriteria(value, claimDetail.getValue())) {
-                                kyc.put(claimDetail.getKey(), value);
-                            }
+                    if(identityData.get(keyMappingEntry.get().getKey()).isArray()) {
+                        List<LanguageValue> languageValues = HelperUtil.getLanguageValuesList( identityData.get(keyMappingEntry.get().getKey()));
+                        kyc.putAll(getKycValues(locales, keyMappingEntry.get().getValue(), languageValues, claimDetail.getValue()));
+                    }
+                    else {
+                        String value = identityData.get(keyMappingEntry.get().getKey()).asText();
+                        if (isClaimMatchingValueOrValuesCriteria(value, claimDetail.getValue())) {
+                            kyc.put(claimDetail.getKey(), value);
                         }
                     }
 
