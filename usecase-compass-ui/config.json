@@ -1,0 +1,5 @@
+{
+    "KEYCLOAK_URL": "http://localhost:9090",
+    "KEYCLOAK_REALM": "compass",
+    "KEYCLOAK_CLIENT_ID": "compass-config"
+}

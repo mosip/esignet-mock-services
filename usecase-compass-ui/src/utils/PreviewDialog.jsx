@@ -1,0 +1,47 @@
+const PreviewDialog = ({showPreviewDialog, submitApplication}) => {
+
+    const closePreviewDialog = () =>{
+        showPreviewDialog();
+    };
+
+    return (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-[#FDEDE1] rounded-3xl w-[781px] shadow-lg h-auto pb-4 relative">
+                <h1 className="text-2xl font-bold px-6 pt-6  mb-4 text-[#181D27]">Confirm Details</h1>
+                <hr className="text-[#D7D8E1]" />
+                <div className="py-6 px-10">
+                    <div className="flex items-center space-x-10 px-1 pb-7">
+                        <div>
+                            <span className="text-[#EC6707] text-[17px]">Photo</span>
+                            <img src="" alt="profile" className="h-[180px] w-[141px] border border-[#ffffff] rounded-lg" />
+                        </div>
+                        <div>
+                            <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Full Name</span><br /><span className="text-[#14397E] text-[18px] font-bold">Mathew Thompson </span></p>
+                            <p className="-mb-4"><span className="text-[#EC6707] text-[16px]">Full Name (Latin)</span><br /><span className="text-[#14397E] text-[18px] font-bold">Mathew Thompson </span></p>
+                        </div>
+                    </div>
+                    <hr className="text-[#D7D8E1]" />
+                    <div className="flex space-x-10 pt-6 px-1">
+                        <div className="w-[50%]">
+                            <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Date of Birth</span><br /><span className="text-[#14397E] text-[18px] font-bold">30-09-1998</span></p>
+                            <p className="mb-4"><span className="text-[#EC6707] text-[16px]">National ID</span><br /><span className="text-[#14397E] text-[18px] font-bold">27346236628863</span></p>
+                            <p><span className="text-[#EC6707] text-[16px]">Birth Country</span><br /><span className="text-[#14397E] text-[18px] font-bold">India</span></p>
+                        </div>
+                        <div className="w-[50%]">
+                            <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Gender</span><br /><span className="text-[#14397E] text-[18px] font-bold">Male</span></p>
+                            <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Nationality</span><br /><span className="text-[#14397E] text-[18px] font-bold">Indian</span></p>
+                            <p><span className="text-[#EC6707] text-[16px]">CAN(Card Access Number)</span><br /><span className="text-[#14397E] text-[18px] font-bold">34253453</span></p>
+                        </div>
+                    </div>
+                </div>
+                <hr className="text-[#D7D8E1]" />
+                <div className="py-6 px-10 flex gap-4">
+                    <button onClick={closePreviewDialog} type="button" className="btn btn-outline w-[50%] font-bold h-[60px] border-2 text-[#FF671F] text-lg cursor-pointer border-[#FF671F] rounded-md">Cancel</button>
+                    <button onClick={submitApplication} type="button" className="btn btn-primary w-[50%] font-bold h-[60px] border-2 bg-[#FF671F] text-lg cursor-pointer text-[#ffffff] border-[#FF671F] rounded-md">Submit</button>
+                </div>
+            </div>
+        </div>
+    )
+};
+
+export default PreviewDialog;
