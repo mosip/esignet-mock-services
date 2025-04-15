@@ -24,17 +24,8 @@ public class UserInfo {
     @Column(name = "user_info_id", nullable = false, updatable = false)
     private UUID userInfoId;
 
-    @Column(name = "pp_mrz_td3")
-    private String ppMrzTd3;
-
-    @Column(name = "pp_number")
-    private String ppNumber;
-
-    @Column(name = "vc_num")
-    private Long vcNum;
-
-    @Column(name = "address")
-    private String address;
+    @Column(name = "compass_id")
+    private String compassId;
 
     @Column(name = "birth_country")
     private String birthCountry;
@@ -49,37 +40,22 @@ public class UserInfo {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "eye_color")
-    private String eyeColor;
-
-    @Column(name = "face_image_color")
+    @Column(name = "face_image_color", columnDefinition = "TEXT")
     @Basic(fetch = FetchType.LAZY)
-    private byte[] faceImageColor;
+    private String faceImageColor;
 
-    @Column(name = "face_image_grey")
+    @Column(name = "face_image_grey", columnDefinition = "TEXT")
     @Basic(fetch = FetchType.LAZY)
-    private byte[] faceImageGrey;
+    private String faceImageGrey;
 
     @Column(name = "first_name_primary")
     private String firstNamePrimary;
 
-    @Column(name = "first_name_primary_latin")
-    private String firstNamePrimaryLatin;
-
     @Column(name = "gender")
     private String gender;
 
-    @Column(name = "height")
-    private Integer height;
-
     @Column(name = "last_name_secondary")
     private String lastNameSecondary;
-
-    @Column(name = "last_name_secondary_latin")
-    private String lastNameSecondaryLatin;
-
-    @Column(name = "mobile_number")
-    private String mobileNumber;
 
     @Column(name = "national_uid", nullable = false, unique = true)
     private String nationalUid;
@@ -99,10 +75,10 @@ public class UserInfo {
             this.userInfoId = UUID.randomUUID();
         }
 
-        if (this.vcNum == null) {
+        if (this.compassId == null) {
             Random random = new Random();
-            // Generate a number between 1000000000 (inclusive) and 9999999999 (inclusive)
-            this.vcNum = 1000000000L + random.nextLong(9999999999L);
+            int randomNineDigits = 100000000 + random.nextInt(900000000);
+            this.compassId = "VC" + randomNineDigits;
         }
     }
 }

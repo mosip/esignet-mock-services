@@ -11,15 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
-import java.util.Iterator;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -27,13 +24,11 @@ public interface UserInfoMapper {
 
     Logger log = LoggerFactory.getLogger(UserInfoMapper.class);
 
-    @Mapping(target = "vcNum", ignore = true) // This is auto-generated
+    @Mapping(target = "compassId", ignore = true) // This is auto-generated
     @Mapping(target = "createdTimes", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "faceImageColor", source = "faceImageColor", qualifiedByName = "base64ToBinary")
-    @Mapping(target = "faceImageGrey", source = "faceImageColor", qualifiedByName = "base64ToGreyBinary") // <- updated
+    @Mapping(target = "faceImageGrey", source = "faceImageColor", qualifiedByName = "convertColorBase64ToGreyBase64")
     UserInfo toEntity(UserInfoDTO dto);
 
-    @Mapping(target = "faceImageColor", source = "faceImageColor", qualifiedByName = "binaryToBase64")
     UserInfoDTO toDto(UserInfo entity);
 
     @Mapping(source = "userInfoId", target = "userInfoId")
@@ -44,76 +39,44 @@ public interface UserInfoMapper {
 
     List<UserInfo> toEntityList(List<UserInfoDTO> dtos);
 
+    @Named("convertColorBase64ToGreyBase64")
+    default String convertColorBase64ToGreyBase64(String base64ColorImage) {
+        if (base64ColorImage == null || base64ColorImage.isEmpty()) return null;
 
-    // Named methods for conversion
-    @Named("base64ToBinary")
-    default byte[] base64ToBinary(String base64String) {
-        if (base64String == null || base64String.isEmpty()) {
-            return null;
-        }
-        return Base64.getDecoder().decode(base64String);
-    }
+        try {
+            // Extract MIME type and format (e.g., image/jpeg => jpeg)
+            String mimeType = base64ColorImage.substring(base64ColorImage.indexOf(":") + 1, base64ColorImage.indexOf(";"));
+            String formatName = mimeType.substring(mimeType.indexOf("/") + 1); // e.g., jpeg, png
 
-    @Named("binaryToBase64")
-    default String binaryToBase64(byte[] binaryData) {
-        if (binaryData == null || binaryData.length == 0) {
-            return null;
-        }
-        return Base64.getEncoder().encodeToString(binaryData);
-    }
+            // Get image data
+            String base64Data = base64ColorImage.substring(base64ColorImage.indexOf(",") + 1);
+            byte[] imageBytes = Base64.getDecoder().decode(base64Data);
 
-    @Named("base64ToGreyBinary")
-    default byte[] base64ToGreyBinary(String base64String) {
-        if (base64String == null || base64String.isEmpty()) {
-            return null;
-        }
+            // Convert to grayscale
+            ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
+            BufferedImage colorImage = ImageIO.read(bis);
 
-        byte[] colorBytes = Base64.getDecoder().decode(base64String);
-
-        try (
-                ByteArrayInputStream bais = new ByteArrayInputStream(colorBytes);
-                ImageInputStream iis = ImageIO.createImageInputStream(bais)
-        ) {
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-            if (!readers.hasNext()) {
-                throw new IllegalArgumentException("Unsupported image format");
-            }
-
-            ImageReader reader = readers.next();
-            reader.setInput(iis, true);
-            String formatName = reader.getFormatName().toLowerCase();
-
-            BufferedImage colorImage = reader.read(0);
-            reader.dispose();
-
-            if (colorImage == null) {
-                throw new IOException("Could not read image");
-            }
-
-            BufferedImage greyImage = new BufferedImage(
+            BufferedImage grayImage = new BufferedImage(
                     colorImage.getWidth(),
                     colorImage.getHeight(),
                     BufferedImage.TYPE_BYTE_GRAY
             );
 
-            Graphics2D g = greyImage.createGraphics();
-            try {
-                g.drawImage(colorImage, 0, 0, null);
-            } finally {
-                g.dispose(); // Must call dispose manually
-            }
+            Graphics g = grayImage.getGraphics();
+            g.drawImage(colorImage, 0, 0, null);
+            g.dispose();
 
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                boolean success = ImageIO.write(greyImage, formatName, baos);
-                if (!success) {
-                    throw new IOException("Failed to write image in format: " + formatName);
-                }
-                return baos.toByteArray();
-            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(grayImage, formatName, baos); // Use the extracted format
+            byte[] greyBytes = baos.toByteArray();
+
+            // Encode back to base64 with MIME
+            return "data:" + mimeType + ";base64," + Base64.getEncoder().encodeToString(greyBytes);
 
         } catch (IOException e) {
-            log.error("Error converting color image to grayscale image", e);
-            return null;
+            log.error("Conversion of color image to grayscale image failed.", e);
+            throw new RuntimeException("Failed to convert color image to grayscale Base64", e);
         }
     }
+
 }
