@@ -6,14 +6,22 @@ const AuthRedirectHandler = () => {
   const { keycloak, initialized } = useKeycloak();
   const navigate = useNavigate();
   const location = useLocation();
+  const tokenParsed = keycloak.tokenParsed;
+
+  const roles = tokenParsed?.realm_access?.roles || [];
 
   useEffect(() => {
     if (!initialized) return;
 
     if (keycloak?.authenticated) {
-      navigate(location.pathname);
+      if(location.pathname === '/'){
+        navigate('/home');
+      }else{
+        navigate(location.pathname)
+      }
+      
     } else {
-      navigate("/start");
+      navigate("/");
     }
   }, [initialized, keycloak?.authenticated]);
 
