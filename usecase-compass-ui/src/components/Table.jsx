@@ -1,60 +1,77 @@
-const Table = ({ applicationsList }) => {
+import { useState } from "react";
+import Shimmer from "../utils/Shimmer";
+import { useEffect } from "react";
+import http from "../services/http";
+import AlertDialog from "../utils/AlertDialog";
+
+
+const Table = ({ applicationsList, selecteApplication, selectedItems, deleteApplication }) => {
+    const [selectedAllDel, setClickedAllDel] = useState(false);
+    const [showDeleteConfMsg, setShowDeleteConfMsg] = useState(false);
+    const [selectedDelId, setSelectedDelId] = useState("");
+
+    const deleteConfMsg = {title:"Delete Conformation!", message:"Are you sure you want to delete this record?", messageTwo:"This action can’t be undone."};
+
+    useEffect(() =>{
+        console.log(applicationsList.length)
+        console.log(selectedItems)
+        if(applicationsList.length === selectedItems.length && applicationsList.length > 0){
+            setClickedAllDel(true);
+        }else{
+            setClickedAllDel(false);
+        }
+
+        return () =>{
+            setSelectedDelId("");
+        }
+    }, [selectedItems]);
+
+    const selectedAllDelBtn = () =>{
+        selecteApplication("selectAll");
+    };
+
+    const deleteSingleItem = async () =>{
+        deleteApplication(selectedDelId)
+        setShowDeleteConfMsg(false);
+    };
+
 
 
     return (
         <div className="w-full min-h-full">
-            <table className="table w-full min-h-full border-collapse">
+            <table className="table w-full min-h-full border-collapse text-[16px]">
                 {/* head */}
                 <thead>
-                    <tr className="text-[#6F6E6E] border-b border-gray-300">
-                        {applicationsList.length > 0 && (
-                            <th className="text-center w-[1%] py-5 px-6">
-                                <label>
-                                    <input type="checkbox" className="checkbox cursor-pointer h-[18px] w-[18px] align-middle accent-[#FF671F]" />
-                                </label>
-                            </th>
-                        )}
-                        <th className="text-left w-[15%] font-medium py-5 px-6">Full Name</th>
-                        <th className="text-center w-[25%] font-medium py-5">National ID</th>
-                        <th className="text-center w-[25%] font-medium py-5">CAN</th>
-                        <th className="text-center w-[25%] font-medium py-5">Action</th>
+                    <tr className="text-[#6F6E6E] border-b border-[#E3DCC9]">
+                        <th className={` pl-6 text-left w-[22%] font-medium py-5`}><p className="flex items-center">{applicationsList.length > 0 && <img onClick={selectedAllDelBtn} src={`/assets/icons/${selectedAllDel ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/>}<span className="pl-4">First Name</span></p></th>
+                        <th className="text-left w-[22%] font-medium py-5">Last Name</th>
+                        <th className="text-left w-[22%] font-medium py-5">National ID</th>
+                        <th className="text-left w-[22%] font-medium py-5">CAN</th>
+                        <th className="text-right w-[10%] font-medium py-5 pr-20">Action</th>
                     </tr>
                 </thead>
-                <tbody className="w-full">
+                <tbody className="w-full text-[#031640]">
                     {applicationsList.length > 0 && applicationsList.map((eachItem, index) => (
-                        <tr key={index} className="border-b border-gray-300">
-                            <th className="px-6 py-5">
-                                <label>
-                                    <input type="checkbox" className="checkbox h-[18px] w-[18px] align-middle" />
-                                </label>
-                            </th>
-                            <td className="py-5 text-left">{eachItem.fullName}</td>
-                            <td className="py-5 text-center">{eachItem.nID}</td>
-                            <td className="py-5 text-center">{eachItem.can}</td>
-                            <th className="py-5">
-                                <button className="btn btn-ghost btn-xs"><img src="src/assets/icons/del-orange.svg" alt="delete" /></button>
+                        <tr key={index} className="border-b border-[#E3DCC9]">
+                            <td className="py-5 pl-6 text-left w-[22%]"><p className="flex items-center"><img onClick={() => selecteApplication(eachItem.userInfoId)} src={`/assets/icons/${selectedItems.includes(eachItem.userInfoId) ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/><span className="pl-4">{eachItem.firstNamePrimary}</span></p></td>
+                            <td className="py-5 text-left w-[22%]">{eachItem.lastNameSecondary}</td>
+                            <td className="py-5 text-left w-[22%]">{eachItem.nationalUid}</td>
+                            <td className="py-5 text-left w-[22%]">{eachItem.cardAccessNumber}</td>
+                            <th className="py-5 text-right pr-20 w-[10%]">
+                                <button onClick={() => {setShowDeleteConfMsg(true);setSelectedDelId(eachItem.userInfoId) }} className="btn btn-ghost btn-xs cursor-pointer"><img src="/assets/icons/del-orange.svg" alt="delete" /></button>
                             </th>
                         </tr>
                     ))}
                     {applicationsList.length <= 0 && (
                         <tr>
                             <td colSpan="100%" className="w-full h-full">
-                                <div className="py-13 w-full h-full flex justify-center">
-                                    <div className="h-[132px] w-[273px] border border-[#D0D0D0] rounded-2xl">
-                                        <div className="flex gap-2">
-                                            <span className="h-[8px] w-[32px] bg-[#D0D0D0] rounded-[2px]"></span>
-                                            <span className="h-[8px] w-[32px] bg-[#D0D0D0] rounded-[2px]"></span>
-                                            <span className="h-[8px] w-[32px] bg-[#D0D0D0] rounded-[2px]"></span>
-                                            <span className="h-[8px] w-[32px] bg-[#D0D0D0] rounded-[2px]"></span>
-                                            <span className="h-[8px] w-[32px] bg-[#D0D0D0] rounded-[2px]"></span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <Shimmer/>
                             </td>
                         </tr>
                     )}
                 </tbody>
             </table>
+            {showDeleteConfMsg && <AlertDialog data={deleteConfMsg} confirmMsg={deleteSingleItem} closePopup={() => setShowDeleteConfMsg(false)}/>}
         </div>
 
     )
