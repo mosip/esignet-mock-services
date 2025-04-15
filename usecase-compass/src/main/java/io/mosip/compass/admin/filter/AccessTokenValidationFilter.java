@@ -6,11 +6,7 @@
 package io.mosip.compass.admin.filter;
 
 
-import com.nimbusds.jose.util.ByteUtils;
-import io.mosip.compass.admin.dto.ParsedAccessToken;
-import io.mosip.compass.admin.exception.AdminServerException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
@@ -21,9 +17,6 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.*;
@@ -32,8 +25,6 @@ import java.util.*;
 @Slf4j
 @Component
 public class AccessTokenValidationFilter extends OncePerRequestFilter {
-    public static final String ALGO_SHA_256 = "SHA-256";
-    private static Base64.Encoder urlSafeEncoder;
 
     @Value("${mosip.admin-server.authn.issuer-uri}")
     private String issuerUri;
@@ -44,14 +35,7 @@ public class AccessTokenValidationFilter extends OncePerRequestFilter {
     @Value("#{${mosip.admin-server.authn.filter-urls}}")
     private List<String> urlPatterns;
 
-    @Autowired
-    private ParsedAccessToken parsedAccessToken;
-
     private NimbusJwtDecoder nimbusJwtDecoder;
-
-//    @Value("#{${mosip.admin-server.authn.required-roles}}")
-//    private List<String> requiredRoles;
-
 
     private boolean isJwt(String token) {
         return token.split("\\.").length == 3;
@@ -88,12 +72,7 @@ public class AccessTokenValidationFilter extends OncePerRequestFilter {
             if(isJwt(token)) {
                 try {
                     //Verifies signature and claim predicates, If invalid throws exception
-                    Jwt jwt = getNimbusJwtDecoder().decode(token);
-
-                    parsedAccessToken.setClaims(new HashMap<>());
-                    parsedAccessToken.getClaims().putAll(jwt.getClaims());
-                    parsedAccessToken.setAccessTokenHash(generateOIDCAtHash(token));
-                    parsedAccessToken.setActive(true);
+                    getNimbusJwtDecoder().decode(token);
                     filterChain.doFilter(request, response);
                     return;
 
@@ -104,20 +83,6 @@ public class AccessTokenValidationFilter extends OncePerRequestFilter {
         }
 
         log.error("No Bearer / Opaque token provided, continue with the request chain");
-        parsedAccessToken.setActive(false);
         filterChain.doFilter(request, response);
-    }
-
-    private String generateOIDCAtHash(String accessToken) throws AdminServerException {
-        try {
-            MessageDigest digest = MessageDigest.getInstance(ALGO_SHA_256);
-            byte[] hash = digest.digest(accessToken.getBytes(StandardCharsets.UTF_8));
-            //taking only 16 bytes (=128 bits)
-            byte[] leftMost128Bits = ByteUtils.subArray(hash, 0, 16);
-            return urlSafeEncoder.encodeToString(leftMost128Bits);
-        } catch (NoSuchAlgorithmException ex) {
-            log.error("Access token hashing failed with alg:{}", ALGO_SHA_256, ex);
-            throw new AdminServerException("INVALID_ALGORITHM");
-        }
     }
 }

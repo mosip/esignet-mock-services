@@ -1,6 +1,7 @@
 package io.mosip.compass.admin.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,12 +13,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfoDTO {
-    private String ppMrzTd3;
-    private String ppNumber;
-
-    @Size(max = 250, message = "Address must be less than 250 characters")
-    private String address;
-
     @NotBlank(message = "Birth country is required")
     private String birthCountry;
 
@@ -34,36 +29,19 @@ public class UserInfoDTO {
     @Email(message = "Email should be valid")
     private String email;
 
-    @Size(min = 0, max = 20, message = "National UID must be between max 30 characters")
-    private String eyeColor;
-
     @NotNull(message = "Face image color is required")
     private String faceImageColor;
-
-//    @NotNull(message = "Face image grey is required")
-//    private String faceImageGrey;
 
     @NotBlank(message = "First name is required")
     @Size(min = 1, max = 100, message = "First name must be between 1 and 100 characters")
     private String firstNamePrimary;
 
-    @Size(min = 0, max = 80, message = "First name latin must be between 1 and 100 characters")
-    private String firstNamePrimaryLatin;
-
     @NotBlank(message = "Gender is required")
     private String gender;
-
-    private Integer height;
 
     @NotBlank(message = "Last name is required")
     @Size(min = 1, max = 100, message = "Last name must be between 1 and 100 characters")
     private String lastNameSecondary;
-
-    @Size(min = 0, max = 80, message = "Last name latin must be between 1 and 100 characters")
-    private String lastNameSecondaryLatin;
-
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Mobile number should be valid")
-    private String mobileNumber;
 
     @NotBlank(message = "National UID is required")
     @Size(min = 1, max = 30, message = "National UID must be between max 30 characters")
@@ -71,4 +49,6 @@ public class UserInfoDTO {
 
     @NotBlank(message = "Nationality is required")
     private String nationality;
+
+    private String compassId;
 }
