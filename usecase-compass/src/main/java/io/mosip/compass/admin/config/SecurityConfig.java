@@ -1,6 +1,5 @@
 package io.mosip.compass.admin.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,9 +19,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
     @Value("${mosip.admin-server.authn.jwk-set-uri}")
     private String jwkSetUri;
 
@@ -41,9 +37,6 @@ public class SecurityConfig {
                         )
                 );
 
-                http.exceptionHandling(exceptionConfigurer ->
-                    exceptionConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                );
                 http.sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );

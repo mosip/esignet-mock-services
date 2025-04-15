@@ -40,9 +40,6 @@ public class UserInfoDTO {
     @NotNull(message = "Face image color is required")
     private String faceImageColor;
 
-//    @NotNull(message = "Face image grey is required")
-//    private String faceImageGrey;
-
     @NotBlank(message = "First name is required")
     @Size(min = 1, max = 100, message = "First name must be between 1 and 100 characters")
     private String firstNamePrimary;
