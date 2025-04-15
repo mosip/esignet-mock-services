@@ -104,7 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.mock.ida.kyc.psut.field:psut}")
     private String psutField;
 
-    @Value("${mosip.mockid.discovery.issuer-id}")
+    @Value("${mosip.mockidentitysystem.esignet.issuer-id}")
     private String issuerId;
 
 
