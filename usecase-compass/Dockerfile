@@ -77,7 +77,7 @@ RUN chmod +x configure_start.sh
 
 RUN chmod a-w /home/${container_user}/configure_start.sh
 
-COPY ./target/admin-service-*.jar admin-service.jar
+COPY ./target/usecase-compass-*.jar usecase-compass.jar
 
 # change permissions of file inside working dir
 RUN chown -R ${container_user}:${container_user} /home/${container_user}
