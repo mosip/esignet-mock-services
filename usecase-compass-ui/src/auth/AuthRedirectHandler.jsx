@@ -20,6 +20,7 @@ const AuthRedirectHandler = () => {
         userRoles.includes(role)
       );
 
+      
       if (!hasAdminRole) {
         // Logout and redirect to `/` (home) with a logout message flag
         sessionStorage.setItem("invaludUser", true);
