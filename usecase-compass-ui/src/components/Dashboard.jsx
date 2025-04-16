@@ -16,7 +16,6 @@ const Dashboard = () => {
     const getUserData = async () => {
         try {
             const response = await http.get('/user-info');
-            typeof response.data
             if(typeof response.data !== 'string'){
                 setApplicationsList(response.data);
             }else{
