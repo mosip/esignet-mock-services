@@ -22,12 +22,15 @@ public class SecurityConfig {
     @Value("${mosip.admin-server.authn.jwk-set-uri}")
     private String jwkSetUri;
 
+    @Value("${mosip.usecase-compass.security.ignore-auth-urls}")
+    private String[] ignoreAuthUrls;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(ignoreAuthUrls).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
