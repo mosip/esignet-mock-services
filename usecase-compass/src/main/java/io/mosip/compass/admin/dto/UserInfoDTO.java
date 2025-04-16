@@ -55,4 +55,7 @@ public class UserInfoDTO {
     private String nationality;
 
     private String compassId;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate issuanceDate;
 }
