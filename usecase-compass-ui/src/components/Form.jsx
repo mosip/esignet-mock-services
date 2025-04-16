@@ -37,7 +37,6 @@ const Form = ({ showSuccessMsg }) => {
     const [errors, setErrors] = useState({});
     const [invalidFormError, setInvalidFormError] = useState("");
     const [showFormClearMsg, setShowFormClearMsg] = useState(false);
-    const inputRef = useRef();
 
     const clearFormConfMsg = { title: "Clear Form", message: "Are you sure you want to clear the form?" };
 
