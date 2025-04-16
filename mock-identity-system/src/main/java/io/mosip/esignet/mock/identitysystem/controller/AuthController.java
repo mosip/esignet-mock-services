@@ -111,6 +111,7 @@ public class AuthController {
             Thread.sleep(delayInMilliSecs);
         } catch (InterruptedException e) {
             log.error("Unable to induce the delay" + e.getMessage());
+            Thread.currentThread().interrupt();
         }
     }
 }
