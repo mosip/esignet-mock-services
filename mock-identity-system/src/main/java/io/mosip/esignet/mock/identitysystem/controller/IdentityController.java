@@ -9,6 +9,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.dto.Error;
 import io.mosip.esignet.mock.identitysystem.validator.IdentitySchema;
@@ -97,6 +98,13 @@ public class IdentityController {
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 				.body(errors);
+	}
+
+	@GetMapping("identity/ui-spec")
+	public ResponseWrapper<JsonNode> getUiSpec() {
+		ResponseWrapper<JsonNode> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(identityService.getSchema());
+		return responseWrapper;
 	}
 
 	private ResponseWrapper getResponseWrapper(List<Error> errors) {

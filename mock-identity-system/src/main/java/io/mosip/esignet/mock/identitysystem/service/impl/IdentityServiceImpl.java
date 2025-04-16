@@ -5,6 +5,8 @@
  */
 package io.mosip.esignet.mock.identitysystem.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -21,6 +23,8 @@ import io.mosip.kernel.core.util.HMACUtils2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,6 +58,12 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	VerifiedClaimRepository verifiedClaimRepository;
+
+	@Autowired
+	private ResourceLoader resourceLoader;
+
+	@Value("${mosip.mock.ui-spec.schema.url}")
+	private String schemaUrl;
 
 	@Override
 	public void addIdentity(IdentityData identityData) throws MockIdentityException {
@@ -130,6 +140,27 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 	}
 
+	@Override
+	public JsonNode getSchema() {
+		InputStream schemaResponse = getResource(schemaUrl);
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			return objectMapper.readTree(schemaResponse);
+		} catch (IOException e) {
+			log.error("Error parsing the UI specification schema: {}", e.getMessage(), e);
+			throw new MockIdentityException("ui_spec_not_found");
+		}
+	}
+
+	private InputStream getResource(String url) {
+		try {
+			Resource resource = resourceLoader.getResource(url);
+			return resource.getInputStream();
+		} catch (IOException e) {
+			log.error("Failed to parse data: {}", url, e);
+		}
+		throw new MockIdentityException("ui_spec_not_found");
+	}
 
 
 	@Override
