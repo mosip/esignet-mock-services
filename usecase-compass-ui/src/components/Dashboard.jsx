@@ -69,7 +69,6 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        console.log("jfnfim")
         getUserData();
     }, []);
 
