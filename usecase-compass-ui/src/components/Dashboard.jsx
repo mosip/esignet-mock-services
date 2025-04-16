@@ -16,7 +16,13 @@ const Dashboard = () => {
     const getUserData = async () => {
         try {
             const response = await http.get('/user-info');
-            setApplicationsList(response.data);
+            typeof response.data
+            if(typeof response.data !== 'string'){
+                setApplicationsList(response.data);
+            }else{
+                setApplicationsList([])
+            }
+            
             setShowLoader(false);
         } catch (err) {
             setApplicationsList([]);
