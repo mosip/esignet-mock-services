@@ -30,7 +30,7 @@ const Dashboard = () => {
     };
 
     const selecteApplication = (userInfoId) => {
-        if(!undefined) return
+        if(!userInfoId) return
         if (userInfoId === "selectAll") {
             if(applicationsList.length !== selectedItems.length){
                 const unselectedItems = applicationsList.map(item => item.userInfoId).filter(id => !selectedItems.includes(id));
