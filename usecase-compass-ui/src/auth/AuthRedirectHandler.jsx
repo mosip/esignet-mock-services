@@ -16,10 +16,11 @@ const AuthRedirectHandler = () => {
       const validAdminRoles = window._env_?.VALID_ADMIN_ROLE || [];
       const userRoles = keycloak?.tokenParsed?.realm_access?.roles || [];
 
-      const hasAdminRole = validAdminRoles.some((role) =>
+      const hasAdminRole = validAdminRoles?.some((role) =>
         userRoles.includes(role)
       );
 
+      
       if (!hasAdminRole) {
         // Logout and redirect to `/` (home) with a logout message flag
         sessionStorage.setItem("invaludUser", true);
