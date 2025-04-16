@@ -24,6 +24,7 @@ public interface UserInfoMapper {
 
     Logger log = LoggerFactory.getLogger(UserInfoMapper.class);
 
+    @Mapping(target = "userInfoId", ignore = true)
     @Mapping(target = "compassId", ignore = true) // This is auto-generated
     @Mapping(target = "createdTimes", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "faceImageGrey", source = "faceImageColor", qualifiedByName = "convertColorBase64ToGreyBase64")

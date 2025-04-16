@@ -8,11 +8,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfoDTO {
+
+    private UUID userInfoId;
+
     @NotBlank(message = "Birth country is required")
     private String birthCountry;
 
