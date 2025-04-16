@@ -7,8 +7,8 @@ export const UserPage= () => {
   return (
     <div className={"pb-20 flex flex-col gap-y-4 h-[80%]"}>
       <Header showLogout={true} />
-      <div className="bg-[url('./assets/bg.svg')] bg-repeat">
-        <WelcomeBanner />
+      <div className="bg-[url('./assets/bg.svg')] bg-repeat my-28">
+        <WelcomeBanner/>
         <UserProfileCard />
       </div>
     </div>

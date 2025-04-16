@@ -48,7 +48,7 @@ export const HomeFeatures = ({ i18nKeyPrefix = "login" }) => {
     });
   };
   return (
-    <div className="py-10 h-full bg-[url('./assets/bg.svg')] bg-repeat">
+    <div className="my-28 h-full bg-[url('./assets/bg.svg')] bg-repeat">
       <div className="mx-32 px-4 sm:px-6 lg:px-8">
         <div className="flex">
           <div className="mb-8 lg:mb-0 w-2xl flex-grow">
@@ -63,15 +63,12 @@ export const HomeFeatures = ({ i18nKeyPrefix = "login" }) => {
               download, manage, and access your digital credentials anytime,
               anywhere.
             </p>
-            {state === "ready" && (
-              <div id="sign-in-with-esignet" className="w-max"></div>
-            )}
-            {/* <button
-              className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              onClick={() => navigate("/user")}
+            {state === "ready" &&  <button
+                id="sign-in-with-esignet"
+                className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Log in with eSignet
-            </button> */}
+            </button>}
           </div>
           <div className="w-auto">
             <ul className="space-y-2 font-light text-gray-600">

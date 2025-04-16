@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import langConfigService from "./services/langConfigService";
 import BookAppointmentPage from "./pages/BookAppointment";
 import { UserProfileCard } from "./components/Home/UserProfileCard";
+import {UserPage} from "./pages/UserPage";
 
 function App() {
   const { i18n } = useTranslation();
@@ -53,7 +54,7 @@ function App() {
         <Routes>
           <Route path={process.env.PUBLIC_URL + "/"} element={<LoginPage langOptions={langOptions} />} />
           <Route path={process.env.PUBLIC_URL + "/signup"} element={<SignUpPage langOptions={langOptions} />} />
-          <Route path={process.env.PUBLIC_URL + "/userprofile"} element={<UserProfileCard langOptions={langOptions} />} />
+          <Route path={process.env.PUBLIC_URL + "/userprofile"} element={<UserPage langOptions={langOptions} />} />
           <Route path={process.env.PUBLIC_URL + "/registration"} element={<RegistrationPage langOptions={langOptions} />} />
           <Route path={process.env.PUBLIC_URL + "/bookappointment"} element={<BookAppointmentPage langOptions={langOptions}/>}/>
         </Routes>
