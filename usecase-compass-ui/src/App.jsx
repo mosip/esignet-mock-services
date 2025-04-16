@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import Main from './shared/Main';
 import Dashboard from './components/Dashboard';
 import { useKeycloak } from "@react-keycloak/web";
-import AuthRedirectHandler from "./auth/AuthRedirectHandler";
+import AuthRedirectHandler from "./auth/AuthRedirectHandler.jsx";
 import NewApplication from './components/NewApplication';
 import Loader from './utils/Loader';
 
