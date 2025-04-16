@@ -3,7 +3,7 @@ import { Link } from "react-router";
 const SuccessMsg = () => {
     return (
         <div className="bg-[#ffffff] shadow rounded-3xl h-[100%] w-[70%] border-t-10 border-[#0A8754]">
-            <div className="flex flex-col items-center justify-center h-[80%]">
+            <div className="flex flex-col items-center text-center justify-center h-[80%]">
                 <img src="/assets/icons/success_message_icon.svg" />
                 <h1 className="text-[#000000] text-[32px] font-bold">Congratulations!</h1>
                 <p className="text-[#666666] text-[20px]">Application have been submitted successfully.</p>

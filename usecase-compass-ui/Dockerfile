@@ -36,7 +36,7 @@ RUN chmod +x /configure_start.sh
 # Add nginx config
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
     
-EXPOSE 8000
+EXPOSE 8080
     
 ENTRYPOINT [ "/configure_start.sh" ]
 CMD ["nginx", "-g", "daemon off;"]
