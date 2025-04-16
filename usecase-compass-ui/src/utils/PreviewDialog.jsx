@@ -6,18 +6,17 @@ const PreviewDialog = ({showPreviewDialog, submitApplication, formData}) => {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-[#FDEDE1] rounded-3xl w-[781px] shadow-lg h-auto pb-4 relative">
+            <div className="bg-[#FDEDE1] rounded-3xl w-[781px] shadow-lg h-[90%] pb-4 relative overflow-y-scroll">
                 <h1 className="text-2xl font-bold px-6 pt-6  mb-4 text-[#181D27]">Confirm Details</h1>
                 <hr className="text-[#D7D8E1]" />
                 <div className="py-6 px-10">
-                    <div className="flex items-center space-x-10 px-1 pb-7">
+                    <div className="flex items-start space-x-10 px-1 pb-7">
                         <div>
                             <span className="text-[#EC6707] text-[17px]">Photo</span>
                             <img src={faceImageColor} alt="profile" className="h-[180px] w-[141px] border border-[#ffffff] rounded-lg object-cover" />
                         </div>
                         <div>
-                            <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Full Name</span><br /><span className="text-[#14397E] text-[18px] font-bold">{`${firstNamePrimary} ${lastNameSecondary}`}</span></p>
-                            <p className="-mb-4"><span className="text-[#EC6707] text-[16px]">Full Name (Latin)</span><br /><span className="text-[#14397E] text-[18px] font-bold">{`${firstNamePrimary} ${lastNameSecondary}`}</span></p>
+                            <p className="mt-7"><span className="text-[#EC6707] text-[16px]">Full Name</span><br /><span className="text-[#14397E] text-[18px] font-bold">{`${firstNamePrimary} ${lastNameSecondary}`}</span></p>
                         </div>
                     </div>
                     <hr className="text-[#D7D8E1]" />
