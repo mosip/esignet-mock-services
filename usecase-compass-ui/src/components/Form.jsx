@@ -18,7 +18,7 @@ const formConfig = [
     { label: 'Nationality', name: 'nationality', type: 'text', placeholder: 'Enter Nationality', errorMessage: 'Nationality is required' },
     { label: 'Birth Country', name: 'birthCountry', type: 'text', placeholder: 'Enter Birth Country', errorMessage: 'Birth country is required' },
     { label: 'CAN (Card Access Number)', name: 'cardAccessNumber', type: 'text', placeholder: 'Enter Card Access Number)', errorMessage: 'Card Access Number is required' },
-    { label: 'Email Address', name: 'email', type: 'email', placeholder: 'Enter Your Email', errorMessage: 'Email is required' },
+    { label: 'Email ID', name: 'email', type: 'email', placeholder: 'Enter Your Email', errorMessage: 'Email is required' },
     {
         label: 'Upload Photo*',
         name: 'faceImageColor',
