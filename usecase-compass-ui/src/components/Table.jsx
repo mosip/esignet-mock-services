@@ -1,16 +1,15 @@
 import { useState } from "react";
 import Shimmer from "../utils/Shimmer";
 import { useEffect } from "react";
-import http from "../services/http";
 import AlertDialog from "../utils/AlertDialog";
 
 
-const Table = ({ applicationsList, selecteApplication, selectedItems, deleteApplication }) => {
+const Table = ({ applicationsList, selectApplication, selectedItems, deleteApplication }) => {
     const [selectedAllDel, setClickedAllDel] = useState(false);
     const [showDeleteConfMsg, setShowDeleteConfMsg] = useState(false);
     const [selectedDelId, setSelectedDelId] = useState("");
 
-    const deleteConfMsg = {title:"Delete Conformation!", message:"Are you sure you want to delete this record?", messageTwo:"This action can’t be undone."};
+    const deleteConfMsg = {title:"Delete Confirmation!", message:"Are you sure you want to delete this record?", messageTwo:"This action can’t be undone."};
 
     useEffect(() =>{
         console.log(applicationsList.length)
@@ -27,7 +26,7 @@ const Table = ({ applicationsList, selecteApplication, selectedItems, deleteAppl
     }, [selectedItems]);
 
     const selectedAllDelBtn = () =>{
-        selecteApplication("selectAll");
+        selectApplication("selectAll");
     };
 
     const deleteSingleItem = async () =>{
@@ -54,7 +53,7 @@ const Table = ({ applicationsList, selecteApplication, selectedItems, deleteAppl
                 <tbody className="w-full text-[#031640]">
                     {applicationsList.length > 0 && applicationsList.map((eachItem, index) => (
                         <tr key={index} className="border-b border-[#E3DCC9]">
-                            <td className="py-5 pl-6 text-left w-[19%]"><p className="flex items-center"><img onClick={() => selecteApplication(eachItem.userInfoId)} src={`/assets/icons/${selectedItems.includes(eachItem.userInfoId) ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/><span className="pl-4">{eachItem.firstNamePrimary}</span></p></td>
+                            <td className="py-5 pl-6 text-left w-[19%]"><p className="flex items-center"><img onClick={() => selectApplication(eachItem.userInfoId)} src={`/assets/icons/${selectedItems.includes(eachItem.userInfoId) ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/><span className="pl-4">{eachItem.firstNamePrimary}</span></p></td>
                             <td className="py-5 text-left w-[13%]">{eachItem.lastNameSecondary}</td>
                             <td className="py-5 text-center w-[16%]">{eachItem.issuanceDate}</td>
                             <td className="py-5 text-left w-[19%]">{eachItem.nationalUid}</td>

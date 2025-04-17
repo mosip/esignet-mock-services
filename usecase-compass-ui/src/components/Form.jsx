@@ -12,16 +12,16 @@ const formConfig = [
         label: 'Gender',
         name: 'gender',
         type: 'select',
-        placeholder: 'Enter Gender',
+        placeholder: 'Select Gender',
         options: ['Male', 'Female', 'Other'],
         errorMessage: 'Gender is required'
     },
     { label: 'Nationality', name: 'nationality', type: 'text', placeholder: 'Enter Nationality', errorMessage: 'Nationality is required' },
     { label: 'Birth Country', name: 'birthCountry', type: 'text', placeholder: 'Enter Birth Country', errorMessage: 'Birth country is required' },
-    { label: 'CAN (Card Access Number)', name: 'cardAccessNumber', type: 'text', placeholder: 'Enter Card Access Number)', errorMessage: 'Card Access Number is required' },
     { label: 'Email ID', name: 'email', type: 'email', placeholder: 'Enter Your Email', errorMessage: 'Email is required' },
+    { label: 'CAN (Card Access Number)', name: 'cardAccessNumber', type: 'text', placeholder: 'Enter Card Access Number', errorMessage: 'Card Access Number is required' },
     {
-        label: 'Upload Photo*',
+        label: 'Upload Photo',
         name: 'faceImageColor',
         type: 'file',
         accept: 'image/png, image/jpeg',
@@ -38,7 +38,7 @@ const Form = ({ showSuccessMsg }) => {
     const [errors, setErrors] = useState({});
     const [invalidFormError, setInvalidFormError] = useState("");
     const [showFormClearMsg, setShowFormClearMsg] = useState(false);
-
+    const today = new Date().toISOString().split("T")[0];
     const clearFormConfMsg = { title: "Clear Form", message: "Are you sure you want to clear the form?" };
 
 
@@ -66,7 +66,7 @@ const Form = ({ showSuccessMsg }) => {
                     }));
                 };
 
-                reader.onerror = (error) => {
+                reader.onerror = () => {
                     setErrors((prev) => ({
                         ...prev,
                         [name]: 'Failed to upload image please try again', // clear error when typing
@@ -92,8 +92,13 @@ const Form = ({ showSuccessMsg }) => {
         formConfig.forEach((field) => {
             const value = formData[field.name];
 
-            if (!value) {
+            if (field.name !=="cardAccessNumber" && !value) {
                 newErrors[field.name] = field.errorMessage;
+            } else if (field.name == "nationalUid" && value.length !== 10) {
+                newErrors[field.name] = "Please enter a valid National ID";
+            }
+            else if(field.name === "email" && !/\S+@\S+\.\S+/.test(value)) {
+                newErrors[field.name] = "Please enter a valid email address";
             }
         });
 
@@ -114,7 +119,7 @@ const Form = ({ showSuccessMsg }) => {
 
     const submitApplication = async () => {
         try {
-            const res = await http.post('/user-info', formData);
+            await http.post('/user-info', formData);
             showSuccessMsg(prevState => !prevState);
         } catch (err) {
             setInvalidFormError(err.response.data);
@@ -129,7 +134,7 @@ const Form = ({ showSuccessMsg }) => {
             <form className="space-y-4">
                 {formConfig.map((field) => (
                     <div key={field.name}>
-                        <label className="block font-medium text-[#0033A0] text-[18px]">{field.label}</label>
+                        <label className="block font-medium text-[#0033A0] text-[18px]">{field.label}{field.name!=="cardAccessNumber"&&<span className="ml-1">*</span>}</label>
 
                         {field.type === 'select' ? (
                             <>
@@ -198,6 +203,7 @@ const Form = ({ showSuccessMsg }) => {
                                         type={field.type}
                                         name={field.name}
                                         value={formData[field.name] || 'DD / MM / YYYY'}
+                                        max={today}
                                         onChange={handleChange}
                                         className={`transition-colors duration-300 w-full input input-bordered mt-1 h-[60px] rounded-lg outline-none px-4 text-[18px] bg-[#ffffff] text-[#9FA1AD] ${formData[field.name] ? "text-[#1B2142]" : "text-[#9FA1AD]"}`}
                                         placeholder={field.placeholder}

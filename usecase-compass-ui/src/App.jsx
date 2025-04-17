@@ -1,5 +1,5 @@
-import Landingpage from './components/Landingpage';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import LandingPage from './components/LandingPage.jsx';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Main from './shared/Main';
 import Dashboard from './components/Dashboard';
 import { useKeycloak } from "@react-keycloak/web";
@@ -18,7 +18,7 @@ function App() {
       <AuthRedirectHandler/>
       <Routes>
         <Route path="/" element={<Main />}>
-          <Route path="/" element={<Landingpage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/home" element={<Dashboard />} />
           <Route path="/newApplication" element={<NewApplication />} />
         </Route>
