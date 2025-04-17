@@ -6,7 +6,7 @@ const SuccessMsg = () => {
             <div className="flex flex-col items-center text-center justify-center h-[80%]">
                 <img src="/assets/icons/success_message_icon.svg" />
                 <h1 className="text-[#000000] text-[32px] font-bold">Congratulations!</h1>
-                <p className="text-[#666666] text-[20px]">Application have been submitted successfully.</p>
+                <p className="text-[#666666] text-[20px]">Your application has been submitted successfully.</p>
             </div>
             <hr className="text-[#D7D8E1]" />
             <div className="flex justify-center flex-col items-center h-[20%] w-full">

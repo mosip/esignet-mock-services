@@ -29,7 +29,7 @@ const Dashboard = () => {
         }
     };
 
-    const selecteApplication = (userInfoId) => {
+    const selectApplication = (userInfoId) => {
         if(!userInfoId) return
         if (userInfoId === "selectAll") {
             if(applicationsList.length !== selectedItems.length){
@@ -54,11 +54,11 @@ const Dashboard = () => {
     const deleteApplication = async (userInfoId) =>{
         setShowLoader(true);
         try{
-            const res = await http.delete(`/user-info/${userInfoId}`);
+           await http.delete(`/user-info/${userInfoId}`);
             getUserData();
             setShowLoader(false);
         }catch(err){
-            consle.log(res);
+            console.log(err);
         }
     };
 
@@ -66,12 +66,12 @@ const Dashboard = () => {
         setShowLoader(true);
         setShowDeleteConfMsg(false);
         try{
-            const res = await http.delete('/user-info', {data: selectedItems});
+            await http.delete('/user-info', {data: selectedItems});
             getUserData();
             setSelectedItems([]);
             setShowLoader(false);
         }catch(err){
-            consle.log(res);
+            console.log(err);
         }
     };
 
@@ -98,7 +98,7 @@ const Dashboard = () => {
                 </div>
                 <div className="w-full">
                     <hr className="text-[#E3DCC9]" />
-                    {applicationsList && <Table applicationsList={applicationsList} selecteApplication={selecteApplication} selectedItems={selectedItems} deleteApplication={deleteApplication}/>}
+                    {applicationsList && <Table applicationsList={applicationsList} selectApplication={selectApplication} selectedItems={selectedItems} deleteApplication={deleteApplication}/>}
                     {/* {showLoader && <Loader/>} */}
                 </div>
             </div>

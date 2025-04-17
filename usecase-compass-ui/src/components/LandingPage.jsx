@@ -1,7 +1,7 @@
 import React from "react";
 import { useKeycloak } from "@react-keycloak/web";
 
-function Landingpage() {
+function LandingPage() {
   const { keycloak } = useKeycloak();
 
 
@@ -21,4 +21,4 @@ function Landingpage() {
   );
 }
 
-export default Landingpage;
+export default LandingPage;

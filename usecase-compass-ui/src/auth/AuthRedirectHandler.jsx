@@ -22,7 +22,8 @@ const AuthRedirectHandler = () => {
 
       if (!hasAdminRole) {
         // Logout and redirect to `/` (home) with a logout message flag
-        sessionStorage.setItem("invaludUser", true);
+        alert("Access denied: Your account does not have the required role to log in to the admin portal")
+        sessionStorage.setItem("invalidUser", true);
         keycloak.logout({
           redirectUri: `${window.location.origin}/?logout=1`,
         });
