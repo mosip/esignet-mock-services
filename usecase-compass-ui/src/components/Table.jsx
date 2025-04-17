@@ -55,7 +55,7 @@ const Table = ({ applicationsList, selectApplication, selectedItems, deleteAppli
                         <tr key={index} className="border-b border-[#E3DCC9]">
                             <td className="py-5 pl-6 text-left w-[19%]"><p className="flex items-center"><img onClick={() => selectApplication(eachItem.userInfoId)} src={`/assets/icons/${selectedItems.includes(eachItem.userInfoId) ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/><span className="pl-4">{eachItem.firstNamePrimary}</span></p></td>
                             <td className="py-5 text-left w-[13%]">{eachItem.lastNameSecondary}</td>
-                            <td className="py-5 text-center w-[16%]">{eachItem.issuanceDate}</td>
+                            <td className="py-5 text-center w-[16%]">{new Date(eachItem.issuanceDate).toLocaleDateString('en-GB').replaceAll('/', '-')}</td>
                             <td className="py-5 text-left w-[19%]">{eachItem.nationalUid}</td>
                             <td className="py-5 text-left w-[13%]">{eachItem.cardAccessNumber}</td>
                             <th className="py-5 text-right pr-20 w-[16%]">
