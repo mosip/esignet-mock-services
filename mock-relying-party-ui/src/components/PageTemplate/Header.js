@@ -8,7 +8,7 @@ export const Header = (props) => {
     <header>
       <div
         data-testid="Header-Container"
-        className="flex fixed top-0 left-0 right-0 bg-iw-background py-7 z-10 shadow"
+        className="bg-white flex fixed top-0 left-0 right-0 bg-iw-background py-7 z-10 shadow"
       >
         <div className="container mx-32 flex justify-between items-center">
           <div
@@ -52,9 +52,18 @@ export const Header = (props) => {
                   stroke-linejoin="round"
                 />
               </svg>
-              Log out
+              &nbsp;&nbsp;Log out
             </button>
           </div>
+        )}
+        {props.showDownload && (
+            <div>
+              <button
+                  className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center"
+              >
+                Download your Wallet
+              </button>
+            </div>
         )}
       </div>
     </header>

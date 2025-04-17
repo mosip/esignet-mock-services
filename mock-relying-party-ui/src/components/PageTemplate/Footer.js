@@ -2,11 +2,10 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 export const Footer = () => {
-  const { t } = useTranslation("PageTemplate");
   return (
     <footer
       data-testid="Footer-Container"
-      className="fixed bottom-0 left-0 right-0 py-4 transform rotate-180 shadow-sm shadow-iw-shadow bg-iw-footer"
+      className="bg-white font-extralight fixed bottom-0 left-0 right-0 py-4 transform rotate-180 shadow-sm shadow-iw-shadow bg-iw-footer"
     >
       <div className="container mx-auto flex flex-col sm:flex-row justify-between items-end sm:items-center">
         <div className={"flex flex-row items-center me-4"}>
@@ -14,7 +13,7 @@ export const Footer = () => {
             data-testid="Footer-Text"
             className="ps-2 text-iw-subText transform rotate-180"
           >
-            1800-UTOPIA
+            &nbsp;&nbsp;1800-UTOPIA
           </p>
           <img
             className={"h-4 transform rotate-180"}
@@ -27,7 +26,7 @@ export const Footer = () => {
             data-testid="Footer-Text"
             className="ps-2 text-iw-subText transform rotate-180"
           >
-            support@utopia.gov
+            &nbsp;&nbsp;support@utopia.gov
           </p>
           <img
             className={"h-4 transform mx-auto rotate-180"}
@@ -40,7 +39,7 @@ export const Footer = () => {
             data-testid="Footer-Text"
             className="ps-2 text-iw-subText transform rotate-180"
           >
-            comPASS services are now available in all regions.
+            &nbsp;&nbsp;comPASS services are now available in all regions.
           </p>
           <img
             className={"h-5 transform mx-auto rotate-180"}
@@ -53,7 +52,7 @@ export const Footer = () => {
           data-testid="Footer-Text"
           className="ps-7 text-iw-subText transform rotate-180"
         >
-          © 2025 Republic of Utopia. All rights reserved.
+          ©&nbsp;&nbsp;2025 Republic of Utopia. All rights reserved.
         </p>
       </div>
     </footer>
