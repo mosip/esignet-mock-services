@@ -16,6 +16,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 
@@ -24,11 +26,13 @@ public interface UserInfoMapper {
 
     Logger log = LoggerFactory.getLogger(UserInfoMapper.class);
 
+    @Mapping(target = "userInfoId", ignore = true)
     @Mapping(target = "compassId", ignore = true) // This is auto-generated
     @Mapping(target = "createdTimes", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "faceImageGrey", source = "faceImageColor", qualifiedByName = "convertColorBase64ToGreyBase64")
     UserInfo toEntity(UserInfoDTO dto);
 
+    @Mapping(source = "createdTimes", target = "issuanceDate", qualifiedByName = "mapCreatedTimesToIssuedDate")
     UserInfoDTO toDto(UserInfo entity);
 
     @Mapping(source = "userInfoId", target = "userInfoId")
@@ -77,6 +81,11 @@ public interface UserInfoMapper {
             log.error("Conversion of color image to grayscale image failed.", e);
             throw new RuntimeException("Failed to convert color image to grayscale Base64", e);
         }
+    }
+
+    @Named("mapCreatedTimesToIssuedDate")
+    default LocalDate mapCreatedTimesToIssuedDate(LocalDateTime createdTimes) {
+        return createdTimes != null ? createdTimes.toLocalDate() : null;
     }
 
 }
