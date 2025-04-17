@@ -11,8 +11,9 @@ const formConfig = [
     {
         label: 'Gender',
         name: 'gender',
-        type: 'text',
+        type: 'select',
         placeholder: 'Enter Gender',
+        options: ['Male', 'Female', 'Other'],
         errorMessage: 'Gender is required'
     },
     { label: 'Nationality', name: 'nationality', type: 'text', placeholder: 'Enter Nationality', errorMessage: 'Nationality is required' },
@@ -136,7 +137,7 @@ const Form = ({ showSuccessMsg }) => {
                                     name={field.name}
                                     value={formData[field.name] || ''}
                                     onChange={handleChange}
-                                    className={`select select-bordered w-full mt-1 border-[2px] h-[60px] rounded-lg outline-none px-4 text-[#9FA1AD] text-[18px] bg-[#ffffff] ${errors[field.name] ? "border-red-500" : "border-[#707070]"}`}
+                                    className={`select select-bordered w-full mt-1 border-[2px] h-[60px] rounded-lg outline-none px-4 text-[18px] bg-[#ffffff] ${errors[field.name] ? "border-red-500" : "border-[#707070]"} ${formData[field.name] ? "text-[#1B2142]" : "text-[#9FA1AD]"}`}
                                 >
                                     <option disabled value="">
                                         {field.placeholder}
