@@ -130,7 +130,7 @@ const Form = ({ showSuccessMsg }) => {
 
     return (
         <div className="rounded-4xl px-12 pt-6 pb-12 bg-[#FFFDF6] min-[1060px]:w-[780px] max-[1060]:w-[680px] min-[860px]:-ml-15">
-            <p className="text-[#3D4468] text-[18px] mb-5">All fields are required unless marked "Optional"</p>
+            <p className="text-[#3D4468] text-[18px] mb-5">Fields marked with an asterisk (*) are mandatory.</p>
             <form className="space-y-4">
                 {formConfig.map((field) => (
                     <div key={field.name}>
