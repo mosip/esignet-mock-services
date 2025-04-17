@@ -1,31 +1,53 @@
-import React from "react"; // Example user icon
-import { FaUserCircle, FaChevronDown } from "react-icons/fa";
+import React from "react";
 
 export const WelcomeBanner = () => {
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 flex items-center justify-between my-16 mx-auto w-[90%]">
-      {/* Left Side: Welcome Text and Logo */}
-      <div className="flex items-center">
-        <div className="mr-4">
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Welcome, User!
-          </h1>
-          <p className="text-gray-600 text-sm">
-            Your gateway to access to trusted digital government services
-          </p>
-        </div>
-      </div>
+      <div className="bg-white shadow rounded-3xl p-4 flex items-center justify-between w-[90%] mx-auto my-8">
+          <div className="flex items-center">
+              <div className="w-24 h-24 rounded-full overflow-hidden mr-4">
+                  <img
+                      alt="User Avatar"
+                      id={"user-avtar"}
+                      className="w-full h-full object-cover"
+                  />
+              </div>
+              <div>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                      Welcome &lt;FullName&gt;! 👋
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                      Your gateway to seamless access to trusted digital government services
+                  </p>
+              </div>
+          </div>
 
-      {/* Right Side: User Profile Dropdown */}
-      <div className="relative">
-        <button className="flex items-center text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full py-2 px-4">
-          <img src={require("../../assets/user.png")} className="w-12 px-1" />
-          Full Name
-          <FaChevronDown className="w-4 h-4 ml-1" />
-        </button>
-        {/* Placeholder for dropdown menu (not styled) */}
-        {/* You would typically use a library like Headless UI or implement custom logic for the dropdown */}
+          {/* Right Section (Search Bar) */}
+          <div className=" h-16 w-1/2 pl-8 flex border border-gray-300 rounded-md">
+              <input
+                  type="text"
+                  placeholder="Search UtopiaGov"
+                  className="focus:border-none flex-grow hover:border-none border-none  "
+              />
+              <button
+                  className=" px-8 bg-blue-500 text-white rounded-md h-16"
+              >
+                  <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 inline-block mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                  >
+                      <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                  </svg>
+                  Search
+              </button>
+          </div>
       </div>
-    </div>
   );
 };
