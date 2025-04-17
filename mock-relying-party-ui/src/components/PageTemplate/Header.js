@@ -52,7 +52,7 @@ export const Header = (props) => {
                   stroke-linejoin="round"
                 />
               </svg>
-              Log out
+              &nbsp;&nbsp;Log out
             </button>
           </div>
         )}

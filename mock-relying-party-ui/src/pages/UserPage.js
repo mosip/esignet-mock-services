@@ -2,6 +2,7 @@ import React from "react";
 import { Header } from "../components/PageTemplate/Header";
 import { UserProfileCard } from "../components/Home/UserProfileCard";
 import { WelcomeBanner } from "../components/Home/WelcomeBanner";
+import {Footer} from "../components/PageTemplate/Footer";
 
 export const UserPage= () => {
   return (
@@ -11,6 +12,7 @@ export const UserPage= () => {
         <WelcomeBanner/>
         <UserProfileCard />
       </div>
+        <Footer/>
     </div>
   );
 };
