@@ -87,17 +87,19 @@ export const UserProfileCard = () => {
 
   console.log(userInfo);
   return (
-      <div className="bg-white shadow rounded-3xl py-10 w-[90%] h-[75%] m-auto">
+      <div className="bg-white shadow rounded-3xl py-8 w-[90%] h-[73%] m-auto">
         <div className="container mx-auto text-center">
           <h1 className="text-3xl font-semibold text-gray-800 mb-4">
             Government Services - Making Life Easier for Utopian's
           </h1>
-          <p className="text-gray-600 mb-8">
+          <p className="text-gray-600 mb-4">
             The Government of Utopia offers many helpful services online so you can get
             things done quickly and easily
           </p>
+          <div className="px-24">
           <hr className={"bg-gray-600"}/>
-          <div className="flex justify-evenly my-12">
+          </div>
+          <div className="flex justify-evenly mt-6 mb-12">
             {servicesRow1.map((service, index) => (
                 <div
                     key={index}
