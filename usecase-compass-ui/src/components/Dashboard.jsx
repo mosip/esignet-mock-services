@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Table from "./Table";
 import { Link } from "react-router";
 import http from "../services/http";
-import Loader from "../utils/Loader";
+import keycloak from "../auth/keycloak";
 import AlertDialog from "../utils/AlertDialog";
 
 const Dashboard = () => {
@@ -10,7 +10,7 @@ const Dashboard = () => {
     const [selectedItems, setSelectedItems] = useState([]);
     const [showLoader, setShowLoader] = useState(false);
     const [showDeleteConfMsg, setShowDeleteConfMsg] = useState(false);
-
+    const userName = keycloak.tokenParsed?.preferred_username.split("@")[0]
     const deleteConfMsg = {title:"Delete Conformation!", message:"Are you sure you want to delete all the record?", messageTwo:"This action can’t be undone."};
 
     const getUserData = async () => {
@@ -82,7 +82,7 @@ const Dashboard = () => {
     return (
         <div className="min-h-[100%] max-h-auto w-full py-8 px-12">
             <div className="h-[120px] shadow px-6 w-full rounded-2xl bg-[#FFFDF6] flex items-center justify-between mb-6">
-                <h1 className="text-[24px] text-[#181D27] font-bold">Welcome User</h1>
+                <h1 className="text-[24px] text-[#181D27] font-bold">Welcome {userName}</h1>
                 <Link to="/newApplication"><button className="text-[#ffffff] bg-[#FF671F] h-[44px] w-[198px] rounded-md cursor-pointer">New Application</button></Link>
             </div>
             <div className="shadow w-full rounded-2xl min-h-[75%] bg-[#FFFDF6]">
