@@ -43,21 +43,23 @@ const Table = ({ applicationsList, selecteApplication, selectedItems, deleteAppl
                 {/* head */}
                 <thead>
                     <tr className="text-[#6F6E6E] border-b border-[#E3DCC9]">
-                        <th className={` pl-6 text-left w-[22%] font-medium py-5`}><p className="flex items-center">{applicationsList.length > 0 && <img onClick={selectedAllDelBtn} src={`/assets/icons/${selectedAllDel ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/>}<span className="pl-4">First Name</span></p></th>
-                        <th className="text-left w-[22%] font-medium py-5">Last Name</th>
-                        <th className="text-left w-[22%] font-medium py-5">National ID</th>
-                        <th className="text-left w-[22%] font-medium py-5">CAN</th>
-                        <th className="text-right w-[10%] font-medium py-5 pr-20">Action</th>
+                        <th className={` pl-6 text-left w-[18%] font-medium py-5`}><p className="flex items-center">{applicationsList.length > 0 && <img onClick={selectedAllDelBtn} src={`/assets/icons/${selectedAllDel ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/>}<span className="pl-4">First Name</span></p></th>
+                        <th className="text-left w-[18%] font-medium py-5">Last Name</th>
+                        <th className="text-left w-[18%] font-medium py-5">Issued Date</th>
+                        <th className="text-left w-[18%] font-medium py-5">National ID</th>
+                        <th className="text-left w-[18%] font-medium py-5">CAN</th>
+                        <th className="text-right w-[8%] font-medium py-5 pr-20">Action</th>
                     </tr>
                 </thead>
                 <tbody className="w-full text-[#031640]">
                     {applicationsList.length > 0 && applicationsList.map((eachItem, index) => (
                         <tr key={index} className="border-b border-[#E3DCC9]">
-                            <td className="py-5 pl-6 text-left w-[22%]"><p className="flex items-center"><img onClick={() => selecteApplication(eachItem.userInfoId)} src={`/assets/icons/${selectedItems.includes(eachItem.userInfoId) ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/><span className="pl-4">{eachItem.firstNamePrimary}</span></p></td>
-                            <td className="py-5 text-left w-[22%]">{eachItem.lastNameSecondary}</td>
-                            <td className="py-5 text-left w-[22%]">{eachItem.nationalUid}</td>
-                            <td className="py-5 text-left w-[22%]">{eachItem.cardAccessNumber}</td>
-                            <th className="py-5 text-right pr-20 w-[10%]">
+                            <td className="py-5 pl-6 text-left w-[18%]"><p className="flex items-center"><img onClick={() => selecteApplication(eachItem.userInfoId)} src={`/assets/icons/${selectedItems.includes(eachItem.userInfoId) ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/><span className="pl-4">{eachItem.firstNamePrimary}</span></p></td>
+                            <td className="py-5 text-left w-[18%]">{eachItem.lastNameSecondary}</td>
+                            <td className="py-5 text-left w-[18%]">{eachItem.issuanceDate}</td>
+                            <td className="py-5 text-left w-[18%]">{eachItem.nationalUid}</td>
+                            <td className="py-5 text-left w-[18%]">{eachItem.cardAccessNumber}</td>
+                            <th className="py-5 text-right pr-20 w-[8%]">
                                 <button onClick={() => {setShowDeleteConfMsg(true);setSelectedDelId(eachItem.userInfoId) }} className="btn btn-ghost btn-xs cursor-pointer"><img src="/assets/icons/del-orange.svg" alt="delete" /></button>
                             </th>
                         </tr>
