@@ -21,7 +21,7 @@ export const UserProfileCard = () => {
 
         //REQUIRED
         params = params + "error=" + errorCode;
-        // navigate(process.env.PUBLIC_URL + "/" + params, { replace: true });
+        navigate(process.env.PUBLIC_URL + "/" + params, { replace: true });
     };
 
     useEffect(() => {
