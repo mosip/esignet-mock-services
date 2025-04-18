@@ -1,6 +1,6 @@
 import React from "react";
 
-export const WelcomeBanner = () => {
+export const WelcomeBanner = (user) => {
   return (
       <div className="bg-white shadow rounded-3xl p-4 flex items-center justify-between w-[90%] mx-auto mt-6 mb-8">
           <div className="flex items-center">
@@ -9,11 +9,14 @@ export const WelcomeBanner = () => {
                       alt="User Avatar"
                       id={"user-avtar"}
                       className="w-full h-full object-cover"
+                      src={
+                          user?.picture ? user.picture : "User-Profile-Icon.png"
+                      }
                   />
               </div>
               <div>
                   <h2 className="text-xl font-semibold text-gray-800">
-                      Welcome &lt;FullName&gt;! 👋
+                      Welcome {user?.given_name ?? user?.name}! 👋
                   </h2>
                   <p className="text-sm text-gray-500">
                       Your gateway to seamless access to trusted digital government services
