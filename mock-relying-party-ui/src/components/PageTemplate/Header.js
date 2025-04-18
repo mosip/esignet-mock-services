@@ -8,7 +8,7 @@ export const Header = (props) => {
     <header>
       <div
         data-testid="Header-Container"
-        className="bg-white flex fixed top-0 left-0 right-0 bg-iw-background py-7 z-10 shadow"
+        className="bg-white flex fixed top-0 left-0 right-0 bg-iw-background py-5 z-10 shadow"
       >
         <div className="container mx-32 flex justify-between items-center">
           <div
@@ -31,9 +31,9 @@ export const Header = (props) => {
           </div>
         </div>
         {props.showLogout && (
-          <div>
+          <div className="min-h-fit min-w-fit">
             <button
-              className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 mr-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center"
               onClick={() => navigate("/")}
             >
               <svg
@@ -57,9 +57,10 @@ export const Header = (props) => {
           </div>
         )}
         {props.showDownload && (
-            <div>
+            <div className="min-h-fit min-w-fit">
               <button
-                  className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center"
+                  className="bg-blue-600 hover:bg-blue-700 text-white  px-6 py-3 mr-3  font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center"
+                  onClick={() =>window.scrollTo({ left: 0, top: document.body.scrollHeight, behavior: "smooth" })}
               >
                 Download your Wallet
               </button>
