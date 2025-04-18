@@ -104,7 +104,7 @@ export const HomeFeatures = ({i18nKeyPrefix = "login"}) => {
                             </p>
                             {state === "ready" && <button
                                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                                onClick={() => document.getElementById("sign-in-with-esignet").click()}
+                                onClick={() => document.getElementById("sign-in-with-esignet").children[0].click()}
                             >
                                 Login with comPASS ID
                             </button>}
