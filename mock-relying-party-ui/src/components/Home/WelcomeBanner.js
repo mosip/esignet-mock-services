@@ -1,19 +1,22 @@
 import React from "react";
 
-export const WelcomeBanner = () => {
+export const WelcomeBanner = (user) => {
   return (
-      <div className="bg-white shadow rounded-3xl p-4 flex items-center justify-between w-[90%] mx-auto my-8">
+      <div className="bg-white shadow rounded-3xl p-4 flex items-center justify-between w-[90%] mx-auto mt-6 mb-8">
           <div className="flex items-center">
               <div className="w-24 h-24 rounded-full overflow-hidden mr-4">
                   <img
                       alt="User Avatar"
                       id={"user-avtar"}
                       className="w-full h-full object-cover"
+                      src={
+                          user?.picture ? user.picture : "User-Profile-Icon.png"
+                      }
                   />
               </div>
               <div>
                   <h2 className="text-xl font-semibold text-gray-800">
-                      Welcome &lt;FullName&gt;! 👋
+                      Welcome {user?.given_name ?? user?.name}! 👋
                   </h2>
                   <p className="text-sm text-gray-500">
                       Your gateway to seamless access to trusted digital government services
@@ -22,14 +25,14 @@ export const WelcomeBanner = () => {
           </div>
 
           {/* Right Section (Search Bar) */}
-          <div className=" h-16 w-1/2 pl-8 flex border border-gray-300 rounded-md">
+          <div className=" h-14 w-1/2 pl-8 flex border border-gray-300 rounded-md">
               <input
                   type="text"
                   placeholder="Search UtopiaGov"
                   className="focus:border-none flex-grow hover:border-none border-none  "
               />
               <button
-                  className=" px-8 bg-blue-500 text-white rounded-md h-16"
+                  className=" px-8 bg-blue-500 text-white rounded-md h-14"
               >
                   <svg
                       xmlns="http://www.w3.org/2000/svg"
