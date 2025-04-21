@@ -11,7 +11,7 @@ const Dashboard = () => {
     const [showLoader, setShowLoader] = useState(false);
     const [showDeleteConfMsg, setShowDeleteConfMsg] = useState(false);
     const userName = keycloak.tokenParsed?.preferred_username.split("@")[0]
-    const capitalizedUsername = userName.charAt(0).toUpperCase() + userName.slice(1);
+    const capitalizedUsername = userName?.charAt(0).toUpperCase() + userName?.slice(1);
     const deleteConfMsg = {title:"Delete Conformation!", message:"Are you sure you want to delete all the record?", messageTwo:"This action can’t be undone."};
 
     const getUserData = async () => {
@@ -76,6 +76,10 @@ const Dashboard = () => {
         }
     };
 
+    const clearSelectedItems = () =>{
+        setSelectedItems([]);
+    };
+
     useEffect(() => {
         getUserData();
     }, []);
@@ -91,7 +95,7 @@ const Dashboard = () => {
                     <h1 className="text-[18px] text-[#031640] font-medium">Recent Applications</h1>
                     {applicationsList && <div className={`flex space-x-8 items-center text-[14px] ${selectedItems.length > 0 ? "text-[#FF671F]" : "text-[#B3B3B3]"}`}>
                         <div className="flex space-x-2 items-center">
-                            <button className="cursor-pointer">Clear Selected</button>
+                            <button onClick={clearSelectedItems} className="cursor-pointer">Clear Selected</button>
                             <button className={`rounded h-[23px] w-[72px] ${selectedItems.length > 0 ? "bg-[#FF671F14]" : "border"}`}>{selectedItems.length} Rows</button>
                         </div>
                         <button onClick={() => setShowDeleteConfMsg(true)} disabled={selectedItems.length <= 0} className="flex items-center w-[131px] cursor-pointer"><img src={selectedItems.length > 0 ? "/assets/icons/del-orange.svg" : "/assets/icons/del-gray.svg"} alt="delete" className="mr-2" />Delete Selected</button>
