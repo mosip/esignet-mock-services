@@ -8,6 +8,12 @@ body,
     font-family: 'Inter', sans-serif;
 }
 
+body.no-scroll {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+
 input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0;
     position: absolute;
