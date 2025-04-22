@@ -63,6 +63,12 @@ public class UserInfo {
     @Column(name = "nationality")
     private String nationality;
 
+    @Column(name = "first_name_primary_latin")
+    private String firstNamePrimaryLatin;
+
+    @Column(name = "last_name_secondary_latin")
+    private String lastNameSecondaryLatin;
+
     @Column(name = "cr_dtimes")
     private LocalDateTime createdTimes;
 
