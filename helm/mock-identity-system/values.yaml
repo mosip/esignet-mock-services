@@ -275,6 +275,11 @@ extraEnvVars:
     value: hsm-client
   - name: MOSIP_ESIGNET_MOCK_SUPPORTED_FIELDS
     value: individualId,password
+  - name: MOSIP_ESIGNET_HOST
+    valueFrom:
+      configMapKeyRef:
+        name: esignet-global
+        key: mosip-esignet-host
 
 ## ConfigMap with extra environment variables that used
 ##
