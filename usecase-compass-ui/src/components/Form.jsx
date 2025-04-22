@@ -6,7 +6,9 @@ import AlertDialog from "../utils/AlertDialog";
 const formConfig = [
     { label: 'First Name', name: 'firstNamePrimary', type: 'text', placeholder: 'Enter First Name', errorMessage: 'First name is required' },
     { label: 'Last Name', name: 'lastNameSecondary', type: 'text', placeholder: 'Enter Last Name', errorMessage: 'Last name is required' },
-    { label: 'National ID', name: 'nationalUid', type: 'text', placeholder: 'Enter National ID', errorMessage: 'National ID is required' },
+    { label: 'First Name(Latin)', name: 'firstNamePrimaryLatin', type: 'text', placeholder: 'Enter First Name', errorMessage: 'First name is required' },
+    { label: 'Last Name(Latin)', name: 'lastNameSecondaryLatin', type: 'text', placeholder: 'Enter Last Name', errorMessage: 'Last name is required' },
+    { label: 'National ID', name: 'nationalUid', type: 'number', placeholder: 'Enter National ID', errorMessage: 'National ID is required' },
     { label: 'Date of Birth', name: 'dateOfBirth', type: 'date', placeholder: 'DD / MM / YYYY', errorMessage: 'Date of birth is required' },
     {
         label: 'Gender',
@@ -19,7 +21,7 @@ const formConfig = [
     { label: 'Nationality', name: 'nationality', type: 'text', placeholder: 'Enter Nationality', errorMessage: 'Nationality is required' },
     { label: 'Birth Country', name: 'birthCountry', type: 'text', placeholder: 'Enter Birth Country', errorMessage: 'Birth country is required' },
     { label: 'Email ID', name: 'email', type: 'email', placeholder: 'Enter Your Email', errorMessage: 'Email is required' },
-    { label: 'CAN (Card Access Number)', name: 'cardAccessNumber', type: 'text', placeholder: 'Enter Card Access Number', errorMessage: 'Card Access Number is required' },
+    { label: 'CAN (Card Access Number)', name: 'cardAccessNumber', type: 'number', placeholder: 'Enter Card Access Number', errorMessage: 'Card Access Number is required' },
     {
         label: 'Upload Photo',
         name: 'faceImageColor',
@@ -73,7 +75,14 @@ const Form = ({ showSuccessMsg }) => {
                     }));
                 };
             }
-        } else {
+        } else if(name === "firstNamePrimaryLatin" || name === "lastNameSecondaryLatin"){
+            if(/^[\p{Script=Latin}]*$/u.test(value)){
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: value,
+                }));
+            }
+        }else {
             setFormData((prev) => ({
                 ...prev,
                 [name]: value,
@@ -92,13 +101,18 @@ const Form = ({ showSuccessMsg }) => {
         formConfig.forEach((field) => {
             const value = formData[field.name];
 
-            if (field.name !=="cardAccessNumber" && !value) {
+            if (field.name !== "cardAccessNumber" && !value) {
                 newErrors[field.name] = field.errorMessage;
             } else if (field.name == "nationalUid" && value.length !== 10) {
                 newErrors[field.name] = "Please enter a valid National ID";
-            }
-            else if(field.name === "email" && !/\S+@\S+\.\S+/.test(value)) {
+            } else if(field.name === "email" && !/\S+@\S+\.\S+/.test(value)) {
                 newErrors[field.name] = "Please enter a valid email address";
+            }else if (field.name === "firstNamePrimary" && !/^[A-Za-z]+$/.test(value)) {
+                newErrors[field.name] = "First name must contain only alphabets";
+            } else if (field.name === "lastNameSecondary" && !/^[A-Za-z]+$/.test(value)) {
+                newErrors[field.name] = "Last name must contain only alphabets";
+            } else if (field.name === "cardAccessNumber" && value && !/^\d{10}$/.test(value)) {
+                newErrors[field.name] = "Card Access Number must be exactly 10 digits";
             }
         });
 
@@ -205,7 +219,7 @@ const Form = ({ showSuccessMsg }) => {
                                         value={formData[field.name] || 'DD / MM / YYYY'}
                                         max={today}
                                         onChange={handleChange}
-                                        className={`transition-colors duration-300 w-full input input-bordered mt-1 h-[60px] rounded-lg outline-none px-4 text-[18px] bg-[#ffffff] text-[#9FA1AD] ${formData[field.name] ? "text-[#1B2142]" : "text-[#9FA1AD]"}`}
+                                        className={`transition-colors duration-300 w-full input input-bordered mt-1 h-[60px] rounded-lg outline-none px-4 text-[18px] bg-[#ffffff] ${formData[field.name] ? "text-[#1B2142]" : "text-[#9FA1AD]"}`}
                                         placeholder={field.placeholder}
                                     />
                                 </div>
