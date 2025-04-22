@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 const PreviewDialog = ({showPreviewDialog, submitApplication, formData}) => {
-    const {firstNamePrimary, lastNameSecondary, nationalUid, dateOfBirth, gender, nationality, birthCountry, faceImageColor, cardAccessNumber} = formData
+    const {firstNamePrimary, lastNameSecondary, firstNamePrimaryLatin, lastNameSecondaryLatin, nationalUid, dateOfBirth, gender, nationality, birthCountry, faceImageColor, cardAccessNumber} = formData
     const closePreviewDialog = () =>{
         showPreviewDialog();
     };
@@ -24,9 +24,13 @@ const PreviewDialog = ({showPreviewDialog, submitApplication, formData}) => {
                             <span className="text-[#EC6707] text-[17px]">Photo</span>
                             <img src={faceImageColor} alt="profile" className="h-[180px] w-full border border-[#ffffff] rounded-lg object-cover" />
                         </div>
-                        <div className="break-words w-[70%]">
+                        <div className="break-words w-[35%]">
                             <p className="mt-7"><span className="text-[#EC6707] text-[16px]">First Name</span><br /><span className="text-[#14397E] text-[18px] font-bold">{firstNamePrimary}</span></p>
                             <p className="mt-7"><span className="text-[#EC6707] text-[16px]">Last Name</span><br /><span className="text-[#14397E] text-[18px] font-bold">{lastNameSecondary}</span></p>
+                        </div>
+                        <div className="break-words w-[35%]">
+                            <p className="mt-7"><span className="text-[#EC6707] text-[16px]">First Name(Latin)</span><br /><span className="text-[#14397E] text-[18px] font-bold">{firstNamePrimaryLatin}</span></p>
+                            <p className="mt-7"><span className="text-[#EC6707] text-[16px]">Last Name(Latin)</span><br /><span className="text-[#14397E] text-[18px] font-bold">{lastNameSecondaryLatin}</span></p>
                         </div>
                     </div>
                     <hr className="text-[#D7D8E1]" />
