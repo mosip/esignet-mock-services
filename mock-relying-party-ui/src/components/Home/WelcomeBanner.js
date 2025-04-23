@@ -9,7 +9,7 @@ export const WelcomeBanner = (userInfo) => {
             alt="User Avatar"
             id={"user-avtar"}
             className="w-full h-full object-cover"
-            src={userInfo?.user?.picture ? userInfo.user.picture : ""}
+            src={userInfo?.user?.picture ? userInfo.user.picture : "User-Profile-Icon.png"}
           />
         </div>
         <div>
