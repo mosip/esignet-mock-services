@@ -92,7 +92,14 @@ const Form = ({ showSuccessMsg }) => {
                     [name]: value,
                 }));
             }
-        } else {
+        } else if(name === "firstNamePrimaryLatin" || name === "lastNameSecondaryLatin"){
+            if(/^[\p{Script=Latin}]*$/u.test(value)){
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: value,
+                }));
+            }
+        }else {
             setFormData((prev) => ({
                 ...prev,
                 [name]: value,
