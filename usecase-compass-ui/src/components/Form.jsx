@@ -48,32 +48,49 @@ const Form = ({ showSuccessMsg }) => {
         const { name, value, files } = e.target;
 
         if (name === "faceImageColor") {
-            const reader = new FileReader();
-            reader.readAsDataURL(files[0]);
+            if (files[0]) {
+                const reader = new FileReader();
+                const allowedExtensions = ['jpg', 'jpeg', 'png'];
+                const fileExtension = files[0]?.name.split('.').pop().toLowerCase();
+                reader.readAsDataURL(files[0]);
 
-            const fileSizeKB = files[0].size / 1024;
+                const fileSizeKB = files[0].size / 1024;
 
-            if (fileSizeKB < 50 || fileSizeKB > 200) {
-                setErrors((prev) => ({
-                    ...prev,
-                    [name]: "The uploaded photo does not meet the required size. Please upload an image within the allowed size limits.", // clear error when typing
-                }));
-                return
-            } else {
-                reader.onload = () => {
-                    const base64Image = reader.result; // this is your Base64 string
-                    setFormData((prev) => ({
-                        ...prev,
-                        [name]: base64Image,
-                    }));
-                };
-
-                reader.onerror = () => {
+                if (fileSizeKB < 50 || fileSizeKB > 200) {
                     setErrors((prev) => ({
                         ...prev,
-                        [name]: 'Failed to upload image please try again', // clear error when typing
+                        [name]: "The uploaded photo does not meet the required size. Please upload an image within the allowed size limits.", // clear error when typing
                     }));
-                };
+                    return
+                } else if (!allowedExtensions.includes(fileExtension)) {
+                    setErrors((prev) => ({
+                        ...prev,
+                        [name]: "Invalid file type. Only JPG and PNG files are allowed.", // clear error when typing
+                    }));
+                    return
+                } else {
+                    reader.onload = () => {
+                        const base64Image = reader.result; // this is your Base64 string
+                        setFormData((prev) => ({
+                            ...prev,
+                            [name]: base64Image,
+                        }));
+                    };
+
+                    reader.onerror = () => {
+                        setErrors((prev) => ({
+                            ...prev,
+                            [name]: 'Failed to upload image please try again', // clear error when typing
+                        }));
+                    };
+                }
+            }
+        } else if (name === "firstNamePrimaryLatin" || name === "lastNameSecondaryLatin") {
+            if (/^[\p{Script=Latin}]*$/u.test(value)) {
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: value,
+                }));
             }
         } else if(name === "firstNamePrimaryLatin" || name === "lastNameSecondaryLatin"){
             if(/^[\p{Script=Latin}]*$/u.test(value)){
@@ -105,9 +122,9 @@ const Form = ({ showSuccessMsg }) => {
                 newErrors[field.name] = field.errorMessage;
             } else if (field.name == "nationalUid" && value.length !== 10) {
                 newErrors[field.name] = "Please enter a valid National ID";
-            } else if(field.name === "email" && !/\S+@\S+\.\S+/.test(value)) {
+            } else if (field.name === "email" && !/\S+@\S+\.\S+/.test(value)) {
                 newErrors[field.name] = "Please enter a valid email address";
-            }else if (field.name === "firstNamePrimary" && !/^[A-Za-z]+$/.test(value)) {
+            } else if (field.name === "firstNamePrimary" && !/^[A-Za-z]+$/.test(value)) {
                 newErrors[field.name] = "First name must contain only alphabets";
             } else if (field.name === "lastNameSecondary" && !/^[A-Za-z]+$/.test(value)) {
                 newErrors[field.name] = "Last name must contain only alphabets";
@@ -148,7 +165,7 @@ const Form = ({ showSuccessMsg }) => {
             <form className="space-y-4">
                 {formConfig.map((field) => (
                     <div key={field.name}>
-                        <label className="block font-medium text-[#0033A0] text-[18px]">{field.label}{field.name!=="cardAccessNumber"&&<span className="ml-1">*</span>}</label>
+                        <label className="block font-medium text-[#0033A0] text-[18px]">{field.label}{field.name !== "cardAccessNumber" && <span className="ml-1">*</span>}</label>
 
                         {field.type === 'select' ? (
                             <>
@@ -212,7 +229,7 @@ const Form = ({ showSuccessMsg }) => {
                         ) : field.type === 'date' ? (
                             <>
                                 <div className={`w-full border-2 rounded-lg flex items-center px-4 text-[#9FA1AD] ${errors[field.name] ? "border-red-500" : "border-[#707070]"}`}>
-                                    <img src="assets/icons/calendar.svg"/>
+                                    <img src="assets/icons/calendar.svg" />
                                     <input
                                         type={field.type}
                                         name={field.name}
