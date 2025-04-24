@@ -18,7 +18,7 @@ export const WelcomeBanner = (userInfo) => {
         </div>
         <div>
           <h2 className="text-[1.5rem] font-semibold text-gray-800">
-            Welcome {userInfo?.user?.given_name ?? userInfo.user?.name}! 👋
+            Welcome {userInfo?.user?.first_name} {userInfo?.user?.last_name}! 👋
           </h2>
           <p className="text-sm text-[#535862] pt-4 font-normal">
             Your gateway to seamless access to trusted digital government
