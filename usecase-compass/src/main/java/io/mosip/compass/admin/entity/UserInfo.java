@@ -34,7 +34,7 @@ public class UserInfo {
     private String cardAccessNumber;
 
     @Column(name = "date_of_birth")
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     @Column(name = "email")
