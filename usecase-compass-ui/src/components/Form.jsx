@@ -136,8 +136,6 @@ const Form = ({ showSuccessMsg }) => {
                 newErrors[field.name] = "First name must contain only alphabets";
             } else if (field.name === "lastNameSecondary" && !/^[A-Za-z]+$/.test(value)) {
                 newErrors[field.name] = "Last name must contain only alphabets";
-            } else if (field.name === "cardAccessNumber" && value && !/^\d{10}$/.test(value)) {
-                newErrors[field.name] = "Card Access Number must be exactly 10 digits";
             }
         });
 
