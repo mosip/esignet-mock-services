@@ -12,7 +12,7 @@ const Dashboard = () => {
     const [showDeleteConfMsg, setShowDeleteConfMsg] = useState(false);
     const userName = keycloak.tokenParsed?.preferred_username.split("@")[0]
     const capitalizedUsername = userName?.charAt(0).toUpperCase() + userName?.slice(1);
-    const deleteConfMsg = {title:"Delete Conformation!", message:"Are you sure you want to delete selected records?", messageTwo:"This action can’t be undone."};
+    const deleteConfMsg = {title:"Delete Confirmation!", message:"Are you sure you want to delete selected records?", messageTwo:"This action can’t be undone."};
 
     const getUserData = async () => {
         try {

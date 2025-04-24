@@ -47,7 +47,14 @@ const Form = ({ showSuccessMsg }) => {
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-
+        
+        if(!value){
+            setFormData((prev) => ({
+                ...prev,
+                [name]: '',
+            }))
+        }
+        
         if (name === "faceImageColor") {
             if (files[0]) {
                 const reader = new FileReader();
