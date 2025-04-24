@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import PreviewDialog from "../utils/PreviewDialog";
 import http from "../services/http";
 import AlertDialog from "../utils/AlertDialog";
@@ -43,18 +43,35 @@ const Form = ({ showSuccessMsg }) => {
     const [showFormClearMsg, setShowFormClearMsg] = useState(false);
     const today = new Date().toISOString().split("T")[0];
     const clearFormConfMsg = { title: "Clear Form", message: "Are you sure you want to clear the form?" };
+    const [showGenderPopup, setShowGenderPopup] = useState(false);
+    const dropdownRef = useRef(null);
+    const dropdownBtnRef = useRef(null);
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !dropdownBtnRef.current.contains(event.target)) {
+                setShowGenderPopup(false);
+            }
+        }
+    
+        document.addEventListener("mousedown", handleClickOutside);
+    
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [dropdownRef]);
 
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-        
-        if(!value){
+
+        if (!value) {
             setFormData((prev) => ({
                 ...prev,
                 [name]: '',
             }))
         }
-        
+
         if (name === "faceImageColor") {
             if (files[0]) {
                 const reader = new FileReader();
@@ -94,7 +111,7 @@ const Form = ({ showSuccessMsg }) => {
                 }
             }
         } else if (name === "firstNamePrimaryLatin" || name === "lastNameSecondaryLatin") {
-            if (/^[\p{Script=Latin}]*$/u.test(value)) {
+            if (/^[\p{Script=Latin} ]*$/u.test(value)) {
                 setFormData((prev) => ({
                     ...prev,
                     [name]: value,
@@ -107,7 +124,7 @@ const Form = ({ showSuccessMsg }) => {
                     [name]: value,
                 }))
             }
-        } else if(name === 'dateOfBirth'){
+        } else if (name === 'dateOfBirth') {
             const [day, month, year] = value.split('-');
             setFormData((prev) => ({
                 ...prev,
@@ -122,7 +139,7 @@ const Form = ({ showSuccessMsg }) => {
 
         setErrors((prev) => ({
             ...prev,
-            [name]: '', 
+            [name]: '',
         }));
     };
 
@@ -138,9 +155,9 @@ const Form = ({ showSuccessMsg }) => {
                 newErrors[field.name] = "Please enter a valid National ID";
             } else if (field.name === "email" && !/\S+@\S+\.\S+/.test(value)) {
                 newErrors[field.name] = "Please enter a valid email address";
-            } else if (field.name === "firstNamePrimary" && !/^[A-Za-z]+$/.test(value)) {
+            } else if (field.name === "firstNamePrimary" && !/^[A-Za-z ]+$/.test(value)) {
                 newErrors[field.name] = "First name must contain only alphabets";
-            } else if (field.name === "lastNameSecondary" && !/^[A-Za-z]+$/.test(value)) {
+            } else if (field.name === "lastNameSecondary" && !/^[A-Za-z ]+$/.test(value)) {
                 newErrors[field.name] = "Last name must contain only alphabets";
             }
         });
@@ -150,6 +167,14 @@ const Form = ({ showSuccessMsg }) => {
     };
 
     const handleClear = () => setShowFormClearMsg(true);
+
+    const setGenderValue = (val) =>{
+        setFormData((prev) => ({
+            ...prev,
+            gender: val,
+        }));
+        setShowGenderPopup(false)
+    };
 
     const handlePreview = () => {
         if (validateForm()) {
@@ -181,21 +206,27 @@ const Form = ({ showSuccessMsg }) => {
 
                         {field.type === 'select' ? (
                             <>
-                                <select
-                                    name={field.name}
-                                    value={formData[field.name] || ''}
-                                    onChange={handleChange}
-                                    className={`select select-bordered w-full mt-1 border-[2px] h-[60px] rounded-lg outline-none px-4 text-[18px] bg-[#ffffff] ${errors[field.name] ? "border-red-500" : "border-[#707070]"} ${formData[field.name] ? "text-[#1B2142]" : "text-[#9FA1AD]"}`}
-                                >
-                                    <option disabled value="" className="text-[#101828]">
-                                        {field.placeholder}
-                                    </option>
-                                    {field.options.map((opt) => (
-                                        <option className="text-[#101828]" key={opt} value={opt}>
-                                            {opt}
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="relative inline-block text-left w-full text-[18px]">
+                                    <div>
+                                        <button ref={dropdownBtnRef} onClick={() => setShowGenderPopup((prevState) => !prevState)} type="button" className={`inline-flex w-full h-[60px] items-center justify-between rounded-md border-2 border-[#707070] bg-white px-4 py-2 font-medium shadow-smfocus:outline-none cursor-pointer ${formData.gender ? "text-[#1B2142]" : "text-[#9FA1AD]"}`}>
+                                            {formData.gender ?  formData.gender : field.placeholder}
+                                            <svg className="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.063a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    {showGenderPopup && <div ref={dropdownRef} className="absolute z-10 mt-2 px-2 py-1 w-full origin-top-right rounded-md bg-white shadow-lg border-1 border-[#E4E7EC]">
+                                        <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                            {field.options.map((eachOpt) => (
+                                                <p onClick={() => setGenderValue(eachOpt)} className={`text-[#101828] px-3 rounded-md py-1 mb-2 flex justify-between items-center ${formData.gender === eachOpt ? "bg-[#F9FAFB]" : ""} cursor-pointer`} key={eachOpt}>
+                                                    <span>{eachOpt}</span>
+                                                   {(formData.gender && formData.gender === eachOpt) && (<img src="/assets/icons/check.svg" alt="check"/>)}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    </div>}
+                                </div>
+
                                 {errors[field.name] && (
                                     <p className="text-red-500 text-xs mt-1">{errors[field.name]}</p>
                                 )}
@@ -240,7 +271,7 @@ const Form = ({ showSuccessMsg }) => {
                             </>
                         ) : field.type === 'date' ? (
                             <>
-                                <Datepicker errors={errors} handleChange={handleChange} formData={formData}/>
+                                <Datepicker errors={errors} handleChange={handleChange} formData={formData} />
                                 {errors[field.name] && (
                                     <p className="text-red-500 text-xs mt-1">{errors[field.name]}</p>
                                 )}
