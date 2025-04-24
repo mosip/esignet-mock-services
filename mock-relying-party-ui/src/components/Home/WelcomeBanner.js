@@ -2,21 +2,25 @@ import React from "react";
 
 export const WelcomeBanner = (userInfo) => {
   return (
-    <div className="bg-white shadow rounded-3xl p-4 flex items-center justify-between w-[90%] mx-auto mt-6 mb-8">
+    <div className="bg-white shadow-sm rounded-3xl p-6 flex items-center justify-between w-[90%] mx-auto mt-6 mb-8 border-[1.75px] border-[#EBEBEB]">
       <div className="flex items-center">
-        <div className="w-24 h-24 rounded-full overflow-hidden mr-4">
+        <div className="w-24 h-24 rounded-md overflow-hidden mr-4">
           <img
             alt="User Avatar"
             id={"user-avtar"}
             className="w-full h-full object-cover"
-            src={userInfo?.user?.picture ? userInfo.user.picture : "User-Profile-Icon.png"}
+            src={
+              userInfo?.user?.picture
+                ? userInfo.user.picture
+                : "User-Profile-Icon.png"
+            }
           />
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-[1.5rem] font-semibold text-gray-800">
             Welcome {userInfo?.user?.given_name ?? userInfo.user?.name}! 👋
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[#535862] pt-4 font-normal">
             Your gateway to seamless access to trusted digital government
             services
           </p>
@@ -24,13 +28,13 @@ export const WelcomeBanner = (userInfo) => {
       </div>
 
       {/* Right Section (Search Bar) */}
-      <div className=" h-14 w-1/2 pl-8 flex border border-gray-300 rounded-md">
+      <div className=" h-14 w-1/2 flex border border-gray-300 rounded-md">
         <input
           type="text"
           placeholder="Search UtopiaGov"
-          className="focus:border-none flex-grow hover:border-none border-none  "
+          className="flex-grow pl-6 rounded-md rounded-tr-none rounded-br-none"
         />
-        <button className=" px-8 bg-blue-500 text-white rounded-md h-14">
+        <button className="px-8 bg-[#2868E8] text-white rounded-md rounded-tl-none rounded-bl-none h-14">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5 inline-block mr-1"
