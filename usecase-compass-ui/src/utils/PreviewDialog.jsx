@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 
 const PreviewDialog = ({showPreviewDialog, submitApplication, formData}) => {
-    const {firstNamePrimary, lastNameSecondary, firstNamePrimaryLatin, lastNameSecondaryLatin, nationalUid, dateOfBirth, gender, nationality, birthCountry, faceImageColor, cardAccessNumber} = formData
+    const {firstNamePrimary, lastNameSecondary, firstNamePrimaryLatin, lastNameSecondaryLatin, nationalUid, dateOfBirth, gender, nationality, birthCountry, faceImageColor, cardAccessNumber} = formData;
+    const [year,month,date] = dateOfBirth.split('-');
+
     const closePreviewDialog = () =>{
         showPreviewDialog();
     };
@@ -35,7 +37,7 @@ const PreviewDialog = ({showPreviewDialog, submitApplication, formData}) => {
                     <hr className="text-[#D7D8E1]" />
                     <div className="flex space-x-10 pt-6 px-1">
                         <div className="w-[50%]">
-                            <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Date of Birth</span><br /><span className="text-[#14397E] text-[18px] font-bold">{dateOfBirth}</span></p>
+                            <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Date of Birth</span><br /><span className="text-[#14397E] text-[18px] font-bold">{date + "-" + month + "-" + year}</span></p>
                             <p className="mb-4"><span className="text-[#EC6707] text-[16px]">National ID</span><br /><span className="text-[#14397E] text-[18px] font-bold">{nationalUid}</span></p>
                             <p><span className="text-[#EC6707] text-[16px]">Birth Country</span><br /><span className="text-[#14397E] text-[18px] font-bold">{birthCountry}</span></p>
                         </div>

@@ -107,6 +107,12 @@ const Form = ({ showSuccessMsg }) => {
                     [name]: value,
                 }))
             }
+        } else if(name === 'dateOfBirth'){
+            const [day, month, year] = value.split('-');
+            setFormData((prev) => ({
+                ...prev,
+                [name]: `${year}-${month}-${day}`,
+            }));
         } else {
             setFormData((prev) => ({
                 ...prev,
@@ -181,11 +187,11 @@ const Form = ({ showSuccessMsg }) => {
                                     onChange={handleChange}
                                     className={`select select-bordered w-full mt-1 border-[2px] h-[60px] rounded-lg outline-none px-4 text-[18px] bg-[#ffffff] ${errors[field.name] ? "border-red-500" : "border-[#707070]"} ${formData[field.name] ? "text-[#1B2142]" : "text-[#9FA1AD]"}`}
                                 >
-                                    <option disabled value="">
+                                    <option disabled value="" className="text-[#101828]">
                                         {field.placeholder}
                                     </option>
                                     {field.options.map((opt) => (
-                                        <option key={opt} value={opt}>
+                                        <option className="text-[#101828]" key={opt} value={opt}>
                                             {opt}
                                         </option>
                                     ))}
