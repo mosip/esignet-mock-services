@@ -42,23 +42,23 @@ const Table = ({ applicationsList, selectApplication, selectedItems, deleteAppli
                 {/* head */}
                 <thead>
                     <tr className="text-[#6F6E6E] border-b border-[#E3DCC9]">
-                        <th className="text-left w-[19%] font-medium py-5 pl-6 break-all"><p className="flex items-center">{applicationsList.length > 0 && <img onClick={selectedAllDelBtn} src={`/assets/icons/${selectedAllDel ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/>}<span className="pl-4">National ID</span></p></th>
-                        <th className="text-left w-[19%] font-medium py-5 break-all">First Name</th>
-                        <th className="text-left w-[13%] font-medium py-5 break-all">Last Name</th>
-                        <th className="text-left w-[16%] font-medium py-5 break-all">Issued Date</th>
-                        <th className="text-left w-[13%] font-medium py-5 break-all">CAN</th>
-                        <th className="text-left w-[16%] font-medium py-5 break-all">Action</th>
+                        <th className="text-left w-[17%] font-medium py-5 pl-6 break-all"><p className="flex items-center">{applicationsList.length > 0 && <img onClick={selectedAllDelBtn} src={`/assets/icons/${selectedAllDel ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/>}<span className="pl-4">National ID</span></p></th>
+                        <th className="text-left w-[17%] font-medium py-5 break-all">First Name</th>
+                        <th className="text-left w-[17%] font-medium py-5 break-all">Last Name</th>
+                        <th className="text-left w-[17%] font-medium py-5 break-all">Issued Date</th>
+                        <th className="text-left w-[15%] font-medium py-5 break-all">CAN</th>
+                        <th className="text-right w-[10%] font-medium py-5 pr-17 break-all max-[1300px]:pr-7 max-[1300px]:w-[12%]">Action</th>
                     </tr>
                 </thead>
                 <tbody className="w-full text-[#031640]">
                     {applicationsList.length > 0 && applicationsList.map((eachItem, index) => (
                         <tr key={index} className="border-b border-[#E3DCC9]">
-                            <td className="py-5 text-left w-[19%] pl-6 break-all"><p className="flex items-center"><img onClick={() => selectApplication(eachItem.userInfoId)} src={`/assets/icons/${selectedItems.includes(eachItem.userInfoId) ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/><span className="pl-4">{eachItem.nationalUid}</span></p></td>
-                            <td className="py-5 text-left w-[19%] break-all pr-1">{eachItem.firstNamePrimary}</td>
-                            <td className="py-5 text-left w-[13%] break-all pr-1">{eachItem.lastNameSecondary}</td>
-                            <td className="py-5 text-left w-[16%] break-all pr-1">{new Date(eachItem.issuanceDate).toLocaleDateString('en-GB').replaceAll('/', '-')}</td>
-                            <td className="py-5 text-left w-[13%] break-all pr-1">{eachItem.cardAccessNumber}</td>
-                            <th className="py-5 text-left w-[16%]">
+                            <td className="py-5 text-left w-[17%] pl-6 break-all"><p className="flex items-center"><img onClick={() => selectApplication(eachItem.userInfoId)} src={`/assets/icons/${selectedItems.includes(eachItem.userInfoId) ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/><span className="pl-4">{eachItem.nationalUid}</span></p></td>
+                            <td className="py-5 text-left w-[17%] break-all pr-1">{eachItem.firstNamePrimary}</td>
+                            <td className="py-5 text-left w-[17%] break-all pr-1">{eachItem.lastNameSecondary}</td>
+                            <td className="py-5 text-left w-[17%] break-all pr-1">{new Date(eachItem.issuanceDate).toLocaleDateString('en-GB').replaceAll('/', '-')}</td>
+                            <td className="py-5 text-left w-[15%] break-all pr-1">{eachItem.cardAccessNumber}</td>
+                            <th className="py-5 text-right w-[10%] pr-18 max-[1300px]:pr-8 max-[1300px]:w-[12%]">
                                 <button onClick={() => {setShowDeleteConfMsg(true);setSelectedDelId(eachItem.userInfoId) }} className="btn btn-ghost btn-xs cursor-pointer"><img src="/assets/icons/del-orange.svg" alt="delete" /></button>
                             </th>
                         </tr>

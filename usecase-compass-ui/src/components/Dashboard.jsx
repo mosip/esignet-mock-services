@@ -12,7 +12,7 @@ const Dashboard = () => {
     const [showDeleteConfMsg, setShowDeleteConfMsg] = useState(false);
     const userName = keycloak.tokenParsed?.preferred_username.split("@")[0]
     const capitalizedUsername = userName?.charAt(0).toUpperCase() + userName?.slice(1);
-    const deleteConfMsg = {title:"Delete Conformation!", message:"Are you sure you want to delete all the record?", messageTwo:"This action can’t be undone."};
+    const deleteConfMsg = {title:"Delete Confirmation!", message:"Are you sure you want to delete selected records?", messageTwo:"This action can’t be undone."};
 
     const getUserData = async () => {
         try {
@@ -91,7 +91,7 @@ const Dashboard = () => {
                 <Link to="/newApplication"><button className="text-[#ffffff] bg-[#FF671F] h-[44px] w-[198px] rounded-md cursor-pointer">New Application</button></Link>
             </div>
             <div className="shadow w-full rounded-2xl min-h-[75%] bg-[#FFFDF6]">
-                <div className="px-6 py-5 flex justify-between items-center">
+                <div className="pl-6 pr-14 py-5 flex justify-between items-center max-[1300px]:pr-6">
                     <h1 className="text-[18px] text-[#031640] font-medium">Recent Applications</h1>
                     {applicationsList && <div className={`flex space-x-8 items-center text-[14px] ${selectedItems.length > 0 ? "text-[#FF671F]" : "text-[#B3B3B3]"}`}>
                         <div className="flex space-x-2 items-center">

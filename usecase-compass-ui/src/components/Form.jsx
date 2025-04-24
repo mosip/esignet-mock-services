@@ -2,13 +2,14 @@ import { useState } from "react";
 import PreviewDialog from "../utils/PreviewDialog";
 import http from "../services/http";
 import AlertDialog from "../utils/AlertDialog";
+import Datepicker from "../utils/DatePicker"
 
 const formConfig = [
-    { label: 'First Name', name: 'firstNamePrimary', type: 'text', placeholder: 'Enter First Name', errorMessage: 'First name is required' },
-    { label: 'Last Name', name: 'lastNameSecondary', type: 'text', placeholder: 'Enter Last Name', errorMessage: 'Last name is required' },
-    { label: 'First Name(Latin)', name: 'firstNamePrimaryLatin', type: 'text', placeholder: 'Enter First Name', errorMessage: 'First name is required' },
-    { label: 'Last Name(Latin)', name: 'lastNameSecondaryLatin', type: 'text', placeholder: 'Enter Last Name', errorMessage: 'Last name is required' },
-    { label: 'National ID', name: 'nationalUid', type: 'number', placeholder: 'Enter National ID', errorMessage: 'National ID is required' },
+    { label: 'First Name', name: 'firstNamePrimary', type: 'text', placeholder: 'Enter First Name', errorMessage: 'First name is required', max: 100 },
+    { label: 'Last Name', name: 'lastNameSecondary', type: 'text', placeholder: 'Enter Last Name', errorMessage: 'Last name is required', max: 100 },
+    { label: 'First Name(Latin)', name: 'firstNamePrimaryLatin', type: 'text', placeholder: 'Enter First Name', errorMessage: 'First name is required', max: 100 },
+    { label: 'Last Name(Latin)', name: 'lastNameSecondaryLatin', type: 'text', placeholder: 'Enter Last Name', errorMessage: 'Last name is required', max: 100 },
+    { label: 'National ID', name: 'nationalUid', type: 'text', placeholder: 'Enter National ID', errorMessage: 'National ID is required', max: 10 },
     { label: 'Date of Birth', name: 'dateOfBirth', type: 'date', placeholder: 'DD / MM / YYYY', errorMessage: 'Date of birth is required' },
     {
         label: 'Gender',
@@ -18,10 +19,10 @@ const formConfig = [
         options: ['Male', 'Female', 'Other'],
         errorMessage: 'Gender is required'
     },
-    { label: 'Nationality', name: 'nationality', type: 'text', placeholder: 'Enter Nationality', errorMessage: 'Nationality is required' },
-    { label: 'Birth Country', name: 'birthCountry', type: 'text', placeholder: 'Enter Birth Country', errorMessage: 'Birth country is required' },
-    { label: 'Email ID', name: 'email', type: 'email', placeholder: 'Enter Your Email', errorMessage: 'Email is required' },
-    { label: 'CAN (Card Access Number)', name: 'cardAccessNumber', type: 'number', placeholder: 'Enter Card Access Number', errorMessage: 'Card Access Number is required' },
+    { label: 'Nationality', name: 'nationality', type: 'text', placeholder: 'Enter Nationality', errorMessage: 'Nationality is required', max: 100 },
+    { label: 'Birth Country', name: 'birthCountry', type: 'text', placeholder: 'Enter Birth Country', errorMessage: 'Birth country is required', max: 100 },
+    { label: 'Email ID', name: 'email', type: 'email', placeholder: 'Enter Your Email', errorMessage: 'Email is required', max: 100 },
+    { label: 'CAN (Card Access Number)', name: 'cardAccessNumber', type: 'text', placeholder: 'Enter Card Access Number', errorMessage: 'Card Access Number is required', max: 10 },
     {
         label: 'Upload Photo',
         name: 'faceImageColor',
@@ -46,7 +47,14 @@ const Form = ({ showSuccessMsg }) => {
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-
+        
+        if(!value){
+            setFormData((prev) => ({
+                ...prev,
+                [name]: '',
+            }))
+        }
+        
         if (name === "faceImageColor") {
             if (files[0]) {
                 const reader = new FileReader();
@@ -92,14 +100,14 @@ const Form = ({ showSuccessMsg }) => {
                     [name]: value,
                 }));
             }
-        } else if(name === "firstNamePrimaryLatin" || name === "lastNameSecondaryLatin"){
-            if(/^[\p{Script=Latin}]*$/u.test(value)){
+        } else if (name === "nationalUid" || name === "cardAccessNumber") {
+            if (/^[a-zA-Z0-9]+$/.test(value)) {
                 setFormData((prev) => ({
                     ...prev,
                     [name]: value,
-                }));
+                }))
             }
-        }else {
+        } else {
             setFormData((prev) => ({
                 ...prev,
                 [name]: value,
@@ -108,7 +116,7 @@ const Form = ({ showSuccessMsg }) => {
 
         setErrors((prev) => ({
             ...prev,
-            [name]: '', // clear error when typing
+            [name]: '', 
         }));
     };
 
@@ -228,18 +236,7 @@ const Form = ({ showSuccessMsg }) => {
                             </>
                         ) : field.type === 'date' ? (
                             <>
-                                <div className={`w-full border-2 rounded-lg flex items-center px-4 text-[#9FA1AD] ${errors[field.name] ? "border-red-500" : "border-[#707070]"}`}>
-                                    <img src="assets/icons/calendar.svg" />
-                                    <input
-                                        type={field.type}
-                                        name={field.name}
-                                        value={formData[field.name] || 'DD / MM / YYYY'}
-                                        max={today}
-                                        onChange={handleChange}
-                                        className={`transition-colors duration-300 w-full input input-bordered mt-1 h-[60px] rounded-lg outline-none px-4 text-[18px] bg-[#ffffff] ${formData[field.name] ? "text-[#1B2142]" : "text-[#9FA1AD]"}`}
-                                        placeholder={field.placeholder}
-                                    />
-                                </div>
+                                <Datepicker errors={errors} handleChange={handleChange} formData={formData}/>
                                 {errors[field.name] && (
                                     <p className="text-red-500 text-xs mt-1">{errors[field.name]}</p>
                                 )}
@@ -254,8 +251,9 @@ const Form = ({ showSuccessMsg }) => {
                                     name={field.name}
                                     value={formData[field.name] || ''}
                                     onChange={handleChange}
-                                    className={`transition-colors duration-300 input input-bordered w-full mt-1 border-[2px] h-[60px] rounded-lg outline-none px-4 text-[18px] text-[] bg-[#ffffff] ${formData[field.name] ? "text-[#1B2142]" : "text-[#9FA1AD]"} ${errors[field.name] ? "border-red-500" : "border-[#707070]"}`}
+                                    className={`transition-colors duration-300 input input-bordered w-full mt-1 border-[2px] h-[60px] rounded-lg outline-none px-4 text-[18px] bg-[#ffffff] ${formData[field.name] ? "text-[#1B2142]" : "text-[#9FA1AD]"} ${errors[field.name] ? "border-red-500" : "border-[#707070]"}`}
                                     placeholder={field.placeholder}
+                                    maxLength={field.max}
                                 />
                                 {errors[field.name] && (
                                     <p className="text-red-500 text-xs mt-1">{errors[field.name]}</p>
