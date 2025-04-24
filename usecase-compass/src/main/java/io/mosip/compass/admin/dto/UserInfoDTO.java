@@ -25,7 +25,7 @@ public class UserInfoDTO {
 
     @NotNull(message = "Date of birth is required")
     @Past(message = "Date of birth must be in the past")
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     @Email(message = "Email should be valid")
