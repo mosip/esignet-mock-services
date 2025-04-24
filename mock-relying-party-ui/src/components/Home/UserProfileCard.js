@@ -92,23 +92,23 @@ export const UserProfileCard = () => {
       {fetchDone && (
         <div>
           <WelcomeBanner user={userInfo} />
-          <div className="bg-white shadow rounded-3xl py-8 w-[90%] h-[73%] m-auto">
+          <div className="bg-white shadow-sm rounded-3xl py-8 w-[90%] h-[73%] m-auto border-[1.75px] border-[#EBEBEB]">
             <div className="container mx-auto text-center">
-              <h1 className="text-3xl font-semibold text-gray-800 mb-4">
+              <h1 className="text-3xl font-semibold text-[#181D27] mb-4">
                 Government Services - Making Life Easier for Utopian's
               </h1>
-              <p className="text-gray-600 mb-4">
-                The Government of Utopia offers many helpful services online so
-                you can get things done quickly and easily
+              <p className="text-[#535862] my-6">
+                Access a range of online services from the Government of Utopia
+                - Quick, convenient, and hassle-free!
               </p>
               <div className="px-24">
-                <hr className={"bg-gray-600"} />
+                <hr className={"bg-[#EBEBEB]"} />
               </div>
-              <div className="flex justify-evenly mt-6 mb-12">
+              <div className="flex justify-evenly my-12">
                 {servicesRow1.map((service, index) => (
                   <div
                     key={index}
-                    className="w-72 h-52x bg-white rounded-md shadow-md p-4 flex flex-col items-center justify-center hover:shadow-lg transition-shadow duration-300"
+                    className="w-72 h-52x bg-white rounded-md shadow-md border-[1.5px] border-[#EBEBEB] p-4 flex flex-col items-center justify-center hover:shadow-lg transition-shadow duration-200 hover:cursor-pointer"
                   >
                     <div className="w-28 h-28 rounded-md overflow-hidden mb-2">
                       <img
@@ -123,11 +123,11 @@ export const UserProfileCard = () => {
                   </div>
                 ))}
               </div>
-              <div className="flex justify-evenly my-12">
+              <div className="flex justify-evenly mt-12 mb-6">
                 {servicesRow2.map((service, index) => (
                   <div
                     key={index}
-                    className="w-72 h-52x bg-white rounded-md shadow-md p-4 flex flex-col items-center justify-center hover:shadow-lg transition-shadow duration-300"
+                    className="w-72 h-52x bg-white rounded-md shadow-md border-[1.5px] border-[#EBEBEB] p-4 flex flex-col items-center justify-center hover:shadow-lg transition-shadow duration-200 hover:cursor-pointer"
                   >
                     <div className="w-28 h-28 rounded-md overflow-hidden mb-2">
                       <img
