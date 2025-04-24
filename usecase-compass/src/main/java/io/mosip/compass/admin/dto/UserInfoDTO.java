@@ -20,14 +20,12 @@ public class UserInfoDTO {
     @NotBlank(message = "Birth country is required")
     private String birthCountry;
 
-    @Digits(integer = 10, fraction = 0, message = "Card access number must be a 10-digit integer")
-    @Min(value = 1000000000L, message = "Card access number must be 10 digits")
-    @Max(value = 9999999999L, message = "Card access number must be 10 digits")
-    private Long cardAccessNumber;
+    @Pattern(regexp = "^[a-zA-Z0-9]{10}$", message = "CAN must be alphanumeric and exactly 10 characters")
+    private String cardAccessNumber;
 
     @NotNull(message = "Date of birth is required")
     @Past(message = "Date of birth must be in the past")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate dateOfBirth;
 
     @Email(message = "Email should be valid")
