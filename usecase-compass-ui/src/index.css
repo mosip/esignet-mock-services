@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
 
 html,
 body,
@@ -12,37 +15,13 @@ body.no-scroll {
     overflow: hidden;
     position: fixed;
     width: 100%;
-  }
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-    opacity: 0;
-    position: absolute;
-    right: 0;
-    height: 90px;
-    width: 100%;
-    cursor: pointer;
-}
-
-input[type="date"] {
-    position: relative;
-}
-
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
 }
 
 input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
     transition: background-color 5000s ease-in-out 0s;
-} 
+    outline: none;
+}
 
 
 @keyframes fadeIn {
@@ -53,4 +32,75 @@ input:-webkit-autofill:focus {
     to {
         opacity: 1;
     }
+}
+
+/* Force light theme on Flowbite Datepicker */
+.datepicker {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    /* gray-800 */
+    border: 1px solid #d1d5db !important;
+    /* gray-300 */
+}
+
+.datepicker .datepicker-header,
+.datepicker .datepicker-footer {
+    background-color: #ffffff !important;
+    /* gray-50 */
+    color: #1f2937 !important;
+}
+
+.datepicker-cell:hover {
+    background-color: #f3f4f6 !important;
+    /* gray-100 */
+}
+
+.datepicker-cell {
+    color: #2d3748 !important;
+}
+
+.datepicker-cell.selected {
+    background-color: #3b82f6 !important;
+    /* blue-500 */
+    color: #ffffff !important;
+}
+
+.datepicker-picker {
+    background-color: #ffffff !important;
+}
+
+.view-switch {
+    background-color: #ffffff;
+    color: #2d3748;
+    cursor: pointer;
+}
+
+.prev-btn {
+    background-color: #ffffff;
+    color: #2d3748;
+    cursor: pointer;
+}
+
+.prev-btn>svg {
+    color: #2d3748;
+}
+
+.next-btn {
+    background-color: #ffffff;
+    color: #2d3748;
+    cursor: pointer;
+}
+
+.next-btn>svg {
+    color: #2d3748;
+}
+
+.focused {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+input:focus {
+    /* removes the glow effect */
+    outline: none !important;
 }

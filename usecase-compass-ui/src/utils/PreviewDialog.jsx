@@ -15,22 +15,21 @@ const PreviewDialog = ({showPreviewDialog, submitApplication, formData}) => {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-[#FDEDE1] rounded-3xl w-[781px] shadow-lg h-[90%] pb-4 relative overflow-y-scroll">
+            <div className="bg-[#FDEDE1] rounded-3xl w-[781px] shadow-lg pb-4 relative overflow-y-scroll">
                 <h1 className="text-2xl font-bold px-6 pt-6  mb-4 text-[#181D27]">Confirm Details</h1>
                 <hr className="text-[#D7D8E1]" />
                 <div className="py-6 px-10">
                     <div className="flex items-start space-x-10 px-1 pb-7">
                         <div className="w-[30%]">
-                            <span className="text-[#EC6707] text-[17px]">Photo</span>
                             <img src={faceImageColor} alt="profile" className="h-[180px] w-full border border-[#ffffff] rounded-lg object-cover" />
                         </div>
                         <div className="break-words w-[35%]">
-                            <p className="mt-7"><span className="text-[#EC6707] text-[16px]">First Name</span><br /><span className="text-[#14397E] text-[18px] font-bold">{firstNamePrimary}</span></p>
-                            <p className="mt-7"><span className="text-[#EC6707] text-[16px]">Last Name</span><br /><span className="text-[#14397E] text-[18px] font-bold">{lastNameSecondary}</span></p>
+                            <p className="mt-4"><span className="text-[#EC6707] text-[16px]">First Name</span><br /><span className="text-[#14397E] text-[18px] font-bold">{firstNamePrimary}</span></p>
+                            <p className="mt-4"><span className="text-[#EC6707] text-[16px]">Last Name</span><br /><span className="text-[#14397E] text-[18px] font-bold">{lastNameSecondary}</span></p>
                         </div>
                         <div className="break-words w-[35%]">
-                            <p className="mt-7"><span className="text-[#EC6707] text-[16px]">First Name(Latin)</span><br /><span className="text-[#14397E] text-[18px] font-bold">{firstNamePrimaryLatin}</span></p>
-                            <p className="mt-7"><span className="text-[#EC6707] text-[16px]">Last Name(Latin)</span><br /><span className="text-[#14397E] text-[18px] font-bold">{lastNameSecondaryLatin}</span></p>
+                            <p className="mt-4"><span className="text-[#EC6707] text-[16px]">First Name(Latin)</span><br /><span className="text-[#14397E] text-[18px] font-bold">{firstNamePrimaryLatin}</span></p>
+                            <p className="mt-4"><span className="text-[#EC6707] text-[16px]">Last Name(Latin)</span><br /><span className="text-[#14397E] text-[18px] font-bold">{lastNameSecondaryLatin}</span></p>
                         </div>
                     </div>
                     <hr className="text-[#D7D8E1]" />
