@@ -53,8 +53,8 @@ public class UserInfoDTO {
     @Size(min = 1, max = 100, message = "Last Name (Latin) must be between 1 and 100 characters")
     private String lastNameSecondaryLatin;
 
-    @NotBlank(message = "National UID is required")
-    @Pattern(regexp = "^[a-zA-Z0-9]{10}$", message = "National UID must be alphanumeric and exactly 10 characters")
+    @NotBlank(message = "National ID is required")
+    @Pattern(regexp = "^[a-zA-Z0-9]{10}$", message = "National ID must be alphanumeric and exactly 10 characters")
     private String nationalUid;
 
     @NotBlank(message = "Nationality is required")
