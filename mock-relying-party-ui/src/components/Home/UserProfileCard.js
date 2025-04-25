@@ -95,7 +95,7 @@ export const UserProfileCard = () => {
           <div className="bg-white shadow-sm rounded-3xl py-8 w-[90%] h-[73%] m-auto border-[1.75px] border-[#EBEBEB]">
             <div className="container mx-auto text-center">
               <h1 className="text-3xl font-semibold text-[#181D27] mb-4">
-                Government Services - Making Life Easier for Utopian's
+                Government Services - Making Life Easier for Utopians
               </h1>
               <p className="text-[#535862] my-6">
                 Access a range of online services from the Government of Utopia
