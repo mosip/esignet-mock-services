@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +23,15 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -41,7 +42,7 @@ import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
     @Autowired
@@ -49,13 +50,13 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers,
-                                                                  HttpStatus status, WebRequest request) {
+                                                                  HttpStatusCode status, WebRequest request) {
         return handleExceptions(ex, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(
-            HttpMediaTypeNotAcceptableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+            HttpMediaTypeNotAcceptableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         return handleExceptions(ex, request);
     }
 
@@ -63,7 +64,7 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMissingServletRequestParameter(
             MissingServletRequestParameterException ex,
             HttpHeaders headers,
-            HttpStatus status,
+            HttpStatusCode status,
             WebRequest request) {
         return handleExceptions(ex, request);
     }
@@ -72,14 +73,14 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
             HttpHeaders headers,
-            HttpStatus status,
+            HttpStatusCode status,
             WebRequest request) {
         return handleExceptions(ex, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers,
-                                                        HttpStatus status, WebRequest request) {
+                                                        HttpStatusCode status, WebRequest request) {
         return handleExceptions(ex, request);
     }
 

@@ -5,26 +5,19 @@
  */
 package io.mosip.esignet.mock.identitysystem.validator;
 
-import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
-import io.mosip.esignet.mock.identitysystem.dto.LanguageValue;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ValidatorTest {
 
     @InjectMocks
@@ -38,32 +31,32 @@ public class ValidatorTest {
 
     @Test
     public void requestTimeValidator_withNullValue_thenFail() {
-        assertFalse(requestTimeValidator.isValid(null, context));
+        Assertions.assertFalse(requestTimeValidator.isValid(null, context));
     }
 
     @Test
     public void requestTimeValidator_withBlankValue_thenFail() {
-        assertFalse(requestTimeValidator.isValid("", context));
-        assertFalse(requestTimeValidator.isValid("   ", context));
+        Assertions.assertFalse(requestTimeValidator.isValid("", context));
+        Assertions.assertFalse(requestTimeValidator.isValid("   ", context));
     }
 
     @Test
     public void requestTimeValidator_withInvalidDate_thenFail() {
-        assertFalse(requestTimeValidator.isValid("invalid-date", context));
+        Assertions.assertFalse(requestTimeValidator.isValid("invalid-date", context));
     }
 
     @Test
     public void requestTimeValidator_withValidDate_thenPass() {
         LocalDateTime now = LocalDateTime.now().plusSeconds(121);
         String validDate = now.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN));
-        assertFalse(requestTimeValidator.isValid(validDate, context));
+        Assertions.assertFalse(requestTimeValidator.isValid(validDate, context));
     }
 
     @Test
     public void testIsValid_ValidDateJustOutsideNegativeVariation() {
         LocalDateTime now = LocalDateTime.now().minusSeconds(121);
         String validDate = now.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN));
-        assertFalse(requestTimeValidator.isValid(validDate, context));
+        Assertions.assertFalse(requestTimeValidator.isValid(validDate, context));
     }
 
 }

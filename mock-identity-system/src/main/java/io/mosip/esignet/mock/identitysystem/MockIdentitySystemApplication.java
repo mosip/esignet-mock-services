@@ -17,10 +17,12 @@ import org.springframework.cache.annotation.EnableCaching;
 				"io.mosip.kernel.keymanagerservice.helper," +
 				"io.mosip.kernel.keymanagerservice.service," +
 				"io.mosip.kernel.keymanagerservice.util," +
+				"io.mosip.kernel.keymanagerservice.validator," +
 				"io.mosip.kernel.keygenerator.bouncycastle," +
 				"io.mosip.kernel.signature.service," +
 				"io.mosip.kernel.partnercertservice.service," +
-				"io.mosip.kernel.partnercertservice.helper" )
+				"io.mosip.kernel.partnercertservice.helper," +
+				"io.mosip.kernel.pdfgenerator.itext.impl")
 public class MockIdentitySystemApplication 
 {
 	public static void main(String[] args) {
