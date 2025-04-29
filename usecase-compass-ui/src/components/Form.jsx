@@ -3,6 +3,7 @@ import PreviewDialog from "../utils/PreviewDialog";
 import http from "../services/http";
 import AlertDialog from "../utils/AlertDialog";
 import Datepicker from "../utils/DatePicker"
+import Dropdown from "../utils/Dropdown";
 
 const formConfig = [
     { label: 'First Name', name: 'firstNamePrimary', type: 'text', placeholder: 'Enter First Name', errorMessage: 'First name is required', max: 100 },
@@ -41,20 +42,18 @@ const Form = ({ showSuccessMsg }) => {
     const [errors, setErrors] = useState({});
     const [invalidFormError, setInvalidFormError] = useState("");
     const [showFormClearMsg, setShowFormClearMsg] = useState(false);
-    const today = new Date().toISOString().split("T")[0];
     const clearFormConfMsg = { title: "Clear Form", message: "Are you sure you want to clear the form?" };
-
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-        
-        if(!value){
+
+        if (!value) {
             setFormData((prev) => ({
                 ...prev,
                 [name]: '',
             }))
         }
-        
+
         if (name === "faceImageColor") {
             if (files[0]) {
                 const reader = new FileReader();
@@ -94,7 +93,7 @@ const Form = ({ showSuccessMsg }) => {
                 }
             }
         } else if (name === "firstNamePrimaryLatin" || name === "lastNameSecondaryLatin") {
-            if (/^[\p{Script=Latin}]*$/u.test(value)) {
+            if (/^[\p{Script=Latin} ]*$/u.test(value)) {
                 setFormData((prev) => ({
                     ...prev,
                     [name]: value,
@@ -107,7 +106,7 @@ const Form = ({ showSuccessMsg }) => {
                     [name]: value,
                 }))
             }
-        } else if(name === 'dateOfBirth'){
+        } else if (name === 'dateOfBirth') {
             const [day, month, year] = value.split('-');
             setFormData((prev) => ({
                 ...prev,
@@ -122,7 +121,7 @@ const Form = ({ showSuccessMsg }) => {
 
         setErrors((prev) => ({
             ...prev,
-            [name]: '', 
+            [name]: '',
         }));
     };
 
@@ -138,9 +137,9 @@ const Form = ({ showSuccessMsg }) => {
                 newErrors[field.name] = "Please enter a valid National ID";
             } else if (field.name === "email" && !/\S+@\S+\.\S+/.test(value)) {
                 newErrors[field.name] = "Please enter a valid email address";
-            } else if (field.name === "firstNamePrimary" && !/^[A-Za-z]+$/.test(value)) {
+            } else if (field.name === "firstNamePrimary" && !/^[A-Za-z ]+$/.test(value)) {
                 newErrors[field.name] = "First name must contain only alphabets";
-            } else if (field.name === "lastNameSecondary" && !/^[A-Za-z]+$/.test(value)) {
+            } else if (field.name === "lastNameSecondary" && !/^[A-Za-z ]+$/.test(value)) {
                 newErrors[field.name] = "Last name must contain only alphabets";
             }
         });
@@ -150,6 +149,13 @@ const Form = ({ showSuccessMsg }) => {
     };
 
     const handleClear = () => setShowFormClearMsg(true);
+
+    const setGenderValue = (val) =>{
+        setFormData((prev) => ({
+            ...prev,
+            gender: val,
+        }));
+    };
 
     const handlePreview = () => {
         if (validateForm()) {
@@ -181,21 +187,7 @@ const Form = ({ showSuccessMsg }) => {
 
                         {field.type === 'select' ? (
                             <>
-                                <select
-                                    name={field.name}
-                                    value={formData[field.name] || ''}
-                                    onChange={handleChange}
-                                    className={`select select-bordered w-full mt-1 border-[2px] h-[60px] rounded-lg outline-none px-4 text-[18px] bg-[#ffffff] ${errors[field.name] ? "border-red-500" : "border-[#707070]"} ${formData[field.name] ? "text-[#1B2142]" : "text-[#9FA1AD]"}`}
-                                >
-                                    <option disabled value="" className="text-[#101828]">
-                                        {field.placeholder}
-                                    </option>
-                                    {field.options.map((opt) => (
-                                        <option className="text-[#101828]" key={opt} value={opt}>
-                                            {opt}
-                                        </option>
-                                    ))}
-                                </select>
+                                <Dropdown field={field} setValue={setGenderValue}/>
                                 {errors[field.name] && (
                                     <p className="text-red-500 text-xs mt-1">{errors[field.name]}</p>
                                 )}
@@ -240,7 +232,7 @@ const Form = ({ showSuccessMsg }) => {
                             </>
                         ) : field.type === 'date' ? (
                             <>
-                                <Datepicker errors={errors} handleChange={handleChange} formData={formData}/>
+                                <Datepicker errors={errors} handleChange={handleChange} formData={formData} />
                                 {errors[field.name] && (
                                     <p className="text-red-500 text-xs mt-1">{errors[field.name]}</p>
                                 )}

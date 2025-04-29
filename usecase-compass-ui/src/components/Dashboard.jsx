@@ -96,7 +96,7 @@ const Dashboard = () => {
                     {applicationsList && <div className={`flex space-x-8 items-center text-[14px] ${selectedItems.length > 0 ? "text-[#FF671F]" : "text-[#B3B3B3]"}`}>
                         <div className="flex space-x-2 items-center">
                             <button onClick={clearSelectedItems} className="cursor-pointer">Clear Selected</button>
-                            <button className={`rounded h-[23px] w-[72px] ${selectedItems.length > 0 ? "bg-[#FF671F14]" : "border"}`}>{selectedItems.length} Rows</button>
+                            <button className={`rounded h-[23px] w-[72px] ${selectedItems.length > 0 ? "bg-[#FF671F14]" : "border"}`}>{selectedItems.length} {selectedItems.length > 1 || selectedItems.length < 1  ? "Rows" : "Row"}</button>
                         </div>
                         <button onClick={() => setShowDeleteConfMsg(true)} disabled={selectedItems.length <= 0} className="flex items-center w-[131px] cursor-pointer"><img src={selectedItems.length > 0 ? "/assets/icons/del-orange.svg" : "/assets/icons/del-gray.svg"} alt="delete" className="mr-2" />Delete Selected</button>
                     </div>}

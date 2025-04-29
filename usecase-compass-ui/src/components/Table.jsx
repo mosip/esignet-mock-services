@@ -12,8 +12,6 @@ const Table = ({ applicationsList, selectApplication, selectedItems, deleteAppli
     const deleteConfMsg = {title:"Delete Confirmation!", message:"Are you sure you want to delete this record?", messageTwo:"This action can’t be undone."};
 
     useEffect(() =>{
-        console.log(applicationsList.length)
-        console.log(selectedItems)
         if(applicationsList.length === selectedItems.length && applicationsList.length > 0){
             setClickedAllDel(true);
         }else{
