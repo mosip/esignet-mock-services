@@ -21,8 +21,7 @@ import org.springframework.cache.annotation.EnableCaching;
 				"io.mosip.kernel.keygenerator.bouncycastle," +
 				"io.mosip.kernel.signature.service," +
 				"io.mosip.kernel.partnercertservice.service," +
-				"io.mosip.kernel.partnercertservice.helper," +
-				"io.mosip.kernel.pdfgenerator.itext.impl")
+				"io.mosip.kernel.partnercertservice.helper")
 public class MockIdentitySystemApplication 
 {
 	public static void main(String[] args) {
