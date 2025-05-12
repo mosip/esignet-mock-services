@@ -13,16 +13,16 @@ const Dashboard = () => {
     const [showDeleteConfMsg, setShowDeleteConfMsg] = useState(false);
     const userName = keycloak.tokenParsed?.preferred_username.split("@")[0]
     const capitalizedUsername = userName?.charAt(0).toUpperCase() + userName?.slice(1);
-    const deleteConfMsg = {title:"Delete Confirmation!", message:"Are you sure you want to delete selected records?", messageTwo:"This action can’t be undone."};
+    const deleteConfMsg = { title: "Delete Confirmation!", message: "Are you sure you want to delete selected records?", messageTwo: "This action can’t be undone." };
     const [filterValue, setFilterValue] = useState('');
 
     const getUserData = async () => {
         try {
             const response = await http.get('/user-info');
-            if(typeof response.data !== 'string'){
+            if (typeof response.data !== 'string') {
                 setApplicationsList(response.data);
                 setFilteredAppList(response.data);
-            }else{
+            } else {
                 setApplicationsList([])
             }
 
@@ -34,14 +34,14 @@ const Dashboard = () => {
     };
 
     const selectApplication = (userInfoId) => {
-        if(!userInfoId) return
+        if (!userInfoId) return
         if (userInfoId === "selectAll") {
-            if(applicationsList.length !== selectedItems.length){
-                const unselectedItems = applicationsList.map(item => item.userInfoId).filter(id => !selectedItems.includes(id));
-                if(unselectedItems.includes(undefined)) return;
+            if (filteredAppList.length !== selectedItems.length) {
+                const unselectedItems = filteredAppList.map(item => item.userInfoId).filter(id => !selectedItems.includes(id));
+                if (unselectedItems.includes(undefined)) return;
                 setSelectedItems(prevSelected => [...prevSelected, ...unselectedItems]);
                 return
-            }else{
+            } else {
                 setSelectedItems([]);
                 return
             }
@@ -51,24 +51,21 @@ const Dashboard = () => {
             setSelectedItems(removeItem);
             return
         };
-
-        setSelectedItems(prevState => ([...prevState, userInfoId]))
+        setSelectedItems(prevState => ([...prevState, userInfoId]));
     };
 
     function removeItemsByIds(list, deletedIds) {
         return list.filter(item => !deletedIds.includes(item.userInfoId));
     }
 
-    const deleteApplication = async (userInfoId) =>{
+    const deleteApplication = async (userInfoId) => {
         setShowLoader(true);
-        try{
+        try {
             await http.delete(`/user-info/${userInfoId}`);
-            setFilteredAppList(removeItemsByIds(applicationsList, [userInfoId]));
-            if (filterValue) {
-                setFilteredAppList(removeItemsByIds(filteredAppList, [userInfoId]));
-            }
+            setApplicationsList(removeItemsByIds(applicationsList, [userInfoId]));
+            setFilteredAppList(removeItemsByIds(filteredAppList, [userInfoId]));
             setShowLoader(false);
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
     };
@@ -76,20 +73,18 @@ const Dashboard = () => {
     const deleteAllApplications = async () => {
         setShowLoader(true);
         setShowDeleteConfMsg(false);
-        try{
-            await http.delete('/user-info', {data: selectedItems});
+        try {
+            await http.delete('/user-info', { data: selectedItems });
             setApplicationsList(removeItemsByIds(applicationsList, selectedItems));
-            if (filterValue) {
-                setFilteredAppList(removeItemsByIds(filteredAppList, selectedItems));
-            }
+            setFilteredAppList(removeItemsByIds(filteredAppList, selectedItems));
             setSelectedItems([]);
             setShowLoader(false);
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
     };
 
-    const clearSelectedItems = () =>{
+    const clearSelectedItems = () => {
         setSelectedItems([]);
     };
 
@@ -119,6 +114,11 @@ const Dashboard = () => {
                 return value && String(value).toLowerCase().includes(query);
             })
         );
+        
+        const filteredSelectedItems = selectedItems.filter(item =>
+            newApplicationsList.some(field => field.userInfoId === item)
+        );
+        setSelectedItems(filteredSelectedItems)
         setFilteredAppList(newApplicationsList);
     };
 
@@ -170,11 +170,11 @@ const Dashboard = () => {
                     </div>}
                 <div className="w-full">
                     <hr className="text-[#E3DCC9]" />
-                    {filteredAppList && <Table applicationsList={filteredAppList} selectApplication={selectApplication} selectedItems={selectedItems} deleteApplication={deleteApplication}/>}
+                    {filteredAppList && <Table applicationsList={filteredAppList} selectApplication={selectApplication} selectedItems={selectedItems} deleteApplication={deleteApplication} />}
                     {/* {showLoader && <Loader/>} */}
                 </div>
             </div>
-            {showDeleteConfMsg && <AlertDialog data={deleteConfMsg} confirmMsg={deleteAllApplications} closePopup={() => setShowDeleteConfMsg(false)}/>}
+            {showDeleteConfMsg && <AlertDialog data={deleteConfMsg} confirmMsg={deleteAllApplications} closePopup={() => setShowDeleteConfMsg(false)} />}
         </div>
     )
 };

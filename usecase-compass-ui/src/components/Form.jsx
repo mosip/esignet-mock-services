@@ -28,8 +28,8 @@ const formConfig = [
         label: 'Upload Photo',
         name: 'faceImageColor',
         type: 'file',
-        accept: 'image/png, image/jpeg',
-        hint: 'Supported formats: PNG/JPEG | Size: Min - 50 KB to Max - 200 KB',
+        accept: 'image/png, image/jpeg, image/jpg',
+        hint: 'Supported formats: PNG/JPEG/JPG | Size: Min - 50 KB to Max - 200 KB',
         placeholder: 'Upload Photo', // placeholder not applicable for file input
         errorMessage: 'Citizen photo is required. Please upload a valid image file.'
     }
