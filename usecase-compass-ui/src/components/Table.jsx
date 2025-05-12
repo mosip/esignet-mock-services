@@ -2,12 +2,14 @@ import { useState } from "react";
 import Shimmer from "../utils/Shimmer";
 import { useEffect } from "react";
 import AlertDialog from "../utils/AlertDialog";
+import ToolTip from "../utils/Tooltip";
 
 
 const Table = ({ applicationsList, selectApplication, selectedItems, deleteApplication }) => {
     const [selectedAllDel, setClickedAllDel] = useState(false);
     const [showDeleteConfMsg, setShowDeleteConfMsg] = useState(false);
     const [selectedDelId, setSelectedDelId] = useState("");
+    const [showTooltip, setShowTooltip] = useState(false);
 
     const deleteConfMsg = {title:"Delete Confirmation!", message:"Are you sure you want to delete this record?", messageTwo:"This action can’t be undone."};
 
@@ -40,7 +42,10 @@ const Table = ({ applicationsList, selectApplication, selectedItems, deleteAppli
                 {/* head */}
                 <thead>
                     <tr className="text-[#6F6E6E] border-b border-[#E3DCC9]">
-                        <th className="text-left w-[17%] font-medium py-5 pl-6 break-all"><p className="flex items-center">{applicationsList.length > 0 && <img onClick={selectedAllDelBtn} src={`/assets/icons/${selectedAllDel ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer"/>}<span className="pl-4">National ID</span></p></th>
+                        <th className="text-left w-[17%] font-medium py-5 pl-6 break-all"><p className="flex items-center">{applicationsList.length > 0 && <img onClick={selectedAllDelBtn} src={`/assets/icons/${selectedAllDel ? 'checkbox-active' : 'checkbox'}.svg`} alt="checkbox" className="h-[18px] w-[18px] align-middle cursor-pointer" />}<span className="pl-4 mr-2">National ID</span><img onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)} className="cursor-pointer" alt="info" src="/assets/icons/info.svg" />
+                            {showTooltip && <ToolTip text={"Select checkboxes to delete preferred applications."} />}
+                        </p>
+                        </th>
                         <th className="text-left w-[17%] font-medium py-5 break-all">First Name</th>
                         <th className="text-left w-[17%] font-medium py-5 break-all">Last Name</th>
                         <th className="text-left w-[17%] font-medium py-5 break-all">Issued Date</th>
@@ -57,7 +62,7 @@ const Table = ({ applicationsList, selectApplication, selectedItems, deleteAppli
                             <td className="py-5 text-left w-[17%] break-all pr-1">{new Date(eachItem.issuanceDate).toLocaleDateString('en-GB').replaceAll('/', '-')}</td>
                             <td className="py-5 text-left w-[15%] break-all pr-1">{eachItem.cardAccessNumber}</td>
                             <th className="py-5 text-right w-[10%] pr-18 max-[1300px]:pr-8 max-[1300px]:w-[12%]">
-                                <button onClick={() => {setShowDeleteConfMsg(true);setSelectedDelId(eachItem.userInfoId) }} className="btn btn-ghost btn-xs cursor-pointer"><img src="/assets/icons/del-orange.svg" alt="delete" /></button>
+                                <button onClick={() => {setShowDeleteConfMsg(true); setSelectedDelId(eachItem.userInfoId) }} className="btn btn-ghost btn-xs cursor-pointer"><img src="/assets/icons/del-orange.svg" alt="delete" /></button>
                             </th>
                         </tr>
                     ))}

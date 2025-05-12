@@ -17,7 +17,7 @@ const PreviewDialog = ({showPreviewDialog, submitApplication, formData}) => {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-[#FDEDE1] rounded-3xl w-[781px] shadow-lg pb-4 relative overflow-y-scroll">
+            <div className="bg-[#FDEDE1] rounded-3xl w-[781px] shadow-lg pb-2 relative overflow-y-auto max-h-[90vh]">
                 <h1 className="text-2xl font-bold px-6 pt-6  mb-4 text-[#181D27]">Confirm Details</h1>
                 <hr className="text-[#D7D8E1]" />
                 <div className="py-6 px-10">
