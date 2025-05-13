@@ -16,24 +16,22 @@ import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.IdentityRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class IdentityServiceTest {
 
     @Mock
@@ -47,7 +45,7 @@ public class IdentityServiceTest {
     @InjectMocks
     IdentityServiceImpl identityService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ReflectionTestUtils.setField(identityService, "fieldLang", "eng");
         ReflectionTestUtils.setField(identityService, "objectMapper", objectMapper);
@@ -111,7 +109,7 @@ public class IdentityServiceTest {
         try{
             identityService.addVerifiedClaim(verifiedClaimRequestDto);
         }catch (MockIdentityException e){
-            Assert.assertEquals(ErrorConstants.INVALID_CLAIM,e.getErrorCode());
+            Assertions.assertEquals(ErrorConstants.INVALID_CLAIM,e.getErrorCode());
         }
     }
 
@@ -140,7 +138,7 @@ public class IdentityServiceTest {
         try{
             identityService.addVerifiedClaim(verifiedClaimRequestDto);
         }catch (MockIdentityException e){
-            Assert.assertEquals(ErrorConstants.INVALID_REQUEST,e.getErrorCode());
+            Assertions.assertEquals(ErrorConstants.INVALID_REQUEST,e.getErrorCode());
         }
     }
 
@@ -161,7 +159,7 @@ public class IdentityServiceTest {
         try{
             identityService.addVerifiedClaim(verifiedClaimRequestDto);
         }catch (MockIdentityException e){
-            Assert.assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID,e.getErrorCode());
+            Assertions.assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID,e.getErrorCode());
         }
 
     }
@@ -186,7 +184,7 @@ public class IdentityServiceTest {
         try{
             identityService.addIdentity(identityData);
         }catch (MockIdentityException e){
-            Assert.assertEquals(ErrorConstants.DUPLICATE_INDIVIDUAL_ID,e.getErrorCode());
+            Assertions.assertEquals(ErrorConstants.DUPLICATE_INDIVIDUAL_ID,e.getErrorCode());
         }
     }
 
@@ -202,7 +200,7 @@ public class IdentityServiceTest {
         when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(mockIdentity));
         IdentityData result = identityService.getIdentity(identityData.getIndividualId());
 
-        assertEquals(identityData.getIndividualId(), result.getIndividualId());
+        Assertions.assertEquals(identityData.getIndividualId(), result.getIndividualId());
     }
 
     @Test
@@ -216,9 +214,9 @@ public class IdentityServiceTest {
         when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(mockIdentity));
         try {
             identityService.getIdentity(identityData.getIndividualId());
-            Assert.fail();
+            Assertions.fail();
         }catch (MockIdentityException e){
-            Assert.assertEquals(ErrorConstants.JSON_PROCESSING_ERROR,e.getErrorCode());
+            Assertions.assertEquals(ErrorConstants.JSON_PROCESSING_ERROR,e.getErrorCode());
         }
     }
 
@@ -227,10 +225,10 @@ public class IdentityServiceTest {
         IdentityData identityData = new IdentityData();
         identityData.setEmail("email@gmail.com");
         identityData.setEncodedPhoto("encodedPhoto");
-        MockIdentityException exception = assertThrows(MockIdentityException.class, () -> {
+        MockIdentityException exception = Assertions.assertThrows(MockIdentityException.class, () -> {
             identityService.getIdentity(identityData.getIndividualId());
         });
-        assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID, exception.getMessage());
+        Assertions.assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID, exception.getMessage());
     }
 
     @Test
@@ -244,7 +242,7 @@ public class IdentityServiceTest {
         when(identityRepository.findById("existing-id")).thenReturn(Optional.of(mockIdentity));
         identityService.updateIdentity(identityData);
         verify(identityRepository, times(1)).save(mockIdentity);
-        Assert.assertNotNull(mockIdentity.getIdentityJson());
+        Assertions.assertNotNull(mockIdentity.getIdentityJson());
     }
 
     @Test
@@ -258,9 +256,9 @@ public class IdentityServiceTest {
         when(identityRepository.findById("existing-id")).thenReturn(Optional.of(mockIdentity));
         try {
             identityService.updateIdentity(identityData);
-            Assert.fail();
+            Assertions.fail();
         }catch (MockIdentityException e){
-            Assert.assertEquals(ErrorConstants.JSON_PROCESSING_ERROR,e.getErrorCode());
+            Assertions.assertEquals(ErrorConstants.JSON_PROCESSING_ERROR,e.getErrorCode());
         }
     }
 
@@ -269,10 +267,10 @@ public class IdentityServiceTest {
         IdentityData identityData = new IdentityData();
         identityData.setIndividualId("non-existing-id");
         when(identityRepository.findById("non-existing-id")).thenReturn(Optional.empty());
-        MockIdentityException exception = assertThrows(MockIdentityException.class, () -> {
+        MockIdentityException exception = Assertions.assertThrows(MockIdentityException.class, () -> {
             identityService.updateIdentity(identityData);
         });
-        assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID, exception.getErrorCode());
+        Assertions.assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID, exception.getErrorCode());
     }
 
 }
