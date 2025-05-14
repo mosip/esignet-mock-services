@@ -3,13 +3,15 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import relyingPartyService from "../../services/relyingPartyService";
 import clientDetails from "../../constants/clientDetails";
 import { WelcomeBanner } from "./WelcomeBanner";
+import MyProfile from "./MyProfile";
 
-export const UserProfileCard = () => {
+export const UserProfileCard = (props) => {
   const userInfo_keyname = "user_info";
   const post_fetchUserInfo = relyingPartyService.post_fetchUserInfo;
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
   const [fetchDone, setFetchDone] = useState(true);
+  const [isMyProfile, setMyProfile] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -37,6 +39,10 @@ export const UserProfileCard = () => {
     };
     getSearchParams();
   }, []);
+  
+  useEffect(() => {
+    setMyProfile(props.isMyProfilePage);
+  }, [props.isMyProfilePage]);
 
   const getUserDetails = async (authCode) => {
     setUserInfo(null);
@@ -90,7 +96,7 @@ export const UserProfileCard = () => {
   return (
     <div>
       {fetchDone && (
-        <div>
+        !isMyProfile ? <div>
           <WelcomeBanner user={userInfo} />
           <div className="bg-white shadow-sm rounded-3xl py-8 w-[90%] h-[73%] m-auto border-[1.75px] border-[#EBEBEB]">
             <div className="container mx-auto text-center">
@@ -145,6 +151,11 @@ export const UserProfileCard = () => {
             </div>
           </div>
         </div>
+        :
+        <MyProfile user={userInfo} myProfile={(val) => {
+            props.revertProfile(val)
+            setMyProfile(val);
+        }}/>
       )}
     </div>
   );
