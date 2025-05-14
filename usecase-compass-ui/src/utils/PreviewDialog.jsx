@@ -1,19 +1,19 @@
 import { useEffect } from "react";
 
-const PreviewDialog = ({showPreviewDialog, submitApplication, formData}) => {
-    const {firstNamePrimary, lastNameSecondary, firstNamePrimaryLatin, lastNameSecondaryLatin, nationalUid, dateOfBirth, gender, nationality, birthCountry, faceImageColor, cardAccessNumber} = formData;
-    const [year,month,date] = dateOfBirth.split('-');
+const PreviewDialog = ({ showPreviewDialog, submitApplication, formData }) => {
+    const { firstNamePrimary, lastNameSecondary, firstNamePrimaryLatin, lastNameSecondaryLatin, nationalUid, dateOfBirth, gender, nationality, birthCountry, faceImageColor, cardAccessNumber, email } = formData;
+    const [year, month, date] = dateOfBirth.split('-');
 
-    const closePreviewDialog = () =>{
+    const closePreviewDialog = () => {
         showPreviewDialog();
     };
 
     useEffect(() => {
         document.body.classList.add("no-scroll");
         return () => {
-          document.body.classList.remove("no-scroll");
+            document.body.classList.remove("no-scroll");
         };
-      }, []);
+    }, []);
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -39,12 +39,13 @@ const PreviewDialog = ({showPreviewDialog, submitApplication, formData}) => {
                         <div className="w-[50%]">
                             <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Date of Birth</span><br /><span className="text-[#14397E] text-[18px] font-bold">{date + "-" + month + "-" + year}</span></p>
                             <p className="mb-4"><span className="text-[#EC6707] text-[16px]">National ID</span><br /><span className="text-[#14397E] text-[18px] font-bold">{nationalUid}</span></p>
-                            <p><span className="text-[#EC6707] text-[16px]">Birth Country</span><br /><span className="text-[#14397E] text-[18px] font-bold">{birthCountry}</span></p>
+                            <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Birth Country</span><br /><span className="text-[#14397E] text-[18px] font-bold">{birthCountry}</span></p>
+                            <p><span className="text-[#EC6707] text-[16px]">CAN(Card Access Number)</span><br /><span className="text-[#14397E] text-[18px] font-bold">{cardAccessNumber}</span></p>
                         </div>
                         <div className="w-[50%]">
                             <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Gender</span><br /><span className="text-[#14397E] text-[18px] font-bold">{gender}</span></p>
                             <p className="mb-4"><span className="text-[#EC6707] text-[16px]">Nationality</span><br /><span className="text-[#14397E] text-[18px] font-bold">{nationality}</span></p>
-                            <p><span className="text-[#EC6707] text-[16px]">CAN(Card Access Number)</span><br /><span className="text-[#14397E] text-[18px] font-bold">{cardAccessNumber}</span></p>
+                            <p><span className="text-[#EC6707] text-[16px]">Email</span><br /><span className="text-[#14397E] text-[18px] font-bold">{email}</span></p>
                         </div>
                     </div>
                 </div>

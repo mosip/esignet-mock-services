@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PreviewDialog from "../utils/PreviewDialog";
 import http from "../services/http";
 import AlertDialog from "../utils/AlertDialog";
 import Datepicker from "../utils/DatePicker"
 import Dropdown from "../utils/Dropdown";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const formConfig = [
     { label: 'First Name', name: 'firstNamePrimary', type: 'text', placeholder: 'Enter First Name', errorMessage: 'First name is required', max: 100 },
@@ -29,7 +30,7 @@ const formConfig = [
         name: 'faceImageColor',
         type: 'file',
         accept: 'image/png, image/jpeg, image/jpg',
-        hint: 'Supported formats: PNG/JPEG/JPG | Size: Min - 50 KB to Max - 200 KB',
+        hint: 'Supported formats: PNG/JPEG/JPG | Size: Max - 200 KB',
         placeholder: 'Upload Photo', // placeholder not applicable for file input
         errorMessage: 'Citizen photo is required. Please upload a valid image file.'
     }
@@ -43,6 +44,15 @@ const Form = ({ showSuccessMsg }) => {
     const [invalidFormError, setInvalidFormError] = useState("");
     const [showFormClearMsg, setShowFormClearMsg] = useState(false);
     const clearFormConfMsg = { title: "Clear Form", message: "Are you sure you want to clear the form?" };
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const storedData = localStorage.getItem("editFormData");
+        if (storedData) {
+            setFormData(JSON.parse(storedData));
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -63,7 +73,7 @@ const Form = ({ showSuccessMsg }) => {
 
                 const fileSizeKB = files[0].size / 1024;
 
-                if (fileSizeKB < 50 || fileSizeKB > 200) {
+                if (fileSizeKB > 200) {
                     setErrors((prev) => ({
                         ...prev,
                         [name]: "The uploaded photo does not meet the required size. Please upload an image within the allowed size limits.", // clear error when typing
@@ -150,7 +160,7 @@ const Form = ({ showSuccessMsg }) => {
 
     const handleClear = () => setShowFormClearMsg(true);
 
-    const setGenderValue = (val) =>{
+    const setGenderValue = (val) => {
         setFormData((prev) => ({
             ...prev,
             gender: val,
@@ -158,8 +168,13 @@ const Form = ({ showSuccessMsg }) => {
     };
 
     const handlePreview = () => {
+        if (location.pathname === '/editApplication' && JSON.stringify(formData) === JSON.stringify(JSON.parse(localStorage.getItem("editFormData")))) {
+            setInvalidFormError({message:"No changes made."});
+            return
+        }
         if (validateForm()) {
             setShowPreviewDialog(prevState => !prevState);
+            setInvalidFormError({message:""})
         } else {
             setInvalidFormError("Please fill in all required fields before submitting the application.");
         }
@@ -168,7 +183,11 @@ const Form = ({ showSuccessMsg }) => {
 
     const submitApplication = async () => {
         try {
-            await http.post('/user-info', formData);
+            if (location.pathname === '/editApplication') {
+                await http.put(`/user-info/${formData.userInfoId}`, formData);
+            } else {
+                await http.post('/user-info', formData);
+            }
             showSuccessMsg(prevState => !prevState);
         } catch (err) {
             setInvalidFormError(err.response.data);
@@ -176,6 +195,10 @@ const Form = ({ showSuccessMsg }) => {
         }
     }
 
+    const handleClose = () => {
+        navigate("/home");
+        localStorage.removeItem("editFormData");
+    }
 
     return (
         <div className="rounded-4xl px-12 pt-6 pb-12 bg-[#FFFDF6] min-[1060px]:w-[780px] max-[1060]:w-[680px] min-[860px]:-ml-15">
@@ -187,7 +210,7 @@ const Form = ({ showSuccessMsg }) => {
 
                         {field.type === 'select' ? (
                             <>
-                                <Dropdown field={field} setValue={setGenderValue}/>
+                                <Dropdown field={field} setValue={setGenderValue} existingVal={formData[field.name]} />
                                 {errors[field.name] && (
                                     <p className="text-red-500 text-xs mt-1">{errors[field.name]}</p>
                                 )}
@@ -266,10 +289,10 @@ const Form = ({ showSuccessMsg }) => {
                 <div className="flex gap-4 mt-8 px-3">
                     <button
                         type="button"
-                        onClick={handleClear}
+                        onClick={location.pathname === '/editApplication' ? handleClose : handleClear}
                         className="btn btn-outline w-[50%] font-bold h-[60px] border-2 text-[#FF671F] text-lg cursor-pointer border-[#FF671F] rounded-md"
                     >
-                        Clear Form
+                        {location.pathname === '/editApplication' ? "Cancel" : "Clear Form"}
                     </button>
                     <button
                         type="button"

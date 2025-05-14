@@ -8,7 +8,7 @@ import NewApplication from './components/NewApplication';
 import Loader from './utils/Loader';
 
 function App() {
-   const { initialized } = useKeycloak();
+  const { initialized } = useKeycloak();
 
   if (!initialized) {
     return <Loader/>;
@@ -21,6 +21,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/home" element={<Dashboard />} />
           <Route path="/newApplication" element={<NewApplication />} />
+          <Route path="/editApplication" element={<NewApplication />} />
         </Route>
       </Routes>
     </BrowserRouter>
