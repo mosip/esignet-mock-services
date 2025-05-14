@@ -81,4 +81,17 @@ public class UserInfoController {
                     .body("Failed to delete users: " + e.getMessage());
         }
     }
+
+    @Operation(
+            summary = "Update user information",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @RequiresAdminAccess
+    @PutMapping("/{id}")
+    public ResponseEntity<UserInfoResponseDTO> updateUserInfo(
+            @PathVariable UUID id,
+            @Valid @RequestBody UserInfoDTO userInfoDTO) {
+        UserInfoResponseDTO updatedUserInfo = userInfoService.updateUserInfo(id, userInfoDTO);
+        return new ResponseEntity<>(updatedUserInfo, HttpStatus.OK);
+    }
 }

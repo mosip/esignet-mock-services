@@ -53,7 +53,7 @@ public class ExceptionHandlerAdvice {
 
         // Check for unique constraint violation
         if (ex.getMessage().contains("uk_user_info_national_uid")) {
-            message = "User with this national UID already exists";
+            message = "User with this National ID already exists";
         }
 
         ErrorResponse error = new ErrorResponse(
