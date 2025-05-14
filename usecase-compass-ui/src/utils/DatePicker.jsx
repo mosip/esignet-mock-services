@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Datepicker from 'flowbite-datepicker/Datepicker';
+import { changeData } from "./appUtils.js"
 
 function Calender({errors, handleChange, formData}) {
   const inputRef = useRef(null);
@@ -41,7 +42,7 @@ function Calender({errors, handleChange, formData}) {
         type="text"
         className={`bg-[#ffffff] border-2 text-gray-900 text-sm rounded-lg block w-full ps-13 mt-[5px] outline-none h-[60px] text-[18px] ${errors.dateOfBirth ? "border-red-500" : "border-[#707070]"}`}
         placeholder="DD / MM / YYYY"
-        value={dateOfBirth}
+        value={dateOfBirth ? dateOfBirth : (formData.dateOfBirth ? changeData(formData.dateOfBirth) : '')}
         name='dateOfBirth'
         onChange={(e) => {setDateOfBirth(e.target.value);selectedDate = e.target.value;}}
         autoComplete="off"

@@ -1,10 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import {handleDropDownEvents} from "./appUtils.js";
 
-const Dropdown = ({field, setValue}) => {
+const Dropdown = ({field, setValue, existingVal}) => {
     const [showPopup, setShowPopup] = useState(false);
     const [selectedValue, setSelectedValue] = useState('');
     const dropdownRef = useRef(null);
     const dropdownBtnRef = useRef(null);
+
+    useEffect(() =>{
+        setSelectedValue(existingVal)
+    }, [existingVal]);
 
     const sendSelectedValue = (val) =>{
         setValue(val);
@@ -12,19 +17,7 @@ const Dropdown = ({field, setValue}) => {
         setShowPopup(false);
     };
 
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !dropdownBtnRef.current.contains(event.target)) {
-                setShowPopup(false);
-            }
-        }
-
-        document.addEventListener("mousedown", handleClickOutside);
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [dropdownRef]);
+    handleDropDownEvents(dropdownRef, dropdownBtnRef, setShowPopup);
 
     return (
         <div className="relative inline-block text-left w-full text-[18px]">
