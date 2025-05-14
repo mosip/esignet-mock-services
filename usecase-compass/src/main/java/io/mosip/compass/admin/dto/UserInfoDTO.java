@@ -36,6 +36,7 @@ public class UserInfoDTO {
 
     @NotBlank(message = "First name is required")
     @Size(min = 1, max = 100, message = "First name must be between 1 and 100 characters")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "First Name Primary must not contain special characters or numbers")
     private String firstNamePrimary;
 
     @NotBlank(message = "Gender is required")
@@ -43,14 +44,17 @@ public class UserInfoDTO {
 
     @NotBlank(message = "Last name is required")
     @Size(min = 1, max = 100, message = "Last name must be between 1 and 100 characters")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Last Name Secondary must not contain special characters or numbers")
     private String lastNameSecondary;
 
     @NotBlank(message = "First Name (Latin) is required")
     @Size(min = 1, max = 100, message = "First Name (Latin) must be between 1 and 100 characters")
+    @Pattern(regexp = "^[\\p{IsLatin} ]*$", message = "First Name Primary (Latin) must contain only latin script characters.")
     private String firstNamePrimaryLatin;
 
     @NotBlank(message = "Last Name (Latin) is required")
     @Size(min = 1, max = 100, message = "Last Name (Latin) must be between 1 and 100 characters")
+    @Pattern(regexp = "^[\\p{IsLatin} ]*$", message = "Last Name Secondary (Latin) must contain only latin script characters.")
     private String lastNameSecondaryLatin;
 
     @NotBlank(message = "National ID is required")

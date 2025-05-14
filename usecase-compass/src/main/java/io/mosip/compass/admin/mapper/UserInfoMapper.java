@@ -6,6 +6,7 @@ import io.mosip.compass.admin.dto.UserInfoResponseDTO;
 import io.mosip.compass.admin.entity.UserInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,13 @@ public interface UserInfoMapper {
     @Mapping(source = "createdTimes", target = "issuanceDate", qualifiedByName = "mapCreatedTimesToIssuedDate")
     UserInfoDTO toDto(UserInfo entity);
 
+    @Mapping(target = "userInfoId", ignore = true)
+    @Mapping(target = "compassId", ignore = true)
+    @Mapping(target = "createdTimes", ignore = true)
+    @Mapping(target = "updatedTimes", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "faceImageGrey", source = "faceImageColor", qualifiedByName = "convertColorBase64ToGreyBase64")
+    void updateEntityFromDto(UserInfoDTO userInfoDTO, @MappingTarget UserInfo userInfo);
+
     @Mapping(source = "userInfoId", target = "userInfoId")
     @Mapping(source = "nationalUid", target = "nationalUid")
     UserInfoResponseDTO toResponseDto(UserInfo entity);
@@ -45,9 +53,15 @@ public interface UserInfoMapper {
 
     @Named("convertColorBase64ToGreyBase64")
     default String convertColorBase64ToGreyBase64(String base64ColorImage) {
-        if (base64ColorImage == null || base64ColorImage.isEmpty()) return null;
+        if (base64ColorImage == null || base64ColorImage.isEmpty()) {
+            throw new RuntimeException("Image is mandatory to proceed further");
+        }
 
         try {
+            if (!base64ColorImage.contains(":") || !base64ColorImage.contains(";") || !base64ColorImage.contains(",")) {
+                throw new IllegalArgumentException("Invalid image format. Upload a proper image type.");
+            }
+
             // Extract MIME type and format (e.g., image/jpeg => jpeg)
             String mimeType = base64ColorImage.substring(base64ColorImage.indexOf(":") + 1, base64ColorImage.indexOf(";"));
             String formatName = mimeType.substring(mimeType.indexOf("/") + 1); // e.g., jpeg, png
@@ -59,6 +73,10 @@ public interface UserInfoMapper {
             // Convert to grayscale
             ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
             BufferedImage colorImage = ImageIO.read(bis);
+
+            if (colorImage == null) {
+                throw new RuntimeException("Failed to read the image. Ensure the image data is valid.");
+            }
 
             BufferedImage grayImage = new BufferedImage(
                     colorImage.getWidth(),
@@ -77,9 +95,15 @@ public interface UserInfoMapper {
             // Encode back to base64 with MIME
             return "data:" + mimeType + ";base64," + Base64.getEncoder().encodeToString(greyBytes);
 
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid image format: {}", e.getMessage());
+            throw new RuntimeException("Invalid image format. Please provide a valid image.");
         } catch (IOException e) {
-            log.error("Conversion of color image to grayscale image failed.", e);
-            throw new RuntimeException("Failed to convert color image to grayscale Base64", e);
+            log.error("Image processing failed: {}", e.getMessage());
+            throw new RuntimeException("Failed to process the image. Please try again.");
+        } catch (Exception e) {
+            log.error("Unexpected error during image conversion: {}", e.getMessage());
+            throw new RuntimeException("An unexpected error occurred while processing the image.");
         }
     }
 

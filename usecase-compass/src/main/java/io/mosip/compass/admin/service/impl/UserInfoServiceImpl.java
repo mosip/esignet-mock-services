@@ -35,7 +35,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Transactional(readOnly = true)
     public UserInfoDTO getUserInfoByNationalUid(String nationalUid) {
         UserInfo userInfo = userInfoRepository.findByNationalUid(nationalUid)
-                .orElseThrow(() -> new AdminServerException("UserInfo not found with National UID: " + nationalUid));
+                .orElseThrow(() -> new AdminServerException("UserInfo not found with National ID: " + nationalUid));
         return userInfoMapper.toDto(userInfo);
     }
 
@@ -55,6 +55,19 @@ public class UserInfoServiceImpl implements UserInfoService {
     public String deleteMultipleUsers(List<UUID> userInfoIds) {
         userInfoRepository.deleteAllByUserInfoIds(userInfoIds);
         return "Users with all userInfoIds deleted";
+    }
+
+    @Override
+    @Transactional
+    public UserInfoResponseDTO updateUserInfo(UUID id, UserInfoDTO userInfoDTO) {
+        UserInfo existingUserInfo = userInfoRepository.findById(id)
+                .orElseThrow(() -> new AdminServerException("UserInfo not found with ID: " + id));
+
+        // Map updated fields from DTO to the existing entity
+        userInfoMapper.updateEntityFromDto(userInfoDTO, existingUserInfo);
+
+        UserInfo updatedUserInfo = userInfoRepository.save(existingUserInfo);
+        return userInfoMapper.toResponseDto(updatedUserInfo);
     }
 
     @Override

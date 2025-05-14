@@ -19,4 +19,6 @@ public interface UserInfoService {
     List<UserInfoDTO> getAllUsers();
 
     String deleteMultipleUsers(List<UUID> userInfoIds);
+
+    UserInfoResponseDTO updateUserInfo(UUID id, UserInfoDTO userInfoDTO);
 }
