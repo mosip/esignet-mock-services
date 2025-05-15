@@ -259,7 +259,7 @@ export const HomeFeatures = ({ i18nKeyPrefix = "login" }) => {
                 Download the app
               </h4>
               <a
-                href="https://testflight.apple.com/join/OVvvU3aU"
+                href="https://testflight.apple.com/join/tenTh4vR"
                 className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 mb-2 flex items-center"
                 target="_blank"
               >
