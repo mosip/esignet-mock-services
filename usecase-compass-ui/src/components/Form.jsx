@@ -102,6 +102,13 @@ const Form = ({ showSuccessMsg }) => {
                     };
                 }
             }
+        } else if (name === "firstNamePrimary" || name === "lastNameSecondary") {
+            if (/^[a-zA-Z ]*$/.test(value)) {
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: value,
+                }));
+            }
         } else if (name === "firstNamePrimaryLatin" || name === "lastNameSecondaryLatin") {
             if (/^[\p{Script=Latin} ]*$/u.test(value)) {
                 setFormData((prev) => ({
