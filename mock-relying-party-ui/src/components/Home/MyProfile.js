@@ -14,7 +14,7 @@ const MyProfile = (props) => {
           className="mr-4 relative top-[1.5px] hover:cursor-pointer"
           onClick={handleBack}
         />
-        <span className="text-2xl font-semibold">My Profile</span>
+        <span className="text-2xl font-semibold">Profile</span>
       </div>
       <div className="flex items-center mb-[2.5em]">
         <div className="w-24 h-24 rounded-md overflow-hidden mr-4">
