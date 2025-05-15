@@ -38,7 +38,11 @@ export const Header = (props) => {
         {props.showLogout && (
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
-              <span className="justify-center outline-none hover:cursor-pointer bg-[#F3F8FE] text-[#2868E8] font-semibold pl-4 pr-5 py-2 mr-[4.75em] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center border-[2.5px] w-48 border-[#D3E7FE]">
+              <span
+                className={`justify-center outline-none hover:cursor-pointer bg-[#F3F8FE] text-[#2868E8] font-semibold pl-4 pr-5 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center border-[2.5px] w-52 border-[#D3E7FE] ${
+                  window.screen.availWidth > 1400 ? `mr-[4.75em]` : `mr-[4em]`
+                }`}
+              >
                 My Account
                 <img
                   src="images/arrow_down.svg"
@@ -57,7 +61,7 @@ export const Header = (props) => {
                   className="border-b-[1.75px] pt-1 pb-3 hover:cursor-pointer outline-0 hover:text-[#2868E8]"
                   onClick={handleMyAccount}
                 >
-                  My Profile
+                  Profile
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="border-b-[1.75px] py-3 flex text-[#C5363D] hover:cursor-pointer outline-0 hover:text-[#2868E8] icon-wrapper"
