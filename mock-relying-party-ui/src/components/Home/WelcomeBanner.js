@@ -10,8 +10,8 @@ export const WelcomeBanner = (userInfo) => {
             id={"user-avtar"}
             className="w-full h-full object-cover"
             src={
-              userInfo?.user?.picture
-                ? userInfo.user.picture
+              userInfo?.user?.photo
+                ? userInfo.user.photo
                 : "User-Profile-Icon.png"
             }
           />

@@ -23,9 +23,7 @@ const MyProfile = (props) => {
             id={"user-avtar"}
             className="w-full h-full object-cover"
             src={
-              props?.user?.picture
-                ? props.user.picture
-                : "User-Profile-Icon.png"
+              props?.user?.photo ? props.user.photo : "User-Profile-Icon.png"
             }
           />
         </div>
@@ -33,9 +31,9 @@ const MyProfile = (props) => {
           <h2 className="text-[1.5rem] font-semibold text-gray-800 mb-4">
             {props?.user?.first_name} {props?.user?.last_name}
           </h2>
-          {props?.user?.email && (
+          {props?.user?.email_id && (
             <p className="text-[#8B8B8B] text-[1.25rem]">
-              {props?.user?.email}
+              {props?.user?.email_id}
             </p>
           )}
         </div>
@@ -53,28 +51,35 @@ const MyProfile = (props) => {
             <div>{props?.user?.last_name}</div>
           </div>
         )}
+        {props?.user?.date_of_birth && (
+          <div className="col-span-6 mb-4">
+            <div className="text-[#8B8B8B] mb-2">Date of Birth</div>
+            <div>
+              {(() => {
+                const [year, month, day] = props.user.date_of_birth;
+                return `${String(day).padStart(2, "0")}-${String(
+                  month
+                ).padStart(2, "0")}-${year}`;
+              })()}
+            </div>
+          </div>
+        )}
         {props?.user?.gender && (
           <div class="col-span-6 mb-4">
             <div className="text-[#8B8B8B] mb-2">Gender</div>
             <div>{props?.user?.gender}</div>
           </div>
         )}
-        {props?.user?.phone_number && (
-          <div class="col-span-6 mb-4">
-            <div className="text-[#8B8B8B] mb-2">Phone Number</div>
-            <div>{props?.user?.phone_number}</div>
+        {props?.user?.sub && (
+          <div class="col-span-6">
+            <div className="text-[#8B8B8B] mb-2">National ID</div>
+            <div>{props?.user?.sub}</div>
           </div>
         )}
-        {props?.user?.address && (
+        {props?.user?.email_id && (
           <div class="col-span-6">
-            <div className="text-[#8B8B8B] mb-2">Address</div>
-            <div>{props?.user?.address}</div>
-          </div>
-        )}
-        {props?.user?.email && (
-          <div class="col-span-6">
-            <div className="text-[#8B8B8B] mb-2">Email</div>
-            <div>{props?.user?.email}</div>
+            <div className="text-[#8B8B8B] mb-2">Email ID</div>
+            <div>{props?.user?.email_id}</div>
           </div>
         )}
       </div>
