@@ -27,16 +27,6 @@ const MyProfile = (props) => {
             }
           />
         </div>
-        <div className="ml-6">
-          <h2 className="text-[1.5rem] font-semibold text-gray-800 mb-4">
-            {props?.user?.first_name} {props?.user?.last_name}
-          </h2>
-          {props?.user?.email_id && (
-            <p className="text-[#8B8B8B] text-[1.25rem]">
-              {props?.user?.email_id}
-            </p>
-          )}
-        </div>
       </div>
       <div class="grid grid-cols-12 gap-4 text-2xl">
         {props?.user?.first_name && (
