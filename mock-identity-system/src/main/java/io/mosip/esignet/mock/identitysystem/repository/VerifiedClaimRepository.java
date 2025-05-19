@@ -13,4 +13,6 @@ public interface VerifiedClaimRepository extends JpaRepository<VerifiedClaim,Str
     Optional<List<VerifiedClaim>> findByIndividualIdAndIsActive(String individualId, Boolean active);
 
     Optional<List<VerifiedClaim>> findByIndividualIdAndClaimAndIsActive(String individualId, String claimName, Boolean active);
+
+    Optional<List<VerifiedClaim>> findByIndividualIdAndClaimAndIsActiveAndTrustFramework(String individualId, String claimName, Boolean active, String trustFramework);
 }

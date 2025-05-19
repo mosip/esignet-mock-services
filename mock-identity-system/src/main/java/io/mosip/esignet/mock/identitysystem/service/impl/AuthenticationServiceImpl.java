@@ -19,6 +19,7 @@ import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.CacheUtilService;
+import io.mosip.esignet.mock.identitysystem.util.ClaimsManager;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 import io.mosip.kernel.core.util.HMACUtils2;
@@ -107,7 +108,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.mockidentitysystem.esignet.issuer-id}")
     private String issuerId;
 
-
+    @Autowired
+    private ClaimsManager claimsManager;
     @Override
     public KycAuthResponseDto kycAuth(String relyingPartyId, String clientId, KycAuthDto kycAuthDto) throws MockIdentityException {
         //TODO validate relying party Id and client Id
@@ -208,6 +210,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             finalKyc = "JWE".equals(userInfoResponseType) ? getJWE(relyingPartyId, signKyc(kyc)) : signKyc(kyc);
             KycExchangeResponseDto kycExchangeResponseDto = new KycExchangeResponseDto();
             kycExchangeResponseDto.setKyc(finalKyc);
+            claimsManager.clearClaims();
             return kycExchangeResponseDto;
         } catch (Exception ex) {
             log.error("Failed to build kyc data", ex);
@@ -399,7 +402,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             locales = Arrays.asList(defaultLanguage);
         }
 
-        List<String> claimsList = new ArrayList<>();
+
         for (Map.Entry<String, JsonNode> claimDetail : claims.entrySet()) {
 
             Optional<Map.Entry<String, String>> keyMappingEntry = oidcClaimsMapping.entrySet().stream().filter(entry -> entry.getValue().equals(claimDetail.getKey()) ).findFirst();
@@ -413,7 +416,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             Map<String, Object> result = getVerificationDetail(individualId, itr.next(), identityData, locales);
                             if(result.isEmpty())
                                 continue;
-                            claimsList = getVerifiedClaimList(claimDetail);
+                            setVerifiedClaimList(result);
                             List<Object> list = (List<Object>) kyc.getOrDefault("verified_claims", new ArrayList<Object>());
                             list.add(result);
                             kyc.put("verified_claims", list);
@@ -426,7 +429,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     break;
 
                 case "address":
-                    if(claimsList.contains(claimDetail.getKey())){
+                    if(claimsManager!=null && claimsManager.getClaims().contains(claimDetail.getKey())){
                         break;
                     }
                     Map<String, Object> addressValues = new HashMap<>();
@@ -445,7 +448,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     break;
 
                 default:
-                    if(claimsList.contains(claimDetail.getKey())){
+                    if(claimsManager!=null && claimsManager.getClaims().contains(claimDetail.getKey())){
                         break;
                     }
                     if(keyMappingEntry.isEmpty() || !identityData.hasNonNull(keyMappingEntry.get().getKey())) { break; }
@@ -465,6 +468,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
         }
         return kyc;
+    }
+
+
+    /**
+     * Claim list to hold the verified claims names
+     * @param result result
+     * @return claimsList
+     */
+    @SuppressWarnings("unchecked")
+    private void setVerifiedClaimList(Map<String, Object> result) {
+        for (Map.Entry<String, Object> entry : result.entrySet()) {
+            Object value = entry.getValue();
+            if (value instanceof Map) {
+                Map<String, String> innerMap = (Map<String, String>) value;
+                // Iterate through the inner map
+                for (Map.Entry<String, String> innerEntry : innerMap.entrySet()) {
+                    String innerKey = innerEntry.getKey();
+                    claimsManager.addClaim(innerKey);
+                }
+            }
+        }
     }
 
     /**
@@ -523,9 +547,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Iterator<Map.Entry<String, JsonNode>> it = requestedVerifiedClaims.fields();
         while (it.hasNext()) {
             Map.Entry<String, JsonNode> entry = it.next();
-            Optional<List<VerifiedClaim>> result = verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(individualId, entry.getKey(), true);
+            String trustFramework = String.valueOf(requestedVerification.get("trust_framework")).replace("\"", "");
+            Optional<List<VerifiedClaim>> result = verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(individualId, entry.getKey(), true,
+                    trustFramework);
             if(result.isEmpty()) { continue; }
-
             Optional<VerifiedClaim> matchedEntry = result.get().stream().
                     filter(vc -> isClaimMatchingValueOrValuesCriteria(vc.getTrustFramework(), requestedVerification.get("trust_framework"))).findFirst();
             if(matchedEntry.isPresent()) {
