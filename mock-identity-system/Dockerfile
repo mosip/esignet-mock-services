@@ -66,7 +66,7 @@ RUN apt-get -y update \
 && echo "%sudo ALL=(ALL) NOPASSWD:/home/${container_user}/${hsm_local_dir}/install.sh" >> /etc/sudoers \
 && mkdir -p ${loader_path} \
 && chmod +x configure_start.sh \
-&& wget https://raw.githubusercontent.com/mosip/artifactory-ref-impl/v1.2.0.3/artifacts/src/hsm/client.zip -O client.zip \
+&& wget https://raw.githubusercontent.com/mosip/artifactory-ref-impl/v1.3.0-beta.2/artifacts/src/hsm/client.zip -O client.zip \
 && chown -R ${container_user}:${container_user} /home/${container_user}
 
 # select container user for all tasks
