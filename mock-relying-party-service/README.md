@@ -1,6 +1,6 @@
 # Mock Relying Party Server
 
-This is a simple node js application which will act as backend for the Mock Relying Party portal.
+This is a simple NodeJS application that will act as a backend for the Mock Relying Party portal.
 
 ## Overview
 
@@ -20,12 +20,12 @@ Mock Relying Party Server has 1 endpoint.
 
 ## Build & run (for developers)
 
-The application run on PORT=8888.
+The application runs on PORT=8888.
 
 - Env variables
 
   - ESIGNET_SERVICE_URL: MOSIP ESIGNET API URL (Example:http://esignet.esignet/v1/esignet)
-  - ESIGNET_AUD_URL: Value to be used as `aud` claim in client_asseertion. With eSignet, it is https://esignet.domain.com/v1/esignet/oauth/v2/token
+  - ESIGNET_AUD_URL: Value to be used as `aud` claim in client_assertion. With eSignet, it is https://esignet.domain.com/v1/esignet/oauth/v2/token
   - JWE_USERINFO_PRIVATE_KEY: Used for encrypting user information.
   - CLIENT_PRIVATE_KEY: Holds private key for authentication and security.
   - USERINFO_RESPONSE_TYPE: Response type for user information retrieval.
