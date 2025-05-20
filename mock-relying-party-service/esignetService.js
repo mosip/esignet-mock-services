@@ -1,6 +1,16 @@
 const axios = require("axios");
 const jose = require("jose");
-const { ESIGNET_SERVICE_URL, ESIGNET_AUD_URL, CLIENT_ASSERTION_TYPE, CLIENT_PRIVATE_KEY, USERINFO_RESPONSE_TYPE, JWE_USERINFO_PRIVATE_KEY } = require("./config");
+const {
+  ESIGNET_SERVICE_URL,
+  ESIGNET_AUD_URL,
+  ESIGNET_PAR_AUD_URL,
+  CLIENT_ASSERTION_TYPE,
+  CLIENT_PRIVATE_KEY,
+  USERINFO_RESPONSE_TYPE,
+  JWE_USERINFO_PRIVATE_KEY,
+} = require("./config");
+
+const clientDetails = require("./clientDetails");
 
 const baseUrl = ESIGNET_SERVICE_URL.trim();
 const getTokenEndPoint = "/oauth/v2/token";
@@ -18,29 +28,52 @@ const expirationTime = "1h";
  * @param {string} grant_type grant_type
  * @returns access token
  */
-const post_GetToken = async ({
-  code,
-  client_id,
-  redirect_uri,
-  grant_type
-}) => {
+const post_GetToken = async ({ code, client_id, redirect_uri, grant_type }) => {
   let request = new URLSearchParams({
     code: code,
     client_id: client_id,
     redirect_uri: redirect_uri,
     grant_type: grant_type,
     client_assertion_type: CLIENT_ASSERTION_TYPE,
-    client_assertion: await generateSignedJwt(client_id),
+    client_assertion: await generateSignedJwt(client_id, ESIGNET_AUD_URL),
   });
   const endpoint = baseUrl + getTokenEndPoint;
-  console.log(baseUrl)
-  console.log(endpoint)
+  console.log(baseUrl);
+  console.log(endpoint);
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
-  console.log(response.data)
+  console.log(response.data);
+  return response.data;
+};
+
+/**
+ * Triggers /oauth/par API on esignet service to fetch requestUri
+ * @param {string} clientId clientId
+ * @returns requestUri
+ */
+const post_GetRequestUri = async (clientId, uiLocales) => {
+  const clientAssertions = generateSignedJwt(clientId, ESIGNET_PAR_AUD_URL);
+  const endpoint = baseUrl + clientDetails.parEndpoint;
+  const params = new URLSearchParams();
+  params.append("nonce", clientDetails.nonce);
+  params.append("state", clientDetails.state);
+  params.append("client_id", clientDetails.clientId);
+  params.append("redirect_uri", clientDetails.redirectUriUserprofile);
+  params.append("scope", clientDetails.scopeUserProfile);
+  params.append("response_type", clientDetails.responseType);
+  params.append("acr_values", clientDetails.acrValues);
+  params.append("claims", clientDetails.userProfileClaims);
+  params.append("claims_locales", clientDetails.claimsLocales);
+  params.append("display", clientDetails.display);
+  params.append("prompt", clientDetails.prompt);
+  params.append("ui_locales", uiLocales);
+  const response = await axios.post(endpoint, params.toString(), {
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  });
+  console.log(response.data);
   return response.data;
 };
 
@@ -49,7 +82,7 @@ const post_GetToken = async ({
  * @param {string} access_token valid access token
  * @returns decrypted/decoded json user information
  */
-const get_GetUserInfo = async (access_token) => {
+const get_GetUserInfo = async access_token => {
   const endpoint = baseUrl + getUserInfoEndPoint;
   const response = await axios.get(endpoint, {
     headers: {
@@ -65,7 +98,7 @@ const get_GetUserInfo = async (access_token) => {
  * @param {string} clientId registered client id
  * @returns client assertion signedJWT
  */
-const generateSignedJwt = async (clientId) => {
+const generateSignedJwt = async (clientId, audience) => {
   // Set headers for JWT
   var header = {
     alg: alg,
@@ -75,10 +108,10 @@ const generateSignedJwt = async (clientId) => {
   var payload = {
     iss: clientId,
     sub: clientId,
-    aud: ESIGNET_AUD_URL,
+    aud: audience,
   };
 
-  var decodeKey = Buffer.from(CLIENT_PRIVATE_KEY, 'base64')?.toString();
+  var decodeKey = Buffer.from(CLIENT_PRIVATE_KEY, "base64")?.toString();
   const jwkObject = JSON.parse(decodeKey);
   const privateKey = await jose.importJWK(jwkObject, alg);
   // var privateKey = await jose.importPKCS8(CLIENT_PRIVATE_KEY, alg);
@@ -86,7 +119,7 @@ const generateSignedJwt = async (clientId) => {
   const jwt = new jose.SignJWT(payload)
     .setProtectedHeader(header)
     .setIssuedAt()
-    .setJti(Math.random().toString(36).substring(2,7))
+    .setJti(Math.random().toString(36).substring(2, 7))
     .setExpirationTime(expirationTime)
     .sign(privateKey);
 
@@ -98,24 +131,32 @@ const generateSignedJwt = async (clientId) => {
  * @param {string} userInfoResponse JWE encrypted or JWT encoded user information
  * @returns decrypted/decoded json user information
  */
-const decodeUserInfoResponse = async (userInfoResponse) => {
-
+const decodeUserInfoResponse = async userInfoResponse => {
   let response = userInfoResponse;
 
   if (USERINFO_RESPONSE_TYPE.toLowerCase() === "jwe") {
-    var decodeKey = Buffer.from(JWE_USERINFO_PRIVATE_KEY, 'base64')?.toString();
+    var decodeKey = Buffer.from(JWE_USERINFO_PRIVATE_KEY, "base64")?.toString();
     const jwkObject = JSON.parse(decodeKey);
     const privateKeyObj = await jose.importJWK(jwkObject, jweEncryAlgo);
 
     try {
-      const { plaintext, protectedHeader } = await jose.compactDecrypt(response, privateKeyObj)
+      const { plaintext, protectedHeader } = await jose.compactDecrypt(
+        response,
+        privateKeyObj,
+      );
       response = new TextDecoder().decode(plaintext);
     } catch (error) {
       try {
-        const { plaintext } = await jose.flattenedDecrypt(response, privateKeyObj)
+        const { plaintext } = await jose.flattenedDecrypt(
+          response,
+          privateKeyObj,
+        );
         response = new TextDecoder().decode(plaintext);
       } catch (error) {
-        const { plaintext } = await jose.generalDecrypt(response, privateKeyObj)
+        const { plaintext } = await jose.generalDecrypt(
+          response,
+          privateKeyObj,
+        );
         response = new TextDecoder().decode(plaintext);
       }
     }
@@ -127,4 +168,5 @@ const decodeUserInfoResponse = async (userInfoResponse) => {
 module.exports = {
   post_GetToken: post_GetToken,
   get_GetUserInfo: get_GetUserInfo,
+  post_GetRequestUri,
 };
