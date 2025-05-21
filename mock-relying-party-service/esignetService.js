@@ -55,12 +55,15 @@ const post_GetToken = async ({ code, client_id, redirect_uri, grant_type }) => {
  * @returns requestUri
  */
 const post_GetRequestUri = async (clientId, uiLocales) => {
-  const clientAssertions = generateSignedJwt(clientId, ESIGNET_PAR_AUD_URL);
+  const clientAssertion = await generateSignedJwt(
+    clientId,
+    ESIGNET_PAR_AUD_URL,
+  );
   const endpoint = baseUrl + clientDetails.parEndpoint;
   const params = new URLSearchParams();
   params.append("nonce", clientDetails.nonce);
   params.append("state", clientDetails.state);
-  params.append("client_id", clientDetails.clientId);
+  params.append("client_id", clientId);
   params.append("redirect_uri", clientDetails.redirectUriUserprofile);
   params.append("scope", clientDetails.scopeUserProfile);
   params.append("response_type", clientDetails.responseType);
@@ -70,6 +73,8 @@ const post_GetRequestUri = async (clientId, uiLocales) => {
   params.append("display", clientDetails.display);
   params.append("prompt", clientDetails.prompt);
   params.append("ui_locales", uiLocales);
+  params.append("client_assertion_type", CLIENT_ASSERTION_TYPE);
+  params.append("client_assertion", clientAssertion);
   const response = await axios.post(endpoint, params.toString(), {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
