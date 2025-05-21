@@ -34,7 +34,7 @@
           "items": {
             "properties": {
               "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ\\s]{1,40}|[ء-ي\\s-٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ]{1,40})$"
+                "pattern": "\\S"
               }
             }
           }
@@ -48,7 +48,7 @@
           "items": {
             "properties": {
               "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ\\s]{1,40}|[ء-ي\\s-٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ]{1,40})$"
+                "pattern": "\\S"
               }
             }
           }
@@ -62,7 +62,7 @@
           "items": {
             "properties": {
               "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ\\s]{1,40}|[ء-ي\\s-٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ]{1,40})$"
+                "pattern": "\\S"
               }
             }
           }
@@ -70,46 +70,70 @@
       ]
     },
     "middleName": {
-      "allOf": [
-        { "$ref": "#/$defs/langField" },
-        {
-          "items": {
-            "properties": {
-              "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ\\s]{1,40}|[ء-ي\\s-٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ]{1,40})$"
+      "type": ["array", "null"],
+      "if": {
+        "type": "array"
+      },
+      "then": {
+        "allOf": [
+          {
+            "$ref": "#/$defs/langField"
+          },
+          {
+            "items": {
+              "properties": {
+                "value": {
+                  "pattern": "\\S"
+                }
               }
             }
           }
-        }
-      ]
+        ]
+      }
     },
     "nickName": {
-      "allOf": [
-        { "$ref": "#/$defs/langField" },
-        {
-          "items": {
-            "properties": {
-              "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ\\s]{1,40}|[ء-ي\\s-٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ]{1,40})$"
+      "type": ["array", "null"],
+      "if": {
+        "type": "array"
+      },
+      "then": {
+        "allOf": [
+          {
+            "$ref": "#/$defs/langField"
+          },
+          {
+            "items": {
+              "properties": {
+                "value": {
+                  "pattern": "\\S"
+                }
               }
             }
           }
-        }
-      ]
+        ]
+      }
     },
     "preferredUsername": {
-      "allOf": [
-        { "$ref": "#/$defs/langField" },
-        {
-          "items": {
-            "properties": {
-              "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ\\s]{1,40}|[ء-ي\\s-٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ]{1,40})$"
+      "type": ["array", "null"],
+      "if": {
+        "type": "array"
+      },
+      "then": {
+        "allOf": [
+          {
+            "$ref": "#/$defs/langField"
+          },
+          {
+            "items": {
+              "properties": {
+                "value": {
+                  "pattern": "\\S"
+                }
               }
             }
           }
-        }
-      ]
+        ]
+      }
     },
     "gender": {
       "allOf": [
@@ -118,7 +142,7 @@
           "items": {
             "properties": {
               "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ\\s]{1,20}|^[ء-ي\\s\\u0621-\\u064A\\u0660-\\u0669\\u0671-\\u06BF\\uFE70-\\uFEFF\\u0600-\\u06FFگچپژیلفقهمو ء-ي]{1,20}$)$"
+                "pattern": "\\S"
               }
             }
           }
@@ -126,19 +150,26 @@
       ]
     },
     "streetAddress": {
-      "allOf": [
-        { "$ref": "#/$defs/langField" },
-        {
-          "items": {
-            "properties": {
-              "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ0-9\\s.,°№-]{1,200}|[ء-ي\\s-٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ0-9]{1,200})$"
-
+      "type": ["array", "null"],
+      "if": {
+        "type": "array"
+      },
+      "then": {
+        "allOf": [
+          {
+            "$ref": "#/$defs/langField"
+          },
+          {
+            "items": {
+              "properties": {
+                "value": {
+                  "pattern": "\\S"
+                }
               }
             }
           }
-        }
-      ]
+        ]
+      }
     },
     "locality": {
       "allOf": [
@@ -147,7 +178,7 @@
           "items": {
             "properties": {
               "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ0-9\\s.,°№-]{1,200}|[ء-ي\\s-٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ0-9]{1,200})$"
+                "pattern": "\\S"
               }
             }
           }
@@ -161,7 +192,7 @@
           "items": {
             "properties": {
               "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ0-9\\s.,°№-]{1,200}|[ء-ي\\s-٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ0-9]{1,200})$"
+                "pattern": "\\S"
               }
             }
           }
@@ -175,7 +206,7 @@
           "items": {
             "properties": {
               "value": {
-                "pattern": "^(?:[a-zA-ZÀ-ÿ\\s]{1,20}|^[ء-ي\\s\\u0621-\\u064A\\u0660-\\u0669\\u0671-\\u06BF\\uFE70-\\uFEFF\\u0600-\\u06FFگچپژیلفقهمو ء-ي]{1,20}$)$"
+                "pattern": "\\S"
               }
             }
           }
@@ -187,7 +218,7 @@
       "pattern": "\\S"
     },
     "preferredLang": {
-      "type": "string"
+      "type":  ["string", "null"]
     },
     "dateOfBirth": {
       "type": "string",
@@ -209,14 +240,14 @@
       "pattern": "\\S"
     },
     "zoneInfo": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "locale": {
-      "type": "string",
+      "type":  ["string", "null"],
       "pattern": "\\S"
     },
     "password": {
-      "type": "string",
+      "type": ["string", "null"],
       "pattern": "\\S"
     }
   },
@@ -225,11 +256,7 @@
     "fullName",
     "givenName",
     "familyName",
-    "middleName",
-    "nickName",
-    "preferredUsername",
     "gender",
-    "streetAddress",
     "locality",
     "region",
     "country",
@@ -239,10 +266,7 @@
     "postalCode",
     "encodedPhoto",
     "email",
-    "phone",
-    "zoneInfo",
-    "locale",
-    "password"
+    "phone"
   ],
   "additionalProperties": false
 }
