@@ -5,6 +5,7 @@
  */
 package io.mosip.esignet.mock.identitysystem.service;
 
+import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 
@@ -15,4 +16,6 @@ public interface AuthenticationService {
     KycExchangeResponseDto kycExchange(String relyingPartnerId, String clientId, KycExchangeDto kycExchangeDto) throws MockIdentityException;
 
     SendOtpResult sendOtp(String relyingPartyId, String clientId, SendOtpDto sendOtpDto) throws MockIdentityException;
+
+    RSAKey getRelyingPartyPublicKey(String relyingPartyId);
 }
