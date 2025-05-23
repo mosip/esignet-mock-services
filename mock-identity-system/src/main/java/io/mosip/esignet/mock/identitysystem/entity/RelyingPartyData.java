@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "partner_data")
+@Table(name = "rp_data")
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartnerData {
+public class RelyingPartyData {
 
     @Id
     @Column(name = "rp_id")
@@ -21,8 +21,8 @@ public class PartnerData {
     @Column(name = "oidc_client_id")
     private String oidcClientId;
 
-    @Column(name = "encrypted_public_key")
-    private String encryptedPublicKey;
+    @Column(name = "encryption_key")
+    private String encryptionKey;
 
     @Column(name = "status")
     private String status;

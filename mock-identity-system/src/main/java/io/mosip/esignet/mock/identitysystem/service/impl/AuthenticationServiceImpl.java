@@ -9,14 +9,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.entity.KycAuth;
-import io.mosip.esignet.mock.identitysystem.entity.PartnerData;
+import io.mosip.esignet.mock.identitysystem.entity.RelyingPartyData;
 import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
-import io.mosip.esignet.mock.identitysystem.repository.PartnerDataRepository;
+import io.mosip.esignet.mock.identitysystem.repository.RelyingPartyDataRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
@@ -39,10 +40,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.X509EncodedKeySpec;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -80,7 +79,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private VerifiedClaimRepository verifiedClaimRepository;
 
     @Autowired
-    private PartnerDataRepository partnerDataRepository;
+    private RelyingPartyDataRepository relyingPartyDataRepository;
 
     @Autowired
     private CacheUtilService cacheUtilService;
@@ -381,23 +380,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public RSAKey getRelyingPartyPublicKey(String relyingPartyId) {
-        PartnerData partner = partnerDataRepository.findByRpId(relyingPartyId)
+        RelyingPartyData relyingPartyData = relyingPartyDataRepository.findByRpId(relyingPartyId)
                 .orElseThrow(() -> new MockIdentityException("Public key not found for relying party: " + relyingPartyId));
-
         try {
-
-            byte[] decodedKey = Base64.getDecoder().decode(partner.getEncryptedPublicKey());
-
-            // Convert to RSAPublicKey
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decodedKey);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            RSAPublicKey rsaPublicKey = (RSAPublicKey) keyFactory.generatePublic(keySpec);
-
-            // Build and return the JWK representation
-            return new RSAKey.Builder(rsaPublicKey).build();
-
-        } catch (Exception e) {
-            throw new MockIdentityException( e.getMessage());
+            String jwkJson = relyingPartyData.getEncryptionKey();
+            JWK jwk = JWK.parse(jwkJson);
+            if (!(jwk instanceof RSAKey)) {
+                throw new MockIdentityException("Stored key is not an RSA key for relying party: " + relyingPartyId);
+            }
+            return (RSAKey) jwk;
+        } catch (ParseException e) {
+            throw new MockIdentityException("Failed to parse JWK public key for relying party: " + relyingPartyId);
         }
     }
 
