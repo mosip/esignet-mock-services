@@ -5,7 +5,6 @@
  */
 package io.mosip.esignet.mock.identitysystem.service;
 
-import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 
