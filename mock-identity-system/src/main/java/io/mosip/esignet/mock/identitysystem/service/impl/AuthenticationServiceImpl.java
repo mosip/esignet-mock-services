@@ -378,7 +378,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return jsonWebEncryption.getCompactSerialization();
     }
 
-    public RSAKey getRelyingPartyPublicKey(String relyingPartyId) {
+    private RSAKey getRelyingPartyPublicKey(String relyingPartyId) {
         RelyingPartyData relyingPartyData = relyingPartyDataRepository.findByRpId(relyingPartyId)
                 .orElseThrow(() -> {
                     log.error("Public key not found for relying party: {}", relyingPartyId);
