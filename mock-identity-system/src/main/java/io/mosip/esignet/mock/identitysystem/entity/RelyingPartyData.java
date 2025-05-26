@@ -18,8 +18,8 @@ public class RelyingPartyData {
     @Column(name = "rp_id")
     private String rpId;
 
-    @Column(name = "oidc_client_id")
-    private String oidcClientId;
+    @Column(name = "client_id")
+    private String clientId;
 
     @Column(name = "encryption_key")
     private String encryptionKey;

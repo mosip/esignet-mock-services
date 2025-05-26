@@ -378,19 +378,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return jsonWebEncryption.getCompactSerialization();
     }
 
-    @Override
     public RSAKey getRelyingPartyPublicKey(String relyingPartyId) {
         RelyingPartyData relyingPartyData = relyingPartyDataRepository.findByRpId(relyingPartyId)
-                .orElseThrow(() -> new MockIdentityException("Public key not found for relying party: " + relyingPartyId));
+                .orElseThrow(() -> {
+                    log.error("Public key not found for relying party: {}", relyingPartyId);
+                    return new MockIdentityException("mock-ida-008");
+                });
         try {
             String jwkJson = relyingPartyData.getEncryptionKey();
             JWK jwk = JWK.parse(jwkJson);
             if (!(jwk instanceof RSAKey)) {
-                throw new MockIdentityException("Stored key is not an RSA key for relying party: " + relyingPartyId);
+                log.error("Stored key is not an RSA key for relying party: {}", relyingPartyId);
+                throw new MockIdentityException("mock-ida-008");
             }
             return (RSAKey) jwk;
         } catch (ParseException e) {
-            throw new MockIdentityException("Failed to parse JWK public key for relying party: " + relyingPartyId);
+            log.error("Failed to parse JWK public key for relying party: {}", relyingPartyId, e);
+            throw new MockIdentityException("mock-ida-008");
         }
     }
 

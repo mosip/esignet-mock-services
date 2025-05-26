@@ -16,6 +16,4 @@ public interface AuthenticationService {
     KycExchangeResponseDto kycExchange(String relyingPartnerId, String clientId, KycExchangeDto kycExchangeDto) throws MockIdentityException;
 
     SendOtpResult sendOtp(String relyingPartyId, String clientId, SendOtpDto sendOtpDto) throws MockIdentityException;
-
-    RSAKey getRelyingPartyPublicKey(String relyingPartyId);
 }

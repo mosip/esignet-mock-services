@@ -2,7 +2,7 @@
 
 CREATE TABLE mockidentitysystem.rp_data (
     rp_id character varying(100) NOT NULL,
-    oidc_client_id character varying(255),
+    client_id character varying(255),
     encryption_key text,
     status character varying(50),
     cr_dtimes timestamp NOT NULL,
