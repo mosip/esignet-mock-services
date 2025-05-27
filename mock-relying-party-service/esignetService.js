@@ -54,7 +54,7 @@ const post_GetToken = async ({ code, client_id, redirect_uri, grant_type }) => {
  * @param {string} clientId clientId
  * @returns requestUri
  */
-const post_GetRequestUri = async (clientId, uiLocales) => {
+const post_GetRequestUri = async (clientId, uiLocales, state) => {
   const clientAssertion = await generateSignedJwt(
     clientId,
     ESIGNET_PAR_AUD_URL,
@@ -62,7 +62,7 @@ const post_GetRequestUri = async (clientId, uiLocales) => {
   const endpoint = baseUrl + clientDetails.parEndpoint;
   const params = new URLSearchParams();
   params.append("nonce", clientDetails.nonce);
-  params.append("state", clientDetails.state);
+  params.append("state", state || clientDetails.state);
   params.append("client_id", clientId);
   params.append("redirect_uri", clientDetails.redirectUriUserprofile);
   params.append("scope", clientDetails.scopeUserProfile);
@@ -72,7 +72,7 @@ const post_GetRequestUri = async (clientId, uiLocales) => {
   params.append("claims_locales", clientDetails.claimsLocales);
   params.append("display", clientDetails.display);
   params.append("prompt", clientDetails.prompt);
-  if(uiLocales) params.append("ui_locales", uiLocales);
+  params.append("ui_locales", uiLocales || process.env.DEFAULT_UI_LOCALES);
   params.append("client_assertion_type", CLIENT_ASSERTION_TYPE);
   params.append("client_assertion", clientAssertion);
   const response = await axios.post(endpoint, params.toString(), {

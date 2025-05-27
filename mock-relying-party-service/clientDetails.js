@@ -1,7 +1,7 @@
 // method to check non-empty and non-null
 // values, if present then give default value
 const checkEmptyNullValue = (initialValue, defaultValue) =>
-  initialValue ? initialValue : defaultValue;
+  initialValue || defaultValue;
 
 const generateRandomString = (strLength = 16) => {
   let result = "";

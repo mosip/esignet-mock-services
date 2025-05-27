@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 app.get("/requestUri/:clientId", async (req, res) => {
   try {
     res.send(
-      await post_GetRequestUri(req.params.clientId, req.query.ui_locales),
+      await post_GetRequestUri(req.params.clientId, req.query.ui_locales, req.query.state),
     );
   } catch (error) {
     console.log(error);
