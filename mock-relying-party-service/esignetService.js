@@ -72,7 +72,7 @@ const post_GetRequestUri = async (clientId, uiLocales) => {
   params.append("claims_locales", clientDetails.claimsLocales);
   params.append("display", clientDetails.display);
   params.append("prompt", clientDetails.prompt);
-  params.append("ui_locales", uiLocales);
+  if(uiLocales) params.append("ui_locales", uiLocales);
   params.append("client_assertion_type", CLIENT_ASSERTION_TYPE);
   params.append("client_assertion", clientAssertion);
   const response = await axios.post(endpoint, params.toString(), {

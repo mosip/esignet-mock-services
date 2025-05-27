@@ -13,12 +13,6 @@ app.get("/", (req, res) => {
 });
 
 app.get("/requestUri/:clientId", async (req, res) => {
-  if (!req.query.ui_locales) {
-    res
-      .status(400)
-      .send({ error_message: "ui_locales not provided as query parameter" });
-    return;
-  }
   try {
     res.send(
       await post_GetRequestUri(req.params.clientId, req.query.ui_locales),
