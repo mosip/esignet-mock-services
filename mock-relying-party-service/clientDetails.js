@@ -14,7 +14,6 @@ const generateRandomString = (strLength = 16) => {
   return result;
 };
 
-const parEndpoint = "/oauth/par";
 const state = "eree2311";
 const nonce = generateRandomString();
 const responseType = "code";
@@ -66,7 +65,7 @@ const clientDetails = {
   claimsLocales,
   maxAge,
   grantType,
-  parEndpoint,
+  parEndpoint: process.env.ESIGNET_PAR_ENDPOINT,
   userProfileClaims,
   registrationClaims,
 };

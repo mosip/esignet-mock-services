@@ -59,7 +59,6 @@ const post_GetRequestUri = async (clientId, uiLocales, state) => {
     clientId,
     ESIGNET_PAR_AUD_URL,
   );
-  const endpoint = baseUrl + clientDetails.parEndpoint;
   const params = new URLSearchParams();
   params.append("nonce", clientDetails.nonce);
   params.append("state", state || clientDetails.state);
@@ -75,7 +74,7 @@ const post_GetRequestUri = async (clientId, uiLocales, state) => {
   params.append("ui_locales", uiLocales || process.env.DEFAULT_UI_LOCALES);
   params.append("client_assertion_type", CLIENT_ASSERTION_TYPE);
   params.append("client_assertion", clientAssertion);
-  const response = await axios.post(endpoint, params.toString(), {
+  const response = await axios.post(clientDetails.parEndpoint, params.toString(), {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
   console.log(response.data);
