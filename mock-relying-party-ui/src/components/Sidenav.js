@@ -116,19 +116,19 @@ export default function Sidenav({
         redirect_uri,
         grant_type
       );
-      let address = getAddress(userInfo?.address);
+      let address = getAddress(getClaims(userInfo, "address"));
       setAddress(address);
       setUserInfo(userInfo);
-      setEmailAddress(userInfo?.email_verified ?? userInfo?.email);
+      setEmailAddress(getClaims(userInfo, "email_verified") ?? getClaims(userInfo, "email"));
       localStorage.setItem(userInfo_keyname, JSON.stringify(userInfo));
       setStatus(states.LOADED);
     } catch (errormsg) {
       //Load from local storage
       if (localStorage.getItem(userInfo_keyname)) {
         let userInf = JSON.parse(localStorage.getItem(userInfo_keyname));
-        let address = getAddress(userInf?.address);
+        let address = getAddress(getClaims(userInf, "address"));
         setAddress(address);
-        setEmailAddress(userInf?.email_verified ?? userInf?.email);
+        setEmailAddress(getClaims(userInf, "email_verified") ?? getClaims(userInf, "email"));
         setUserInfo(userInf);
         setStatus(states.LOADED);
       } else {
@@ -201,6 +201,23 @@ export default function Sidenav({
 
     //returning after removing last ", " characters
     return address.substring(0, address.length - 2);
+  };
+
+  //getting verified claims, if they are present
+  const getClaims = (userInfo, fieldName) => {
+    if (userInfo?.[fieldName]) {
+      return userInfo[fieldName];
+    }
+
+    if (userInfo?.verified_claims) {
+      for (let verifiedClaim of userInfo.verified_claims) {
+        if (verifiedClaim?.claims?.[fieldName]) {
+          return verifiedClaim.claims[fieldName];
+        }
+      }
+    }
+
+    return null;
   };
 
   const verifiedIcon = (
@@ -727,7 +744,7 @@ export default function Sidenav({
             <div className="flex flex-wrap justify-between items-center px-3 py-2.5">
               <a className="flex-1 items-center truncate">
                 <span className="self-center text-2xl font-semibold whitespace-nowrap">
-                  {t("welcome")}, {userInfo?.name}
+                  {t("welcome")}, {getClaims(userInfo, "name")}
                 </span>
                 <p className="text-sm text-gray-500 truncate bg-gray-50 font-sans">
                   {t("message_notification")}
@@ -741,17 +758,15 @@ export default function Sidenav({
                       alt={"profile_picture"}
                       className="h-12 w-12 ml-3 mr-3"
                       src={
-                        userInfo?.picture
-                          ? userInfo.picture
-                          : "User-Profile-Icon.png"
+                        getClaims(userInfo, "picture") ?? "User-Profile-Icon.png"
                       }
                     />
                     <div className="flex my-3 max-w-xs">
                       <p
                         className="text-gray-500 truncate bg-gray-50"
-                        title={userInfo?.name}
+                        title={getClaims(userInfo, "name")}
                       >
-                        {userInfo?.name}
+                        {getClaims(userInfo, "name")}
                       </p>
                     </div>
                     <button
@@ -798,9 +813,9 @@ export default function Sidenav({
                               verifiedIcon}
                           </a>
                         )}
-                        {userInfo?.birthdate && (
+                        {getClaims(userInfo, "birthdate") && (
                           <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
-                            {t("dob")}: {userInfo?.birthdate}
+                            {t("dob")}: {getClaims(userInfo, "birthdate")}
                             {userInfo?.verified_claims &&
                               getAllKeys(
                                 userInfo?.verified_claims[0].claims
@@ -808,9 +823,9 @@ export default function Sidenav({
                               verifiedIcon}
                           </a>
                         )}
-                        {userInfo?.gender && (
+                        {getClaims(userInfo, "gender") && (
                           <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
-                            {t("gender")}: {userInfo?.gender}
+                            {t("gender")}: {getClaims(userInfo, "gender")}
                             {userInfo?.verified_claims &&
                               getAllKeys(
                                 userInfo?.verified_claims[0].claims
@@ -818,9 +833,9 @@ export default function Sidenav({
                               verifiedIcon}
                           </a>
                         )}
-                        {userInfo?.phone_number && (
+                        {getClaims(userInfo, "phone_number") && (
                           <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
-                            {t("mobile_no")}: {userInfo?.phone_number}
+                            {t("mobile_no")}: {getClaims(userInfo, "phone_number")}
                             {userInfo?.verified_claims &&
                               getAllKeys(
                                 userInfo?.verified_claims[0].claims
