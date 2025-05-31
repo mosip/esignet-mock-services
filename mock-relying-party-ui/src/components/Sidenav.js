@@ -116,25 +116,60 @@ export default function Sidenav({
         redirect_uri,
         grant_type
       );
-      let address = getAddress(getClaims(userInfo, "address"));
-      setAddress(address);
-      setUserInfo(userInfo);
-      setEmailAddress(getClaims(userInfo, "email_verified") ?? getClaims(userInfo, "email"));
-      localStorage.setItem(userInfo_keyname, JSON.stringify(userInfo));
-      setStatus(states.LOADED);
+      setUserDetail(userInfo);
     } catch (errormsg) {
       //Load from local storage
       if (localStorage.getItem(userInfo_keyname)) {
         let userInf = JSON.parse(localStorage.getItem(userInfo_keyname));
-        let address = getAddress(getClaims(userInf, "address"));
-        setAddress(address);
-        setEmailAddress(getClaims(userInf, "email_verified") ?? getClaims(userInf, "email"));
-        setUserInfo(userInf);
-        setStatus(states.LOADED);
+        setUserDetail(userInf);
       } else {
         navigateToLogin("session_expired", "Session Expired");
       }
     }
+  };
+
+  // Checking and getting Verified claims.
+  const setUserDetail = (userInfoResponse) => {
+    let addressDetails = getClaimDetails(userInfoResponse, "address");
+    let address = getAddress(addressDetails.value);
+    setAddress(address);
+    const emailDetails = getClaimDetails(userInfoResponse, "email");
+    setEmailAddress(emailDetails);
+
+    let tempUserInfo = {
+      name: getClaimDetails(userInfoResponse, "name"),
+      email: emailAddress,
+      phone_number: getClaimDetails(userInfoResponse, "phone_number"),
+      gender: getClaimDetails(userInfoResponse, "gender"),
+      address: {
+        value: address,
+        verified: addressDetails.verified
+      },
+      birthdate: getClaimDetails(userInfoResponse, "birthdate"),
+      picture: getClaimDetails(userInfoResponse, "picture")
+    }
+    setUserInfo(tempUserInfo);
+    setStatus(states.LOADED);
+    localStorage.setItem(userInfo_keyname, JSON.stringify(userInfoResponse));
+  }
+
+  const getClaimDetails = (userInfo, fieldName) => {
+    let result = { value: null, verified: false };
+    if (userInfo?.[fieldName]) {
+      result.value = userInfo[fieldName];
+    }
+
+    if (userInfo?.verified_claims) {
+      for (let verifiedClaim of userInfo.verified_claims) {
+        if (verifiedClaim?.claims?.[fieldName]) {
+          result.value = verifiedClaim.claims[fieldName];
+          result.verified = true;
+          break;
+        }
+      }
+    }
+
+    return result;
   };
 
   //claimproviders details
@@ -203,22 +238,6 @@ export default function Sidenav({
     return address.substring(0, address.length - 2);
   };
 
-  //getting verified claims, if they are present
-  const getClaims = (userInfo, fieldName) => {
-    if (userInfo?.[fieldName]) {
-      return userInfo[fieldName];
-    }
-
-    if (userInfo?.verified_claims) {
-      for (let verifiedClaim of userInfo.verified_claims) {
-        if (verifiedClaim?.claims?.[fieldName]) {
-          return verifiedClaim.claims[fieldName];
-        }
-      }
-    }
-
-    return null;
-  };
 
   const verifiedIcon = (
     <img
@@ -263,7 +282,7 @@ export default function Sidenav({
                   </p>
 
                   <p className="text-sm text-gray-500 truncate max-w-xs whitespace-pre-wrap">
-                    {t("hi")} {userInfo?.name} , {t(message["message"])}
+                    {t("hi")} {userInfo?.name?.value} , {t(message["message"])}
                   </p>
                 </div>
                 <button
@@ -668,21 +687,21 @@ export default function Sidenav({
                 alt={"profile_picture"}
                 className="h-10 w-10 ml-3 mr-3"
                 src={
-                  userInfo?.picture ? userInfo.picture : "User-Profile-Icon.png"
+                  userInfo?.picture?.value ? userInfo.picture?.value : "User-Profile-Icon.png"
                 }
               />
               <div className="flex flex-col my-3 max-w-xs">
                 <p
                   className="text-[#344054] truncate font-semibold text-sm"
-                  title={userInfo?.name}
+                  title={userInfo?.name?.value}
                 >
-                  {userInfo?.name}
+                  {userInfo?.name?.value}
                 </p>
                 <p
                   className="text-[#475467] truncate font-normal text-sm"
-                  title={userInfo?.email}
+                  title={userInfo?.email?.value}
                 >
-                  {userInfo?.email}
+                  {userInfo?.email?.value}
                 </p>
               </div>
             </div>
@@ -744,7 +763,7 @@ export default function Sidenav({
             <div className="flex flex-wrap justify-between items-center px-3 py-2.5">
               <a className="flex-1 items-center truncate">
                 <span className="self-center text-2xl font-semibold whitespace-nowrap">
-                  {t("welcome")}, {getClaims(userInfo, "name")}
+                  {t("welcome")}, {userInfo?.name?.value}
                 </span>
                 <p className="text-sm text-gray-500 truncate bg-gray-50 font-sans">
                   {t("message_notification")}
@@ -758,16 +777,17 @@ export default function Sidenav({
                       alt={"profile_picture"}
                       className="h-12 w-12 ml-3 mr-3"
                       src={
-                        getClaims(userInfo, "picture") ?? "User-Profile-Icon.png"
+                        userInfo?.picture?.value ?? "User-Profile-Icon.png"
                       }
                     />
                     <div className="flex my-3 max-w-xs">
                       <p
                         className="text-gray-500 truncate bg-gray-50"
-                        title={getClaims(userInfo, "name")}
+                        title={userInfo?.name?.value}
                       >
-                        {getClaims(userInfo, "name")}
+                        {userInfo?.name?.value}
                       </p>
+                      {userInfo?.name?.verified && verifiedIcon}
                     </div>
                     <button
                       className="flex items-center px-4 py-2  text-sm leading-5 font-medium rounded-md text-gray-700 bg-transparent hover:text-gray-500  active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out"
@@ -793,64 +813,44 @@ export default function Sidenav({
                   {isOpen && (
                     <div className="origin-top-left absolute ltr:right-0 rtl:left-0 max-w-xs shadow-lg">
                       <div className="flex flex-col px-1 py-1 rounded-md bg-white shadow-xs mt-2">
-                        {emailAddress && (
+                        {emailAddress.value && (
                           <a
                             className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max"
-                            title={emailAddress}
+                            title={emailAddress.value}
                           >
                             {t("email")}:&nbsp;
                             <span className="truncate">
-                              {emailAddress?.split("@")[0]}
+                              {emailAddress.value.split("@")[0]}
                             </span>
                             @
                             <span className="truncate">
-                              {emailAddress?.split("@")[1]}
+                              {emailAddress.value.split("@")[1]}
                             </span>
-                            {userInfo?.verified_claims &&
-                              getAllKeys(
-                                userInfo?.verified_claims[0].claims
-                              ).includes("emailAddress") &&
-                              verifiedIcon}
+                            {emailAddress.verified && verifiedIcon}
                           </a>
                         )}
-                        {getClaims(userInfo, "birthdate") && (
+                        {userInfo?.birthdate?.value && (
                           <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
-                            {t("dob")}: {getClaims(userInfo, "birthdate")}
-                            {userInfo?.verified_claims &&
-                              getAllKeys(
-                                userInfo?.verified_claims[0].claims
-                              ).includes("birthdate") &&
-                              verifiedIcon}
+                            {t("dob")}: {userInfo?.birthdate?.value}
+                            {userInfo?.birthdate?.verified && verifiedIcon}
                           </a>
                         )}
-                        {getClaims(userInfo, "gender") && (
+                        {userInfo?.gender?.value && (
                           <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
-                            {t("gender")}: {getClaims(userInfo, "gender")}
-                            {userInfo?.verified_claims &&
-                              getAllKeys(
-                                userInfo?.verified_claims[0].claims
-                              ).includes("gender") &&
-                              verifiedIcon}
+                            {t("gender")}: {userInfo?.gender?.value}
+                            {userInfo?.gender?.verified && verifiedIcon}
                           </a>
                         )}
-                        {getClaims(userInfo, "phone_number") && (
+                        {userInfo?.phone_number?.value && (
                           <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
-                            {t("mobile_no")}: {getClaims(userInfo, "phone_number")}
-                            {userInfo?.verified_claims &&
-                              getAllKeys(
-                                userInfo?.verified_claims[0].claims
-                              ).includes("phone_number") &&
-                              verifiedIcon}
+                            {t("mobile_no")}: {userInfo?.phone_number?.value}
+                            {userInfo?.phone_number?.verified && verifiedIcon}
                           </a>
                         )}
                         {address && (
                           <a className="px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900 flex w-max">
                             {t("address")}: {address}
-                            {userInfo?.verified_claims &&
-                              getAllKeys(
-                                userInfo?.verified_claims[0].claims
-                              ).includes("address") &&
-                              verifiedIcon}
+                            {userInfo?.address?.verified && verifiedIcon}
                           </a>
                         )}
                         <button
