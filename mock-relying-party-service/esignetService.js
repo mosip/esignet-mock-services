@@ -170,7 +170,7 @@ const decodeUserInfoResponse = async userInfoResponse => {
 };
 
 module.exports = {
-  post_GetToken: post_GetToken,
-  get_GetUserInfo: get_GetUserInfo,
+  post_GetToken,
+  get_GetUserInfo,
   post_GetRequestUri,
 };
