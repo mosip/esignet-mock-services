@@ -1,0 +1,11 @@
+{
+  "languages": [
+    { "code": "en", "name": "English", "nativeName": "English" },
+    { "code": "hi", "name": "Hindi", "nativeName": "हिंदी" },
+    { "code": "ar", "name": "Arabic", "nativeName": "عربي" },
+    { "code": "kn", "name": "Kannada", "nativeName": "ಕನ್ನಡ" },
+    { "code": "ta", "name": "Tamil", "nativeName": "தமிழ்" },
+    { "code": "km", "name": "Khmer", "nativeName": "ខ្មែរ" },
+    { "code": "pt", "name": "Portuguese", "nativeName": "Português" }
+  ]
+}

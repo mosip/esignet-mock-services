@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "prepaid": "Pré-pago",
+    "postpaid": "Pós-pago",
+    "newPlans": "Novos Planos",
+    "newSim": "Nova Conexão SIM",
+    "help": "Ajuda"
+  },
+  "hero": {
+    "title": "Seu SIM grátis a um clique de distância",
+    "subtitle": "Evite filas. Obtenha seu eSIM gratuito online com sua identidade nacional.",
+    "cta": "Começar"
+  },
+  "footer": {
+    "copyright": "© 2025 FynTel. Todos os direitos reservados."
+  }
+}
