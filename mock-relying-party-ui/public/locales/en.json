@@ -243,6 +243,8 @@
     "no_ekyc_provider": "Oops! The eKYC verification could not be completed because no eKYC provider was found. Please try again later.",
     "invalid_frame": "The provided frames are not valid. Please check the input and try again.",
     "invalid_order": "The order provided is invalid. Please ensure the correct sequence and try again.",
-    "invalid_step_code": "The step code is incorrect. Please verify the step and provide a valid code."
+    "invalid_step_code": "The step code is incorrect. Please verify the step and provide a valid code.",
+    "request_uri_error": "Failed to get Request URI. Please try again later.",
+    "request_uri_timeout": "Request timed out while fetching Request URI. Please try again later."
   }
 }

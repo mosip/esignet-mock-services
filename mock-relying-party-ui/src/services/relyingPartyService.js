@@ -6,9 +6,13 @@ const baseUrl =
 const fetchUserInfoEndPoint = "/fetchUserInfo";
 const getRequestUriEndPoint = "/requestUri";
 
-const get_requestUri = async (clientId) => {
+const get_requestUri = async (clientId, state, ui_locales) => {
   try {
-    const endpoint = `${baseUrl}${getRequestUriEndPoint}/${clientId}`;
+    const params = new URLSearchParams({
+      state,
+      ui_locales,
+    });
+    const endpoint = `${baseUrl}${getRequestUriEndPoint}/${clientId}?${params.toString()}`;
     const response = await axios.get(endpoint, {
       headers: {
         "Content-Type": "application/json",
