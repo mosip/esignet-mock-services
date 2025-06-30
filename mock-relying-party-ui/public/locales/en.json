@@ -245,6 +245,7 @@
     "invalid_order": "The order provided is invalid. Please ensure the correct sequence and try again.",
     "invalid_step_code": "The step code is incorrect. Please verify the step and provide a valid code.",
     "request_uri_error": "Failed to get Request URI. Please try again later.",
-    "request_uri_timeout": "Request timed out while fetching Request URI. Please try again later."
+    "request_uri_timeout": "Request timed out while fetching Request URI. Please try again later.",
+    "web_socket_fail": "eKYC verification was not completed. Please try again."
   }
 }
