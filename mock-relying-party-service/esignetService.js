@@ -131,42 +131,46 @@ const generateSignedJwt = async (clientId, audience) => {
 };
 
 /**
- * decrypts and decodes the user information fetched from esignet services
- * @param {string} userInfoResponse JWE encrypted or JWT encoded user information
- * @returns decrypted/decoded json user information
+ * Decrypts and decodes the user information fetched from esignet services.
+ * @param {string} userInfoResponse - JWE encrypted or JWT encoded user information
+ * @returns {Object} - Decrypted and/or decoded user information
  */
-const decodeUserInfoResponse = async userInfoResponse => {
+const decodeUserInfoResponse = async (userInfoResponse) => {
   let response = userInfoResponse;
 
   if (USERINFO_RESPONSE_TYPE.toLowerCase() === "jwe") {
-    var decodeKey = Buffer.from(JWE_USERINFO_PRIVATE_KEY, "base64")?.toString();
+    const decodeKey = Buffer.from(JWE_USERINFO_PRIVATE_KEY, "base64")?.toString();
     const jwkObject = JSON.parse(decodeKey);
     const privateKeyObj = await jose.importJWK(jwkObject, jweEncryAlgo);
 
     try {
-      const { plaintext, protectedHeader } = await jose.compactDecrypt(
-        response,
-        privateKeyObj,
-      );
+      const { plaintext } = await jose.compactDecrypt(response, privateKeyObj);
       response = new TextDecoder().decode(plaintext);
-    } catch (error) {
+    } catch {
       try {
-        const { plaintext } = await jose.flattenedDecrypt(
-          response,
-          privateKeyObj,
-        );
+        const { plaintext } = await jose.flattenedDecrypt(response, privateKeyObj);
         response = new TextDecoder().decode(plaintext);
-      } catch (error) {
-        const { plaintext } = await jose.generalDecrypt(
-          response,
-          privateKeyObj,
-        );
+      } catch {
+        const { plaintext } = await jose.generalDecrypt(response, privateKeyObj);
         response = new TextDecoder().decode(plaintext);
       }
     }
   }
+
   console.log("userInfoResponse", response);
-  return await new jose.decodeJwt(response);
+
+  // ✅ Check if the response is a JWT (3 dot-separated segments)
+  if (typeof response === 'string' && response.split('.').length === 3) {
+    return jose.decodeJwt(response);
+  }
+
+  // ✅ Otherwise, parse as plain JSON
+  try {
+    return JSON.parse(response);
+  } catch (err) {
+    console.error("Failed to parse decrypted user info response:", err);
+    throw new Error("Invalid userInfoResponse format.");
+  }
 };
 
 module.exports = {
