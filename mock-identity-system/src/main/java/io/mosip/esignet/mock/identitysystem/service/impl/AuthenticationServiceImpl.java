@@ -19,7 +19,6 @@ import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.CacheUtilService;
-import io.mosip.esignet.mock.identitysystem.util.ClaimsManager;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 import io.mosip.kernel.core.util.HMACUtils2;
@@ -108,8 +107,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${mosip.mockidentitysystem.esignet.issuer-id}")
     private String issuerId;
 
-    @Autowired
-    private ClaimsManager claimsManager;
     @Override
     public KycAuthResponseDto kycAuth(String relyingPartyId, String clientId, KycAuthDto kycAuthDto) throws MockIdentityException {
         //TODO validate relying party Id and client Id
@@ -197,8 +194,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (identityData == null) {
                 throw new MockIdentityException("mock-ida-001");
             }
+            List<String> claimsList = new ArrayList<>();
             Map<String, Object> kyc = buildKycDataBasedOnPolicy(kycExchangeDto.getIndividualId(), identityData,
-                    kycExchangeDto.getAcceptedClaimDetail(), kycExchangeDto.getClaimLocales());
+                    kycExchangeDto.getAcceptedClaimDetail(), kycExchangeDto.getClaimLocales(), claimsList);
             kyc.put("sub", result.get().getPartnerSpecificUserToken());
             kyc.put("iss", issuerId);
             kyc.put("aud", clientId);
@@ -210,7 +208,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             finalKyc = "JWE".equals(userInfoResponseType) ? getJWE(relyingPartyId, signKyc(kyc)) : signKyc(kyc);
             KycExchangeResponseDto kycExchangeResponseDto = new KycExchangeResponseDto();
             kycExchangeResponseDto.setKyc(finalKyc);
-            claimsManager.clearClaims();
             return kycExchangeResponseDto;
         } catch (Exception ex) {
             log.error("Failed to build kyc data", ex);
@@ -395,7 +392,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return authRepository.save(kycAuth);
     }
 
-    private Map<String, Object> buildKycDataBasedOnPolicy(String individualId, JsonNode identityData, Map<String, JsonNode> claims, List<String> locales) {
+    private Map<String, Object> buildKycDataBasedOnPolicy(String individualId, JsonNode identityData, Map<String, JsonNode> claims, List<String> locales, List<String> claimsList) {
         log.info("Accepted claim details {} for locales : {}", claims, locales);
         Map<String, Object> kyc = new HashMap<>();
         if (CollectionUtils.isEmpty(locales)) {
@@ -413,23 +410,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     if(claimDetail.getValue().isArray()) {
                         Iterator<JsonNode> itr = claimDetail.getValue().iterator();
                         while(itr.hasNext()) {
-                            Map<String, Object> result = getVerificationDetail(individualId, itr.next(), identityData, locales);
+                            Map<String, Object> result = getVerificationDetail(individualId, itr.next(), identityData, locales, claimsList);
                             if(result.isEmpty())
                                 continue;
-                            setVerifiedClaimList(result);
+                            setVerifiedClaimList(result, claimsList);
                             List<Object> list = (List<Object>) kyc.getOrDefault("verified_claims", new ArrayList<Object>());
                             list.add(result);
                             kyc.put("verified_claims", list);
                         }
                     }
                     else {
-                        Map<String, Object> result = getVerificationDetail(individualId, claimDetail.getValue(), identityData, locales);
+                        Map<String, Object> result = getVerificationDetail(individualId, claimDetail.getValue(), identityData, locales, claimsList);
                         kyc.put("verified_claims", result);
                     }
                     break;
 
                 case "address":
-                    if(claimsManager!=null && claimsManager.getClaims().contains(claimDetail.getKey())){
+                    if(claimsList.contains(claimDetail.getKey())){
                         break;
                     }
                     Map<String, Object> addressValues = new HashMap<>();
@@ -448,7 +445,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     break;
 
                 default:
-                    if(claimsManager!=null && claimsManager.getClaims().contains(claimDetail.getKey())){
+                    if(claimsList.contains(claimDetail.getKey())){
                         break;
                     }
                     if(keyMappingEntry.isEmpty() || !identityData.hasNonNull(keyMappingEntry.get().getKey())) { break; }
@@ -477,7 +474,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @return claimsList
      */
     @SuppressWarnings("unchecked")
-    private void setVerifiedClaimList(Map<String, Object> result) {
+    private void setVerifiedClaimList(Map<String, Object> result, List<String> claimsList) {
         for (Map.Entry<String, Object> entry : result.entrySet()) {
             Object value = entry.getValue();
             if (value instanceof Map) {
@@ -485,7 +482,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 // Iterate through the inner map
                 for (Map.Entry<String, String> innerEntry : innerMap.entrySet()) {
                     String innerKey = innerEntry.getKey();
-                    claimsManager.addClaim(innerKey);
+                    claimsList.add(innerKey);
                 }
             }
         }
@@ -535,7 +532,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                 .anyMatch(node -> node.asText().equals(claimValue)) ) );
     }
 
-    private Map<String,Object> getVerificationDetail(String individualId, JsonNode requestedVerificationMetadata, JsonNode identityData, List<String> locales) {
+    private Map<String,Object> getVerificationDetail(String individualId, JsonNode requestedVerificationMetadata, JsonNode identityData, List<String> locales, List<String> claimsList) {
         if (requestedVerificationMetadata == null) {
             return Collections.emptyMap();
         }
@@ -565,7 +562,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Map<String,Object> result = new HashMap<>();
         result.put("verification", matchedVerificationDetail);
-        Map<String, Object> kyc = buildKycDataBasedOnPolicy(individualId, identityData, matchedVerifiedClaims, locales);
+        Map<String, Object> kyc = buildKycDataBasedOnPolicy(individualId, identityData, matchedVerifiedClaims, locales, claimsList);
         result.put("claims", kyc);
         return result;
     }
