@@ -139,7 +139,7 @@ const generateSignedJwt = async (clientId, audience) => {
 const decodeUserInfoResponse = async (userInfoResponse) => {
   try {
     const parts = userInfoResponse.split(".");
-    if (USERINFO_RESPONSE_TYPE === "jwe" && parts.length === 5) {
+    if (USERINFO_RESPONSE_TYPE.toLowerCase() === "jwe" && parts.length === 5) {
       // JWE detected
       const jwkJson = Buffer.from(JWE_USERINFO_PRIVATE_KEY, "base64").toString(
         "utf-8"
