@@ -146,8 +146,8 @@ const decodeUserInfoResponse = async (userInfoResponse) => {
       );
       const jwk = JSON.parse(jwkJson);
       // Ensure correct algorithm
-      jwk.alg = "RSA-OAEP-256"; // Important fix
-      const privateKey = await importJWK(jwk, "RSA-OAEP-256");
+      jwk.alg = jweEncryAlgo;
+      const privateKey = await importJWK(jwk, jweEncryAlgo);
       // Decrypt JWE
       const { plaintext } = await compactDecrypt(userInfoResponse, privateKey);
       const decrypted = new TextDecoder().decode(plaintext);
