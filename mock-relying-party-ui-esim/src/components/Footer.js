@@ -5,7 +5,7 @@ function Footer() {
   const { t } = useTranslation();
 
   return (
-    <footer className="footer">
+    <footer className="text-center py-5 text-gray-600 text-sm bg-white mt-10">
       {t('footer.copyright')}
     </footer>
   );

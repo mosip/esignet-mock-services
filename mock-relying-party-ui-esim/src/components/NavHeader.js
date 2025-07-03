@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import langConfigService from '../services/langConfigService';
+import ROUTES from '../constants/routes';
 
 function NavHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
-  const [languages, setLanguages] = useState([]);
+  const [languages, setLanguages] = useState({});
   const { t, i18n } = useTranslation();
   const dropdownRef = useRef(null);
 
@@ -18,7 +19,7 @@ function NavHeader() {
     fetchLanguages();
   }, []);
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || {};
+  const currentLanguageName = languages[i18n.language] || i18n.language;
 
   const changeLanguage = (languageCode) => {
     i18n.changeLanguage(languageCode);
@@ -31,51 +32,102 @@ function NavHeader() {
         setLanguageDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
-    <header className="navbar">
-      <div className="nav-left">
-        <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
-        <Link to="/">
-          <img src="/Images/Logo.svg" alt="Logo" className="logo" />
+    <header className="flex justify-between items-center px-16 py-5 bg-white relative flex-nowrap md:px-5 rtl:flex-row-reverse">
+      {/* Left Section: Menu + Logo */}
+      <div className="flex items-center gap-5 order-1 rtl:order-3 md:order-1">
+        {/* Mobile Menu Icon */}
+        <button 
+          id="menu-toggle" 
+          className="hidden text-2xl bg-none border-none cursor-pointer text-gray-800 md:block" 
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <img src="/Images/menu.svg" alt="Menu" className="w-6 h-6" />
+        </button>
+
+        {/* Logo */}
+        <Link id="logo-link" to={ROUTES.HOME}>
+          <img 
+            src="/Images/Logo.svg" 
+            alt="Logo" 
+            className="h-9 md:m-0 rtl:ml-4" 
+          />
         </Link>
       </div>
 
-      <div className="nav-right">
-        <nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          <Link to="/prepaid">{t('nav.prepaid')}</Link>
-          <Link to="/postpaid">{t('nav.postpaid')}</Link>
-          <Link to="/new-plans">{t('nav.newPlans')}</Link>
-          <Link to="/new-sim">{t('nav.newSim')}</Link>
-          <Link to="/help">{t('nav.help')}</Link>
+      {/* Right Section: Nav Links + Language Dropdown */}
+      <div className="flex items-center gap-5 ml-auto rtl:ml-0 rtl:mr-auto order-2 rtl:order-1 md:order-2">
+        {/* Navigation Links */}
+        <nav className={`
+          flex items-center gap-5 rtl:flex-row-reverse
+          ${menuOpen ? 'md:flex' : 'md:hidden'}
+          md:flex-col md:absolute md:top-16 md:left-0 md:right-0 
+          md:bg-white md:p-5 md:gap-4 md:shadow-lg md:z-[999] 
+          md:text-left md:items-start
+          rtl:md:flex-col rtl:md:items-start rtl:md:text-left
+        `}>
+          <Link to={ROUTES.PREPAID} id="nav-prepaid" className="no-underline text-black font-medium transition-all duration-200 hover:text-blue-600 hover:font-semibold md:text-base">
+            {t('nav.prepaid')}
+          </Link>
+          <Link to={ROUTES.POSTPAID} id="nav-postpaid" className="no-underline text-black font-medium transition-all duration-200 hover:text-blue-600 hover:font-semibold md:text-base">
+            {t('nav.postpaid')}
+          </Link>
+          <Link to={ROUTES.NEW_PLANS} id="nav-new-plans" className="no-underline text-black font-medium transition-all duration-200 hover:text-blue-600 hover:font-semibold md:text-base">
+            {t('nav.newPlans')}
+          </Link>
+          <Link to={ROUTES.NEW_SIM} id="nav-new-sim" className="no-underline text-black font-medium transition-all duration-200 hover:text-blue-600 hover:font-semibold md:text-base">
+            {t('nav.newSim')}
+          </Link>
+          <Link to={ROUTES.HELP} id="nav-help" className="no-underline text-black font-medium transition-all duration-200 hover:text-blue-600 hover:font-semibold md:text-base">
+            {t('nav.help')}
+          </Link>
         </nav>
 
-        <div className="language-dropdown-container" ref={dropdownRef}>
-          <div className="language-container">
-            <img src="/Images/globe.svg" alt="World" className="globe-icon" />
-            <button className="language-dropdown-button" onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}>
-              {currentLanguage.nativeName}
-              <svg className={`dropdown-arrow ${languageDropdownOpen ? 'open' : ''}`} width="10" height="6">
-                <path d="M0 0l5 6 5-6H0z" fill="#017DC0"/>
+        {/* Language Dropdown */}
+        <div className="relative inline-block" ref={dropdownRef}>
+          <div className="flex items-center gap-1 ml-1 rtl:flex-row-reverse rtl:gap-1.5">
+            <img 
+              src="/Images/globe.svg" 
+              alt="World"
+              className="w-[21.08px] h-[21.08px] mt-[5.46px]" 
+            />
+            <button
+              id="language-toggle"
+              className="flex items-center gap-1 font-semibold text-base leading-[1.5] tracking-normal text-gray-800 px-2 py-1 border-none rounded bg-transparent cursor-pointer transition-colors duration-200 min-w-20 justify-between pr-6 md:px-3 md:py-2 md:min-w-18"
+              onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
+            >
+              <span>{currentLanguageName}</span>
+              <svg
+                className={`transition-transform duration-200 flex-shrink-0 ${languageDropdownOpen ? 'rotate-180' : ''}`}
+                width="10"
+                height="6"
+              >
+                <path d="M0 0l5 6 5-6H0z" fill="#017DC0" />
               </svg>
             </button>
           </div>
+
           {languageDropdownOpen && (
-            <div className="language-dropdown-menu">
-              {languages.map((language) => (
+            <div className="absolute top-full -left-15 rtl:-right-15 rtl:left-auto bg-white border border-gray-200 rounded-lg shadow-lg min-w-58 z-[1000] mt-1 py-2 md:-right-2.5 md:-left-2.5 md:w-[calc(100%+20px)] before:content-[''] before:absolute before:-top-1.5 before:left-1/2 before:transform before:-translate-x-1/2 before:rotate-45 before:w-3 before:h-3 before:bg-white before:border-l before:border-t before:border-gray-200 before:-z-10">
+              {Object.entries(languages).map(([code, name]) => (
                 <button
-                  key={language.code}
-                  className={`language-option ${currentLanguage.code === language.code ? 'selected' : ''}`}
-                  onClick={() => changeLanguage(language.code)}
+                  id={`lang-${code}`}
+                  key={code}
+                  className={`
+                    flex items-center justify-between w-full px-4 py-3 border-none bg-none text-left cursor-pointer text-base text-gray-800 border-b border-gray-100 last:border-b-0 transition-colors duration-200 hover:font-semibold hover:text-blue-600
+                    md:px-4 md:py-3.5 md:text-lg
+                    ${i18n.language === code ? 'font-semibold text-blue-600' : 'font-normal'}
+                  `}
+                  onClick={() => changeLanguage(code)}
                 >
-                  <span className="language-name">{language.nativeName}</span>
-                  {currentLanguage.code === language.code && (
-                    <svg className="check-icon" width="16" height="16">
-                      <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" fill="#017DC0"/>
+                  <span className="flex-1 font-normal">{name}</span>
+                  {i18n.language === code && (
+                    <svg className="flex-shrink-0 ml-2" width="16" height="16">
+                      <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" fill="#017DC0" />
                     </svg>
                   )}
                 </button>

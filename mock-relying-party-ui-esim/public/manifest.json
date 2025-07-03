@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "MOSIP - Mock Relying Party eSIM Portal",
+  "name": "MOSIP - Mock Relying Party eSIM Portal",
   "icons": [
     {
       "src": "favicon.ico",
