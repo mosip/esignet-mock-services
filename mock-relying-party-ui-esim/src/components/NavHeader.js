@@ -94,10 +94,11 @@ function NavHeader() {
               src="/Images/globe.svg" 
               alt="World"
               className="w-[21.08px] h-[21.08px] mt-[5.46px]" 
+              class="relative -bottom-[2px]"
             />
             <button
               id="language-toggle"
-              className="flex items-center gap-1 font-semibold text-base leading-[1.5] tracking-normal text-gray-800 px-2 py-1 border-none rounded bg-transparent cursor-pointer transition-colors duration-200 min-w-20 justify-between pr-6 md:px-3 md:py-2 md:min-w-18"
+              className="flex items-center gap-1 font-semibold text-base leading-[1.5] tracking-normal text-gray-800 py-1 border-none rounded bg-transparent cursor-pointer transition-colors duration-200 min-w-20 justify-between pr-6 md:px-3 md:py-2 md:min-w-18"
               onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
             >
               <span>{currentLanguageName}</span>
