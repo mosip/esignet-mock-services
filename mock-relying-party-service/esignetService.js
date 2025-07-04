@@ -1,5 +1,10 @@
 const axios = require("axios");
-const jose = require("jose");
+const {
+  decodeJwt,
+  compactDecrypt,
+  importJWK,
+  SignJWT,
+} = require("jose");
 const {
   ESIGNET_SERVICE_URL,
   ESIGNET_AUD_URL,
@@ -38,14 +43,11 @@ const post_GetToken = async ({ code, client_id, redirect_uri, grant_type }) => {
     client_assertion: await generateSignedJwt(client_id, ESIGNET_AUD_URL),
   });
   const endpoint = baseUrl + getTokenEndPoint;
-  console.log(baseUrl);
-  console.log(endpoint);
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
-  console.log(response.data);
   return response.data;
 };
 
@@ -77,7 +79,6 @@ const post_GetRequestUri = async (clientId, uiLocales, state) => {
   const response = await axios.post(clientDetails.parEndpoint, params.toString(), {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
-  console.log(response.data);
   return response.data;
 };
 
@@ -117,10 +118,10 @@ const generateSignedJwt = async (clientId, audience) => {
 
   var decodeKey = Buffer.from(CLIENT_PRIVATE_KEY, "base64")?.toString();
   const jwkObject = JSON.parse(decodeKey);
-  const privateKey = await jose.importJWK(jwkObject, alg);
-  // var privateKey = await jose.importPKCS8(CLIENT_PRIVATE_KEY, alg);
+  const privateKey = await importJWK(jwkObject, alg);
+  // var privateKey = await importPKCS8(CLIENT_PRIVATE_KEY, alg);
 
-  const jwt = new jose.SignJWT(payload)
+  const jwt = new SignJWT(payload)
     .setProtectedHeader(header)
     .setIssuedAt()
     .setJti(Math.random().toString(36).substring(2, 7))
@@ -135,38 +136,32 @@ const generateSignedJwt = async (clientId, audience) => {
  * @param {string} userInfoResponse JWE encrypted or JWT encoded user information
  * @returns decrypted/decoded json user information
  */
-const decodeUserInfoResponse = async userInfoResponse => {
-  let response = userInfoResponse;
-
-  if (USERINFO_RESPONSE_TYPE.toLowerCase() === "jwe") {
-    var decodeKey = Buffer.from(JWE_USERINFO_PRIVATE_KEY, "base64")?.toString();
-    const jwkObject = JSON.parse(decodeKey);
-    const privateKeyObj = await jose.importJWK(jwkObject, jweEncryAlgo);
-
-    try {
-      const { plaintext, protectedHeader } = await jose.compactDecrypt(
-        response,
-        privateKeyObj,
+const decodeUserInfoResponse = async (userInfoResponse) => {
+  try {
+    const parts = userInfoResponse.split(".");
+    if (USERINFO_RESPONSE_TYPE.toLowerCase() === "jwe" && parts.length === 5) {
+      // JWE detected
+      const jwkJson = Buffer.from(JWE_USERINFO_PRIVATE_KEY, "base64").toString(
+        "utf-8"
       );
-      response = new TextDecoder().decode(plaintext);
-    } catch (error) {
-      try {
-        const { plaintext } = await jose.flattenedDecrypt(
-          response,
-          privateKeyObj,
-        );
-        response = new TextDecoder().decode(plaintext);
-      } catch (error) {
-        const { plaintext } = await jose.generalDecrypt(
-          response,
-          privateKeyObj,
-        );
-        response = new TextDecoder().decode(plaintext);
-      }
+      const jwk = JSON.parse(jwkJson);
+      // Ensure correct algorithm
+      jwk.alg = jweEncryAlgo;
+      const privateKey = await importJWK(jwk, jweEncryAlgo);
+      // Decrypt JWE
+      const { plaintext } = await compactDecrypt(userInfoResponse, privateKey);
+      const decrypted = new TextDecoder().decode(plaintext);
+      const decoded = decodeJwt(decrypted);
+      return decoded;
+    } else {
+      // Not encrypted - assume plain JWT
+      const decoded = decodeJwt(userInfoResponse);
+      return decoded;
     }
+  } catch (error) {
+    console.error("Failed to decode userInfoResponse:", error.message);
+    throw error;
   }
-  console.log("userInfoResponse", response);
-  return await new jose.decodeJwt(response);
 };
 
 module.exports = {
