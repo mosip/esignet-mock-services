@@ -53,9 +53,18 @@ const registrationClaims = checkEmptyNullValue(
   window._env_.CLAIMS_REGISTRATION,
   "{}"
 );
-const mockRpUIPublicUrl = process.env.PUBLIC_URL;
-const par_callback_name = window._env_.PAR_CALLBACK_NAME;
-const par_callback_timeout = window._env_.PAR_CALLBACK_TIMEOUT;
+const mockRpUIPublicUrl = checkEmptyNullValue(
+  process.env.PUBLIC_URL,
+  "http://localhost:5000"
+)
+const par_callback_name = checkEmptyNullValue(
+  window._env_.PAR_CALLBACK_NAME,
+  "get_requestUri"
+);
+const par_callback_timeout = checkEmptyNullValue(
+  window._env_.PAR_CALLBACK_TIMEOUT,
+  5000
+)
 const claims = {
   userinfo: {
     given_name: {
