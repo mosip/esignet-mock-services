@@ -194,6 +194,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (identityData == null) {
                 throw new MockIdentityException("mock-ida-001");
             }
+
             List<String> claimsList = new ArrayList<>();
             Map<String, Object> kyc = buildKycDataBasedOnPolicy(kycExchangeDto.getIndividualId(), identityData,
                     kycExchangeDto.getAcceptedClaimDetail(), kycExchangeDto.getClaimLocales(), claimsList);
@@ -426,7 +427,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     break;
 
                 case "address":
-                    if(claimsList.contains(claimDetail.getKey())){
+                    if(claimsList!=null && claimsList.contains(claimDetail.getKey())){
                         break;
                     }
                     Map<String, Object> addressValues = new HashMap<>();
@@ -445,7 +446,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     break;
 
                 default:
-                    if(claimsList.contains(claimDetail.getKey())){
+                    if(claimsList!=null && claimsList.contains(claimDetail.getKey())){
                         break;
                     }
                     if(keyMappingEntry.isEmpty() || !identityData.hasNonNull(keyMappingEntry.get().getKey())) { break; }
@@ -470,7 +471,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     /**
      * Claim list to hold the verified claims names
-     * @param result result
+     *
+     * @param result     result
+     * @param claimsList
      * @return claimsList
      */
     @SuppressWarnings("unchecked")
@@ -482,6 +485,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 // Iterate through the inner map
                 for (Map.Entry<String, String> innerEntry : innerMap.entrySet()) {
                     String innerKey = innerEntry.getKey();
+                    if(innerKey.contains("#")){
+                        innerKey = innerKey.split("#")[0];
+                    }
                     claimsList.add(innerKey);
                 }
             }
@@ -544,7 +550,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Iterator<Map.Entry<String, JsonNode>> it = requestedVerifiedClaims.fields();
         while (it.hasNext()) {
             Map.Entry<String, JsonNode> entry = it.next();
-            String trustFramework = String.valueOf(requestedVerification.get("trust_framework")).replace("\"", "");
+            String trustFramework = "";
+            JsonNode trustFrameworkNode  = requestedVerification.get("trust_framework");
+            if (trustFrameworkNode.has("values")) {
+                trustFramework = String.valueOf(trustFrameworkNode.get("values").get(0)).replace("\"", "");
+            } else if (trustFrameworkNode.has("value")) {
+                trustFramework = String.valueOf(trustFrameworkNode.get("value")).replace("\"", "");
+            }
             Optional<List<VerifiedClaim>> result = verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(individualId, entry.getKey(), true,
                     trustFramework);
             if(result.isEmpty()) { continue; }
