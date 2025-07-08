@@ -57,10 +57,7 @@ const mockRpUIPublicUrl = checkEmptyNullValue(
   process.env.PUBLIC_URL,
   "http://localhost:5000"
 )
-const par_callback_name = checkEmptyNullValue(
-  window._env_.PAR_CALLBACK_NAME,
-  "get_requestUri"
-);
+const par_callback_name = window._env_.PAR_CALLBACK_NAME
 const par_callback_timeout = checkEmptyNullValue(
   window._env_.PAR_CALLBACK_TIMEOUT,
   5000
