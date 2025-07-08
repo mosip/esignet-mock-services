@@ -139,16 +139,25 @@ const generateSignedJwt = async (clientId, audience) => {
 const decodeUserInfoResponse = async (userInfoResponse) => {
   try {
     const parts = userInfoResponse.split(".");
-    if (USERINFO_RESPONSE_TYPE.toLowerCase() === "jwe" && parts.length === 5) {
-      // JWE detected
-      const jwkJson = Buffer.from(JWE_USERINFO_PRIVATE_KEY, "base64").toString(
-        "utf-8"
-      );
-      const jwk = JSON.parse(jwkJson);
-      // Ensure correct algorithm
-      jwk.alg = jweEncryAlgo;
-      const privateKey = await importJWK(jwk, jweEncryAlgo);
-      // Decrypt JWE
+    const isJWE = USERINFO_RESPONSE_TYPE.toLowerCase() === "jwe" && parts.length === 5;
+
+    if (isJWE) {
+      // Decode base64-encoded JWK or JWK Set
+      const jwkJson = Buffer.from(JWE_USERINFO_PRIVATE_KEY, "base64").toString("utf-8");
+      const jwkParsed = JSON.parse(jwkJson);
+
+      // Support both single JWK and JWK Set
+      const jwk = Array.isArray(jwkParsed?.keys) ? jwkParsed.keys[0] : jwkParsed;
+
+      if (!jwk || !jwk.kty || !jwk.d) {
+        throw new Error("Invalid or missing private JWK");
+      }
+
+      // Ensure algorithm is present
+      jwk.alg = jwk.alg || jweEncryAlgo;
+
+      // Import private key and decrypt
+      const privateKey = await importJWK(jwk, jwk.alg);
       const { plaintext } = await compactDecrypt(userInfoResponse, privateKey);
       const decrypted = new TextDecoder().decode(plaintext);
       const decoded = decodeJwt(decrypted);
