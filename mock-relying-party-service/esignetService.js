@@ -119,7 +119,6 @@ const generateSignedJwt = async (clientId, audience) => {
   var decodeKey = Buffer.from(CLIENT_PRIVATE_KEY, "base64")?.toString();
   const jwkObject = JSON.parse(decodeKey);
   const privateKey = await importJWK(jwkObject, alg);
-  // var privateKey = await importPKCS8(CLIENT_PRIVATE_KEY, alg);
 
   const jwt = new SignJWT(payload)
     .setProtectedHeader(header)
