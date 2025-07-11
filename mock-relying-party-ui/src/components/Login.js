@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import clientDetails from "../constants/clientDetails";
 import { useExternalScript } from "../hooks/useExternalScript";
+import relyingPartyService from "../services/relyingPartyService";
 
 export default function Login({ i18nKeyPrefix = "login" }) {
   const { i18n, t } = useTranslation("translation", {
@@ -34,7 +35,6 @@ export default function Login({ i18nKeyPrefix = "login" }) {
   }, [state]);
 
   const renderSignInButton = () => {
-
     const oidcConfig = {
       authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
       redirect_uri: clientDetails.redirect_uri_userprofile,
@@ -49,6 +49,9 @@ export default function Login({ i18nKeyPrefix = "login" }) {
       max_age: clientDetails.max_age,
       ui_locales: i18n.language,
       claims: JSON.parse(decodeURIComponent(clientDetails.userProfileClaims)),
+      mockRpUIPublicUrl: clientDetails.mockRpUIPublicUrl,
+      par_callback: relyingPartyService[clientDetails.par_callback_name],
+      par_callback_timeout: clientDetails.par_callback_timeout,
     };
 
     window.SignInWithEsignetButton?.init({
