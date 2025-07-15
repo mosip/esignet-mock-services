@@ -4,6 +4,25 @@ const baseUrl =
     ? process.env.REACT_APP_MOCK_RELYING_PARTY_SERVER_URL
     : window._env_.MOCK_RELYING_PARTY_SERVER_URL;
 const fetchUserInfoEndPoint = "/fetchUserInfo";
+const getRequestUriEndPoint = "/requestUri";
+
+const get_requestUri = async (clientId, state, ui_locales) => {
+  try {
+    const params = new URLSearchParams({
+      state,
+      ui_locales,
+    });
+    const endpoint = `${baseUrl}${getRequestUriEndPoint}/${clientId}?${params.toString()}`;
+    const response = await axios.get(endpoint, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response?.data?.request_uri;
+  } catch (error) {
+    throw new Error("Failed to fetch request URI");
+  }
+};
 /**
  * Triggers /fetchUserInfo API on relying party server
  * @param {string} code auth code
@@ -126,5 +145,6 @@ const relyingPartyService = {
   get_currentMedications,
   get_messages,
   get_nextAppointment,
+  get_requestUri
 };
 export default relyingPartyService;

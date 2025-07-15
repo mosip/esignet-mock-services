@@ -280,6 +280,21 @@ extraEnvVars:
       configMapKeyRef:
         name: esignet-global
         key: mosip-esignet-host
+  - name: REDIS_HOST
+    valueFrom:
+      configMapKeyRef:
+        name: redis-config
+        key: redis-host
+  - name: REDIS_PORT
+    valueFrom:
+      configMapKeyRef:
+        name: redis-config
+        key: redis-port
+  - name: REDIS_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: redis
+        key: redis-password
 
 ## ConfigMap with extra environment variables that used
 ##

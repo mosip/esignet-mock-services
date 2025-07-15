@@ -9,7 +9,7 @@ databases:
     su:
       user: postgres
       secret:
-        name: esignet-postgres-postgresql
+        name: postgres-postgresql
         key: postgres-password
     dml: 1
     branch: develop

@@ -62,6 +62,8 @@ function installing_mock-identity-system() {
   ../copy_cm_func.sh secret softhsm-mock-identity-system softhsm $NS
   ../copy_cm_func.sh configmap softhsm-mock-identity-system-share softhsm $NS
   ../copy_cm_func.sh configmap esignet-global esignet $NS
+  ../copy_cm_func.sh configmap redis-config redis $NS
+  ../copy_cm_func.sh secret redis redis $NS
 
   echo Installing mock-identity-system
   helm -n $NS install mock-identity-system mosip/mock-identity-system --set metrics.serviceMonitor.enabled=$servicemonitorflag --version $CHART_VERSION $ENABLE_INSECURE -f values.yaml --wait

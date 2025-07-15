@@ -9,12 +9,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.entity.KycAuth;
+import io.mosip.esignet.mock.identitysystem.entity.RelyingPartyData;
 import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
+import io.mosip.esignet.mock.identitysystem.repository.RelyingPartyDataRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
@@ -38,6 +41,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -73,6 +77,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
     private VerifiedClaimRepository verifiedClaimRepository;
+
+    @Autowired
+    private RelyingPartyDataRepository relyingPartyDataRepository;
 
     @Autowired
     private CacheUtilService cacheUtilService;
@@ -375,8 +382,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private RSAKey getRelyingPartyPublicKey(String relyingPartyId) {
-        //TODO where to store relying-party public key
-        throw new MockIdentityException("jwe-not-implemented");
+        RelyingPartyData relyingPartyData = relyingPartyDataRepository.findByRpId(relyingPartyId)
+                .orElseThrow(() -> {
+                    log.error("Public key not found for relying party: {}", relyingPartyId);
+                    return new MockIdentityException("mock-ida-008");
+                });
+        try {
+            String jwkJson = relyingPartyData.getEncryptionKey();
+            JWK jwk = JWK.parse(jwkJson);
+            if (!(jwk instanceof RSAKey)) {
+                log.error("Stored key is not an RSA key for relying party: {}", relyingPartyId);
+                throw new MockIdentityException("mock-ida-008");
+            }
+            return (RSAKey) jwk;
+        } catch (ParseException e) {
+            log.error("Failed to parse JWK public key for relying party: {}", relyingPartyId, e);
+            throw new MockIdentityException("mock-ida-008");
+        }
     }
 
     private KycAuth saveKycAuthTransaction(String transactionId, String relyingPartyId, String individualId) {
