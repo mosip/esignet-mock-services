@@ -241,7 +241,7 @@
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>${maven.deploy.plugin.version}</version>
 				<configuration>
-					<skip>false</skip>
+					<skip>true</skip>
 				</configuration>
 				<executions>
 					<execution>
@@ -251,7 +251,7 @@
 							<goal>deploy</goal>
 						</goals>
 						<configuration>
-							<skip>false</skip>
+							<skip>true</skip>
 						</configuration>
 					</execution>
 				</executions>
