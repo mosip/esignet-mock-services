@@ -18,6 +18,8 @@ Below authentication factors are supported:
 * PWD
 * WLA
 
+For L2 flow, the mock identity system supports only trust-framework as the filter.
+
 ## Local setup of mock-identity-system
 
 1. Run [docker-compose.yml](../docker-compose/docker-compose.yml)

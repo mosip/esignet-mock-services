@@ -696,8 +696,6 @@ public class AuthenticationServiceImplTest {
         languageValueName.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValueName));
 
-
-
         KycExchangeDto kycExchangeRequestDtoV2 = new KycExchangeDto();
         kycExchangeRequestDtoV2.setIndividualId("individualId");
         kycExchangeRequestDtoV2.setTransactionId("transactionId");
@@ -720,44 +718,43 @@ public class AuthenticationServiceImplTest {
         // First verified claim
         ObjectNode verifiedClaim1 = objectMapper.createObjectNode();
         ObjectNode verification1 = objectMapper.createObjectNode();
-        verification1.put("trust_framework", "pwd");
-        verifiedClaim1.put("verification", verification1);
+        // Create trust_framework object with values array
+        ObjectNode trustFramework = objectMapper.createObjectNode();
+        ArrayNode valuesArray = objectMapper.createArrayNode();
+        valuesArray.add("pwd");
+        trustFramework.set("values", valuesArray);
+        verification1.set("trust_framework", trustFramework);
+
+        verifiedClaim1.set("verification", verification1);
 
         ObjectNode claims1 = objectMapper.createObjectNode();
-        claims1.put("email", NullNode.getInstance());
-        claims1.put("birthdate", NullNode.getInstance());
-        verifiedClaim1.put("claims", claims1);
+        claims1.set("email", NullNode.getInstance());
+        claims1.set("birthdate", NullNode.getInstance());
+        verifiedClaim1.set("claims", claims1);
 
         verifiedClaimsList.add(verifiedClaim1);
 
         // Second verified claim
         ObjectNode verifiedClaim2 = objectMapper.createObjectNode();
         ObjectNode verification2 = objectMapper.createObjectNode();
-        verification2.put("trust_framework", "income-tax");
-        verifiedClaim2.put("verification", verification2);
+        // Create trust_framework object with values array
+        ObjectNode trustFrameworkTwo = objectMapper.createObjectNode();
+        ArrayNode valuesArrayTwo = objectMapper.createArrayNode();
+        valuesArrayTwo.add("non_matching");
+        trustFrameworkTwo.set("values", valuesArrayTwo);
+        verification2.set("trust_framework", trustFrameworkTwo);
+
+        verifiedClaim2.set("verification", verification2);
 
         ObjectNode claims2 = objectMapper.createObjectNode();
-        claims2.put("name", NullNode.getInstance());
-        claims2.put("email", NullNode.getInstance());
-        claims2.put("gender", NullNode.getInstance());
-        verifiedClaim2.put("claims", claims2);
+        claims2.set("name", NullNode.getInstance());
+        claims2.set("email", NullNode.getInstance());
+        verifiedClaim2.set("claims", claims2);
 
         verifiedClaimsList.add(verifiedClaim2);
 
-        // Third verified claim
-        ObjectNode verifiedClaim3 = objectMapper.createObjectNode();
-        ObjectNode verification3 = objectMapper.createObjectNode();
-        verification3.put("trust_framework", NullNode.getInstance());
-        verifiedClaim3.put("verification", verification3);
-
-        ObjectNode claims3 = objectMapper.createObjectNode();
-        claims3.put("email", NullNode.getInstance());
-        claims3.put("birthdate", NullNode.getInstance());
-        verifiedClaim3.put("claims", claims3);
-
-        verifiedClaimsList.add(verifiedClaim3);
         ObjectNode addressClaim = objectMapper.createObjectNode();
-        addressClaim.put("locality", NullNode.getInstance());
+        addressClaim.set("locality", NullNode.getInstance());
 
         // Add the list of verified claims to the outer map
         acceptedClaims.put("verified_claims", verifiedClaimsList);
@@ -780,8 +777,20 @@ public class AuthenticationServiceImplTest {
 
         Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
 
+        Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
+
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString()))
+                .thenReturn(verifiedClaimsOptional);
+        JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
+        jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
+        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
+        KycExchangeResponseDto kycExchangeResponseDto = authenticationService.kycExchange("relyingPartyId", "clientId", kycExchangeRequestDtoV2);
+        Assert.assertEquals("jwtSignedData",kycExchangeResponseDto.getKyc());
+    }
+
+    private Optional<List<VerifiedClaim>> getVerifiedClaims() {
         VerifiedClaim verifiedClaim = new VerifiedClaim();
-        verifiedClaim.setTrustFramework("pwd");
+        verifiedClaim.setTrustFramework("non_matching");
         verifiedClaim.setClaim("name");
 
         VerifiedClaim verifiedClaim4=new VerifiedClaim();
@@ -796,19 +805,11 @@ public class AuthenticationServiceImplTest {
         verifiedClaimList.add(verifiedClaim);
         verifiedClaimList.add(verifiedClaim4);
         verifiedClaimList.add(verifiedClaim5);
-        Optional<List<VerifiedClaim>> verifiedClaimsOptional = Optional.of(verifiedClaimList);
-
-
-        //Mockito.when(verifiedClaimRepository.findByIndividualIdAndActive(Mockito.anyString(),Mockito.anyBoolean())).thenReturn(verifiedClaimsOptional);
-        JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
-        jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
-        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
-        KycExchangeResponseDto kycExchangeResponseDto = authenticationService.kycExchange("relyingPartyId", "clientId", kycExchangeRequestDtoV2);
-        Assert.assertEquals("jwtSignedData",kycExchangeResponseDto.getKyc());
+        return Optional.of(verifiedClaimList);
     }
 
     @Test
-    public void kycExchangeV2_withInValidIndividualId_thenFail() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public void kycExchangeV2_withInValidIndividualId_thenFail() {
         Map<String,String> oidcClaimsMap=new HashMap<>();
         oidcClaimsMap.put("name", "name");
         oidcClaimsMap.put("email", "email");
@@ -903,25 +904,38 @@ public class AuthenticationServiceImplTest {
         // First verified claim with matching trust framework
         ObjectNode verifiedClaim1 = objectMapper.createObjectNode();
         ObjectNode verification1 = objectMapper.createObjectNode();
-        verification1.put("trust_framework", "pwd");
-        verifiedClaim1.put("verification", verification1);
+        // Create trust_framework object with values array
+        ObjectNode trustFramework = objectMapper.createObjectNode();
+        ArrayNode valuesArray = objectMapper.createArrayNode();
+        valuesArray.add("pwd");
+        trustFramework.set("values", valuesArray);
+        verification1.set("trust_framework", trustFramework);
+
+        verifiedClaim1.set("verification", verification1);
 
         ObjectNode claims1 = objectMapper.createObjectNode();
-        claims1.put("email", NullNode.getInstance());
-        claims1.put("birthdate", NullNode.getInstance());
-        verifiedClaim1.put("claims", claims1);
+        claims1.set("email", NullNode.getInstance());
+        claims1.set("birthdate", NullNode.getInstance());
+        verifiedClaim1.set("claims", claims1);
         verifiedClaimsList.add(verifiedClaim1);
+
 
         // Set up the second verified claim that should not match
         ObjectNode verifiedClaim2 = objectMapper.createObjectNode();
         ObjectNode verification2 = objectMapper.createObjectNode();
-        verification2.put("trust_framework", "non_matching");
-        verifiedClaim2.put("verification", verification2);
+        // Create trust_framework object with values array
+        ObjectNode trustFrameworkTwo = objectMapper.createObjectNode();
+        ArrayNode valuesArrayTwo = objectMapper.createArrayNode();
+        valuesArrayTwo.add("non_matching");
+        trustFrameworkTwo.set("values", valuesArrayTwo);
+        verification2.set("trust_framework", trustFrameworkTwo);
+
+        verifiedClaim2.set("verification", verification2);
 
         ObjectNode claims2 = objectMapper.createObjectNode();
-        claims2.put("name", NullNode.getInstance());
-        claims2.put("email", NullNode.getInstance());
-        verifiedClaim2.put("claims", claims2);
+        claims2.set("name", NullNode.getInstance());
+        claims2.set("email", NullNode.getInstance());
+        verifiedClaim2.set("claims", claims2);
         verifiedClaimsList.add(verifiedClaim2);
 
         // Add the list of verified claims to the outer map
@@ -944,18 +958,138 @@ public class AuthenticationServiceImplTest {
         // Mock the identityService to return JsonNode
         Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityDataJsonNode);
 
-        VerifiedClaim verifiedClaim = new VerifiedClaim();
-        verifiedClaim.setTrustFramework("pwd");
-        verifiedClaim.setClaim("email");
+        Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
-        VerifiedClaim verifiedClaim4 = new VerifiedClaim();
-        verifiedClaim4.setTrustFramework("pwd");
-        verifiedClaim4.setClaim("birthdate");
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString()))
+                .thenReturn(verifiedClaimsOptional);
 
-        List<VerifiedClaim> verifiedClaimList = new ArrayList<>();
-        verifiedClaimList.add(verifiedClaim);
-        verifiedClaimList.add(verifiedClaim4);
-        Optional<List<VerifiedClaim>> verifiedClaimsOptional = Optional.of(verifiedClaimList);
+        JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
+        jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
+        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
+
+        KycExchangeResponseDto kycExchangeResponseDto = authenticationService.kycExchange("relyingPartyId", "clientId", kycExchangeRequestDtoV2);
+        Assert.assertEquals("jwtSignedData", kycExchangeResponseDto.getKyc());
+    }
+
+
+
+    @Test
+    public void kycExchangeV2_withMultipleTrustFramework_thenPass() {
+        Map<String, String> oidcClaimsMap = new HashMap<>();
+        oidcClaimsMap.put("name", "name");
+        oidcClaimsMap.put("email", "email");
+        oidcClaimsMap.put("phone", "phone");
+        oidcClaimsMap.put("gender", "gender");
+        oidcClaimsMap.put("address", "address");
+        oidcClaimsMap.put("dateOfBirth", "birthdate");
+        oidcClaimsMap.put("encodedPhoto", "picture");
+        ReflectionTestUtils.setField(authenticationService, "oidcClaimsMapping", oidcClaimsMap);
+        ReflectionTestUtils.setField(authenticationService, "objectMapper", new ObjectMapper());
+
+        // Create an IdentityData object
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        LanguageValue languageValueGender = new LanguageValue();
+        languageValueGender.setLanguage("eng");
+        languageValueGender.setValue("Male");
+        identityData.setGender(List.of(languageValueGender));
+
+        LanguageValue languageValueName = new LanguageValue();
+        languageValueName.setLanguage("eng");
+        languageValueName.setValue("Siddharth K Mansour");
+        identityData.setFullName(List.of(languageValueName));
+
+        // Convert IdentityData to JsonNode
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode identityDataJsonNode = objectMapper.valueToTree(identityData);
+
+        KycExchangeDto kycExchangeRequestDtoV2 = new KycExchangeDto();
+        kycExchangeRequestDtoV2.setIndividualId("individualId");
+        kycExchangeRequestDtoV2.setTransactionId("transactionId");
+
+        Map<String, JsonNode> acceptedClaims = new HashMap<>();
+
+        ObjectNode birthdate = objectMapper.createObjectNode();
+        birthdate.put("essential", true);
+        acceptedClaims.put("birthdate", birthdate);
+
+        ObjectNode gender = objectMapper.createObjectNode();
+        gender.put("essential", true);
+        acceptedClaims.put("gender", gender);
+
+        ObjectNode address = objectMapper.createObjectNode();
+        address.put("essential", true);
+        acceptedClaims.put("address", address);
+
+        ObjectNode picture = objectMapper.createObjectNode();
+        picture.put("essential", true);
+        acceptedClaims.put("picture", picture);
+
+        // Create a list for verified claims
+        ArrayNode verifiedClaimsList = objectMapper.createArrayNode();
+
+        // First verified claim with matching trust framework
+        ObjectNode verifiedClaim1 = objectMapper.createObjectNode();
+        ObjectNode verification1 = objectMapper.createObjectNode();
+        // Create trust_framework object with values array
+        ObjectNode trustFramework = objectMapper.createObjectNode();
+        ArrayNode valuesArray = objectMapper.createArrayNode();
+        valuesArray.add("pwd");
+        valuesArray.add("non_matching");
+        trustFramework.set("values", valuesArray);
+        verification1.set("trust_framework", trustFramework);
+
+        verifiedClaim1.set("verification", verification1);
+
+        ObjectNode claims1 = objectMapper.createObjectNode();
+        claims1.set("email", NullNode.getInstance());
+        claims1.set("birthdate", NullNode.getInstance());
+        verifiedClaim1.set("claims", claims1);
+        verifiedClaimsList.add(verifiedClaim1);
+
+
+        // Set up the second verified claim that should not match
+        ObjectNode verifiedClaim2 = objectMapper.createObjectNode();
+        ObjectNode verification2 = objectMapper.createObjectNode();
+        // Create trust_framework object with values array
+        ObjectNode trustFrameworkTwo = objectMapper.createObjectNode();
+        ArrayNode valuesArrayTwo = objectMapper.createArrayNode();
+        valuesArrayTwo.add("non_matching");
+        trustFrameworkTwo.set("values", valuesArrayTwo);
+        verification2.set("trust_framework", trustFrameworkTwo);
+
+        verifiedClaim2.set("verification", verification2);
+
+        ObjectNode claims2 = objectMapper.createObjectNode();
+        claims2.set("name", NullNode.getInstance());
+        claims2.set("email", NullNode.getInstance());
+        verifiedClaim2.set("claims", claims2);
+        verifiedClaimsList.add(verifiedClaim2);
+
+        // Add the list of verified claims to the outer map
+        acceptedClaims.put("verified_claims", verifiedClaimsList);
+        kycExchangeRequestDtoV2.setAcceptedClaimDetail(acceptedClaims);
+        kycExchangeRequestDtoV2.setClaimLocales(List.of("eng"));
+        kycExchangeRequestDtoV2.setRequestDateTime(LocalDateTime.now());
+
+        KycAuth kycAuth = new KycAuth();
+        kycAuth.setKycToken("kycToken");
+        kycAuth.setTransactionId("transactionId");
+        kycAuth.setIndividualId("individualId");
+        kycAuth.setPartnerSpecificUserToken("partnerSpecificUserToken");
+        kycAuth.setResponseTime(LocalDateTime.now());
+        Optional<KycAuth> kycAuthOptional = Optional.of(kycAuth);
+        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(Mockito.any(),
+                Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(kycAuthOptional);
+        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+
+        // Mock the identityService to return JsonNode
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityDataJsonNode);
+
+        Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
+
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString()))
+                .thenReturn(verifiedClaimsOptional);
 
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
         jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
@@ -966,7 +1100,160 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void kycExchangeV2_withOutVerifiedClaims_thenPass() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public void kycExchangeV2_withMultipleLanguages_thenPass() {
+        Map<String, String> oidcClaimsMap = new HashMap<>();
+        oidcClaimsMap.put("name", "name");
+        oidcClaimsMap.put("email", "email");
+        oidcClaimsMap.put("phone", "phone");
+        oidcClaimsMap.put("gender", "gender");
+        oidcClaimsMap.put("address", "address");
+        oidcClaimsMap.put("dateOfBirth", "birthdate");
+        oidcClaimsMap.put("encodedPhoto", "picture");
+        ReflectionTestUtils.setField(authenticationService, "oidcClaimsMapping", oidcClaimsMap);
+        ReflectionTestUtils.setField(authenticationService, "objectMapper", new ObjectMapper());
+
+        // Create an IdentityData object
+        IdentityData identityData = new IdentityData();
+        identityData.setDateOfBirth("1987/11/25");
+        LanguageValue languageValueGender = new LanguageValue();
+        languageValueGender.setLanguage("eng");
+        languageValueGender.setValue("Male");
+
+        LanguageValue languageValueGenderFra = new LanguageValue();
+        languageValueGenderFra.setLanguage("fra");
+        languageValueGenderFra.setValue("Mâle");
+
+        LanguageValue languageValueGenderAra = new LanguageValue();
+        languageValueGenderAra.setLanguage("ara");
+        languageValueGenderAra.setValue("ذكر");
+
+        List<LanguageValue> langValuesGender = new ArrayList<>();
+        langValuesGender.add(languageValueGender);
+        langValuesGender.add(languageValueGenderFra);
+        langValuesGender.add(languageValueGenderAra);
+        identityData.setGender(langValuesGender);
+
+        LanguageValue languageValueName = new LanguageValue();
+        languageValueName.setLanguage("eng");
+        languageValueName.setValue("Siddharth K Mansour");
+
+        LanguageValue languageValueNameFra = new LanguageValue();
+        languageValueNameFra.setLanguage("fra");
+        languageValueNameFra.setValue("Siddharth K Mansour");
+
+        LanguageValue languageValueNameAra = new LanguageValue();
+        languageValueNameAra.setLanguage("ara");
+        languageValueNameAra.setValue("تتگلدكنسَزقهِقِفل دسييسيكدكنوڤو");
+
+        List<LanguageValue> langValuesNames = new ArrayList<>();
+        langValuesNames.add(languageValueName);
+        langValuesNames.add(languageValueNameFra);
+        langValuesNames.add(languageValueNameAra);
+        identityData.setGender(langValuesNames);
+
+        identityData.setFullName(List.of(languageValueName));
+
+        // Convert IdentityData to JsonNode
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode identityDataJsonNode = objectMapper.valueToTree(identityData);
+
+        KycExchangeDto kycExchangeRequestDtoV2 = new KycExchangeDto();
+        kycExchangeRequestDtoV2.setIndividualId("individualId");
+        kycExchangeRequestDtoV2.setTransactionId("transactionId");
+
+        Map<String, JsonNode> acceptedClaims = new HashMap<>();
+
+        ObjectNode birthdate = objectMapper.createObjectNode();
+        birthdate.put("essential", true);
+        acceptedClaims.put("birthdate", birthdate);
+
+        ObjectNode gender = objectMapper.createObjectNode();
+        gender.put("essential", true);
+        acceptedClaims.put("gender", gender);
+
+        ObjectNode address = objectMapper.createObjectNode();
+        address.put("essential", true);
+        acceptedClaims.put("address", address);
+
+        ObjectNode picture = objectMapper.createObjectNode();
+        picture.put("essential", true);
+        acceptedClaims.put("picture", picture);
+
+        // Create a list for verified claims
+        ArrayNode verifiedClaimsList = objectMapper.createArrayNode();
+
+        // First verified claim with matching trust framework
+        ObjectNode verifiedClaim1 = objectMapper.createObjectNode();
+        ObjectNode verification1 = objectMapper.createObjectNode();
+        // Create trust_framework object with values array
+        ObjectNode trustFramework = objectMapper.createObjectNode();
+        ArrayNode valuesArray = objectMapper.createArrayNode();
+        valuesArray.add("pwd");
+        trustFramework.set("values", valuesArray);
+        verification1.set("trust_framework", trustFramework);
+
+        verifiedClaim1.set("verification", verification1);
+
+        ObjectNode claims1 = objectMapper.createObjectNode();
+        claims1.set("email", NullNode.getInstance());
+        claims1.set("birthdate", NullNode.getInstance());
+        verifiedClaim1.set("claims", claims1);
+        verifiedClaimsList.add(verifiedClaim1);
+
+
+        // Set up the second verified claim that should not match
+        ObjectNode verifiedClaim2 = objectMapper.createObjectNode();
+        ObjectNode verification2 = objectMapper.createObjectNode();
+        // Create trust_framework object with values array
+        ObjectNode trustFrameworkTwo = objectMapper.createObjectNode();
+        ArrayNode valuesArrayTwo = objectMapper.createArrayNode();
+        valuesArrayTwo.add("non_matching");
+        trustFrameworkTwo.set("values", valuesArrayTwo);
+        verification2.set("trust_framework", trustFrameworkTwo);
+
+        verifiedClaim2.set("verification", verification2);
+
+        ObjectNode claims2 = objectMapper.createObjectNode();
+        claims2.set("name", NullNode.getInstance());
+        claims2.set("email", NullNode.getInstance());
+        verifiedClaim2.set("claims", claims2);
+        verifiedClaimsList.add(verifiedClaim2);
+
+        // Add the list of verified claims to the outer map
+        acceptedClaims.put("verified_claims", verifiedClaimsList);
+        kycExchangeRequestDtoV2.setAcceptedClaimDetail(acceptedClaims);
+        kycExchangeRequestDtoV2.setClaimLocales(List.of("eng"));
+        kycExchangeRequestDtoV2.setRequestDateTime(LocalDateTime.now());
+
+        KycAuth kycAuth = new KycAuth();
+        kycAuth.setKycToken("kycToken");
+        kycAuth.setTransactionId("transactionId");
+        kycAuth.setIndividualId("individualId");
+        kycAuth.setPartnerSpecificUserToken("partnerSpecificUserToken");
+        kycAuth.setResponseTime(LocalDateTime.now());
+        Optional<KycAuth> kycAuthOptional = Optional.of(kycAuth);
+        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(Mockito.any(),
+                Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(kycAuthOptional);
+        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+
+        // Mock the identityService to return JsonNode
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityDataJsonNode);
+
+        Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
+
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString()))
+                .thenReturn(verifiedClaimsOptional);
+
+        JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
+        jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
+        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
+
+        KycExchangeResponseDto kycExchangeResponseDto = authenticationService.kycExchange("relyingPartyId", "clientId", kycExchangeRequestDtoV2);
+        Assert.assertEquals("jwtSignedData", kycExchangeResponseDto.getKyc());
+    }
+
+    @Test
+    public void kycExchangeV2_withOutVerifiedClaims_thenPass() {
         Map<String,String> oidcClaimsMap=new HashMap<>();
         oidcClaimsMap.put("name", "name");
         oidcClaimsMap.put("email", "email");
@@ -1005,47 +1292,65 @@ public class AuthenticationServiceImplTest {
         // First verified claim
         ObjectNode verifiedClaim1 = objectMapper.createObjectNode();
         ObjectNode verification1 = objectMapper.createObjectNode();
-        verification1.put("trust_framework", "pwd");
-        verifiedClaim1.put("verification", verification1);
+        // Create trust_framework object with values array
+        ObjectNode trustFramework = objectMapper.createObjectNode();
+        ArrayNode valuesArray = objectMapper.createArrayNode();
+        valuesArray.add("non_matching");
+        trustFramework.set("values", valuesArray);
+        verification1.set("trust_framework", trustFramework);
+
+        verifiedClaim1.set("verification", verification1);
 
         ObjectNode claims1 = objectMapper.createObjectNode();
-        claims1.put("email", NullNode.getInstance());
-        claims1.put("birthdate", NullNode.getInstance());
-        verifiedClaim1.put("claims", claims1);
+        claims1.set("email", NullNode.getInstance());
+        claims1.set("birthdate", NullNode.getInstance());
+        verifiedClaim1.set("claims", claims1);
 
         verifiedClaimsList.add(verifiedClaim1);
 
         // Second verified claim
         ObjectNode verifiedClaim2 = objectMapper.createObjectNode();
         ObjectNode verification2 =objectMapper.createObjectNode();
-        verification2.put("trust_framework", "income-tax");
-        verifiedClaim2.put("verification", verification2);
+        // Create trust_framework object with values array
+        ObjectNode trustFrameworkTwo = objectMapper.createObjectNode();
+        ArrayNode valuesArrayTwo = objectMapper.createArrayNode();
+        valuesArrayTwo.add("pwd");
+        trustFrameworkTwo.set("values", valuesArrayTwo);
+        verification2.set("trust_framework", trustFrameworkTwo);
+
+        verifiedClaim2.set("verification", verification2);
 
         ObjectNode claims2 = objectMapper.createObjectNode();
-        claims2.put("name", NullNode.getInstance());
-        claims2.put("email", NullNode.getInstance());
-        claims2.put("gender", NullNode.getInstance());
-        verifiedClaim2.put("claims", claims2);
+        claims2.set("name", NullNode.getInstance());
+        claims2.set("email", NullNode.getInstance());
+        claims2.set("gender", NullNode.getInstance());
+        verifiedClaim2.set("claims", claims2);
 
         verifiedClaimsList.add(verifiedClaim2);
 
         // Third verified claim
         ObjectNode verifiedClaim3 = objectMapper.createObjectNode();
         ObjectNode verification3 = objectMapper.createObjectNode();
-        verification3.put("trust_framework", NullNode.getInstance());
-        verifiedClaim3.put("verification", verification3);
+        // Create trust_framework object with values array
+        ObjectNode trustFrameworkThree = objectMapper.createObjectNode();
+        ArrayNode valuesArrayThree = objectMapper.createArrayNode();
+        valuesArrayThree.add("income_tax");
+        trustFrameworkThree.set("values", valuesArrayThree);
+        verification3.set("trust_framework", trustFrameworkThree);
+
+        verifiedClaim3.set("verification", verification3);
 
         ObjectNode claims3 =  objectMapper.createObjectNode();
-        claims3.put("email", NullNode.getInstance());
-        claims3.put("birthdate", NullNode.getInstance());
-        verifiedClaim3.put("claims", claims3);
+        claims3.set("email", NullNode.getInstance());
+        claims3.set("birthdate", NullNode.getInstance());
+        verifiedClaim3.set("claims", claims3);
 
         verifiedClaimsList.add(verifiedClaim3);
 
         // Add the list of verified claims to the outer map
         acceptedClaims.put("verified_claims", verifiedClaimsList);
 
-        kycExchangeRequestDtoV2.setAcceptedClaims(Arrays.asList("name"));
+        kycExchangeRequestDtoV2.setAcceptedClaims(List.of("name"));
         kycExchangeRequestDtoV2.setClaimLocales(List.of("eng"));
         kycExchangeRequestDtoV2.setRequestDateTime(LocalDateTime.now());
 

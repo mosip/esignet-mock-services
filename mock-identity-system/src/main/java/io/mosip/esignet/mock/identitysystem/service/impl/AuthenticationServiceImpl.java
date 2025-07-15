@@ -217,7 +217,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             finalKyc = "JWE".equals(userInfoResponseType) ? getJWE(relyingPartyId, signKyc(kyc)) : signKyc(kyc);
             KycExchangeResponseDto kycExchangeResponseDto = new KycExchangeResponseDto();
             kycExchangeResponseDto.setKyc(finalKyc);
-          //  claimsManager.clearClaims();
             return kycExchangeResponseDto;
         } catch (Exception ex) {
             log.error("Failed to build kyc data", ex);
@@ -509,7 +508,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 // Iterate through the inner map
                 for (Map.Entry<String, String> innerEntry : innerMap.entrySet()) {
                     String innerKey = innerEntry.getKey();
-                   // claimsManager.addClaim(innerKey);
+                    if(innerKey.contains("#")){
+                        innerKey = innerKey.split("#")[0];
+                    }
                     claimsList.add(innerKey);
                 }
             }
@@ -572,7 +573,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Iterator<Map.Entry<String, JsonNode>> it = requestedVerifiedClaims.fields();
         while (it.hasNext()) {
             Map.Entry<String, JsonNode> entry = it.next();
-            String trustFramework = String.valueOf(requestedVerification.get("trust_framework")).replace("\"", "");
+            String trustFramework = "";
+            JsonNode trustFrameworkNode  = requestedVerification.get("trust_framework");
+            if (trustFrameworkNode.has("values")) {
+                trustFramework = String.valueOf(trustFrameworkNode.get("values").get(0)).replace("\"", "");
+            } else if (trustFrameworkNode.has("value")) {
+                trustFramework = String.valueOf(trustFrameworkNode.get("value")).replace("\"", "");
+            }
             Optional<List<VerifiedClaim>> result = verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(individualId, entry.getKey(), true,
                     trustFramework);
             if(result.isEmpty()) { continue; }
