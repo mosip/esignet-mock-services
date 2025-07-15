@@ -18,7 +18,27 @@ Below authentication factors are supported:
 * PWD
 * WLA
 
-For L2 flow, the mock identity system supports only trust-framework as the filter.
+### Verified Claims Support in L2 Flow
+The mock-identity system now supports verified claims in the L2 flow, as per the OIDC Identity Assurance 1.0 specification.
+
+#### What Are Verified Claims?
+Verified claims are identity attributes (e.g., name, birthdate, email) that have been verified by a trusted source. 
+Each verified claim includes metadata about the trust_framework, time, verification_process, evidence, assurance level.
+
+1. trust_framework: Identifies the framework that governed the identity verification process conducted by the OpenID Provider (OP) or claim provider.
+   * For example:
+     * eidas: Indicates adherence to the eIDAS regulation for electronic identification and trust services in the European Union. 
+     * de_aml: Represents compliance with the German Anti-Money Laundering Law.
+2. assurance_level: Specifies the level of confidence in the accuracy of the verified claims.
+     * The specific assurance levels vary depending on the trust framework in use. For the eidas trust framework, potential values include 
+       * low, 
+       * substantial, and 
+       * high.
+3. verification_process: An OPTIONAL unique reference to the identity verification process performed by the OP. This helps with audits and resolving disputes and might be required by certain trust frameworks.
+4. time: An OPTIONAL timestamp (in ISO 8601 format, e.g., 2025-07-15T09:15:00Z) indicating when the verification process was completed. This can differ from a document/time element, as the document check and the overall process might be done by different parties. The trust framework might require this element. 
+5. evidence: An OPTIONAL JSON array containing information about the evidence used, where each object has a type property (e.g., document, electronic_record).
+
+From the above filters/metadata parameters mock identity system now supports only trust framework as the filter.
 
 ## Local setup of mock-identity-system
 

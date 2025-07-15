@@ -561,7 +561,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                 .anyMatch(node -> node.asText().equals(claimValue)) ) );
     }
 
-    private Map<String,Object> getVerificationDetail(String individualId, JsonNode requestedVerificationMetadata, JsonNode identityData, List<String> locales, List<String> claimsList) {
+    private Map<String, Object> getVerificationDetail(String individualId, JsonNode requestedVerificationMetadata, JsonNode identityData, List<String> locales, List<String> claimsList) {
         if (requestedVerificationMetadata == null) {
             return Collections.emptyMap();
         }
@@ -570,37 +570,56 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Map<String, JsonNode> matchedVerifiedClaims = new HashMap<>();
         JsonNode requestedVerification = requestedVerificationMetadata.get("verification");
         JsonNode requestedVerifiedClaims = requestedVerificationMetadata.get("claims");
+
+        List<String> trustFrameworkValues = new ArrayList<>();
+        try {
+            TrustFramework tf = objectMapper.treeToValue(requestedVerification.get("trust_framework"), TrustFramework.class);
+            if (tf.getValues() != null && !tf.getValues().isEmpty()) {
+                trustFrameworkValues.addAll(tf.getValues());
+            } else if (tf.getValue() != null) {
+                trustFrameworkValues.add(tf.getValue());
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
         Iterator<Map.Entry<String, JsonNode>> it = requestedVerifiedClaims.fields();
         while (it.hasNext()) {
             Map.Entry<String, JsonNode> entry = it.next();
-            String trustFramework = "";
-            JsonNode trustFrameworkNode  = requestedVerification.get("trust_framework");
-            if (trustFrameworkNode.has("values")) {
-                trustFramework = String.valueOf(trustFrameworkNode.get("values").get(0)).replace("\"", "");
-            } else if (trustFrameworkNode.has("value")) {
-                trustFramework = String.valueOf(trustFrameworkNode.get("value")).replace("\"", "");
-            }
-            Optional<List<VerifiedClaim>> result = verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(individualId, entry.getKey(), true,
-                    trustFramework);
-            if(result.isEmpty()) { continue; }
-            Optional<VerifiedClaim> matchedEntry = result.get().stream().
-                    filter(vc -> isClaimMatchingValueOrValuesCriteria(vc.getTrustFramework(), requestedVerification.get("trust_framework"))).findFirst();
-            if(matchedEntry.isPresent()) {
-                matchedVerificationDetail.put("trust_framework", matchedEntry.get().getTrustFramework());
-                matchedVerificationDetail.put("time", String.valueOf(matchedEntry.get().getUpdDateTime()));//TODO need to format
-                matchedVerifiedClaims.put(entry.getKey(), entry.getValue());
+            String claimKey = entry.getKey();
+
+            for (String trustFramework : trustFrameworkValues) {
+                Optional<List<VerifiedClaim>> result = verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(
+                        individualId, claimKey, true, trustFramework);
+
+                if (result.isEmpty()) {
+                    continue;
+                }
+
+                Optional<VerifiedClaim> matchedEntry = result.get().stream()
+                        .filter(vc -> isClaimMatchingValueOrValuesCriteria(vc.getTrustFramework(), requestedVerification.get("trust_framework")))
+                        .findFirst();
+
+                if (matchedEntry.isPresent()) {
+                    matchedVerificationDetail.put("trust_framework", matchedEntry.get().getTrustFramework());
+                    matchedVerificationDetail.put("time", String.valueOf(matchedEntry.get().getUpdDateTime())); // TODO: format time
+                    matchedVerifiedClaims.put(claimKey, entry.getValue());
+                    break; // Stop checking other trust frameworks once matched
+                }
             }
         }
 
-        if(matchedVerifiedClaims.isEmpty() || matchedVerificationDetail.isEmpty())
+        if (matchedVerifiedClaims.isEmpty() || matchedVerificationDetail.isEmpty()) {
             return Collections.emptyMap();
+        }
 
-        Map<String,Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         result.put("verification", matchedVerificationDetail);
         Map<String, Object> kyc = buildKycDataBasedOnPolicy(individualId, identityData, matchedVerifiedClaims, locales, claimsList);
         result.put("claims", kyc);
         return result;
     }
+
 
     public boolean isSupportedOtpChannel(String channel) {
         return channel != null && otpChannels.contains(channel.toLowerCase());
