@@ -53,10 +53,6 @@ const registrationClaims = checkEmptyNullValue(
   window._env_.CLAIMS_REGISTRATION,
   "{}"
 );
-const mockRpUIPublicUrl = checkEmptyNullValue(
-  process.env.PUBLIC_URL,
-  "http://localhost:5000"
-)
 const par_callback_name = window._env_.PAR_CALLBACK_NAME
 const par_callback_timeout = checkEmptyNullValue(
   window._env_.PAR_CALLBACK_TIMEOUT,
@@ -108,7 +104,6 @@ const clientDetails = {
   authorizeEndpoint: authorizeEndpoint,
   userProfileClaims: userProfileClaims ?? encodeURI(JSON.stringify(claims)),
   registrationClaims: registrationClaims ?? encodeURI(JSON.stringify(claims)),
-  mockRpUIPublicUrl: mockRpUIPublicUrl,
   par_callback_name: par_callback_name,
   par_callback_timeout: par_callback_timeout,
 };
