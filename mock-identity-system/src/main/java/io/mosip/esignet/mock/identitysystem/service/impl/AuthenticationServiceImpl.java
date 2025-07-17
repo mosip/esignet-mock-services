@@ -571,31 +571,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         JsonNode requestedVerification = requestedVerificationMetadata.get("verification");
         JsonNode requestedVerifiedClaims = requestedVerificationMetadata.get("claims");
 
-        List<String> trustFrameworkValues = new ArrayList<>();
-        try {
-            TrustFramework tf = objectMapper.treeToValue(requestedVerification.get("trust_framework"), TrustFramework.class);
-            if (tf.getValues() != null && !tf.getValues().isEmpty()) {
-                trustFrameworkValues.addAll(tf.getValues());
-            } else if (tf.getValue() != null) {
-                trustFrameworkValues.add(tf.getValue());
-            }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
         Iterator<Map.Entry<String, JsonNode>> it = requestedVerifiedClaims.fields();
         while (it.hasNext()) {
             Map.Entry<String, JsonNode> entry = it.next();
             String claimKey = entry.getKey();
 
-            for (String trustFramework : trustFrameworkValues) {
-                Optional<List<VerifiedClaim>> result = verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(
-                        individualId, claimKey, true, trustFramework);
-
+            Optional<List<VerifiedClaim>> result = verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(
+                    individualId, claimKey, true);
                 if (result.isEmpty()) {
                     continue;
                 }
-
                 Optional<VerifiedClaim> matchedEntry = result.get().stream()
                         .filter(vc -> isClaimMatchingValueOrValuesCriteria(vc.getTrustFramework(), requestedVerification.get("trust_framework")))
                         .findFirst();
@@ -607,7 +592,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     break; // Stop checking other trust frameworks once matched
                 }
             }
-        }
 
         if (matchedVerifiedClaims.isEmpty() || matchedVerificationDetail.isEmpty()) {
             return Collections.emptyMap();
@@ -619,7 +603,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         result.put("claims", kyc);
         return result;
     }
-
 
     public boolean isSupportedOtpChannel(String channel) {
         return channel != null && otpChannels.contains(channel.toLowerCase());

@@ -778,7 +778,7 @@ public class AuthenticationServiceImplTest {
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
-        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString()))
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
                 .thenReturn(verifiedClaimsOptional);
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
         jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
@@ -959,7 +959,7 @@ public class AuthenticationServiceImplTest {
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
-        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString()))
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
                 .thenReturn(verifiedClaimsOptional);
 
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
@@ -1087,7 +1087,7 @@ public class AuthenticationServiceImplTest {
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
-        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString()))
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
                 .thenReturn(verifiedClaimsOptional);
 
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
@@ -1240,7 +1240,7 @@ public class AuthenticationServiceImplTest {
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
-        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActiveAndTrustFramework(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString()))
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
                 .thenReturn(verifiedClaimsOptional);
 
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
