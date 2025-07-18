@@ -49,7 +49,6 @@ export default function Login({ i18nKeyPrefix = "login" }) {
       max_age: clientDetails.max_age,
       ui_locales: i18n.language,
       claims: JSON.parse(decodeURIComponent(clientDetails.userProfileClaims)),
-      mockRpUIPublicUrl: clientDetails.mockRpUIPublicUrl,
       par_callback: relyingPartyService[clientDetails.par_callback_name],
       par_callback_timeout: clientDetails.par_callback_timeout,
     };
