@@ -18,8 +18,8 @@ Below authentication factors are supported:
 * PWD
 * WLA
 
-### Verified Claims Support in L2 Flow
-The mock-identity system now supports verified claims in the L2 flow, as per the OIDC Identity Assurance 1.0 specification.
+### Support for verification metadata in mock identity system
+The mock-identity system now supports verified claims, as per the OIDC Identity Assurance 1.0 specification.
 
 #### What Are Verified Claims?
 Verified claims are identity attributes (e.g., name, birthdate, email) that have been verified by a trusted source. 
