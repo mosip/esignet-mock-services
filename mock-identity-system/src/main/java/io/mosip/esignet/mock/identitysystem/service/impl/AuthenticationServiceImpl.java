@@ -437,7 +437,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             Map<String, Object> result = getVerificationDetail(individualId, itr.next(), identityData, locales, claimsList);
                             if(result.isEmpty())
                                 continue;
-                            setVerifiedClaimList(result, claimsList);
+                            addVerifiedClaimToClaimList(result, claimsList);
                             List<Object> list = (List<Object>) kyc.getOrDefault("verified_claims", new ArrayList<Object>());
                             list.add(result);
                             kyc.put("verified_claims", list);
@@ -445,12 +445,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     }
                     else {
                         Map<String, Object> result = getVerificationDetail(individualId, claimDetail.getValue(), identityData, locales, claimsList);
+                        addVerifiedClaimToClaimList(result, claimsList);
                         kyc.put("verified_claims", result);
                     }
                     break;
 
                 case "address":
-                    if(claimsList!=null && claimsList.contains(claimDetail.getKey())){
+                    if(claimsList.contains(claimDetail.getKey())){
                         break;
                     }
                     Map<String, Object> addressValues = new HashMap<>();
@@ -469,7 +470,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     break;
 
                 default:
-                    if(claimsList!=null && claimsList.contains(claimDetail.getKey())){
+                    if(claimsList.contains(claimDetail.getKey())){
                         break;
                     }
                     if(keyMappingEntry.isEmpty() || !identityData.hasNonNull(keyMappingEntry.get().getKey())) { break; }
@@ -495,12 +496,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     /**
      * Claim list to hold the verified claims names
      *
-     * @param result     result
-     * @param claimsList
-     * @return claimsList
+     * @param result  result
+     * @param claimsList temporary claim list for holding the verified claims.
      */
     @SuppressWarnings("unchecked")
-    private void setVerifiedClaimList(Map<String, Object> result, List<String> claimsList) {
+    private void addVerifiedClaimToClaimList(Map<String, Object> result, List<String> claimsList) {
         for (Map.Entry<String, Object> entry : result.entrySet()) {
             Object value = entry.getValue();
             if (value instanceof Map) {

@@ -1252,7 +1252,7 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void kycExchangeV2_withOutVerifiedClaims_thenPass() {
+    public void kycExchangeV2_withoutVerificationMetadata_thenPass() {
         Map<String,String> oidcClaimsMap=new HashMap<>();
         oidcClaimsMap.put("name", "name");
         oidcClaimsMap.put("email", "email");
