@@ -254,8 +254,6 @@
   "required": [
     "individualId",
     "fullName",
-    "givenName",
-    "familyName",
     "gender",
     "locality",
     "region",
