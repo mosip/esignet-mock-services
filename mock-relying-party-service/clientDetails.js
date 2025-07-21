@@ -3,19 +3,6 @@
 const checkEmptyNullValue = (initialValue, defaultValue) =>
   initialValue || defaultValue;
 
-const generateRandomString = (strLength = 16) => {
-  let result = "";
-  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (let i = 0; i < strLength; i++) {
-    const randomInd = Math.floor(Math.random() * characters.length);
-    result += characters.charAt(randomInd);
-  }
-  return result;
-};
-
-const state = generateRandomString(10);
-const nonce = generateRandomString();
 const responseType = "code";
 const scopeUserProfile = checkEmptyNullValue(
   process.env.SCOPE_USER_PROFILE,
@@ -52,8 +39,6 @@ const registrationClaims = checkEmptyNullValue(
 );
 
 const clientDetails = {
-  nonce,
-  state,
   scopeUserProfile,
   scopeRegistration,
   responseType,
