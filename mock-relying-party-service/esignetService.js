@@ -62,8 +62,8 @@ const post_GetRequestUri = async (clientId, uiLocales, state) => {
     ESIGNET_PAR_AUD_URL,
   );
   const params = new URLSearchParams();
-  params.append("nonce", clientDetails.nonce);
-  params.append("state", state || clientDetails.state);
+  params.append("nonce", generateRandomString());
+  params.append("state", state || generateRandomString(10));
   params.append("client_id", clientId);
   params.append("redirect_uri", clientDetails.redirectUriUserprofile);
   params.append("scope", clientDetails.scopeUserProfile);
@@ -170,6 +170,17 @@ const decodeUserInfoResponse = async (userInfoResponse) => {
     console.error("Failed to decode userInfoResponse:", error.message);
     throw error;
   }
+};
+
+const generateRandomString = (strLength = 16) => {
+  let result = "";
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (let i = 0; i < strLength; i++) {
+    const randomInd = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomInd);
+  }
+  return result;
 };
 
 module.exports = {
