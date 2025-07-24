@@ -1,3 +1,1 @@
-\c mosip_mockidentitysystem
--- Rollback script to drop the table 'rp_data'
-DROP TABLE IF EXISTS mockidentitysystem.rp_data;
+\echo 'Rollback Queries not required for transition from $CURRENT_VERSION to $UPGRADE_VERSION'
