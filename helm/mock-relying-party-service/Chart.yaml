@@ -2,7 +2,7 @@ apiVersion: v2
 name: mock-relying-party-service
 description: A Helm chart to file server application.
 type: application
-version: 0.11.0
+version: 0.11.1
 appVersion: ""
 dependencies:
   - name: common
