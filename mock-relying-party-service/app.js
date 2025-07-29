@@ -5,11 +5,31 @@ const {
   get_GetUserInfo,
   post_GetRequestUri,
 } = require("./esignetService");
+const { generateDpopKeyPair } = require("./utils");
+const cache = require("./cacheClient");
 const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Welcome to Mock Relying Party REST APIs!!");
+});
+
+app.get("/dpopJKT", async (req, res) => {
+  const { clientId, state } = req.query;
+  if (!state || !clientId)
+    return res.status(400).send({ message: "Missing state or clientId" });
+  const cached = await cache.get(`keypair:${clientId}:${state}`);
+  if (cached) {
+    return res
+      .status(400)
+      .send({ message: "Duplicate State." });
+  }
+  const { publicKey, privateKey, jwk, dpop_jkt } = await generateDpopKeyPair();
+  await cache.set(
+    `keypair:${clientId}:${state}`,
+    JSON.stringify({ publicKey, privateKey, jwk })
+  );
+  res.json({ dpop_jkt });
 });
 
 app.get("/requestUri/:clientId", async (req, res) => {
