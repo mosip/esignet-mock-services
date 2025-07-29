@@ -1,18 +1,49 @@
 import axios from "axios";
-const baseUrl =
-  process.env.NODE_ENV === "development"
-    ? process.env.REACT_APP_MOCK_RELYING_PARTY_SERVER_URL
-    : window._env_.MOCK_RELYING_PARTY_SERVER_URL;
-const fetchUserInfoEndPoint = "/fetchUserInfo";
-const getRequestUriEndPoint = "/requestUri";
+import {
+  BASE_URL,
+  GET_USER_INFO,
+  GET_REQUEST_URI,
+  GET_DPOP_JKT,
+} from "../constants/routes";
 
+/**
+ * Fetches the DPoP JWK thumbprint (JKT) from the relying party server.
+ * @param {string} clientId - Registered client ID
+ * @param {string} state - Unique state value for the authorization request
+ * @returns {Promise<string>} - DPoP JKT string
+ */
+const get_dpop_jkt = async (clientId, state) => {
+  try {
+    const params = new URLSearchParams({
+      clientId,
+      state,
+    });
+    const endpoint = `${BASE_URL}${GET_DPOP_JKT}?${params.toString()}`;
+    const response = await axios.get(endpoint, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response?.data?.dpop_jkt;
+  } catch (error) {
+    throw new Error("Failed to fetch the DPoP JKT");
+  }
+};
+
+/**
+ * Fetches the Pushed Authorization Request (PAR) request_uri from the relying party server.
+ * @param {string} clientId - Registered client ID
+ * @param {string} state - Unique state value for the authorization request
+ * @param {string} ui_locales - Locale/language preference
+ * @returns {Promise<string>} - Request URI (URN format)
+ */
 const get_requestUri = async (clientId, state, ui_locales) => {
   try {
     const params = new URLSearchParams({
       state,
       ui_locales,
     });
-    const endpoint = `${baseUrl}${getRequestUriEndPoint}/${clientId}?${params.toString()}`;
+    const endpoint = `${BASE_URL}${GET_REQUEST_URI}/${clientId}?${params.toString()}`;
     const response = await axios.get(endpoint, {
       headers: {
         "Content-Type": "application/json",
@@ -23,13 +54,16 @@ const get_requestUri = async (clientId, state, ui_locales) => {
     throw new Error("Failed to fetch request URI");
   }
 };
+
 /**
- * Triggers /fetchUserInfo API on relying party server
- * @param {string} code auth code
- * @param {string} client_id registered client id
- * @param {string} redirect_uri validated redirect_uri
- * @param {string} grant_type grant_type
- * @returns decode/decrypted user information json
+ * Sends an authorization code exchange request to retrieve user information.
+ * Typically called after receiving the auth code from the authorization server.
+ *
+ * @param {string} code - Authorization code received after user consent
+ * @param {string} client_id - Registered client ID
+ * @param {string} redirect_uri - Redirect URI used during authorization
+ * @param {string} grant_type - OAuth 2.0 grant type (usually "authorization_code")
+ * @returns {Promise<Object>} - Decoded and decrypted user information as a JSON object
  */
 const post_fetchUserInfo = async (
   code,
@@ -43,7 +77,7 @@ const post_fetchUserInfo = async (
     redirect_uri: redirect_uri,
     grant_type: grant_type,
   };
-  const endpoint = baseUrl + fetchUserInfoEndPoint;
+  const endpoint = BASE_URL + GET_USER_INFO;
   const response = await axios.post(endpoint, request, {
     headers: {
       "Content-Type": "application/json",
@@ -51,6 +85,7 @@ const post_fetchUserInfo = async (
   });
   return response.data;
 };
+
 const get_claimProvider = () => {
   return {
     claimproviders: [
@@ -81,6 +116,7 @@ const get_claimProvider = () => {
     ],
   };
 };
+
 const get_currentMedications = () => {
   return {
     medications: [
@@ -99,6 +135,7 @@ const get_currentMedications = () => {
     ],
   };
 };
+
 const get_messages = () => {
   return {
     messages: [
@@ -110,14 +147,12 @@ const get_messages = () => {
       {
         doctorName: "dr_alexander_kalish",
         days: "3",
-        message:
-          "dr_alexander_kalish_message_2",
+        message: "dr_alexander_kalish_message_2",
       },
       {
         doctorName: "samantha_kleizar",
         days: "4",
-        message:
-          "samantha_kleizar_message_1",
+        message: "samantha_kleizar_message_1",
       },
       {
         doctorName: "dr_fariz",
@@ -127,6 +162,7 @@ const get_messages = () => {
     ],
   };
 };
+
 const get_nextAppointment = () => {
   return {
     appointment: [
@@ -139,12 +175,15 @@ const get_nextAppointment = () => {
     ],
   };
 };
+
 const relyingPartyService = {
   post_fetchUserInfo,
   get_claimProvider,
   get_currentMedications,
   get_messages,
   get_nextAppointment,
-  get_requestUri
+  get_requestUri,
+  get_dpop_jkt,
 };
+
 export default relyingPartyService;
