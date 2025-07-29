@@ -4,7 +4,8 @@ import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n from './i18n';
 import NavHeader from './components/NavHeader';
 import Footer from './components/Footer';
-import HomePage from './pages/HomePage';
+import Home from './pages/Home';
+import UserProfile from './pages/UserProfile';
 import './App.css';
 import ROUTES from './constants/routes';
 
@@ -26,14 +27,10 @@ function App() {
           <div className="flex flex-col min-h-screen">
             <NavHeader />
 
-            <main className="flex-grow">
+            <main className="flex-grow pt-24">
               <Routes>
-                <Route path={ROUTES.HOME} element={<HomePage />} />
-                <Route path={ROUTES.PREPAID} element={<div>Prepaid Page - Coming Soon</div>} />
-                <Route path={ROUTES.POSTPAID} element={<div>Postpaid Page - Coming Soon</div>} />
-                <Route path={ROUTES.NEW_PLANS} element={<div>New Plans Page - Coming Soon</div>} />
-                <Route path={ROUTES.NEW_SIM} element={<div>New SIM Connection Page - Coming Soon</div>} />
-                <Route path={ROUTES.HELP} element={<div>Help Page - Coming Soon</div>} />
+                <Route path={ROUTES.HOME} element={<Home />} />
+                <Route path={ROUTES.ESIM} element={<UserProfile />} />
               </Routes>
             </main>
 
