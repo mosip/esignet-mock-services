@@ -12,6 +12,7 @@ const {
   USERINFO_RESPONSE_TYPE,
   JWE_USERINFO_PRIVATE_KEY,
 } = require("./config");
+const rateLimit = require('express-rate-limit');
 const { get_dpopKeyAlgo } = require("./esignetService");
 
 const alg = "RS256";
@@ -117,9 +118,18 @@ const generateDpopKeyPair = async () => {
   return { publicKey, privateKey, jwk, dpop_jkt };
 };
 
+const dpopLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later."}
+});
+
 module.exports = {
   generateSignedJwt,
   generateRandomString,
   decodeUserInfoResponse,
   generateDpopKeyPair,
+  dpopLimiter,
 };
