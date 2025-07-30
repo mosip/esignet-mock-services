@@ -106,7 +106,8 @@ const decodeUserInfoResponse = async (userInfoResponse) => {
 const generateDpopKeyPair = async () => {
   let dpopKeyAlgo;
   try {
-    dpopKeyAlgo = await get_dpopKeyAlgo();
+    const algos = await get_dpopKeyAlgo();
+    dpopKeyAlgo = Array.isArray(algos) && algos.length > 0 ? algos[0] : "RS256";
   } catch (error) {
     dpopKeyAlgo = "RS256";
   }
