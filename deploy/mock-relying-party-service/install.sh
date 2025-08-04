@@ -23,6 +23,7 @@ function installing_mock-relying-party-service() {
   helm repo update
 
   NS=esignet
+  MOCK_REPLYING_PARTY_SERVICE_NAME=mock-relying-party-service
   CHART_VERSION=0.10.0-develop
 
   echo Create $NS namespace
@@ -51,13 +52,13 @@ function installing_mock-relying-party-service() {
   ESIGNET_SERVICE_URL=${USER_PROVIDED_ESIGNET_SERVICE_URL:-$DEFAULT_ESIGNET_SERVICE_URL}
 
   echo Installing Mock Relying Party Service
-  helm -n $NS install mock-relying-party-service mosip/mock-relying-party-service \
+  helm -n $NS install $MOCK_REPLYING_PARTY_SERVICE_NAME mosip/mock-relying-party-service \
     --set mock_relying_party_service.ESIGNET_SERVICE_URL="$ESIGNET_SERVICE_URL" \
     --set mock_relying_party_service.ESIGNET_AUD_URL="https://$ESIGNET_HOST/v1/esignet/oauth/v2/token" \
     --version $CHART_VERSION $ENABLE_INSECURE \
     -f values.yaml --wait
 
-  kubectl -n $NS get deploy mock-relying-party-service -o name |  xargs -n1 -t  kubectl -n $NS rollout status
+  kubectl -n $NS get deploy $MOCK_REPLYING_PARTY_SERVICE_NAME -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
   echo Installed mock-relying-party-service service
   return 0

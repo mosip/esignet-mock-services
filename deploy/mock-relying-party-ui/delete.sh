@@ -8,11 +8,12 @@ fi
 
 function Deleting_mock-relying-party-ui() {
   NS=esignet
+  MOCK_REPLYING_PARTY_UI_SERVICE_NAME=mock-relying-party-ui
   while true; do
       read -p "Are you sure you want to delete all mock-relying-party-ui helm charts?(Y/n) " yn
       if [[ $yn = "Y" ]] || [[ $yn = "y" ]];
         then
-          helm -n $NS delete mock-relying-party-ui
+          helm -n $NS delete $MOCK_REPLYING_PARTY_UI_SERVICE_NAME
           break
         else
           break
