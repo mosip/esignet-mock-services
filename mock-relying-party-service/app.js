@@ -15,21 +15,25 @@ app.get("/", (req, res) => {
 });
 
 app.get("/dpopJKT", dpopLimiter, async (req, res) => {
-  const { clientId, state } = req.query;
-  if (!state || !clientId)
-    return res.status(400).send({ message: "Missing state or clientId" });
-  const cached = await cache.get(`keypair:${clientId}:${state}`);
-  if (cached) {
-    return res
-      .status(400)
-      .send({ message: "Duplicate State." });
+  try {
+    const { clientId, state } = req.query;
+    if (!state || !clientId)
+      return res.status(400).send({ message: "Missing state or clientId" });
+    const cached = await cache.get(`keypair:${clientId}:${state}`);
+    if (cached) {
+      return res.status(400).send({ message: "Duplicate State." });
+    }
+    const { publicKey, privateKey, jwk, dpop_jkt } =
+      await generateDpopKeyPair();
+    await cache.set(
+      `keypair:${clientId}:${state}`,
+      JSON.stringify({ publicKey, privateKey, jwk })
+    );
+    res.json({ dpop_jkt });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Failed to generate DPoP JKT." });
   }
-  const { publicKey, privateKey, jwk, dpop_jkt } = await generateDpopKeyPair();
-  await cache.set(
-    `keypair:${clientId}:${state}`,
-    JSON.stringify({ publicKey, privateKey, jwk })
-  );
-  res.json({ dpop_jkt });
 });
 
 app.get("/requestUri/:clientId", async (req, res) => {
