@@ -35,10 +35,6 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-
-                // -----------------------------------------------------------
-                // Authorisation rules
-                // -----------------------------------------------------------
                 .authorizeHttpRequests(auth -> auth
                         // URLs from property file
                         .requestMatchers(ignoreAuthUrls).permitAll()
@@ -52,20 +48,12 @@ public class SecurityConfig {
                         // Everything else
                         .anyRequest().authenticated()
                 )
-
-                // -----------------------------------------------------------
-                // OAuth2 Resource-Server (JWT)
-                // -----------------------------------------------------------
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .jwkSetUri(jwkSetUri)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
                 )
-
-                // -----------------------------------------------------------
-                // Stateless session management
-                // -----------------------------------------------------------
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
