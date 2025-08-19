@@ -247,6 +247,7 @@
     "request_uri_error": "Failed to get Request URI. Please try again later.",
     "request_uri_timeout": "Request timed out while fetching Request URI. Please try again later.",
     "web_socket_fail": "eKYC verification was not completed. Please try again.",
-    "dpop_failed": "DPoP verification failed. Please try again."
+    "dpop_failed": "DPoP verification failed. Please try again.",
+    "invalid_dpop_proof": "Authentication could not be completed. Please try again"
   }
 }
