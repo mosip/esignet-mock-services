@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import clientDetails from "../constants/clientDetails";
 
-const EsimStepperForm = ({ onSubmitSuccess }) => {
+const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
   const { t } = useTranslation();
 
   const [expandedStep, setExpandedStep] = useState(1);
@@ -15,14 +16,38 @@ const EsimStepperForm = ({ onSubmitSuccess }) => {
   const isPlanSelected = selectedPlan !== null;
   const isFormComplete = isPlanSelected && isDeviceValid;
 
-  const info = [
-    { label: t('personalInfo.fullName'), value: 'Mathew Thompson' },
-    { label: t('personalInfo.mobileNumber'), value: '+919876543210' },
-    { label: t('personalInfo.email'), value: 'mathewthompson@gmail.com' },
-    { label: t('personalInfo.gender'), value: 'Male' },
-    { label: t('personalInfo.dateOfBirth'), value: '30/09/1998' },
-    { label: t('personalInfo.address'), value: '#491, Sector 8A, Chandigarh, a very long address to test truncation' },
-  ];
+
+  // const info = userInfo ? [
+  //   { label: t('personalInfo.fullName'), value: userInfo.name },
+  //   { label: t('personalInfo.mobileNumber'), value: userInfo.phone_number },
+  //   { label: t('personalInfo.email'), value: userInfo.email },
+  //   { label: t('personalInfo.gender'), value: userInfo.gender },
+  //   { label: t('personalInfo.dateOfBirth'), value: userInfo.birthdate },
+  //   { label: t('personalInfo.address'), value: address }, // Use the address prop
+  // ] : [];
+
+  const info = [];
+
+if (userInfo) {
+  if (userInfo.name) {
+    info.push({ label: t('personalInfo.fullName'), value: userInfo.name });
+  }
+  if (userInfo.phone_number) {
+    info.push({ label: t('personalInfo.mobileNumber'), value: userInfo.phone_number });
+  }
+  if (userInfo.email) {
+    info.push({ label: t('personalInfo.email'), value: userInfo.email });
+  }
+  if (userInfo.gender) {
+    info.push({ label: t('personalInfo.gender'), value: userInfo.gender });
+  }
+  if (userInfo.birthdate) {
+    info.push({ label: t('personalInfo.dateOfBirth'), value: userInfo.birthdate });
+  }
+  if (address) {
+    info.push({ label: t('personalInfo.address'), value: address });
+  }
+}
 
   const toggleStep = (step) => {
     setExpandedStep(prevExpandedStep => prevExpandedStep === step ? null : step);

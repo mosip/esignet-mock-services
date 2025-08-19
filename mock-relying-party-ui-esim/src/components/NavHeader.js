@@ -56,7 +56,7 @@ function NavHeader() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 w-full flex justify-between items-center py-5 px-4 md:px-4 bg-white rtl:flex-row-reverse shadow-md z-50">
+      <header className="fixed top-0 left-0 right-0 w-full flex justify-between items-center py-5 px-16 md:px-4 bg-white rtl:flex-row-reverse shadow-md z-50">
         {/* Left Section (LTR) / Right Section (RTL): Menu + Logo */}
         <div className="flex items-center gap-5 order-1 rtl:order-3 md:order-1">
           <button

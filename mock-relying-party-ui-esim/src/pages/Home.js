@@ -1,11 +1,69 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import ROUTES from "../constants/routes";
+import clientDetails from "../constants/clientDetails";
+import { useExternalScript } from "../hooks/useExternalScript";
 
 
 function Home() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  //Button changes
+  const signInButtonScript = window._env_.SIGN_IN_BUTTON_PLUGIN_URL;
+  const state = useExternalScript(signInButtonScript);
+
+  // renderSignInButton();
+
+  // i18n.on("languageChanged", function (lng) {
+  //     renderSignInButton();
+  //   });
+  // }, [state]);
+
+  const renderSignInButton = () => {
+
+    const oidcConfig = {
+      authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
+      redirect_uri: clientDetails.redirect_uri_userprofile,
+      client_id: clientDetails.clientId,
+      scope: clientDetails.scopeUserProfile,
+      nonce: clientDetails.nonce,
+      state: clientDetails.state,
+      acr_values: clientDetails.acr_values,
+      claims_locales: clientDetails.claims_locales,
+      display: clientDetails.display,
+      prompt: clientDetails.prompt,
+      max_age: clientDetails.max_age,
+      ui_locales: i18n.language,
+      claims: JSON.parse(decodeURIComponent(clientDetails.userProfileClaims)),
+    };
+
+    window.SignInWithEsignetButton?.init({
+      oidcConfig: oidcConfig,
+      buttonConfig: {
+        shape: "soft_edges",
+        labelText: t('hero.cta'),
+        width: "100%"
+      },
+      signInElement: document.getElementById("sign-in-with-esignet"),
+    });
+  }
+
+  useEffect(() => {
+    const handleRender = () => {
+      if (state === "ready") {
+        renderSignInButton();
+      }
+    };
+
+    handleRender();
+    i18n.on("languageChanged", handleRender);
+
+    return () => {
+      i18n.off("languageChanged", handleRender);
+    };
+  }, [state, i18n]); // The effect will re-run if 'state' or 'i18n' changes.
+
+
 
   return (
     <section
@@ -14,7 +72,7 @@ function Home() {
     >
       {/* Left content (text + button) */}
       <div className="flex-1 max-w-1/2 pr-5 mr-8 -translate-x-4 rtl:translate-x-4 rtl:ml-8 rtl:mr-0 md:max-w-full md:p-5 md:m-0 md:transform-none">
-        
+
         {/* Heading with display font */}
         <h1 className="font-display font-semibold text-[64px] leading-[76px] tracking-[-0.02em] mb-5 md:text-3xl md:leading-snug md:tracking-normal">
           {t('hero.title')}
@@ -24,13 +82,8 @@ function Home() {
         <p className="font-body font-normal text-2xl md:text-3xl leading-relaxed tracking-normal text-gray-600 mb-7 md:text-base md:leading-normal">
           {t('hero.subtitle')}
         </p>
-        
-        <Link to={ROUTES.ESIM}>
-        {/* CTA button */}
-        <button className="px-6 py-3 bg-blue-600 text-white border-none rounded-md text-base cursor-pointer transition-colors duration-300 hover:bg-blue-700 md:w-full md:text-lg md:py-3.5">
-          {t('hero.cta')}
-        </button>
-        </Link>
+
+        {state === "ready" && <div id="sign-in-with-esignet" ></div>}
       </div>
 
       {/* Right content (image) */}

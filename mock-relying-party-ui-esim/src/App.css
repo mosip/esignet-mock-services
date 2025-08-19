@@ -16,8 +16,31 @@
   }
 }
 
+/* Rule for the logo class */
+.SignInWithEsignet-module_softLogoBox__jj7aZ {
+  @apply !hidden;
+}
+
+/* Rule for the button class */
+.SignInWithEsignet-module_softRectBox__hXT5v {
+  @apply !py-3 !px-6 !bg-blue-600 !text-white !border-0 !rounded-md !text-base !cursor-pointer !max-w-max !transition-colors !ease-in-out !duration-300;
+}
+
+/* Rule for the button's hover state */
+.SignInWithEsignet-module_softRectBox__hXT5v:hover {
+  @apply !bg-blue-700;
+}
+
+/* Rule for the button's responsive styles */
+@screen md {
+  .SignInWithEsignet-module_softRectBox__hXT5v {
+    @apply !w-full !text-lg !py-3.5;
+  }
+}
+
 /* Custom component classes using Tailwind utilities */
 @layer components {
+
   /* Container class */
   .container {
     @apply max-w-screen-xl mx-auto px-5;
