@@ -89,7 +89,6 @@ const generateSignedJwt = async (clientId) => {
     .setJti(Math.random().toString(36).substring(2,7))
     .setExpirationTime(expirationTime)
     .sign(privateKey);
-
   return jwt;
 };
 
