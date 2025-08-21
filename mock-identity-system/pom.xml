@@ -78,7 +78,7 @@
 		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
 		<maven-gpg-plugin.version>1.5</maven-gpg-plugin.version>
 		<maven-source-plugin>2.2.1</maven-source-plugin>
-        <nexus-staging-maven-plugin>1.6.7</nexus-staging-maven-plugin>
+        <central.publishing.maven.plugin.version>0.7.0</central.publishing.maven.plugin.version>
 		<git-commit-id-plugin.version>3.0.1</git-commit-id-plugin.version>
 
 		<!-- Core -->
