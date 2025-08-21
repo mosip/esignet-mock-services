@@ -311,13 +311,13 @@ const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
                         </p>
                       </div>
                     ) : (
-                      // Grid layout with responsive "Verified" Tag
+                      // Grid layout with all responsive Verified Tags
                       <>
                         <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-8 gap-y-4 my-4">
                           {/* Render the first info field */}
                           {info.length > 0 && (
                             <div className="col-span-1">
-                              {/* Mobile View for this field */}
+                              {/* Mobile View */}
                               <div className="lg:hidden">
                                 <div className="flex items-center mb-1">
                                   <span className="text-sm font-medium text-gray-700">{info[0].label}</span>
@@ -328,7 +328,7 @@ const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
                                 </div>
                                 <input type="text" value={info[0].value} disabled className="p-3 w-full rounded-md text-gray-600 bg-gray-100 border-gray-300 cursor-not-allowed" />
                               </div>
-                              {/* Desktop View for this field */}
+                              {/* Desktop View */}
                               <div className="hidden lg:block">
                                 <span className="text-sm font-medium text-gray-700">{info[0].label}</span>
                                 <div className="flex items-center gap-4 mt-1">
@@ -342,20 +342,38 @@ const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
                             </div>
                           )}
 
-                          {/* Render the Photo */}
+                          {/* Render the Photo with its responsive Verified Tag */}
                           {userInfo.picture && (
                             <div className="col-span-1 sm:row-span-3 order-first sm:order-none">
-                              <span className="text-sm font-medium text-gray-700">
-                                {t('personalInfo.photoLabel', 'Photo')}
-                              </span>
-                              <img src={userInfo.picture} alt={t('personalInfo.userPhotoAlt', 'User Photo')} className="mt-1 w-32 h-32 rounded-md object-cover border-2 border-gray-200 shadow-md" />
+                              {/* Mobile View for Photo */}
+                              <div className="lg:hidden">
+                                <div className="flex items-center mb-1">
+                                  <span className="text-sm font-medium text-gray-700">{t('personalInfo.photoLabel', 'Photo')}</span>
+                                  <div className="flex items-center ml-2 text-[#4CAF50]">
+                                    <img src="/Images/tick.svg" alt="Verified" className="w-4 h-4" />
+                                    <span className="ml-1 text-xs font-medium">{t('personalInfo.verified', 'Verified')}</span>
+                                  </div>
+                                </div>
+                                <img src={userInfo.picture} alt={t('personalInfo.userPhotoAlt', 'User Photo')} className="w-32 h-32 rounded-md object-cover border-2 border-gray-200 shadow-md" />
+                              </div>
+                              {/* Desktop View for Photo */}
+                              <div className="hidden lg:block">
+                                <span className="text-sm font-medium text-gray-700">{t('personalInfo.photoLabel', 'Photo')}</span>
+                                <div className="flex items-end gap-4 mt-1">
+                                  <img src={userInfo.picture} alt={t('personalInfo.userPhotoAlt', 'User Photo')} className="w-32 h-32 rounded-md object-cover border-2 border-gray-200 shadow-md" />
+                                  <div className="flex-shrink-0 flex items-center justify-center bg-[#F2FFF9] border border-[#C6EDDB] rounded-md h-[44px] px-3 text-[#4CAF50] text-sm font-medium">
+                                    <img src="/Images/tick.svg" alt="Tick" className="w-5 h-5" />
+                                    <span className="ml-2">{t('personalInfo.verified', 'Verified')}</span>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           )}
 
                           {/* Render the rest of the info fields */}
                           {info.slice(1).map((field) => (
                             <div className="col-span-1" key={field.label}>
-                              {/* Mobile View for this field */}
+                              {/* Mobile View */}
                               <div className="lg:hidden">
                                 <div className="flex items-center mb-1">
                                   <span className="text-sm font-medium text-gray-700">{field.label}</span>
@@ -366,7 +384,7 @@ const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
                                 </div>
                                 <input type="text" value={field.value} disabled className="p-3 w-full rounded-md text-gray-600 bg-gray-100 border-gray-300 cursor-not-allowed" />
                               </div>
-                              {/* Desktop View for this field */}
+                              {/* Desktop View */}
                               <div className="hidden lg:block">
                                 <span className="text-sm font-medium text-gray-700">{field.label}</span>
                                 <div className="flex items-center gap-4 mt-1">
@@ -385,8 +403,8 @@ const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
                         <div className="flex justify-end mt-6">
                           <button
                             className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${!isFormComplete
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
+                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                              : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
                               }`}
                             onClick={handleSubmit}
                             disabled={!isFormComplete}
@@ -398,7 +416,6 @@ const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
                     )}
                   </>
                 )}
-
               </div>
             )}
           </div>
