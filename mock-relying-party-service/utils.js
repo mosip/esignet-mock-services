@@ -13,7 +13,6 @@ const {
   JWE_USERINFO_PRIVATE_KEY,
 } = require("./config");
 const rateLimit = require('express-rate-limit');
-const { get_dpopKeyAlgo } = require("./esignetService");
 
 const alg = "RS256";
 const expirationTime = "1h";
@@ -107,18 +106,20 @@ const decodeUserInfoResponse = async (userInfoResponse) => {
 const generateDpopKeyPair = async () => {
   let dpopKeyAlgo;
   try {
+    const { get_dpopKeyAlgo } = require("./esignetService");
     const algos = await get_dpopKeyAlgo();
     dpopKeyAlgo = Array.isArray(algos) && algos.length > 0 ? algos[0] : "RS256";
   } catch (error) {
     dpopKeyAlgo = "RS256";
   }
   const { publicKey, privateKey } = await generateKeyPair(dpopKeyAlgo);
-  const jwk = await exportJWK(publicKey);
-  const dpop_jkt = await calculateJwkThumbprint(jwk);
-  return { publicKey, privateKey, jwk, dpop_jkt };
+  const jwkPublic = await exportJWK(publicKey);
+  const jwkPrivate = await exportJWK(privateKey);
+  const dpop_jkt = await calculateJwkThumbprint(jwkPublic);
+  return { jwkPrivate, jwkPublic, dpop_jkt };
 };
 
-const dpopLimiter = rateLimit({
+const rateLimiter = rateLimit({
   windowMs: 1 * 60 * 1000,
   max: 10,
   standardHeaders: true,
@@ -131,5 +132,5 @@ module.exports = {
   generateRandomString,
   decodeUserInfoResponse,
   generateDpopKeyPair,
-  dpopLimiter,
+  rateLimiter,
 };

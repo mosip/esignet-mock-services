@@ -6,10 +6,6 @@ ARG esignet_aud_url
 ARG client_private_key
 ARG userinfo_response_type
 ARG jwe_userinfo_private_key
-ARG redis_host
-ARG redis_port
-ARG redis_password
-ARG cache_type
 
 # can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user=mosip
@@ -43,10 +39,6 @@ ENV ESIGNET_AUD_URL=${esignet_aud_url}
 ENV CLIENT_PRIVATE_KEY=${client_private_key}
 ENV USERINFO_RESPONSE_TYPE=${userinfo_response_type}
 ENV JWE_USERINFO_PRIVATE_KEY=${jwe_userinfo_private_key}
-ENV REDIS_HOST=${REDIS_HOST}
-ENV REDIS_PORT=${REDIS_PORT}
-ENV REDIS_PASSWORD=${REDIS_PASSWORD}
-ENV CACHE_TYPE=${CACHE_TYPE}
 
 ## Create the work directory and Change permissions of files inside working directory
 

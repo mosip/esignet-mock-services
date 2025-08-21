@@ -5,7 +5,7 @@ const {
   get_GetUserInfo,
   post_GetRequestUri,
 } = require("./esignetService");
-const { generateDpopKeyPair, dpopLimiter } = require("./utils");
+const { generateDpopKeyPair, rateLimiter } = require("./utils");
 const cache = require("./cacheClient");
 const app = express();
 app.use(express.json());
@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to Mock Relying Party REST APIs!!");
 });
 
-app.get("/dpopJKT", dpopLimiter, async (req, res) => {
+app.get("/dpopJKT", rateLimiter, async (req, res) => {
   try {
     const { clientId, state } = req.query;
     if (!state || !clientId)
@@ -23,11 +23,11 @@ app.get("/dpopJKT", dpopLimiter, async (req, res) => {
     if (cached) {
       return res.status(400).send({ message: "Duplicate State." });
     }
-    const { publicKey, privateKey, jwk, dpop_jkt } =
+    const { jwkPrivate, jwkPublic, dpop_jkt } =
       await generateDpopKeyPair();
     await cache.set(
       `keypair:${clientId}:${state}`,
-      JSON.stringify({ publicKey, privateKey, jwk })
+      JSON.stringify({ jwkPrivate, jwkPublic })
     );
     res.json({ dpop_jkt });
   } catch (error) {

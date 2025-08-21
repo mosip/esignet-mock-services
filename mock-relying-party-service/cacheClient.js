@@ -1,34 +1,39 @@
-const {
-  REDIS_HOST,
-  REDIS_PORT,
-  REDIS_PASSWORD,
-  CACHE_TYPE,
-} = require("./config");
+const cache = {
+  store: {},
 
-const cacheType = CACHE_TYPE;
+  /**
+   * Get a value from the cache.
+   * @param {string} key - Cache key
+   * @returns {Promise<string|null>} - Cached value or null if not found
+   */
+  async get(key) {
+    return this.store[key] || null;
+  },
 
-let cache;
+  /**
+   * Set a value in the cache.
+   * @param {string} key - Cache key
+   * @param {string} value - Value to cache
+   * @param  {...any} args - Additional arguments(if present)
+   */
+  async set(key, value, ...args) {
+    this.store[key] = value;
+  },
 
-if (cacheType && cacheType === "redis") {
-  const Redis = require("ioredis");
-  cache = new Redis({
-    host: REDIS_HOST,
-    port: REDIS_PORT,
-    password: REDIS_PASSWORD,
-  });
-} else {
-  cache = {
-    store: {},
-    async get(key) {
-      return this.store[key];
-    },
-    async set(key, value, ...args) {
-      this.store[key] = value;
-    },
-    async del(key) {
-      delete this.store[key];
-    },
-  };
-}
+  /**
+   * Clear all cache entries.
+   */
+  async clear() {
+    this.store = {};
+  },
+
+  /**
+   * Delete a value from cache.
+   * @param {string} key - Cache key
+   */
+  async del(key) {
+    delete this.store[key];
+  },
+};
 
 module.exports = cache;

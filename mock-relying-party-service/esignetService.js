@@ -87,10 +87,15 @@ const get_GetUserInfo = async (access_token) => {
 };
 
 const get_dpopKeyAlgo = async () => {
-  const endpoint = baseUrl + getOidcConfigurationEndpoint;
+  const endpoint = getBaseUrl(baseUrl) + getOidcConfigurationEndpoint;
   const response = await axios.get(endpoint);
   return response?.data?.dpop_signing_alg_values_supported;
 };
+
+const getBaseUrl = (serviceUrl) => {
+  const url = new URL(serviceUrl.trim());
+  return `${url.protocol}//${url.host}`;
+}
 
 module.exports = {
   post_GetToken,
