@@ -65,10 +65,10 @@ public class ApplicationSearchController {
 
             @Parameter(description = "Card Access Number - partial or full match")
             @RequestParam(required = false)
-            @Size(max = 50, message = "CAN cannot exceed 50 characters")
-            String can,
+            @Size(max = 50, message = "Card Access Number cannot exceed 50 characters")
+            String cardAccessNumber,
 
-            @Parameter(description = "General search text - searches across nationalId, firstName, lastName, CAN, and issueDate fields")
+            @Parameter(description = "General search text - searches across nationalId, firstName, lastName,cardAccessNumber , and issueDate fields")
             @RequestParam(required = false)
             @Size(max = 255, message = "Search text cannot exceed 255 characters")
             String searchText,
@@ -85,10 +85,10 @@ public class ApplicationSearchController {
             @Max(value = 100, message = "Size cannot exceed 100")
             Integer size,
 
-            @Parameter(description = "Sort field (issuedDate, firstName, lastName, nationalId, can)")
+            @Parameter(description = "Sort field (issuedDate, firstName, lastName, nationalId,cardAccessNumber)")
             @RequestParam(defaultValue = "issuedDate")
-            @Pattern(regexp = "^(issuedDate|firstName|lastName|nationalId|can)$",
-                    message = "Sort field must be one of: issuedDate, firstName, lastName, nationalId, can")
+            @Pattern(regexp = "^(issuedDate|firstName|lastName|nationalId|cardAccessNumber)$",
+                    message = "Sort field must be one of: issuedDate, firstName, lastName, nationalId,cardAccessNumber")
             String sortBy,
 
             @Parameter(description = "Sort order (asc or desc)")
@@ -97,12 +97,12 @@ public class ApplicationSearchController {
             String sortOrder
 
     ) {
-        log.info("Search request received - nationalId: {}, firstName: {}, lastName: {}, issueDate: {}, searchText: {}, page: {}, size: {}, sortBy: {}, sortOrder: {}",
-                nationalId, firstName, lastName, issueDate, searchText, page, size, sortBy, sortOrder);
+        log.info("Search request received - nationalId: {}, firstName: {}, lastName: {}, issueDate: {}, cardAccessNumber: {}, searchText: {}, page: {}, size: {}, sortBy: {}, sortOrder: {}",
+                nationalId, firstName, lastName, issueDate, cardAccessNumber, searchText, page, size, sortBy, sortOrder);
 
         ApplicationSearchResponseDTO response = applicationSearchService.searchApplications(
                 nationalId, firstName, lastName, issuedDateFrom, issuedDateTo,
-                issueDate, can, searchText, page, size, sortBy, sortOrder
+                issueDate, cardAccessNumber, searchText, page, size, sortBy, sortOrder
         );
 
         log.info("Search completed - totalResults: {}, totalPages: {}",

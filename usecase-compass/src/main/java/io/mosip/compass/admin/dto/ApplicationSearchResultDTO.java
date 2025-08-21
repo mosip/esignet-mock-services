@@ -20,5 +20,5 @@ public class ApplicationSearchResultDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate issuedDate;
 
-    private String can;
+    private String cardAccessNumber;
 }

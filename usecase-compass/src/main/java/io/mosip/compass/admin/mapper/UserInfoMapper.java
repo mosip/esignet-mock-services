@@ -111,5 +111,4 @@ public interface UserInfoMapper {
     default LocalDate mapCreatedTimesToIssuedDate(LocalDateTime createdTimes) {
         return createdTimes != null ? createdTimes.toLocalDate() : null;
     }
-
 }

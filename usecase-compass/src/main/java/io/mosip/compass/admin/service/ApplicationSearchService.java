@@ -14,7 +14,7 @@ public interface ApplicationSearchService {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate issuedDateFrom,
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate issuedDateTo,
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate issueDate,
-            String can,
+            String cardAccessNumber,
             String searchText, // New parameter for general search
             Integer page,
             Integer size,

@@ -1,5 +1,6 @@
 package io.mosip.compass.admin.service.impl;
 
+import io.mosip.compass.admin.constants.DbFields;
 import io.mosip.compass.admin.dto.ApplicationSearchResultDTO;
 import io.mosip.compass.admin.dto.ApplicationSearchResponseDTO;
 import io.mosip.compass.admin.entity.UserInfo;
@@ -36,202 +37,190 @@ public class ApplicationSearchServiceImpl implements ApplicationSearchService {
             LocalDate issuedDateFrom,
             LocalDate issuedDateTo,
             LocalDate issueDate,
-            String can,
-            String searchText, // New parameter
+            String cardAccessNumber,
+            String searchText,
             Integer page,
             Integer size,
             String sortBy,
             String sortOrder) {
 
-        try {
-            // Create specification for search
-            Specification<UserInfo> spec = createCANSearchSpecification(
-                    sanitizeInput(nationalId),
-                    sanitizeInput(firstName),
-                    sanitizeInput(lastName),
-                    issuedDateFrom,
-                    issuedDateTo,
-                    issueDate,
-                    sanitizeInput(can),
-                    sanitizeInput(searchText) // Pass searchText
-            );
+        Specification<UserInfo> spec = createCardAccessNumberSearchSpecification(
+                sanitizeInput(nationalId),
+                sanitizeInput(firstName),
+                sanitizeInput(lastName),
+                issuedDateFrom,
+                issuedDateTo,
+                issueDate,
+                sanitizeInput(cardAccessNumber),
+                sanitizeInput(searchText)
+        );
 
-            // Create pageable
-            Pageable pageable = createPageable(page, size, sortBy, sortOrder);
+        Pageable pageable = createPageable(page, size, sortBy, sortOrder);
+        Page<UserInfo> results = userInfoRepository.findAll(spec, pageable);
 
-            // Execute search
-            Page<UserInfo> results = userInfoRepository.findAll(spec, pageable);
-
-            // Convert and return results
-            return buildResponse(results, page, size);
-
-        } catch (Exception e) {
-            log.error("Error during search", e);
-            return ApplicationSearchResponseDTO.empty(page != null ? page : 1, size != null ? size : 10,
-                    "Search failed: " + e.getMessage());
-        }
+        return buildResponse(results, page, size);
     }
 
-    private Specification<UserInfo> createCANSearchSpecification(
-            String nationalId, String firstName, String lastName,
-            LocalDate issuedDateFrom, LocalDate issuedDateTo, LocalDate issueDate,
-            String can, String searchText) {
+    private Specification<UserInfo> createCardAccessNumberSearchSpecification(
+            String nationalId,
+            String firstName,
+            String lastName,
+            LocalDate issuedDateFrom,
+            LocalDate issuedDateTo,
+            LocalDate issueDate,
+            String cardAccessNumber,
+            String searchText) {
 
-        return (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+        return (root, query, criteriaBuilder) ->
+                buildPredicate(root, query, criteriaBuilder,
+                        nationalId, firstName, lastName,
+                        issuedDateFrom, issuedDateTo, issueDate,
+                        cardAccessNumber, searchText);
+    }
 
-            // **General Search Text - searches across all fields**
-            if (searchText != null && !searchText.trim().isEmpty()) {
-                String searchTerm = searchText.toLowerCase().trim();
+    private Predicate buildPredicate(
+            jakarta.persistence.criteria.Root<UserInfo> root,
+            jakarta.persistence.criteria.CriteriaQuery<?> query,
+            jakarta.persistence.criteria.CriteriaBuilder criteriaBuilder,
+            String nationalId,
+            String firstName,
+            String lastName,
+            LocalDate issuedDateFrom,
+            LocalDate issuedDateTo,
+            LocalDate issueDate,
+            String cardAccessNumber,
+            String searchText) {
 
-                Predicate nationalIdPredicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("nationalUid")),
-                        "%" + searchTerm + "%"
-                );
+        List<Predicate> predicates = new ArrayList<>();
 
-                Predicate firstNamePredicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("firstNamePrimary")),
-                        "%" + searchTerm + "%"
-                );
+        if (searchText != null && !searchText.trim().isEmpty()) {
+            String searchTerm = searchText.toLowerCase().trim();
 
-                Predicate lastNamePredicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("lastNameSecondary")),
-                        "%" + searchTerm + "%"
-                );
-
-                Predicate canPredicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("cardAccessNumber")),
-                        "%" + searchTerm + "%"
-                );
-
-                // For date search, try to match the searchText as date string
-                Predicate datePredicate = null;
-                try {
-                    // Try to parse as date (yyyy-MM-dd format)
-                    if (searchTerm.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                        LocalDate searchDate = LocalDate.parse(searchTerm);
-                        datePredicate = criteriaBuilder.equal(
-                                criteriaBuilder.function("DATE", java.sql.Date.class, root.get("createdTimes")),
-                                searchDate
-                        );
-                    }
-                } catch (Exception e) {
-                    // Ignore date parsing errors
+            Predicate nationalIdPredicate = criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get(DbFields.NATIONAL_UID)),
+                    DbFields.PERCENT + searchTerm + DbFields.PERCENT
+            );
+            Predicate firstNamePredicate = criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get(DbFields.FIRST_NAME_PRIMARY)),
+                    DbFields.PERCENT + searchTerm + DbFields.PERCENT
+            );
+            Predicate lastNamePredicate = criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get(DbFields.LAST_NAME_SECONDARY)),
+                    DbFields.PERCENT + searchTerm + DbFields.PERCENT
+            );
+            Predicate cardAccessNumberPredicate = criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get(DbFields.CARD_ACCESS_NUMBER)),
+                    DbFields.PERCENT + searchTerm + DbFields.PERCENT
+            );
+            Predicate datePredicate = null;
+            try {
+                if (searchTerm.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                    LocalDate searchDate = LocalDate.parse(searchTerm);
+                    datePredicate = criteriaBuilder.equal(
+                            criteriaBuilder.function("DATE", java.sql.Date.class, root.get(DbFields.CREATED_TIMES)),
+                            searchDate
+                    );
                 }
-
-                // Combine all search predicates with OR
-                if (datePredicate != null) {
-                    predicates.add(criteriaBuilder.or(
-                            nationalIdPredicate,
-                            firstNamePredicate,
-                            lastNamePredicate,
-                            canPredicate,
-                            datePredicate
-                    ));
-                } else {
-                    predicates.add(criteriaBuilder.or(
-                            nationalIdPredicate,
-                            firstNamePredicate,
-                            lastNamePredicate,
-                            canPredicate
-                    ));
-                }
+            } catch (Exception e) {
+                log.debug("Failed to parse searchText '{}' as date - continuing without date predicate: {}", searchTerm, e.getMessage());
+            }
+            if (datePredicate != null) {
+                predicates.add(criteriaBuilder.or(
+                        nationalIdPredicate,
+                        firstNamePredicate,
+                        lastNamePredicate,
+                        cardAccessNumberPredicate,
+                        datePredicate
+                ));
             } else {
-                // **Existing individual field searches (unchanged)**
-                // National ID search
-                if (nationalId != null && !nationalId.trim().isEmpty()) {
-                    predicates.add(criteriaBuilder.like(
-                            criteriaBuilder.lower(root.get("nationalUid")),
-                            "%" + nationalId.toLowerCase().trim() + "%"
-                    ));
-                }
-
-                // First name search
-                if (firstName != null && !firstName.trim().isEmpty()) {
-                    predicates.add(criteriaBuilder.like(
-                            criteriaBuilder.lower(root.get("firstNamePrimary")),
-                            "%" + firstName.toLowerCase().trim() + "%"
-                    ));
-                }
-
-                // Last name search
-                if (lastName != null && !lastName.trim().isEmpty()) {
-                    predicates.add(criteriaBuilder.like(
-                            criteriaBuilder.lower(root.get("lastNameSecondary")),
-                            "%" + lastName.toLowerCase().trim() + "%"
-                    ));
-                }
-
-                // CAN SEARCH - Partial and Exact Match
-                if (can != null && !can.trim().isEmpty()) {
-                    String searchTerm = can.trim();
-                    if (searchTerm.length() == 10 && searchTerm.matches("^[a-zA-Z0-9]{10}$")) {
-                        // Exact match for full CAN
-                        predicates.add(criteriaBuilder.equal(
-                                criteriaBuilder.lower(root.get("cardAccessNumber")),
-                                searchTerm.toLowerCase()
-                        ));
-                    } else {
-                        // Partial match for incomplete CAN
-                        predicates.add(criteriaBuilder.like(
-                                criteriaBuilder.lower(root.get("cardAccessNumber")),
-                                "%" + searchTerm.toLowerCase() + "%"
-                        ));
-                    }
-                }
+                predicates.add(criteriaBuilder.or(
+                        nationalIdPredicate,
+                        firstNamePredicate,
+                        lastNamePredicate,
+                        cardAccessNumberPredicate
+                ));
+            }
+        } else {
+            if (nationalId != null && !nationalId.trim().isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get(DbFields.NATIONAL_UID)),
+                        DbFields.PERCENT + nationalId.toLowerCase().trim() + DbFields.PERCENT
+                ));
             }
 
-            // **Date filtering (applies to both general and specific searches)**
-            // EXACT ISSUE DATE SEARCH - Priority over date range
+            if (firstName != null && !firstName.trim().isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get(DbFields.FIRST_NAME_PRIMARY)),
+                        DbFields.PERCENT + firstName.toLowerCase().trim() + DbFields.PERCENT
+                ));
+            }
+
+            if (lastName != null && !lastName.trim().isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get(DbFields.LAST_NAME_SECONDARY)),
+                        DbFields.PERCENT + lastName.toLowerCase().trim() + DbFields.PERCENT
+                ));
+            }
+
+            if (cardAccessNumber != null && !cardAccessNumber.trim().isEmpty()) {
+                String searchTerm = cardAccessNumber.trim();
+                if (searchTerm.length() == 10 && searchTerm.matches("^[a-zA-Z0-9]{10}$")) {
+                    predicates.add(criteriaBuilder.equal(
+                            criteriaBuilder.lower(root.get(DbFields.CARD_ACCESS_NUMBER)),
+                            searchTerm.toLowerCase()
+                    ));
+                } else {
+                    predicates.add(criteriaBuilder.like(
+                            criteriaBuilder.lower(root.get(DbFields.CARD_ACCESS_NUMBER)),
+                            DbFields.PERCENT + searchTerm.toLowerCase() + DbFields.PERCENT
+                    ));
+                }
+            }
             if (issueDate != null) {
                 predicates.add(criteriaBuilder.equal(
-                        criteriaBuilder.function("DATE", java.sql.Date.class, root.get("createdTimes")),
+                        criteriaBuilder.function("DATE", java.sql.Date.class, root.get(DbFields.CREATED_TIMES)),
                         issueDate
                 ));
             } else {
-                // Date range filtering (only if exact date is not specified)
                 if (issuedDateFrom != null) {
                     predicates.add(criteriaBuilder.greaterThanOrEqualTo(
-                            root.get("createdTimes"), issuedDateFrom.atStartOfDay()
+                            root.get(DbFields.CREATED_TIMES), issuedDateFrom.atStartOfDay()
                     ));
                 }
-
                 if (issuedDateTo != null) {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(
-                            root.get("createdTimes"), issuedDateTo.atTime(23, 59, 59)
+                            root.get(DbFields.CREATED_TIMES), issuedDateTo.atTime(23, 59, 59)
                     ));
                 }
             }
+        }
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 
     private String sanitizeInput(String input) {
         if (input == null) return null;
         return input.trim()
-                .replaceAll("[%_\\\\]", "\\\\$0") // Escape SQL wildcards
-                .replaceAll("[^a-zA-Z0-9\\s-]", ""); // Keep alphanumeric, spaces, and hyphens for general search
+                .replaceAll("[%_\\\\]", "\\\\$0")
+                .replaceAll("[^a-zA-Z0-9\\s-]", "");
     }
 
     private Pageable createPageable(Integer page, Integer size, String sortBy, String sortOrder) {
         page = (page != null && page > 0) ? page - 1 : 0;
         size = (size != null && size > 0) ? Math.min(size, 100) : 10;
-        sortBy = mapSortField(sortBy != null ? sortBy : "createdTimes");
-        Sort.Direction direction = "asc".equalsIgnoreCase(sortOrder) ?
-                Sort.Direction.ASC : Sort.Direction.DESC;
-
+        sortBy = mapSortField(sortBy != null ? sortBy : DbFields.CREATED_TIMES);
+        Sort.Direction direction = "asc".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
         return PageRequest.of(page, size, Sort.by(direction, sortBy));
     }
 
     private String mapSortField(String sortBy) {
         return switch (sortBy.toLowerCase()) {
-            case "can" -> "cardAccessNumber";
-            case "nationalid", "nationalId" -> "nationalUid";
-            case "firstname", "firstName" -> "firstNamePrimary";
-            case "lastname", "lastName" -> "lastNameSecondary";
-            case "issueddate", "issuedDate" -> "createdTimes";
-            default -> "createdTimes";
+            case "cardaccessnumber", "cardAccessNumber" -> DbFields.CARD_ACCESS_NUMBER;
+            case "nationalid", "nationalId" -> DbFields.NATIONAL_UID;
+            case "firstname", "firstName" -> DbFields.FIRST_NAME_PRIMARY;
+            case "lastname", "lastName" -> DbFields.LAST_NAME_SECONDARY;
+            case "issueddate", "issuedDate" -> DbFields.CREATED_TIMES;
+            default -> DbFields.CREATED_TIMES;
         };
     }
 
@@ -240,7 +229,6 @@ public class ApplicationSearchServiceImpl implements ApplicationSearchService {
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
-
         return ApplicationSearchResponseDTO.builder()
                 .page(page != null ? page : 1)
                 .size(size != null ? size : 10)
@@ -257,7 +245,7 @@ public class ApplicationSearchServiceImpl implements ApplicationSearchService {
                 .firstName(userInfo.getFirstNamePrimary())
                 .lastName(userInfo.getLastNameSecondary())
                 .issuedDate(userInfo.getCreatedTimes() != null ? userInfo.getCreatedTimes().toLocalDate() : null)
-                .can(userInfo.getCardAccessNumber())
+                .cardAccessNumber(userInfo.getCardAccessNumber())
                 .build();
     }
 }

@@ -21,31 +21,17 @@ public class SecurityConfig {
     @Value("${mosip.admin-server.authn.jwk-set-uri}")
     private String jwkSetUri;
 
-    /**
-     * Comma-separated list from application.properties.
-     * Example: /actuator/health,/actuator/info
-     * <p>
-     * A fallback empty value ({@code :}) avoids a missing-property error.
-     */
     @Value("${mosip.usecase-compass.security.ignore-auth-urls:}")
     private String[] ignoreAuthUrls;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // URLs from property file
+                        // Permit all requests for URLs specified in the property
                         .requestMatchers(ignoreAuthUrls).permitAll()
-                        // Swagger & OpenAPI endpoints
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs"
-                        ).permitAll()
-                        // Everything else
+                        // All other requests require authentication
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -57,7 +43,6 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
-
         return http.build();
     }
 
