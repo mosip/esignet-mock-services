@@ -4,19 +4,15 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import Backend from "i18next-http-backend";
 
 i18n
-  // detect available locale files
   .use(Backend)
-  // detect user language
   .use(LanguageDetector)
-  // pass the i18n instance to react-i18next.
   .use(initReactI18next)
-  // init i18next
   .init({
     lng: window._env_.DEFAULT_LANG,
     debug: false,
-    fallbackLng: "en", //window["envConfigs"].defaultLang, //default language
+    fallbackLng: "en", 
     interpolation: {
-      escapeValue: false, // not needed for react as it escapes by default
+      escapeValue: false, 
     },
     backend: {
       loadPath: process.env.PUBLIC_URL + "/locales/{{lng}}.json",

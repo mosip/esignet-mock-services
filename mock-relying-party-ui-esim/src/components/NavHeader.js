@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import langConfigService from '../services/langConfigService';
@@ -50,8 +50,8 @@ function NavHeader() {
   // This function is now the confirmation action for the popup
   const handleConfirmLogout = () => {
     console.log('Logging out...');
-    setIsLogoutPopupOpen(false); // Close the popup
-    navigate(ROUTES.HOME); // Navigate to home page
+    setIsLogoutPopupOpen(false); 
+    navigate(ROUTES.HOME); 
   };
 
   return (
@@ -69,7 +69,7 @@ function NavHeader() {
 
           <Link id="logo-link" to={ROUTES.HOME}>
             <img
-              src="/Images/Logo.svg"
+              src="/Images/logo.svg"
               alt="Logo"
               className="h-9 max-w-none md:m-0 rtl:ml-4"
             />
@@ -156,7 +156,7 @@ function NavHeader() {
           {/* Logout Button - Only on /userprofile (ROUTES.ESIM) */}
           {location.pathname === ROUTES.ESIM && (
             <button
-              onClick={() => setIsLogoutPopupOpen(true)} // Opens the popup
+              onClick={() => setIsLogoutPopupOpen(true)}
               className="ml-2 text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-3 focus:outline-none"
               aria-label={t('logout.ariaLabel')}
             >
@@ -174,7 +174,7 @@ function NavHeader() {
           )}
         </div>
       </header>
-      
+
       {/* --- Embedded Logout Popup --- */}
       {isLogoutPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[999] p-4">

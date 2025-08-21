@@ -7,7 +7,7 @@ export const useExternalScript = (url) => {
     if (!url) {
       setState("idle");
       return;
-     }
+    }
 
     let script = document.querySelector(`script[src="${url}"]`);
 
@@ -25,13 +25,13 @@ export const useExternalScript = (url) => {
       script.addEventListener("error", handleScript);
     }
 
-   script.addEventListener("load", handleScript);
-   script.addEventListener("error", handleScript);
+    script.addEventListener("load", handleScript);
+    script.addEventListener("error", handleScript);
 
-   return () => {
-     script.removeEventListener("load", handleScript);
-     script.removeEventListener("error", handleScript);
-   };
+    return () => {
+      script.removeEventListener("load", handleScript);
+      script.removeEventListener("error", handleScript);
+    };
   }, [url]);
 
   return state;

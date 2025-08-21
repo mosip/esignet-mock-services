@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from "react-router-dom";
-import ROUTES from "../constants/routes";
 import clientDetails from "../constants/clientDetails";
 import { useExternalScript } from "../hooks/useExternalScript";
 
@@ -11,13 +9,6 @@ function Home() {
   //Button changes
   const signInButtonScript = window._env_.SIGN_IN_BUTTON_PLUGIN_URL;
   const state = useExternalScript(signInButtonScript);
-
-  // renderSignInButton();
-
-  // i18n.on("languageChanged", function (lng) {
-  //     renderSignInButton();
-  //   });
-  // }, [state]);
 
   const renderSignInButton = () => {
 
@@ -68,7 +59,7 @@ function Home() {
   return (
     <section
       className="flex items-center justify-between px-16 py-15 pb-12 flex-wrap bg-no-repeat bg-cover bg-top bg-left md:flex-col-reverse md:text-center md:px-5 md:py-10"
-      style={{ backgroundImage: "url('/images/Dotgrid.svg')" }}
+      style={{ backgroundImage: "url('/images/dotgrid.svg')" }}
     >
       {/* Left content (text + button) */}
       <div className="flex-1 max-w-1/2 pr-5 mr-8 -translate-x-4 rtl:translate-x-4 rtl:ml-8 rtl:mr-0 md:max-w-full md:p-5 md:m-0 md:transform-none">

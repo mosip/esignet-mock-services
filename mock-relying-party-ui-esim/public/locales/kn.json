@@ -87,7 +87,8 @@
     "gender": "ಲಿಂಗ",
     "dateOfBirth": "ಹುಟ್ಟಿದ ದಿನಾಂಕ",
     "address": "ವಿಳಾಸ",
-    "verified": "ಪರಿಶೀಲಿಸಲಾಗಿದೆ"
+    "verified": "ಪರಿಶೀಲಿಸಲಾಗಿದೆ",
+    "photoLabel": "ಫೋಟೋ"
   },
   "success": {
     "title": "ಅಭಿನಂದನೆಗಳು!",

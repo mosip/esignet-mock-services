@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import clientDetails from "../constants/clientDetails";
 
 const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
   const { t } = useTranslation();
@@ -16,38 +15,28 @@ const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
   const isPlanSelected = selectedPlan !== null;
   const isFormComplete = isPlanSelected && isDeviceValid;
 
-
-  // const info = userInfo ? [
-  //   { label: t('personalInfo.fullName'), value: userInfo.name },
-  //   { label: t('personalInfo.mobileNumber'), value: userInfo.phone_number },
-  //   { label: t('personalInfo.email'), value: userInfo.email },
-  //   { label: t('personalInfo.gender'), value: userInfo.gender },
-  //   { label: t('personalInfo.dateOfBirth'), value: userInfo.birthdate },
-  //   { label: t('personalInfo.address'), value: address }, // Use the address prop
-  // ] : [];
-
   const info = [];
 
-if (userInfo) {
-  if (userInfo.name) {
-    info.push({ label: t('personalInfo.fullName'), value: userInfo.name });
+  if (userInfo) {
+    if (userInfo.name) {
+      info.push({ label: t('personalInfo.fullName'), value: userInfo.name });
+    }
+    if (userInfo.phone_number) {
+      info.push({ label: t('personalInfo.mobileNumber'), value: userInfo.phone_number });
+    }
+    if (userInfo.email) {
+      info.push({ label: t('personalInfo.email'), value: userInfo.email });
+    }
+    if (userInfo.gender) {
+      info.push({ label: t('personalInfo.gender'), value: userInfo.gender });
+    }
+    if (userInfo.birthdate) {
+      info.push({ label: t('personalInfo.dateOfBirth'), value: userInfo.birthdate });
+    }
+    if (address) {
+      info.push({ label: t('personalInfo.address'), value: address });
+    }
   }
-  if (userInfo.phone_number) {
-    info.push({ label: t('personalInfo.mobileNumber'), value: userInfo.phone_number });
-  }
-  if (userInfo.email) {
-    info.push({ label: t('personalInfo.email'), value: userInfo.email });
-  }
-  if (userInfo.gender) {
-    info.push({ label: t('personalInfo.gender'), value: userInfo.gender });
-  }
-  if (userInfo.birthdate) {
-    info.push({ label: t('personalInfo.dateOfBirth'), value: userInfo.birthdate });
-  }
-  if (address) {
-    info.push({ label: t('personalInfo.address'), value: address });
-  }
-}
 
   const toggleStep = (step) => {
     setExpandedStep(prevExpandedStep => prevExpandedStep === step ? null : step);
@@ -116,13 +105,11 @@ if (userInfo) {
                       {plans.map((plan) => (
                         <label
                           key={plan.id}
-                          className={`relative p-3 border rounded-md cursor-pointer flex flex-col items-start justify-start mx-auto ${
-                            plan.type === 'small' ? 'w-[138px] h-[126px]' : 'w-[138px] h-[155px]'
-                          } rounded-[12px] border-[1px] ${
-                            selectedPlan === plan.id
+                          className={`relative p-3 border rounded-md cursor-pointer flex flex-col items-start justify-start mx-auto ${plan.type === 'small' ? 'w-[138px] h-[126px]' : 'w-[138px] h-[155px]'
+                            } rounded-[12px] border-[1px] ${selectedPlan === plan.id
                               ? 'border-blue-600 bg-blue-50'
                               : 'border-[#E2E2E4] bg-white'
-                          }`}
+                            }`}
                           onClick={() => setSelectedPlan(plan.id)}
                         >
                           {plan.label && (plan.type === 'large') && (
@@ -141,10 +128,10 @@ if (userInfo) {
                     <div className="bg-gray-100 rounded-[12px] p-4 flex items-start gap-3 border-[1px] border-[#E2E2E4] w-full lg:hidden mx-auto">
                       <img src="/Images/info-circle-icon.svg" alt="Info Icon" className="w-5 h-5 mt-0.5" />
                       <p className="text-sm text-gray-700 leading-snug">
-                          <strong className="block mb-1">{t('plans.info.title')}</strong>
-                          <Trans i18nKey="plans.info.content">
-                            All plans have a <b className="font-semibold">30-day activation period</b>. If you get a plan <b className="font-semibold">today</b> and don’t activate it until <b className="font-semibold">1 month</b>, it will be activated automatically.
-                          </Trans>
+                        <strong className="block mb-1">{t('plans.info.title')}</strong>
+                        <Trans i18nKey="plans.info.content">
+                          All plans have a <b className="font-semibold">30-day activation period</b>. If you get a plan <b className="font-semibold">today</b> and don’t activate it until <b className="font-semibold">1 month</b>, it will be activated automatically.
+                        </Trans>
                       </p>
                     </div>
 
@@ -154,13 +141,11 @@ if (userInfo) {
                         {plans.filter(plan => plan.type === 'small').map((plan) => (
                           <label
                             key={plan.id}
-                            className={`relative p-3 border rounded-md cursor-pointer flex flex-col items-start justify-start ${
-                              'w-[138px] h-[126px] rounded-[12px] border-[1px]'
-                            } ${
-                              selectedPlan === plan.id
+                            className={`relative p-3 border rounded-md cursor-pointer flex flex-col items-start justify-start ${'w-[138px] h-[126px] rounded-[12px] border-[1px]'
+                              } ${selectedPlan === plan.id
                                 ? 'border-blue-600 bg-blue-50'
                                 : 'border-[#E2E2E4] bg-white'
-                            }`}
+                              }`}
                             onClick={() => setSelectedPlan(plan.id)}
                           >
                             <div className={`absolute w-4 h-4 border rounded-full flex items-center justify-center top-[11px] left-3 ${selectedPlan === plan.id ? 'border-blue-600 border-[3px]' : 'border-gray-400'}`}>
@@ -170,18 +155,16 @@ if (userInfo) {
                             <div className="font-normal text-sm leading-normal">{plan.validity}</div>
                           </label>
                         ))}
-                        
+
                         <div className="col-span-2 grid grid-cols-2 gap-4">
                           {plans.filter(plan => plan.type === 'large').map((plan) => (
                             <label
                               key={plan.id}
-                              className={`relative p-4 border rounded-md cursor-pointer flex flex-col items-start justify-start ${
-                                'w-[138px] h-[155px] rounded-[12px] border-[1px]'
-                              } ${
-                                selectedPlan === plan.id
+                              className={`relative p-4 border rounded-md cursor-pointer flex flex-col items-start justify-start ${'w-[138px] h-[155px] rounded-[12px] border-[1px]'
+                                } ${selectedPlan === plan.id
                                   ? 'border-blue-600 bg-blue-50'
                                   : 'border-[#E2E2E4] bg-white'
-                              }`}
+                                }`}
                               onClick={() => setSelectedPlan(plan.id)}
                             >
                               {plan.label && (
@@ -212,11 +195,10 @@ if (userInfo) {
 
                     <div className="flex justify-end">
                       <button
-                        className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${
-                          !isPlanSelected
+                        className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${!isPlanSelected
                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                             : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
-                        }`}
+                          }`}
                         onClick={() => handleNextStep(2)}
                         disabled={!isPlanSelected}
                       >
@@ -305,11 +287,10 @@ if (userInfo) {
                       <button
                         onClick={() => handleNextStep(3)}
                         disabled={!isDeviceValid}
-                        className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${
-                          !isDeviceValid
+                        className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${!isDeviceValid
                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                             : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
-                        }`}
+                          }`}
                       >
                         {t('common.next')}
                       </button>
@@ -319,47 +300,65 @@ if (userInfo) {
 
                 {step === 3 && (
                   <>
-                      <div className="space-y-4 lg:hidden">
-                          {info.map((field, index) => (
-                          <div key={index} className="flex flex-col">
+                    <div className="flex flex-col lg:flex-row lg:justify-between lg:gap-8">
+
+                      {/* === LEFT COLUMN: User Info Fields === */}
+                      <div className="space-y-4 order-2 lg:order-1">
+                        {info.map((field, index) => (
+                          <div key={index}>
+                            {/* Mobile View for each field */}
+                            <div className="flex flex-col lg:hidden">
                               <div className="flex items-center mb-1">
-                              <label className="block text-sm font-medium text-gray-700">{field.label}</label>
-                              <div className="flex items-center ml-2 text-[#4CAF50]">
+                                <label className="block text-sm font-medium text-gray-700">{field.label}</label>
+                                <div className="flex items-center ml-2 text-[#4CAF50]">
                                   <img src="/Images/tick.svg" alt="Verified" className="w-4 h-4" />
                                   <span className="ml-1 text-xs font-medium">{t('personalInfo.verified')}</span>
-                              </div>
+                                </div>
                               </div>
                               <div className="bg-[#F8F8F8] p-3 rounded-[8px] h-[44px] text-sm text-gray-600 flex items-center w-full">
                                 <span className="truncate">{field.value}</span>
                               </div>
+                            </div>
+
+                            {/* Desktop View for each field */}
+                            <div className="hidden lg:flex lg:flex-col">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
+                              <div className="flex flex-row items-center gap-4">
+                                <div className="bg-[#F8F8F8] p-3 rounded-[8px] h-[44px] text-sm text-gray-600 flex items-center flex-grow lg:flex-grow-0 lg:w-[489px]">
+                                  <span className="truncate">{field.value}</span>
+                                </div>
+                                <div className="flex items-center justify-center bg-[#F2FFF9] border border-[#C6EDDB] rounded-[8px] w-[123px] h-[44px] text-[#4CAF50] text-sm font-medium flex-shrink-0">
+                                  <img src="/Images/tick.svg" alt="Tick" className="w-5 h-5" />
+                                  <span className="ml-1">{t('personalInfo.verified')}</span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                          ))}
+                        ))}
                       </div>
 
-                      <div className="hidden lg:block space-y-4">
-                          {info.map((field, index) => (
-                              <div key={index} className="flex flex-col">
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
-                                  <div className="flex flex-row items-center gap-4">
-                                      <div className="bg-[#F8F8F8] p-3 rounded-[8px] h-[44px] text-sm text-gray-600 flex items-center flex-grow lg:flex-grow-0 lg:w-[489px]">
-                                        <span className="truncate">{field.value}</span>
-                                      </div>
-                                      <div className="flex items-center justify-center bg-[#F2FFF9] border border-[#C6EDDB] rounded-[8px] w-[123px] h-[44px] text-[#4CAF50] text-sm font-medium flex-shrink-0">
-                                      <img src="/Images/tick.svg" alt="Tick" className="w-5 h-5" />
-                                      <span className="ml-1">{t('personalInfo.verified')}</span>
-                                      </div>
-                                  </div>
-                              </div>
-                          ))}
-                      </div>
-  
+                      {/* === RIGHT COLUMN: Photo === */}
+                      {userInfo && userInfo.picture && (
+                        <div className="mb-6 lg:mb-0 order-1 lg:order-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1 text-left lg:text-right">
+                            {t('personalInfo.photoLabel', 'Photo')}
+                          </label>
+                          <img
+                            src={userInfo.picture}
+                            alt="User Photo"
+                            className="w-24 h-24 rounded-md object-cover border-2 border-gray-200 shadow-md"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Submit button remains at the bottom */}
                     <div className="flex justify-end mt-6">
                       <button
-                        className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${
-                          !isFormComplete
+                        className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${!isFormComplete
                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                             : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
-                        }`}
+                          }`}
                         onClick={handleSubmit}
                         disabled={!isFormComplete}
                       >
@@ -368,6 +367,7 @@ if (userInfo) {
                     </div>
                   </>
                 )}
+
               </div>
             )}
           </div>

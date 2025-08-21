@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Error } from "../common/Errors";
 import LoadingIndicator from "../common/LoadingIndicator";
 import StepperHeader from "../components/EsimStepperForm";
 import SuccessScreen from "../components/SuccessScreen";
@@ -10,10 +9,7 @@ import clientDetails from "../constants/clientDetails";
 import relyingPartyService from "../services/relyingPartyService";
 
 
-function UserProfile({
-  // relyingPartyService,
-  i18nKeyPrefix = "userprofile",
-}) {
+function UserProfile() {
 
   const { t } = useTranslation("translation");
 
@@ -21,13 +17,9 @@ function UserProfile({
     ...relyingPartyService,
   };
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [error, setError] = useState({ errorCode: "", errorMsg: "" });
+  const [searchParams] = useSearchParams();
   const [userInfo, setUserInfo] = useState(null);
-  const [status, setStatus] = useState(states.LOADING);
-  const [showRawUserInfo, setShowRawUserInfo] = useState(false);
   const [address, setAddress] = useState(null);
-  const [emailAddress, setEmailAddress] = useState(null);
 
   const navigate = useNavigate();
 
@@ -58,10 +50,6 @@ function UserProfile({
       if (authCode) {
         getUserDetails(authCode);
       } else {
-        setError({
-          errorCode: "authCode_missing",
-        });
-        setStatus(states.ERROR);
         return;
       }
     };
@@ -70,7 +58,6 @@ function UserProfile({
 
   //Handle Login API Integration here
   const getUserDetails = async (authCode) => {
-    setError(null);
     setUserInfo(null);
 
     try {
@@ -88,12 +75,8 @@ function UserProfile({
       let address = getAddress(userInfo?.address);
       setAddress(address);
       setUserInfo(userInfo);
-      setEmailAddress(userInfo?.email_verified ?? userInfo?.email);
-      setStatus(states.LOADED);
 
     } catch (errormsg) {
-      setError({ errorCode: "", errorMsg: errormsg.message });
-      setStatus(states.ERROR);
     }
   };
 
@@ -146,11 +129,8 @@ function UserProfile({
 
     //returning after removing last ", " characters
     return address.substring(0, address.length - 2);
-    
+
   };
-
-
-
 
   const images = [
     "/images/step1-graphic.svg",
@@ -181,10 +161,12 @@ function UserProfile({
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % images.length);
     }, 7000);
-    return () =>{console.log("  - 🧹 useEffect [carousel]: Cleaning up interval.");
+    return () => {
+      console.log("  - 🧹 useEffect [carousel]: Cleaning up interval.");
 
-     clearInterval(interval);
-  }}, []);
+      clearInterval(interval);
+    }
+  }, []);
 
   const handleFormSuccess = () => {
     setFormSubmitted(true);
@@ -251,9 +233,8 @@ function UserProfile({
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                      currentImageIndex === index ? "bg-white" : "bg-white/50 hover:bg-white/70"
-                    }`}
+                    className={`w-2.5 h-2.5 rounded-full transition-colors ${currentImageIndex === index ? "bg-white" : "bg-white/50 hover:bg-white/70"
+                      }`}
                   ></button>
                 ))}
               </div>
@@ -278,10 +259,10 @@ function UserProfile({
 
           {/* Right stepper form content */}
           <div className="w-full lg:flex-grow px-4 py-6 lg:px-10 lg:py-10">
-            <StepperHeader 
-            userInfo={userInfo} 
-            address={address} 
-            onSubmitSuccess={handleFormSuccess} />
+            <StepperHeader
+              userInfo={userInfo}
+              address={address}
+              onSubmitSuccess={handleFormSuccess} />
           </div>
         </div>
       ) : (

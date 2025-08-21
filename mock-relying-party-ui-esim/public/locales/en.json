@@ -87,7 +87,8 @@
     "gender": "Gender",
     "dateOfBirth": "Date of Birth",
     "address": "Address",
-    "verified": "Verified"
+    "verified": "Verified",
+    "photoLabel": "Photo"
   },
   "success": {
     "title": "Congratulations!",

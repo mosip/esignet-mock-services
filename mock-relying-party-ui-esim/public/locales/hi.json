@@ -87,7 +87,8 @@
     "gender": "लिंग",
     "dateOfBirth": "जन्म तिथि",
     "address": "पता",
-    "verified": "सत्यापित"
+    "verified": "सत्यापित",
+    "photoLabel": "फ़ोटो"
   },
   "success": {
     "title": "बधाई हो!",

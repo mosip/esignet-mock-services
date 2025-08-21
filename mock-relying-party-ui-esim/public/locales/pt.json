@@ -87,7 +87,8 @@
     "gender": "Gênero",
     "dateOfBirth": "Data de Nascimento",
     "address": "Endereço",
-    "verified": "Verificado"
+    "verified": "Verificado",
+    "photoLabel": "Foto"
   },
   "success": {
     "title": "Parabéns!",

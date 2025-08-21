@@ -87,7 +87,8 @@
     "gender": "లింగం",
     "dateOfBirth": "పుట్టిన తేది",
     "address": "చిరునామా",
-    "verified": "ధృవీకరించబడింది"
+    "verified": "ధృవీకరించబడింది",
+    "photoLabel": "ఫోటో"
   },
   "success": {
     "title": "అభినందనలు!",

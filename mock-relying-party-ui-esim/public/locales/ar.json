@@ -87,7 +87,8 @@
     "gender": "الجنس",
     "dateOfBirth": "تاريخ الميلاد",
     "address": "العنوان",
-    "verified": "تم التحقق"
+    "verified": "تم التحقق",
+    "photoLabel": "صورة"
   },
   "success": {
     "title": "تهانينا!",

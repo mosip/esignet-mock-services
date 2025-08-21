@@ -87,7 +87,8 @@
     "gender": "ភេទ",
     "dateOfBirth": "ថ្ងៃខែ​ឆ្នាំ​កំណើត",
     "address": "អាសយដ្ឋាន",
-    "verified": "បានផ្ទៀងផ្ទាត់"
+    "verified": "បានផ្ទៀងផ្ទាត់",
+    "photoLabel": "រូបថត"
   },
   "success": {
     "title": "អបអរសាទរ!",
