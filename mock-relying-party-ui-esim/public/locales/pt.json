@@ -1,0 +1,98 @@
+{
+  "nav": {
+    "prepaid": "Pré-pago",
+    "postpaid": "Pós-pago",
+    "newPlans": "Novos Planos",
+    "newSim": "Nova Conexão SIM",
+    "help": "Ajuda"
+  },
+  "hero": {
+    "title": "Seu SIM Grátis, a Apenas um Clique de Distância",
+    "subtitle": "Pule as filas. Obtenha seu eSIM grátis online com sua identidade nacional.",
+    "cta": "Começar"
+  },
+  "footer": {
+    "copyright": "© 2025 FynTel. Todos os direitos reservados."
+  },
+  "common": {
+    "next": "Próximo",
+    "submit": "Enviar"
+  },
+  "logout": {
+    "buttonText": "Sair",
+    "ariaLabel": "Sair",
+    "title": "Confirmação de Logout!",
+    "description": "Tem certeza de que deseja sair?",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar"
+  },
+  "userProfile": {
+    "carousel": {
+      "item1": {
+        "title": "Seja Digital com o eSIM da FynTel",
+        "description": "Tenha seu eSIM pronto em minutos — sem papelada, sem espera"
+      },
+      "item2": {
+        "title": "Cartões SIM se perdem. eSIMs não.",
+        "description": "Seguro, incorporado e sempre pronto — seu número fica com você."
+      },
+      "item3": {
+        "title": "Funciona com Todos os Principais Dispositivos",
+        "description": "Compatível com iPhone, Pixel, Samsung e outros smartphones com suporte para eSIM."
+      }
+    }
+  },
+  "stepper": {
+    "stepLabel": "PASSO {{step}}",
+    "step1": {
+      "description": "Escolha seu plano eSim"
+    },
+    "step2": {
+      "description": "Adicione os detalhes do dispositivo"
+    },
+    "step3": {
+      "description": "Verifique as informações pessoais"
+    }
+  },
+  "plans": {
+    "bestValue": "Melhor Valor",
+    "mostPopular": "Mais Popular",
+    "info": {
+      "title": "Posso ativar meu plano mais tarde?",
+      "content": "Todos os planos têm um <1>período de ativação de 30 dias</1>. Se você adquirir um plano <5>hoje</5> e não o ativar até <9>1 mês</9>, ele será ativado automaticamente."
+    }
+  },
+  "device": {
+    "eid": "EID",
+    "confirmEid": "Confirmar EID",
+    "imei": "Número IMEI",
+    "confirmImei": "Confirmar Número IMEI",
+    "eidPlaceholder": "Digite o número EID",
+    "imeiPlaceholder": "Digite o número IMEI",
+    "tooltip": {
+      "eid": {
+        "title": "Para encontrar o EID do seu dispositivo",
+        "description": "Vá para Configurações > Sobre o telefone > Status > EID"
+      },
+      "imei": {
+        "title": "Para encontrar o IMEI do seu dispositivo",
+        "description": "Disque *#06# no seu dispositivo."
+      }
+    }
+  },
+  "personalInfo": {
+    "fullName": "Nome Completo",
+    "mobileNumber": "Número de Celular",
+    "email": "E-mail",
+    "gender": "Gênero",
+    "dateOfBirth": "Data de Nascimento",
+    "address": "Endereço",
+    "verified": "Verificado",
+    "photoLabel": "Foto"
+  },
+  "success": {
+    "title": "Parabéns!",
+    "line1": "Tudo pronto! Um eSIM gratuito foi atribuído à sua conta.",
+    "line2": "Por favor, verifique seu e-mail para detalhes de ativação e próximos passos."
+  }
+}
