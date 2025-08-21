@@ -196,8 +196,8 @@ const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
                     <div className="flex justify-end">
                       <button
                         className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${!isPlanSelected
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
                           }`}
                         onClick={() => handleNextStep(2)}
                         disabled={!isPlanSelected}
@@ -288,8 +288,8 @@ const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
                         onClick={() => handleNextStep(3)}
                         disabled={!isDeviceValid}
                         className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${!isDeviceValid
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
                           }`}
                       >
                         {t('common.next')}
@@ -297,74 +297,105 @@ const EsimStepperForm = ({ userInfo, address, onSubmitSuccess }) => {
                     </div>
                   </>
                 )}
-
                 {step === 3 && (
                   <>
-                    <div className="flex flex-col lg:flex-row lg:justify-between lg:gap-8">
-
-                      {/* === LEFT COLUMN: User Info Fields === */}
-                      <div className="space-y-4 order-2 lg:order-1">
-                        {info.map((field, index) => (
-                          <div key={index}>
-                            {/* Mobile View for each field */}
-                            <div className="flex flex-col lg:hidden">
-                              <div className="flex items-center mb-1">
-                                <label className="block text-sm font-medium text-gray-700">{field.label}</label>
-                                <div className="flex items-center ml-2 text-[#4CAF50]">
-                                  <img src="/Images/tick.svg" alt="Verified" className="w-4 h-4" />
-                                  <span className="ml-1 text-xs font-medium">{t('personalInfo.verified')}</span>
-                                </div>
-                              </div>
-                              <div className="bg-[#F8F8F8] p-3 rounded-[8px] h-[44px] text-sm text-gray-600 flex items-center w-full">
-                                <span className="truncate">{field.value}</span>
-                              </div>
-                            </div>
-
-                            {/* Desktop View for each field */}
-                            <div className="hidden lg:flex lg:flex-col">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
-                              <div className="flex flex-row items-center gap-4">
-                                <div className="bg-[#F8F8F8] p-3 rounded-[8px] h-[44px] text-sm text-gray-600 flex items-center flex-grow lg:flex-grow-0 lg:w-[489px]">
-                                  <span className="truncate">{field.value}</span>
-                                </div>
-                                <div className="flex items-center justify-center bg-[#F2FFF9] border border-[#C6EDDB] rounded-[8px] w-[123px] h-[44px] text-[#4CAF50] text-sm font-medium flex-shrink-0">
-                                  <img src="/Images/tick.svg" alt="Tick" className="w-5 h-5" />
-                                  <span className="ml-1">{t('personalInfo.verified')}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
+                    {!userInfo ? (
+                      // Loading indicator
+                      <div className="flex flex-col items-center justify-center min-h-[250px] text-gray-500">
+                        <svg className="animate-spin h-8 w-8 text-blue-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <p className="text-lg font-medium">
+                          {t('loading.userDetails', 'Loading User Details...')}
+                        </p>
                       </div>
+                    ) : (
+                      // Grid layout with responsive "Verified" Tag
+                      <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-8 gap-y-4 my-4">
+                          {/* Render the first info field */}
+                          {info.length > 0 && (
+                            <div className="col-span-1">
+                              {/* Mobile View for this field */}
+                              <div className="lg:hidden">
+                                <div className="flex items-center mb-1">
+                                  <span className="text-sm font-medium text-gray-700">{info[0].label}</span>
+                                  <div className="flex items-center ml-2 text-[#4CAF50]">
+                                    <img src="/Images/tick.svg" alt="Verified" className="w-4 h-4" />
+                                    <span className="ml-1 text-xs font-medium">{t('personalInfo.verified', 'Verified')}</span>
+                                  </div>
+                                </div>
+                                <input type="text" value={info[0].value} disabled className="p-3 w-full rounded-md text-gray-600 bg-gray-100 border-gray-300 cursor-not-allowed" />
+                              </div>
+                              {/* Desktop View for this field */}
+                              <div className="hidden lg:block">
+                                <span className="text-sm font-medium text-gray-700">{info[0].label}</span>
+                                <div className="flex items-center gap-4 mt-1">
+                                  <input type="text" value={info[0].value} disabled className="p-3 w-full rounded-md text-gray-600 bg-gray-100 border-gray-300 cursor-not-allowed" />
+                                  <div className="flex-shrink-0 flex items-center justify-center bg-[#F2FFF9] border border-[#C6EDDB] rounded-md h-[44px] px-3 text-[#4CAF50] text-sm font-medium">
+                                    <img src="/Images/tick.svg" alt="Tick" className="w-5 h-5" />
+                                    <span className="ml-2">{t('personalInfo.verified', 'Verified')}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
 
-                      {/* === RIGHT COLUMN: Photo === */}
-                      {userInfo && userInfo.picture && (
-                        <div className="mb-6 lg:mb-0 order-1 lg:order-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-1 text-left lg:text-right">
-                            {t('personalInfo.photoLabel', 'Photo')}
-                          </label>
-                          <img
-                            src={userInfo.picture}
-                            alt="User Photo"
-                            className="w-24 h-24 rounded-md object-cover border-2 border-gray-200 shadow-md"
-                          />
+                          {/* Render the Photo */}
+                          {userInfo.picture && (
+                            <div className="col-span-1 sm:row-span-3 order-first sm:order-none">
+                              <span className="text-sm font-medium text-gray-700">
+                                {t('personalInfo.photoLabel', 'Photo')}
+                              </span>
+                              <img src={userInfo.picture} alt={t('personalInfo.userPhotoAlt', 'User Photo')} className="mt-1 w-32 h-32 rounded-md object-cover border-2 border-gray-200 shadow-md" />
+                            </div>
+                          )}
+
+                          {/* Render the rest of the info fields */}
+                          {info.slice(1).map((field) => (
+                            <div className="col-span-1" key={field.label}>
+                              {/* Mobile View for this field */}
+                              <div className="lg:hidden">
+                                <div className="flex items-center mb-1">
+                                  <span className="text-sm font-medium text-gray-700">{field.label}</span>
+                                  <div className="flex items-center ml-2 text-[#4CAF50]">
+                                    <img src="/Images/tick.svg" alt="Verified" className="w-4 h-4" />
+                                    <span className="ml-1 text-xs font-medium">{t('personalInfo.verified', 'Verified')}</span>
+                                  </div>
+                                </div>
+                                <input type="text" value={field.value} disabled className="p-3 w-full rounded-md text-gray-600 bg-gray-100 border-gray-300 cursor-not-allowed" />
+                              </div>
+                              {/* Desktop View for this field */}
+                              <div className="hidden lg:block">
+                                <span className="text-sm font-medium text-gray-700">{field.label}</span>
+                                <div className="flex items-center gap-4 mt-1">
+                                  <input type="text" value={field.value} disabled className="p-3 w-full rounded-md text-gray-600 bg-gray-100 border-gray-300 cursor-not-allowed" />
+                                  <div className="flex-shrink-0 flex items-center justify-center bg-[#F2FFF9] border border-[#C6EDDB] rounded-md h-[44px] px-3 text-[#4CAF50] text-sm font-medium">
+                                    <img src="/Images/tick.svg" alt="Tick" className="w-5 h-5" />
+                                    <span className="ml-2">{t('personalInfo.verified', 'Verified')}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      )}
-                    </div>
 
-                    {/* Submit button remains at the bottom */}
-                    <div className="flex justify-end mt-6">
-                      <button
-                        className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${!isFormComplete
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
-                          }`}
-                        onClick={handleSubmit}
-                        disabled={!isFormComplete}
-                      >
-                        {t('common.submit')}
-                      </button>
-                    </div>
+                        {/* Submit button */}
+                        <div className="flex justify-end mt-6">
+                          <button
+                            className={`w-full h-[48px] lg:w-[381px] border-[1px] rounded-[8px] font-medium ${!isFormComplete
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                : 'bg-blue-600 border-[#017DC0] text-white hover:bg-blue-700'
+                              }`}
+                            onClick={handleSubmit}
+                            disabled={!isFormComplete}
+                          >
+                            {t('common.submit', 'Submit')}
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
 
