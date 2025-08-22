@@ -8,7 +8,6 @@
         <version>3.2.3</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-
     <groupId>io.mosip.compass.admin</groupId>
     <artifactId>usecase-compass</artifactId>
     <version>0.10.2-RC</version>
@@ -16,21 +15,18 @@
     <name>usecase-compass</name>
     <description>Project for Compass Admin Server</description>
     <url>https://github.com/mosip/esignet-mock-services</url>
-
     <licenses>
         <license>
             <name>MPL 2.0</name>
             <url>https://www.mozilla.org/en-US/MPL/2.0/</url>
         </license>
     </licenses>
-
     <scm>
         <connection>scm:git:git://github.com/mosip/esignet-mock-services.git</connection>
         <developerConnection>scm:git:ssh://github.com:mosip/esignet-mock-services.git</developerConnection>
         <url>https://github.com/mosip/esignet-mock-services</url>
         <tag>HEAD</tag>
     </scm>
-
     <developers>
         <developer>
             <name>Mosip</name>
@@ -39,7 +35,6 @@
             <organizationUrl>https://github.com/mosip/esignet-mock-services</organizationUrl>
         </developer>
     </developers>
-
     <repositories>
         <repository>
             <id>ossrh</id>
@@ -64,7 +59,6 @@
             <url>https://repo.danubetech.com/repository/maven-public/</url>
         </repository>
     </repositories>
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -75,13 +69,11 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -115,11 +107,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
@@ -151,8 +138,27 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.vladimir-bukhtoyarov</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>7.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-locator-core</artifactId>
+            <version>0.52</version>
+        </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
