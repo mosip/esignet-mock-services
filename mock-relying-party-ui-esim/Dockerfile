@@ -1,4 +1,4 @@
-FROM node:12.18.4-alpine as build
+FROM node:18-alpine as build
 
 # Set a build-time environment variable
 ARG mockRpUIPublicUrl
@@ -45,7 +45,7 @@ ENV PUBLIC_URL=_PUBLIC_URL_
 ## Mock relying party portal
 WORKDIR ./app
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY . ./
 RUN npm run build
 
