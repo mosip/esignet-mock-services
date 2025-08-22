@@ -19,5 +19,6 @@ window._env_ = {
   DEFAULT_LANG: "en",
   FALLBACK_LANG: "%7B%22label%22%3A%22English%22%2C%22value%22%3A%22en%22%7D",
   PAR_CALLBACK_NAME: "get_requestUri",
-  PAR_CALLBACK_TIMEOUT: 5000
+  PAR_CALLBACK_TIMEOUT: 5000,
+  DPOP_CALLBACK_NAME: "get_dpop_jkt",
 };

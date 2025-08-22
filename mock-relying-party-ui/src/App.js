@@ -10,6 +10,13 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import langConfigService from "./services/langConfigService";
 import BookAppointmentPage from "./pages/BookAppointment";
+import {
+  ROUTE_LOGIN,
+  ROUTE_SIGNUP,
+  ROUTE_USER_PROFILE,
+  ROUTE_REGISTRATION,
+  ROUTE_BOOK_APPOINTMENT,
+} from "./constants/routes";
 
 function App() {
   const { i18n } = useTranslation();
@@ -46,18 +53,48 @@ function App() {
     }
   }, []);
 
+  const routes = [
+    {
+      path: ROUTE_LOGIN,
+      element: LoginPage,
+    },
+    {
+      path: ROUTE_SIGNUP,
+      element: SignUpPage,
+    },
+    {
+      path: ROUTE_USER_PROFILE,
+      element: UserProfilePage,
+    },
+    {
+      path: ROUTE_REGISTRATION,
+      element: RegistrationPage,
+    },
+    {
+      path: ROUTE_BOOK_APPOINTMENT,
+      element: BookAppointmentPage,
+    },
+  ];
+
   return (
     <div dir={dir} className="h-screen">
       <BrowserRouter>
         <Routes>
-          <Route path={process.env.PUBLIC_URL + "/"} element={<LoginPage langOptions={langOptions} />} />
-          <Route path={process.env.PUBLIC_URL + "/signup"} element={<SignUpPage langOptions={langOptions} />} />
-          <Route path={process.env.PUBLIC_URL + "/userprofile"} element={<UserProfilePage langOptions={langOptions} />} />
-          <Route path={process.env.PUBLIC_URL + "/registration"} element={<RegistrationPage langOptions={langOptions} />} />
-          <Route path={process.env.PUBLIC_URL + "/bookappointment"} element={<BookAppointmentPage langOptions={langOptions}/>}/>
+          {routes.map(({ path, element: Component }) => (
+            <Route
+              key={path}
+              path={process.env.PUBLIC_URL + path}
+              element={<Component langOptions={langOptions} />}
+            />
+          ))}
         </Routes>
       </BrowserRouter>
-      <ToastContainer position="top-center" hideProgressBar={true} pauseOnHover={false} draggable={false} />
+      <ToastContainer
+        position="top-center"
+        hideProgressBar={true}
+        pauseOnHover={false}
+        draggable={false}
+      />
     </div>
   );
 }
