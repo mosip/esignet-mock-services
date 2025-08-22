@@ -30,7 +30,6 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfo savedUserInfo = userInfoRepository.save(userInfo);
         return userInfoMapper.toResponseDto(savedUserInfo);
     }
-
     @Override
     @Transactional(readOnly = true)
     public UserInfoDTO getUserInfoByNationalUid(String nationalUid) {
@@ -38,7 +37,6 @@ public class UserInfoServiceImpl implements UserInfoService {
                 .orElseThrow(() -> new AdminServerException("UserInfo not found with National ID: " + nationalUid));
         return userInfoMapper.toDto(userInfo);
     }
-
     @Override
     public List<UserInfoDTO> getAllUsers() {
         List<UserInfo> userInfoList = userInfoRepository.findAllByOrderByCreatedTimesDesc();
@@ -49,14 +47,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         return userInfoDTOList;
     }
-
     @Override
     @Transactional
     public String deleteMultipleUsers(List<UUID> userInfoIds) {
         userInfoRepository.deleteAllByUserInfoIds(userInfoIds);
         return "Users with all userInfoIds deleted";
     }
-
     @Override
     @Transactional
     public UserInfoResponseDTO updateUserInfo(UUID id, UserInfoDTO userInfoDTO) {
@@ -69,14 +65,12 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfo updatedUserInfo = userInfoRepository.save(existingUserInfo);
         return userInfoMapper.toResponseDto(updatedUserInfo);
     }
-
     @Override
     @Transactional
     public String deleteUserInfo(UUID id) {
         UserInfo userInfo = userInfoRepository.findById(id)
                 .orElseThrow(() -> new AdminServerException("UserInfo not found with National UID: " + id));
         userInfoRepository.delete(userInfo);
-
         return "User deleted with userInfoId: " + id;
     }
 }
