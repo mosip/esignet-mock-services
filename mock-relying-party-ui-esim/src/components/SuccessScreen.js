@@ -14,7 +14,7 @@ function SuccessScreen() {
           {/* Image */}
           <div className="w-[220px] sm:w-[256px] h-[220px] sm:h-[258px] mb-6">
             <img
-              src="/Images/container.svg"
+              src="/images/container.svg"
               alt="Success"
               className="w-full h-full object-contain"
             />
