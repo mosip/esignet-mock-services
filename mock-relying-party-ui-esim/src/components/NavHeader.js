@@ -64,12 +64,12 @@ function NavHeader() {
             className="hidden text-2xl bg-none border-none cursor-pointer text-gray-800 md:block"
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            <img src="/Images/menu.svg" alt="Menu" className="w-8 h-6 max-w-none" />
+            <img src="/images/menu.svg" alt="Menu" className="w-8 h-6 max-w-none" />
           </button>
 
           <Link id="logo-link" to={ROUTES.HOME}>
             <img
-              src="/Images/logo.svg"
+              src="/images/logo.svg"
               alt="Logo"
               className="h-9 max-w-none md:m-0 rtl:ml-4"
             />
@@ -108,7 +108,7 @@ function NavHeader() {
           <div className="relative inline-block" ref={dropdownRef}>
             <div className="flex items-center gap-1 ml-1 rtl:flex-row-reverse md:ml-0 rtl:mr-0 rtl:gap-1.5">
               <img
-                src="/Images/globe.svg"
+                src="/images/globe.svg"
                 alt="World"
                 className="w-[21.08px] h-[21.08px] relative -bottom-[2px]"
               />
@@ -161,12 +161,12 @@ function NavHeader() {
               aria-label={t('logout.ariaLabel')}
             >
               <img
-                src="/Images/logout-desktop-icon.svg"
+                src="/images/logout-desktop-icon.svg"
                 alt="Logout Icon Mobile"
                 className="h-[40px] block md:hidden"
               />
               <img
-                src="/Images/logout-mobile-icon.svg"
+                src="/images/logout-mobile-icon.svg"
                 alt="Logout Icon Desktop"
                 className="hidden md:block w-[150px] h-[50px]"
               />
