@@ -1,29 +1,18 @@
 const axios = require("axios");
 const {
-  decodeJwt,
-  compactDecrypt,
-  importJWK,
-  SignJWT,
-} = require("jose");
-const {
   ESIGNET_SERVICE_URL,
   ESIGNET_AUD_URL,
   ESIGNET_PAR_AUD_URL,
   CLIENT_ASSERTION_TYPE,
-  CLIENT_PRIVATE_KEY,
-  USERINFO_RESPONSE_TYPE,
-  JWE_USERINFO_PRIVATE_KEY,
 } = require("./config");
 
 const clientDetails = require("./clientDetails");
+const { generateSignedJwt, generateRandomString, decodeUserInfoResponse } = require("./utils");
 
 const baseUrl = ESIGNET_SERVICE_URL.trim();
 const getTokenEndPoint = "/oauth/v2/token";
 const getUserInfoEndPoint = "/oidc/userinfo";
-
-const alg = "RS256";
-const jweEncryAlgo = "RSA-OAEP-256";
-const expirationTime = "1h";
+const getOidcConfigurationEndpoint = "/.well-known/openid-configuration";
 
 /**
  * Triggers /oauth/v2/token API on esignet service to fetch access token
@@ -87,104 +76,30 @@ const post_GetRequestUri = async (clientId, uiLocales, state) => {
  * @param {string} access_token valid access token
  * @returns decrypted/decoded json user information
  */
-const get_GetUserInfo = async access_token => {
+const get_GetUserInfo = async (access_token) => {
   const endpoint = baseUrl + getUserInfoEndPoint;
   const response = await axios.get(endpoint, {
     headers: {
       Authorization: "Bearer " + access_token,
     },
   });
-
   return decodeUserInfoResponse(response.data);
 };
 
-/**
- * Generates client assertion signedJWT
- * @param {string} clientId registered client id
- * @returns client assertion signedJWT
- */
-const generateSignedJwt = async (clientId, audience) => {
-  // Set headers for JWT
-  var header = {
-    alg: alg,
-    typ: "JWT",
-  };
-
-  var payload = {
-    iss: clientId,
-    sub: clientId,
-    aud: audience,
-  };
-
-  var decodeKey = Buffer.from(CLIENT_PRIVATE_KEY, "base64")?.toString();
-  const jwkObject = JSON.parse(decodeKey);
-  const privateKey = await importJWK(jwkObject, alg);
-
-  const jwt = new SignJWT(payload)
-    .setProtectedHeader(header)
-    .setIssuedAt()
-    .setJti(Math.random().toString(36).substring(2, 7))
-    .setExpirationTime(expirationTime)
-    .sign(privateKey);
-
-  return jwt;
+const get_dpopKeyAlgo = async () => {
+  const endpoint = getBaseUrl(baseUrl) + getOidcConfigurationEndpoint;
+  const response = await axios.get(endpoint);
+  return response?.data?.dpop_signing_alg_values_supported;
 };
 
-/**
- * decrypts and decodes the user information fetched from esignet services
- * @param {string} userInfoResponse JWE encrypted or JWT encoded user information
- * @returns decrypted/decoded json user information
- */
-const decodeUserInfoResponse = async (userInfoResponse) => {
-  try {
-    const parts = userInfoResponse.split(".");
-    const isJWE = USERINFO_RESPONSE_TYPE.toLowerCase() === "jwe" && parts.length === 5;
-
-    if (isJWE) {
-      // Decode base64-encoded JWK or JWK Set
-      const jwkJson = Buffer.from(JWE_USERINFO_PRIVATE_KEY, "base64").toString("utf-8");
-      const jwkParsed = JSON.parse(jwkJson);
-
-      // Support both single JWK and JWK Set
-      const jwk = Array.isArray(jwkParsed?.keys) ? jwkParsed.keys[0] : jwkParsed;
-
-      if (!jwk || !jwk.kty || !jwk.d) {
-        throw new Error("Invalid or missing private JWK");
-      }
-
-      // Ensure algorithm is present
-      jwk.alg = jwk.alg || jweEncryAlgo;
-
-      // Import private key and decrypt
-      const privateKey = await importJWK(jwk, jwk.alg);
-      const { plaintext } = await compactDecrypt(userInfoResponse, privateKey);
-      const decrypted = new TextDecoder().decode(plaintext);
-      const decoded = decodeJwt(decrypted);
-      return decoded;
-    } else {
-      // Not encrypted - assume plain JWT
-      const decoded = decodeJwt(userInfoResponse);
-      return decoded;
-    }
-  } catch (error) {
-    console.error("Failed to decode userInfoResponse:", error.message);
-    throw error;
-  }
-};
-
-const generateRandomString = (strLength = 16) => {
-  let result = "";
-  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (let i = 0; i < strLength; i++) {
-    const randomInd = Math.floor(Math.random() * characters.length);
-    result += characters.charAt(randomInd);
-  }
-  return result;
-};
+const getBaseUrl = (serviceUrl) => {
+  const url = new URL(serviceUrl.trim());
+  return `${url.protocol}//${url.host}`;
+}
 
 module.exports = {
   post_GetToken,
   get_GetUserInfo,
   post_GetRequestUri,
+  get_dpopKeyAlgo,
 };
