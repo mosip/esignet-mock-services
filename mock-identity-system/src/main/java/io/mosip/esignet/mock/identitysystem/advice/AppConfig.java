@@ -38,7 +38,7 @@ public class AppConfig implements ApplicationRunner {
     @Autowired
     private KeymanagerService keymanagerService;
 
-    @Value("${mosip.esignet.cache.security.secretkey.reference-id}")
+    @Value("${mosip.kernel.keymgr.hsm.healthkey.ref-id}")
     private String cacheSecretKeyRefId;
 
     @Bean
