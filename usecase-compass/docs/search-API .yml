@@ -1,0 +1,368 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8091/v1/admin
+    description: Generated server url
+
+paths:
+  /user-info/{id}:
+    put:
+      tags: [user-info-controller]
+      summary: Update user information
+      operationId: updateUserInfo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInfoDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoResponseDTO'
+      security:
+        - bearerAuth: [ ]
+    delete:
+      tags: [user-info-controller]
+      summary: Delete user
+      operationId: deleteUserInfo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: [ ]
+
+  /user-info:
+    get:
+      tags: [user-info-controller]
+      summary: Get All Users
+      operationId: getAllUserInfo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserInfoDTO'
+      security:
+        - bearerAuth: [ ]
+    post:
+      tags: [user-info-controller]
+      summary: Create a new user
+      operationId: createUserInfo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInfoDTO'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoResponseDTO'
+      security:
+        - bearerAuth: [ ]
+    delete:
+      tags: [user-info-controller]
+      summary: Delete Multiple Users
+      operationId: deleteMultipleUsers
+      description: 'Supply repeated **userInfoId** query parameters: `/user-info?userInfoId=id1&userInfoId=id2`'
+      parameters:
+        - name: userInfoId
+          in: query
+          required: true
+          explode: true         # allows repeating the parameter
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      security:
+        - bearerAuth: [ ]
+
+  /user-info/{nationalUid}:
+    get:
+      tags: [user-info-controller]
+      summary: Get user by national UID
+      operationId: getUserInfoByNationalUid
+      parameters:
+        - name: nationalUid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoDTO'
+      security:
+        - bearerAuth: [ ]
+
+  /api/applications/search:
+    get:
+      tags: [application-search-controller]
+      summary: Search applications with pagination and sorting
+      description: >
+        Search applications by various criteria with support for pagination,
+        sorting, and filtering. All search parameters are optional. Use
+        **searchText** for general search across all fields, or use specific
+        parameters for targeted search. Use **issueDate** for exact date
+        matching or **issuedDateFrom** / **issuedDateTo** for date-range
+        filtering.
+      operationId: searchApplications
+      parameters:
+        - name: nationalId
+          in: query
+          description: National ID – partial or full match, case-insensitive
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - name: firstName
+          in: query
+          description: First name – partial or full match, case-insensitive
+          required: false
+          schema:
+            type: string
+            maxLength: 100
+        - name: lastName
+          in: query
+          description: Last name – partial or full match, case-insensitive
+          required: false
+          schema:
+            type: string
+            maxLength: 100
+        - name: issuedDateFrom
+          in: query
+          description: Start date for issued date range (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: issuedDateTo
+          in: query
+          description: End date for issued date range (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: issueDate
+          in: query
+          description: Exact issue date (YYYY-MM-DD) – takes priority over range
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: can
+          in: query
+          description: Card Access Number – partial or full match
+          required: false
+          schema:
+            type: string
+            maxLength: 50
+        - name: searchText
+          in: query
+          description: >
+            General search text – searches across nationalId, firstName,
+            lastName, CAN, and issueDate
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - name: page
+          in: query
+          description: Page number (1-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 1000
+            default: 1
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: sortBy
+          in: query
+          description: Sort field (issuedDate, firstName, lastName, nationalId, can)
+          required: false
+          schema:
+            type: string
+            pattern: ^(issuedDate|firstName|lastName|nationalId|can)$
+            default: issuedDate
+        - name: sortOrder
+          in: query
+          description: Sort order (asc or desc)
+          required: false
+          schema:
+            type: string
+            pattern: ^(asc|desc)$
+            default: desc
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationSearchResponseDTO'
+      security:
+        - bearerAuth: [ ]
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserInfoDTO:
+      type: object
+      required:
+        - birthCountry
+        - dateOfBirth
+        - faceImageColor
+        - firstNamePrimary
+        - firstNamePrimaryLatin
+        - gender
+        - lastNameSecondary
+        - lastNameSecondaryLatin
+        - nationalUid
+        - nationality
+      properties:
+        userInfoId:
+          type: string
+          format: uuid
+        birthCountry:
+          type: string
+        cardAccessNumber:
+          type: string
+          pattern: '^[a-zA-Z0-9]{10}$'
+        dateOfBirth:
+          type: string
+          format: date
+        email:
+          type: string
+        faceImageColor:
+          type: string
+        firstNamePrimary:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^[a-zA-Z ]+$'
+        gender:
+          type: string
+        lastNameSecondary:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^[a-zA-Z ]+$'
+        firstNamePrimaryLatin:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^[\\p{IsLatin} ]*$'
+        lastNameSecondaryLatin:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^[\\p{IsLatin} ]*$'
+        nationalUid:
+          type: string
+          pattern: '^[a-zA-Z0-9]{10}$'
+        nationality:
+          type: string
+        compassId:
+          type: string
+        issuanceDate:
+          type: string
+          format: date
+
+    UserInfoResponseDTO:
+      type: object
+      properties:
+        userInfoId:
+          type: string
+          format: uuid
+        nationalUid:
+          type: string
+
+    ApplicationSearchResultDTO:
+      type: object
+      properties:
+        nationalId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        issuedDate:
+          type: string
+          format: date
+        can:
+          type: string
+
+    ApplicationSearchResponseDTO:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalResults:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        applications:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationSearchResultDTO'
+        message:
+          type: string
