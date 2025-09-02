@@ -11,7 +11,7 @@ services:
 
 
   mock-identity-system:
-    image: 'mosipqa/mock-identity-system:0.11.x'
+    image: 'mosipdev/mock-identity-system:develop'
     user: root
     ports:
       - 8082:8082
