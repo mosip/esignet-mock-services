@@ -133,8 +133,45 @@ function Form({ showPopup, handleLandDetailsAction, selectedAcres }) {
     setLandDetails({ area: selectedAcres });
   }, [selectedAcres]);
 
-  const handleSubmit = () => {
-    showPopup(true);
+  const handleSubmit = async () => {
+    try {
+      // Transform form data to match backend expectations
+      const payload = {
+        name: formData.name,
+        phone_number: formData.phoneNumber,
+        email: formData.email,
+        date_of_birth: formData.dateOfBirth,
+        gender: formData.gender,
+        state: formData.state,
+        district: formData.district,
+        village: formData.villageOrTown,
+        pin_code: parseInt(formData.pinCode) || null,
+        total_land_area: formData.landDetails.reduce((total, land) =>
+          total + (parseFloat(land.area) || 0), 0),
+        ownership_type: formData.landDetails[0]?.landOwnership || null,
+        primary_crop: formData.landDetails[0]?.primaryCropType || null,
+        secondary_crop: formData.landDetails[0]?.secondaryCropType || null,
+      };
+
+      const response = await fetch('http://localhost:8080/api/data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-source': 'farmer',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        console.log('Form submitted successfully');
+        showPopup(true); // Show success popup
+      } else {
+        const errorText = await response.text();
+        console.error('Form submission failed:', errorText);
+      }
+    } catch (error) {
+      console.error('ERROR:: ', error);
+    }
   };
 
   const handleLandDetailsForm = () => {
