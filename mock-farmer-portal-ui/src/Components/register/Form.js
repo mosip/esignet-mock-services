@@ -153,7 +153,9 @@ function Form({ showPopup, handleLandDetailsAction, selectedAcres }) {
         secondary_crop: formData.landDetails[0]?.secondaryCropType || null,
       };
 
-      const response = await fetch('http://localhost:8080/api/data', {
+      const apiUrl = `${process.env.REACT_APP_COMMON_DATABASE_SERVICE_URL}/api/data`;
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
