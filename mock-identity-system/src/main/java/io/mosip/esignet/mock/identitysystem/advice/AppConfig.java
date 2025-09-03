@@ -11,15 +11,18 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import io.mosip.kernel.keymanagerservice.dto.KeyPairGenerateRequestDto;
+import io.mosip.kernel.keymanagerservice.dto.SymmetricKeyGenerateRequestDto;
 import io.mosip.kernel.keymanagerservice.service.KeymanagerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.util.StringUtils;
 
 import static io.mosip.esignet.mock.identitysystem.util.Constants.APPLICATION_ID;
 
@@ -34,6 +37,9 @@ public class AppConfig implements ApplicationRunner {
 
     @Autowired
     private KeymanagerService keymanagerService;
+
+    @Value("${mosip.kernel.keymgr.hsm.healthkey.ref-id}")
+    private String cacheSecretKeyRefId;
 
     @Bean
     public ObjectMapper objectMapper() {
@@ -55,5 +61,14 @@ public class AppConfig implements ApplicationRunner {
         KeyPairGenerateRequestDto masterKeyRequest = new KeyPairGenerateRequestDto();
         masterKeyRequest.setApplicationId(APPLICATION_ID);
         keymanagerService.generateMasterKey(objectType, masterKeyRequest);
+
+        if(!StringUtils.isEmpty(cacheSecretKeyRefId)) {
+            SymmetricKeyGenerateRequestDto symmetricKeyGenerateRequestDto = new SymmetricKeyGenerateRequestDto();
+            symmetricKeyGenerateRequestDto.setApplicationId(APPLICATION_ID);
+            symmetricKeyGenerateRequestDto.setReferenceId(cacheSecretKeyRefId);
+            symmetricKeyGenerateRequestDto.setForce(false);
+            keymanagerService.generateSymmetricKey(symmetricKeyGenerateRequestDto);
+            log.info("============= IDP_SERVICE CACHE SYMMETRIC KEY CHECK COMPLETED =============");
+        }
     }
 }
