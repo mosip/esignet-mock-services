@@ -23,9 +23,9 @@ function installing_mock-relying-party-ui() {
   helm repo update
 
   NS=esignet
-  MOCK_REPLYING_PARTY_SERVICE_NAME=mock-relying-party-service
   MOCK_REPLYING_PARTY_UI_SERVICE_NAME=mock-relying-party-ui
-  CHART_VERSION=0.10.0-develop
+  MOCK_REPLYING_PARTY_SERVICE_NAME=mock-relying-party-service
+  CHART_VERSION=0.0.1-develop
 
   read -p "Please provide mock relying party ui domain (eg: healthservices.sandbox.xyz.net ) : " MOCK_UI_HOST
   if [ -z "$MOCK_UI_HOST" ]; then

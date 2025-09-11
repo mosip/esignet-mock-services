@@ -24,7 +24,7 @@ function installing_mock-relying-party-service() {
 
   NS=esignet
   MOCK_REPLYING_PARTY_SERVICE_NAME=mock-relying-party-service
-  CHART_VERSION=0.10.0-develop
+  CHART_VERSION=0.0.1-develop
 
   echo Create $NS namespace
   kubectl create ns $NS || true
