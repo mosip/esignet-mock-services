@@ -137,6 +137,7 @@ function Form({ showPopup, handleLandDetailsAction, selectedAcres }) {
     try {
       // Transform form data to match backend expectations
       const payload = {
+        id: "1234",
         name: formData.name,
         phone_number: formData.phoneNumber,
         email: formData.email,
@@ -153,7 +154,7 @@ function Form({ showPopup, handleLandDetailsAction, selectedAcres }) {
         secondary_crop: formData.landDetails[0]?.secondaryCropType || null,
       };
 
-      const apiUrl = `${process.env.REACT_APP_COMMON_DATABASE_SERVICE_URL}/api/data`;
+      const apiUrl = `${process.env.REACT_APP_COMMON_DATABASE_SERVICE_URL}/api/data/Farmer`;
 
       const response = await fetch(apiUrl, {
         method: 'POST',
