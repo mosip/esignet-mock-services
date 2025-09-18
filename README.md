@@ -18,6 +18,17 @@ Repository contains mock implementations for eSignet. Only for non-production us
   * Copy required `configmaps` and `secrets` to `mockid` namespace.
   * Initialise mock Identity DB. 
   * Create empty secret for `client-private-key` and `jwe-userinfo-key` for mock relying party service.
+
+  ### Note: When deploying multiple esignet plugins in the same cluster, a few manual changes are required in the deployment scripts:
+  ##### If you are deploying a single esignet plugin in a cluster, these changes are not required.
+    - Update the **namespace** and **mock relying party service name** in the `mock-relying-party-service install.sh` script according to the plugin being deployed.
+    - Update the **namespace**, **mock relying party ui service name**, and **mock relying party service name** in the `mock-relying-party-ui install.sh` script according to the plugin being deployed.
+    - Update the **namespace** and **mock relying party service name** in the `partner-onboarder` install script.
+        * Example: Sunbird Plugin Deployment
+            *  namespace: esignet-sunbird
+            *  mock relying party service name: mock-relying-party-service-sunbird
+            *  mock relying party ui service name: mock-relying-party-ui-sunbird
+
   ```
   cd deploy
   ./prereq.sh

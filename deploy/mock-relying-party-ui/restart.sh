@@ -7,9 +7,10 @@ fi
 
 function Restarting_mock-relying-party-ui() {
   NS=esignet
-  kubectl -n $NS rollout restart deploy mock-relying-party-ui
+  MOCK_REPLYING_PARTY_UI_SERVICE_NAME=mock-relying-party-ui
+  kubectl -n $NS rollout restart deploy $MOCK_REPLYING_PARTY_UI_SERVICE_NAME
 
-  kubectl -n $NS  get mock-relying-party-ui deploy -o name |  xargs -n1 -t  kubectl -n $NS rollout status
+  kubectl -n $NS  get $MOCK_REPLYING_PARTY_UI_SERVICE_NAME deploy -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
   echo Retarted mock-relying-party-ui services
   return 0

@@ -21,7 +21,8 @@ if [ "$flag" = "n" ]; then
 fi
 
 NS=esignet
-CHART_VERSION=1.5.0-es-develop
+MOCK_REPLYING_PARTY_SERVICE_NAME=mock-relying-party-service
+CHART_VERSION=0.0.1-develop
 
 echo Create $NS namespace
 kubectl create ns $NS || true
@@ -124,7 +125,6 @@ function installing_onboarder() {
     echo "Copy configmaps"
     COPY_UTIL=../deploy/copy_cm_func.sh
     $COPY_UTIL configmap keycloak-env-vars keycloak $NS
-    $COPY_UTIL configmap keycloak-host keycloak $NS
 
     $COPY_UTIL secret keycloak keycloak $NS
     $COPY_UTIL secret keycloak-client-secrets keycloak $NS
@@ -143,7 +143,7 @@ function installing_onboarder() {
       --version $CHART_VERSION \
       --wait --wait-for-jobs
     echo "Partner onboarder executed and reports are moved to S3 or NFS please check the same to make sure partner was onboarded sucessfully."
-    kubectl rollout restart deployment mock-relying-party-service -n esignet
+    kubectl rollout restart deployment $MOCK_REPLYING_PARTY_SERVICE_NAME -n $NS
     return 0
   fi
 }
