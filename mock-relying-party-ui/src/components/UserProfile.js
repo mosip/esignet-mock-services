@@ -45,6 +45,7 @@ export default function UserProfile({
       let authCode = searchParams.get("code");
       let errorCode = searchParams.get("error");
       let error_desc = searchParams.get("error_description");
+      let state =  searchParams.get("state");
 
       if (errorCode) {
         navigateToLogin(errorCode, error_desc);
@@ -52,7 +53,7 @@ export default function UserProfile({
       }
 
       if (authCode) {
-        getUserDetails(authCode);
+        getUserDetails(authCode, state);
       } else {
         setError({
           errorCode: "authCode_missing",
@@ -65,7 +66,7 @@ export default function UserProfile({
   }, []);
 
   //Handle Login API Integration here
-  const getUserDetails = async (authCode) => {
+  const getUserDetails = async (authCode, state) => {
     setError(null);
     setUserInfo(null);
 
@@ -76,6 +77,7 @@ export default function UserProfile({
 
       var userInfo = await post_fetchUserInfo(
         authCode,
+        state,
         client_id,
         redirect_uri,
         grant_type

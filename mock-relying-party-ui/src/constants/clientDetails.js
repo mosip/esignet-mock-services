@@ -14,7 +14,7 @@ const generateRandomString = (strLength = 16) => {
   return result;
 };
 
-const state = "eree2311";
+const state = generateRandomString();
 const nonce = generateRandomString();
 const responseType = "code";
 const scopeUserProfile = checkEmptyNullValue(
