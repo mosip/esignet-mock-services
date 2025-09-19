@@ -7,12 +7,18 @@ const {
 } = require("./config");
 
 const clientDetails = require("./clientDetails");
-const { generateSignedJwt, generateRandomString, decodeUserInfoResponse } = require("./utils");
+const {
+  generateSignedJwt,
+  generateRandomString, 
+  decodeUserInfoResponse,
+  generateDpopJKT,
+  calculateAth,
+  buildDpopHeaders,
+} = require("./utils");
 
 const baseUrl = ESIGNET_SERVICE_URL.trim();
 const getTokenEndPoint = "/oauth/v2/token";
 const getUserInfoEndPoint = "/oidc/userinfo";
-const getOidcConfigurationEndpoint = "/.well-known/openid-configuration";
 
 /**
  * Triggers /oauth/v2/token API on esignet service to fetch access token
@@ -22,7 +28,13 @@ const getOidcConfigurationEndpoint = "/.well-known/openid-configuration";
  * @param {string} grant_type grant_type
  * @returns access token
  */
-const post_GetToken = async ({ code, client_id, redirect_uri, grant_type }) => {
+const post_GetToken = async ({
+  code,
+  state,
+  client_id,
+  redirect_uri,
+  grant_type,
+}) => {
   let request = new URLSearchParams({
     code: code,
     client_id: client_id,
@@ -32,12 +44,40 @@ const post_GetToken = async ({ code, client_id, redirect_uri, grant_type }) => {
     client_assertion: await generateSignedJwt(client_id, ESIGNET_AUD_URL),
   });
   const endpoint = baseUrl + getTokenEndPoint;
-  const response = await axios.post(endpoint, request, {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
+  const dpopHeaders = await buildDpopHeaders({
+    clientId: client_id,
+    state,
+    endpoint,
+    method: "POST"
   });
-  return response.data;
+  let headers = {
+    "Content-Type": "application/x-www-form-urlencoded",
+    ...dpopHeaders
+  };
+  try {
+    const response = await axios.post(endpoint, request, {
+      headers,
+    });
+    return response.data;
+  } catch (error) {
+    const nonce = error.response.headers["dpop-nonce"];
+    if (error.status === 400 && nonce) {
+      const dpopHeadersWithNonce = await buildDpopHeaders({
+        clientId: client_id,
+        state,
+        endpoint,
+        method: "POST",
+        nonce
+      });
+      headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        ...dpopHeadersWithNonce
+      };
+      const retryResponse = await axios.post(endpoint, request, { headers });
+      return retryResponse.data;
+    }
+    throw error;
+  }
 };
 
 /**
@@ -45,7 +85,7 @@ const post_GetToken = async ({ code, client_id, redirect_uri, grant_type }) => {
  * @param {string} clientId clientId
  * @returns requestUri
  */
-const post_GetRequestUri = async (clientId, uiLocales, state) => {
+const post_GetRequestUri = async (clientId, uiLocales, state, dpop_jkt) => {
   const clientAssertion = await generateSignedJwt(
     clientId,
     ESIGNET_PAR_AUD_URL,
@@ -65,9 +105,22 @@ const post_GetRequestUri = async (clientId, uiLocales, state) => {
   params.append("ui_locales", uiLocales || process.env.DEFAULT_UI_LOCALES);
   params.append("client_assertion_type", CLIENT_ASSERTION_TYPE);
   params.append("client_assertion", clientAssertion);
-  const response = await axios.post(clientDetails.parEndpoint, params.toString(), {
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  if (dpop_jkt) {
+    params.append("dpop_jkt", dpop_jkt);
+  }
+  const endpoint = clientDetails.parEndpoint;
+  const dpopHeaders = await buildDpopHeaders({
+    clientId,
+    state,
+    endpoint,
+    method: "POST"
   });
+  const headers = { "Content-Type": "application/x-www-form-urlencoded", ...dpopHeaders };
+  const response = await axios.post(
+    endpoint,
+    params.toString(),
+    { headers }
+  );
   return response.data;
 };
 
@@ -76,30 +129,47 @@ const post_GetRequestUri = async (clientId, uiLocales, state) => {
  * @param {string} access_token valid access token
  * @returns decrypted/decoded json user information
  */
-const get_GetUserInfo = async (access_token) => {
+const get_GetUserInfo = async (access_token, client_id, state) => {
   const endpoint = baseUrl + getUserInfoEndPoint;
+  const dpopHeaders = await buildDpopHeaders({
+    clientId: client_id,
+    state,
+    endpoint,
+    method: "GET",
+    ath: calculateAth(access_token)
+  });
+  let headers;
+  if (dpopHeaders.DPoP) {
+    headers = {
+      Authorization: `DPoP ${access_token}`,
+      ...dpopHeaders
+    };
+  } else {
+    headers = {
+      Authorization: `Bearer ${access_token}`
+    };
+  }
   const response = await axios.get(endpoint, {
-    headers: {
-      Authorization: "Bearer " + access_token,
-    },
+    headers,
   });
   return decodeUserInfoResponse(response.data);
 };
 
-const get_dpopKeyAlgo = async () => {
-  const endpoint = getBaseUrl(baseUrl) + getOidcConfigurationEndpoint;
-  const response = await axios.get(endpoint);
-  return response?.data?.dpop_signing_alg_values_supported;
+/**
+ * Generate a public private key pair and store
+ * in-memory cache and then return the dpop jkt
+ * @param {string} clientId client id for the flow
+ * @param {string} state state of the current flow
+ * @returns {Object} a thumbprint of the dpop as dpop_jkt
+ */
+const get_dpopJKT = async (clientId, state) => {
+  const dpopJKT = await generateDpopJKT(clientId, state);
+  return dpopJKT;
 };
-
-const getBaseUrl = (serviceUrl) => {
-  const url = new URL(serviceUrl.trim());
-  return `${url.protocol}//${url.host}`;
-}
 
 module.exports = {
   post_GetToken,
   get_GetUserInfo,
   post_GetRequestUri,
-  get_dpopKeyAlgo,
+  get_dpopJKT,
 };

@@ -1,3 +1,4 @@
+const axios = require("axios");
 const {
   generateKeyPair,
   exportJWK,
@@ -8,15 +9,31 @@ const {
   importJWK,
 } = require("jose");
 const {
+  ESIGNET_SERVICE_URL,
   CLIENT_PRIVATE_KEY,
   USERINFO_RESPONSE_TYPE,
   JWE_USERINFO_PRIVATE_KEY,
 } = require("./config");
-const rateLimit = require('express-rate-limit');
-
+const crypto = require("crypto");
+const rateLimit = require("express-rate-limit");
+const { cache } = require("./cacheClient");
 const alg = "RS256";
 const expirationTime = "1h";
 const jweEncryAlgo = "RSA-OAEP-256";
+const getOidcConfigurationEndpoint = "/.well-known/openid-configuration";
+const baseUrl = ESIGNET_SERVICE_URL.trim();
+let dpopKeyAlgo;
+
+const get_dpopKeyAlgo = async () => {
+  const endpoint = getBaseUrl(baseUrl) + getOidcConfigurationEndpoint;
+  const response = await axios.get(endpoint);
+  return response?.data?.dpop_signing_alg_values_supported;
+};
+
+const getBaseUrl = (serviceUrl) => {
+  const url = new URL(serviceUrl.trim());
+  return `${url.protocol}//${url.host}`;
+};
 
 /**
  * Generates client assertion signedJWT
@@ -104,19 +121,74 @@ const decodeUserInfoResponse = async (userInfoResponse) => {
 };
 
 const generateDpopKeyPair = async () => {
-  let dpopKeyAlgo;
   try {
-    const { get_dpopKeyAlgo } = require("./esignetService");
     const algos = await get_dpopKeyAlgo();
     dpopKeyAlgo = Array.isArray(algos) && algos.length > 0 ? algos[0] : "RS256";
   } catch (error) {
     dpopKeyAlgo = "RS256";
   }
-  const { publicKey, privateKey } = await generateKeyPair(dpopKeyAlgo);
+  const { publicKey, privateKey } = await generateKeyPair(dpopKeyAlgo, {
+    extractable: true,
+  });
   const jwkPublic = await exportJWK(publicKey);
   const jwkPrivate = await exportJWK(privateKey);
-  const dpop_jkt = await calculateJwkThumbprint(jwkPublic);
-  return { jwkPrivate, jwkPublic, dpop_jkt };
+  return { publicKey: jwkPublic, privateKey: jwkPrivate };
+};
+
+const generateDpopJKT = async (clientId, state) => {
+  const { publicKey, privateKey } = await generateDpopKeyPair();
+
+  cache.set(
+    `${clientId}###${state}`,
+    JSON.stringify({ publicKey, privateKey })
+  );
+
+  const dpopJKT = await calculateJwkThumbprint(publicKey);
+  return dpopJKT;
+};
+
+const generateDpopJwt = async (key, reqPayload) => {
+  const header = {
+    typ: "dpop+jwt",
+    alg: dpopKeyAlgo,
+    jwk: key.publicKey,
+  };
+  const payload = {
+    htm: reqPayload.htm,
+    htu: reqPayload.htu,
+  };
+  if (reqPayload.ath) payload.ath = reqPayload.ath;
+  if (reqPayload.nonce) payload.nonce = reqPayload.nonce;
+  const privateKey = await importJWK(key.privateKey, dpopKeyAlgo);
+  return await new SignJWT(payload)
+    .setProtectedHeader(header)
+    .setIssuedAt()
+    .setJti(Math.random().toString(36).substring(2, 7))
+    .sign(privateKey);
+};
+
+const calculateAth = (accessToken) => {
+  const hash = crypto
+    .createHash("sha256")
+    .update(accessToken, "ascii")
+    .digest();
+  return hash.toString("base64url");
+};
+
+
+const buildDpopHeaders = async (params) => {
+  if (!params.clientId || !params.state) return {};
+
+  const cached = await cache.get(`${params.clientId}###${params.state}`);
+  if (!cached) return {};
+
+  const key = JSON.parse(cached);
+  const payload = { htm: params.method, htu: params.endpoint };
+  if (params.ath) payload.ath = params.ath;
+  if (params.nonce) payload.nonce = params.nonce;
+  const dpopJwt = await generateDpopJwt(key, payload);
+
+  return { DPoP: dpopJwt };
 };
 
 const rateLimiter = rateLimit({
@@ -133,4 +205,8 @@ module.exports = {
   decodeUserInfoResponse,
   generateDpopKeyPair,
   rateLimiter,
+  generateDpopJwt,
+  generateDpopJKT,
+  calculateAth,
+  buildDpopHeaders,
 };

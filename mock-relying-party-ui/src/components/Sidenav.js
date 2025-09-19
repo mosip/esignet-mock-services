@@ -83,13 +83,14 @@ export default function Sidenav({
       let authCode = searchParams.get("code");
       let errorCode = searchParams.get("error");
       let error_desc = searchParams.get("error_description");
+      let state = searchParams.get("state");
       if (errorCode) {
         navigateToLogin(errorCode, error_desc);
         return;
       }
       getClaimProvider();
       getMessages();
-      getUserDetails(authCode);
+      getUserDetails(authCode, state);
     };
     getSearchParams();
     // hiding or showing the side nav
@@ -103,7 +104,7 @@ export default function Sidenav({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const getUserDetails = async (authCode) => {
+  const getUserDetails = async (authCode, state) => {
     setUserInfo(null);
     setStatus(states.LOADING);
     try {
@@ -112,6 +113,7 @@ export default function Sidenav({
       let grant_type = clientDetails.grant_type;
       var userInfo = await post_fetchUserInfo(
         authCode,
+        state,
         client_id,
         redirect_uri,
         grant_type
