@@ -60,7 +60,7 @@ const post_GetToken = async ({
     });
     return response.data;
   } catch (error) {
-    const nonce = error.response.headers["dpop-nonce"];
+    const nonce = error.response?.headers?.["dpop-nonce"];
     if (error.status === 400 && nonce) {
       const dpopHeadersWithNonce = await buildDpopHeaders({
         clientId: client_id,
