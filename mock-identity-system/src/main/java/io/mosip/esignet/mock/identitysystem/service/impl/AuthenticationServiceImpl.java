@@ -13,11 +13,11 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.entity.KycAuth;
-import io.mosip.esignet.mock.identitysystem.entity.RelyingPartyData;
+import io.mosip.esignet.mock.identitysystem.entity.PartnerData;
 import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
-import io.mosip.esignet.mock.identitysystem.repository.RelyingPartyDataRepository;
+import io.mosip.esignet.mock.identitysystem.repository.PartnerDataRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
@@ -79,7 +79,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private VerifiedClaimRepository verifiedClaimRepository;
 
     @Autowired
-    private RelyingPartyDataRepository relyingPartyDataRepository;
+    private PartnerDataRepository partnerDataRepository;
 
     @Autowired
     private CacheUtilService cacheUtilService;
@@ -214,7 +214,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             authRepository.save(result.get());
             String finalKyc;
             String userInfoResponseType = kycExchangeDto.getRespType();
-            finalKyc = "JWE".equals(userInfoResponseType) ? getJWE(relyingPartyId, signKyc(kyc)) : signKyc(kyc);
+            finalKyc = "JWE".equals(userInfoResponseType) ? getJWE(relyingPartyId, clientId, signKyc(kyc)) : signKyc(kyc);
             KycExchangeResponseDto kycExchangeResponseDto = new KycExchangeResponseDto();
             kycExchangeResponseDto.setKyc(finalKyc);
             return kycExchangeResponseDto;
@@ -368,26 +368,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return responseDto.getJwtSignedData();
     }
 
-    private String getJWE(String relyingPartyId, String signedJwt) throws Exception {
+    private String getJWE(String relyingPartyId, String clientId, String signedJwt) throws Exception {
         JsonWebEncryption jsonWebEncryption = new JsonWebEncryption();
         jsonWebEncryption.setAlgorithmHeaderValue(KeyManagementAlgorithmIdentifiers.RSA_OAEP_256);
         jsonWebEncryption.setEncryptionMethodHeaderParameter(ContentEncryptionAlgorithmIdentifiers.AES_256_GCM);
         jsonWebEncryption.setPayload(signedJwt);
         jsonWebEncryption.setContentTypeHeaderValue("JWT");
-        RSAKey rsaKey = getRelyingPartyPublicKey(relyingPartyId);
+        RSAKey rsaKey = getRelyingPartyPublicKey(relyingPartyId, clientId);
         jsonWebEncryption.setKey(rsaKey.toPublicKey());
         jsonWebEncryption.setKeyIdHeaderValue(rsaKey.getKeyID());
         return jsonWebEncryption.getCompactSerialization();
     }
 
-    private RSAKey getRelyingPartyPublicKey(String relyingPartyId) {
-        RelyingPartyData relyingPartyData = relyingPartyDataRepository.findByRpId(relyingPartyId)
+    private RSAKey getRelyingPartyPublicKey(String relyingPartyId, String clientId) {
+        PartnerData partnerData = partnerDataRepository.findByPartnerIdAndClientId(relyingPartyId, clientId)
                 .orElseThrow(() -> {
                     log.error("Public key not found for relying party: {}", relyingPartyId);
                     return new MockIdentityException("mock-ida-008");
                 });
         try {
-            String jwkJson = relyingPartyData.getEncryptionKey();
+            String jwkJson = partnerData.getPublicKey();
             JWK jwk = JWK.parse(jwkJson);
             if (!(jwk instanceof RSAKey)) {
                 log.error("Stored key is not an RSA key for relying party: {}", relyingPartyId);
