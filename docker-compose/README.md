@@ -26,6 +26,35 @@ Below environment variables should be changed to point to different environment:
 * ESIGNET_AUD_URL
 * CLIENT_PRIVATE_KEY
 
-Refer [README.md](../mock-relying-party-ui/README.md) for more details.
+## How to start the mock Relying party UI with FAPI 2.0 enabled?
+
+1. Run [mock-relying-party-portal-dpop-par-docker-compose.yml](mock-relying-party-portal-dpop-par-docker-compose.yml) to start the relying party portal with DPoP and PAR enabled.
+2. Access the Relying party UI at http://localhost:3000
+
+### Required Environment Variables
+
+To enable FAPI 2.0 features, ensure the following environment variables are set in your compose file or deployment configuration:
+
+**For mock-relying-party-service:**
+- `ESIGNET_PAR_ENDPOINT` and `ESIGNET_PAR_AUD_URL` (PAR endpoint and audience)
+- `CLIENT_PRIVATE_KEY` and `JWE_USERINFO_PRIVATE_KEY` (private keys for client and userinfo JWT)
+- Other standard variables: `ESIGNET_SERVICE_URL`, `ESIGNET_AUD_URL`, `USERINFO_RESPONSE_TYPE`, `SCOPE_USER_PROFILE`, `REDIRECT_URI`, `ACRS`, `CLAIMS_USER_PROFILE`
+
+**For mock-relying-party-ui:**
+- `DPOP_CALLBACK_NAME` (`get_dpop_jkt`)
+- `PAR_CALLBACK_NAME` (`get_requestUri`)
+- `PAR_CALLBACK_TIMEOUT` (optional, e.g. `5000`)
+- All standard UI variables: `ESIGNET_UI_BASE_URL`, `MOCK_RELYING_PARTY_SERVER_URL`, `REDIRECT_URI`, `CLIENT_ID`, `ACRS`, `CLAIMS_USER_PROFILE`, `CLAIMS_REGISTRATION`, etc.
+
+### Example
+
+Refer to [mock-relying-party-portal-dpop-par-docker-compose.yml](mock-relying-party-portal-dpop-par-docker-compose.yml) for a complete example with all required variables pre-configured.
+
+---
+
+**Note:**  
+If you need to connect to a different environment, update the relevant URLs and credentials in your environment variables.
+
+For more details on configuration, refer to [README.md](../mock-relying-party-ui/README.md).
 
 

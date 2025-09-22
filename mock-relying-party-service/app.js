@@ -10,6 +10,7 @@ const { rateLimiter } = require("./utils");
 const { cache } = require("./cacheClient");
 const app = express();
 app.use(express.json());
+app.set('trust proxy', 1);
 
 app.get("/", (req, res) => {
   res.send("Welcome to Mock Relying Party REST APIs!!");
