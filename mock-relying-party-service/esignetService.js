@@ -9,7 +9,7 @@ const {
 const clientDetails = require("./clientDetails");
 const {
   generateSignedJwt,
-  generateRandomString, 
+  generateRandomString,
   decodeUserInfoResponse,
   generateDpopJKT,
   calculateAth,
@@ -48,11 +48,11 @@ const post_GetToken = async ({
     clientId: client_id,
     state,
     endpoint,
-    method: "POST"
+    method: "POST",
   });
   let headers = {
     "Content-Type": "application/x-www-form-urlencoded",
-    ...dpopHeaders
+    ...dpopHeaders,
   };
   try {
     const response = await axios.post(endpoint, request, {
@@ -67,11 +67,11 @@ const post_GetToken = async ({
         state,
         endpoint,
         method: "POST",
-        nonce
+        nonce,
       });
       headers = {
         "Content-Type": "application/x-www-form-urlencoded",
-        ...dpopHeadersWithNonce
+        ...dpopHeadersWithNonce,
       };
       const retryResponse = await axios.post(endpoint, request, { headers });
       return retryResponse.data;
@@ -88,7 +88,7 @@ const post_GetToken = async ({
 const post_GetRequestUri = async (clientId, uiLocales, state, dpop_jkt) => {
   const clientAssertion = await generateSignedJwt(
     clientId,
-    ESIGNET_PAR_AUD_URL,
+    ESIGNET_PAR_AUD_URL
   );
   const params = new URLSearchParams();
   params.append("nonce", generateRandomString());
@@ -113,14 +113,13 @@ const post_GetRequestUri = async (clientId, uiLocales, state, dpop_jkt) => {
     clientId,
     state,
     endpoint,
-    method: "POST"
+    method: "POST",
   });
-  const headers = { "Content-Type": "application/x-www-form-urlencoded", ...dpopHeaders };
-  const response = await axios.post(
-    endpoint,
-    params.toString(),
-    { headers }
-  );
+  const headers = {
+    "Content-Type": "application/x-www-form-urlencoded",
+    ...dpopHeaders,
+  };
+  const response = await axios.post(endpoint, params.toString(), { headers });
   return response.data;
 };
 
@@ -136,23 +135,54 @@ const get_GetUserInfo = async (access_token, client_id, state) => {
     state,
     endpoint,
     method: "GET",
-    ath: calculateAth(access_token)
+    ath: calculateAth(access_token),
   });
   let headers;
   if (dpopHeaders.DPoP) {
     headers = {
       Authorization: `DPoP ${access_token}`,
-      ...dpopHeaders
+      ...dpopHeaders,
     };
   } else {
     headers = {
-      Authorization: `Bearer ${access_token}`
+      Authorization: `Bearer ${access_token}`,
     };
   }
-  const response = await axios.get(endpoint, {
-    headers,
-  });
-  return decodeUserInfoResponse(response.data);
+  try {
+    const response = await axios.get(endpoint, { headers });
+    return decodeUserInfoResponse(response.data);
+  } catch (error) {
+    const nonce = error.response?.headers?.["DPoP-Nonce"];
+    const wwwAuth = error.response?.headers?.[" WWW-Authenticate"];
+    const status = error.status;
+
+    if (
+      status === 401 &&
+      wwwAuth &&
+      wwwAuth.includes("use_dpop_nonce") &&
+      nonce
+    ) {
+      const dpopHeadersWithNonce = await buildDpopHeaders({
+        clientId: client_id,
+        state,
+        endpoint,
+        method: "GET",
+        ath: calculateAth(access_token),
+        nonce,
+      });
+
+      const retryHeaders = {
+        Authorization: `DPoP ${access_token}`,
+        ...dpopHeadersWithNonce,
+      };
+
+      const retryResponse = await axios.get(endpoint, {
+        headers: retryHeaders,
+      });
+      return decodeUserInfoResponse(retryResponse.data);
+    }
+    throw error;
+  }
 };
 
 /**
