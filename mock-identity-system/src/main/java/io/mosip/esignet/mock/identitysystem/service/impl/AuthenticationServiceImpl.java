@@ -8,6 +8,7 @@ package io.mosip.esignet.mock.identitysystem.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -203,9 +204,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new MockIdentityException("mock-ida-001");
             }
 
-            List<String> claimsList = new ArrayList<>();
-            Map<String, Object> kyc = buildKycDataBasedOnPolicy(kycExchangeDto.getIndividualId(), identityData,
-                    kycExchangeDto.getAcceptedClaimDetail(), kycExchangeDto.getClaimLocales(), claimsList);
+            ObjectNode kyc = buildKycData(kycExchangeDto.getIndividualId(), identityData,
+                    kycExchangeDto.getAcceptedClaimDetail(), kycExchangeDto.getClaimLocales());
             kyc.put("sub", result.get().getPartnerSpecificUserToken());
             kyc.put("iss", issuerId);
             kyc.put("aud", clientId);
@@ -355,7 +355,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private String signKyc(Map<String, Object> kyc) throws JsonProcessingException {
+    private String signKyc(ObjectNode kyc) throws JsonProcessingException {
         String payload = objectMapper.writeValueAsString(kyc);
         JWTSignatureRequestDto jwtSignatureRequestDto = new JWTSignatureRequestDto();
         jwtSignatureRequestDto.setApplicationId(APPLICATION_ID);
@@ -416,7 +416,131 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return authRepository.save(kycAuth);
     }
 
-    private Map<String, Object> buildKycDataBasedOnPolicy(String individualId, JsonNode identityData, Map<String, JsonNode> claims, List<String> locales, List<String> claimsList) {
+    private ObjectNode buildKycData(String individualId, JsonNode identityData, Map<String, JsonNode> claimsParam, List<String> claimLocales) {
+        ObjectNode kyc = objectMapper.createObjectNode();
+        List<String> locales = (claimLocales != null && !claimLocales.isEmpty())
+                ? claimLocales
+                : List.of(defaultLanguage);
+
+        Set<String> requestedClaims = new HashSet<>();
+        JsonNode verifiedClaimsNode = null; // can be object or array
+
+        for(String claim : claimsParam.keySet()) {
+            if("verified_claims".equals(claim)) {
+                verifiedClaimsNode = claimsParam.get(claim);
+            } else {
+                requestedClaims.add(claim);
+            }
+        }
+
+        // Add requested standard claims
+        for (String claimName : requestedClaims) {
+            addClaimToKyc(claimName, identityData, locales, kyc);
+        }
+
+        // Handle verified_claims as object or array
+        if (verifiedClaimsNode != null) {
+            Optional<List<VerifiedClaim>> claimsByVerificationMetadataResult = verifiedClaimRepository.findByIndividualIdAndIsActive(individualId, true);
+            if(claimsByVerificationMetadataResult.isEmpty())
+                return kyc;
+
+            if (verifiedClaimsNode.isArray()) {
+                // multiple verified_claims requests
+                List<ObjectNode> verifiedList = new ArrayList<>();
+                for (JsonNode singleReq : verifiedClaimsNode) {
+                    verifiedList.add(
+                            buildVerifiedClaimsObject(singleReq, locales,
+                                    identityData, claimsByVerificationMetadataResult.get(), kyc)
+                    );
+                }
+                kyc.set("verified_claims", objectMapper.valueToTree(verifiedList));
+            } else if (verifiedClaimsNode.isObject()) {
+                // single verified_claims request
+                kyc.set("verified_claims",
+                        buildVerifiedClaimsObject(verifiedClaimsNode, locales,
+                                identityData, claimsByVerificationMetadataResult.get(), kyc)
+                );
+            }
+        }
+
+        return kyc;
+    }
+
+    private void addClaimToKyc(String claimName, JsonNode identityData, List<String> locales, ObjectNode kyc) {
+        Optional<Map.Entry<String, String>> keyMappingEntry = oidcClaimsMapping.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(claimName) )
+                .findFirst();
+        if(keyMappingEntry.isEmpty())
+            return;
+
+        List<LanguageValue> filteredValues = getLanguageValuesList(identityData.get(keyMappingEntry.get().getKey()), locales);
+        for (LanguageValue languageValue : filteredValues) {
+            String key = (filteredValues.size() > 1) ? claimName + "#" + languageValue.getLanguage() : claimName;
+            kyc.put(key, languageValue.getValue());
+        }
+    }
+
+    private List<LanguageValue> getLanguageValuesList(JsonNode fieldValue, List<String> locales) {
+        if(fieldValue == null || !fieldValue.isArray())
+            return Collections.emptyList();
+        List<LanguageValue> languageValues=new ArrayList<>();
+        for (JsonNode node : (ArrayNode)fieldValue) {
+            String language = node.get("language").asText();
+            if(locales.contains(language)) {
+                String value = node.get("value").asText();
+                LanguageValue languageValue = new LanguageValue();
+                languageValue.setLanguage(language);
+                languageValue.setValue(value);
+                languageValues.add(languageValue);
+            }
+        }
+        return languageValues;
+    }
+
+    /**
+     * Build a single verified_claims object with verification/evidence and filtered claims.
+     */
+    private ObjectNode buildVerifiedClaimsObject(
+            JsonNode requestNode,
+            List<String> locales,
+            JsonNode identityData,
+            List<VerifiedClaim> claimsByVerificationMetadata,
+            ObjectNode kyc) {
+
+        JsonNode requestedVerification = requestNode.get("verification");
+        JsonNode requestedVerifiedClaims = requestNode.get("claims");
+
+        List<VerifiedClaim> matchedEntries = claimsByVerificationMetadata.stream()
+                .filter(vc -> isClaimMatchingValueOrValuesCriteria(vc.getTrustFramework(), requestedVerification.get("trust_framework")))
+                .collect(Collectors.toList());
+
+        // Collect claims present in verification metadata & requested
+        ObjectNode verifiedValues = objectMapper.createObjectNode();
+        for(VerifiedClaim verifiedClaim : matchedEntries) {
+            requestedVerifiedClaims.fieldNames().forEachRemaining(
+                    fieldName -> {
+                        if(fieldName.equals(verifiedClaim.getClaim())) {
+                            addClaimToKyc(verifiedClaim.getClaim(), identityData, locales, verifiedValues);
+                            kyc.remove(verifiedClaim.getClaim()); // remove from standard claims if present
+                        }
+                    }
+            );
+        }
+
+        ObjectNode verifiedClaimDetail = objectMapper.createObjectNode();
+        if(!verifiedValues.isEmpty()) {
+            ObjectNode verification = objectMapper.createObjectNode();
+            verification.set("trust_framework", requestedVerification.get("trust_framework"));
+            verification.put("time", String.valueOf(matchedEntries.get(0).getUpdDateTime())); // TODO: format time
+
+            verifiedClaimDetail.set("verification", verification);
+            verifiedClaimDetail.set("claims", verifiedValues);
+        }
+        return verifiedClaimDetail;
+    }
+
+/*
+        private Map<String, Object> buildKycDataBasedOnPolicy(String individualId, JsonNode identityData, Map<String, JsonNode> claims, List<String> locales, List<String> claimsList) {
         log.info("Accepted claim details {} for locales : {}", claims, locales);
         Map<String, Object> kyc = new HashMap<>();
         if (CollectionUtils.isEmpty(locales)) {
@@ -493,12 +617,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
 
-    /**
+    *//**
      * Claim list to hold the verified claims names
      *
      * @param result  result
      * @param claimsList temporary claim list for holding the verified claims.
-     */
+     *//*
     @SuppressWarnings("unchecked")
     private void addVerifiedClaimToClaimList(Map<String, Object> result, List<String> claimsList) {
         for (Map.Entry<String, Object> entry : result.entrySet()) {
@@ -517,11 +641,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    /**
+    *//**
      * Claim list to hold the verified claims names
      * @param claimDetail claimDetail
      * @return claimsList
-     */
+     *//*
     private List<String> getVerifiedClaimList(Map.Entry<String, JsonNode> claimDetail) {
         List<String> claimsList = new ArrayList<>();
         if(claimDetail.getKey()!=null && claimDetail.getValue()!=null){
@@ -552,7 +676,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .collect(Collectors.toMap(v -> isSingleLanguage ? claimName : claimName + "#" + locale, LanguageValue::getValue)));
         }
         return map;
-    }
+    }*/
 
     private boolean isClaimMatchingValueOrValuesCriteria(String claimValue, JsonNode requestedClaimDetail) {
         return requestedClaimDetail == null ||
@@ -561,7 +685,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                 .anyMatch(node -> node.asText().equals(claimValue)) ) );
     }
 
-    private Map<String, Object> getVerificationDetail(String individualId, JsonNode requestedVerificationMetadata, JsonNode identityData, List<String> locales, List<String> claimsList) {
+    /*private Map<String, Object> getVerificationDetail(String individualId, JsonNode requestedVerificationMetadata, JsonNode identityData, List<String> locales, List<String> claimsList) {
         if (requestedVerificationMetadata == null) {
             return Collections.emptyMap();
         }
@@ -602,7 +726,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Map<String, Object> kyc = buildKycDataBasedOnPolicy(individualId, identityData, matchedVerifiedClaims, locales, claimsList);
         result.put("claims", kyc);
         return result;
-    }
+    }*/
 
     public boolean isSupportedOtpChannel(String channel) {
         return channel != null && otpChannels.contains(channel.toLowerCase());
