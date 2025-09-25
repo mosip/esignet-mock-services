@@ -75,11 +75,11 @@ The application runs on PORT=8888 by default.
 ### Environment Variables
 
 - `ESIGNET_SERVICE_URL`: MOSIP eSignet API base URL  
-  Example: `https://esignet.es-dev.mosip.net/v1/esignet`
+  Example: `https://<ESIGNET_DOMAIN>/v1/esignet`
 - `PORT`: Server port (default: 8888)
 - `CLIENT_PRIVATE_KEY`: Base64 encoded private key JWK for client authentication (required)
 - `ESIGNET_AUD_URL`: Audience value for token endpoint client assertions  
-  Example: `https://esignet.es-dev.mosip.net/v1/esignet/oauth/v2/token`
+  Example: `https://<ESIGNET_DOMAIN>/v1/esignet/oauth/v2/token`
 - `CLIENT_ASSERTION_TYPE`: JWT client assertion type (default: `urn:ietf:params:oauth:client-assertion-type:jwt-bearer`)
 - `USERINFO_RESPONSE_TYPE`: Response type for user information (default: `jws`, options: `jws`, `jwe`, `jwt`)
 - `JWE_USERINFO_PRIVATE_KEY`: Base64 encoded private key for JWE decryption (required only if `USERINFO_RESPONSE_TYPE=jwe`)
@@ -89,11 +89,11 @@ The application runs on PORT=8888 by default.
 When using PAR flow or when PAR is enabled, make sure to add these additional environment variables:
 
 - `ESIGNET_PAR_ENDPOINT`: PAR (Pushed Authorization Request) endpoint URL  
-  Example: `https://esignet.es-dev.mosip.net/v1/esignet/oauth/par`
+  Example: `https://<ESIGNET_DOMAIN>/v1/esignet/oauth/par`
 - `ESIGNET_PAR_AUD_URL`: Audience value for PAR endpoint client assertions  
-  Example: `https://esignet.es-dev.mosip.net/v1/esignet/oauth/par`
+  Example: `https://<ESIGNET_DOMAIN>/v1/esignet/oauth/par`
 - `REDIRECT_URI`: Redirect URI for OAuth flows  
-  Example: `https://healthservices.es-dev.mosip.net/userprofile`
+  Example: `https://<YOUR_DOMAIN>/userprofile`
 - `SCOPE_USER_PROFILE`: Scope for user profile requests (default: `openid profile`)
 - `SCOPE_REGISTRATION`: Scope for registration requests (default: `openid profile`)
 - `DISPLAY`: Display mode (default: `page`)
@@ -108,7 +108,6 @@ When using PAR flow or when PAR is enabled, make sure to add these additional en
 - `CLAIMS_LOCALES`: Claims localization (default: `en`)
 - `DEFAULT_UI_LOCALES`: Default UI localization (optional)
 
-
 > **Note:** PAR (RFC 9126) enhances security by allowing authorization request parameters to be pushed to the authorization server prior to the authorization request itself, reducing the risk of parameter tampering and supporting larger request payloads.
 
 ### Build and run with Docker
@@ -118,22 +117,22 @@ $ docker build -t <dockerImageName>:<tag> .
 
 # Basic setup
 $ docker run -it -d -p 8888:8888 \
-  --env ESIGNET_SERVICE_URL='https://esignet.es-dev.mosip.net/v1/esignet' \
-  --env ESIGNET_AUD_URL='https://esignet.es-dev.mosip.net/v1/esignet/oauth/v2/token' \
+  --env ESIGNET_SERVICE_URL='https://<ESIGNET_DOMAIN>/v1/esignet' \
+  --env ESIGNET_AUD_URL='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/v2/token' \
   --env CLIENT_PRIVATE_KEY='<BASE64_ENCODED_PRIVATE_KEY>' \
-  --env REDIRECT_URI='https://healthservices.es-dev.mosip.net/userprofile' \
+  --env REDIRECT_URI='https://<YOUR_DOMAIN>/userprofile' \
   --env SCOPE_USER_PROFILE='openid profile' \
   --env ACRS='mosip:idp:acr:linked-wallet mosip:idp:acr:knowledge mosip:idp:acr:generated-code mosip:idp:acr:password' \
   <dockerImageName>:<tag>
 
 # For PAR-enabled setup, add these additional environment variables:
 $ docker run -it -d -p 8888:8888 \
-  --env ESIGNET_SERVICE_URL='https://esignet.es-dev.mosip.net/v1/esignet' \
-  --env ESIGNET_AUD_URL='https://esignet.es-dev.mosip.net/v1/esignet/oauth/v2/token' \
-  --env ESIGNET_PAR_ENDPOINT='https://esignet.es-dev.mosip.net/v1/esignet/oauth/par' \
-  --env ESIGNET_PAR_AUD_URL='https://esignet.es-dev.mosip.net/v1/esignet/oauth/par' \
+  --env ESIGNET_SERVICE_URL='https://<ESIGNET_DOMAIN>/v1/esignet' \
+  --env ESIGNET_AUD_URL='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/v2/token' \
+  --env ESIGNET_PAR_ENDPOINT='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/par' \
+  --env ESIGNET_PAR_AUD_URL='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/par' \
   --env CLIENT_PRIVATE_KEY='<BASE64_ENCODED_PRIVATE_KEY>' \
-  --env REDIRECT_URI='https://healthservices.es-dev.mosip.net/userprofile' \
+  --env REDIRECT_URI='https://<YOUR_DOMAIN>/userprofile' \
   --env SCOPE_USER_PROFILE='openid profile' \
   --env ACRS='mosip:idp:acr:linked-wallet mosip:idp:acr:knowledge mosip:idp:acr:generated-code mosip:idp:acr:password' \
   <dockerImageName>:<tag>
@@ -149,10 +148,10 @@ $ docker run -it -d -p 8888:8888 \
 2. **Basic setup** - Set core environment variables and run:
    ```bash
    $ export PORT=8888
-   $ export ESIGNET_SERVICE_URL='https://esignet.es-dev.mosip.net/v1/esignet'
-   $ export ESIGNET_AUD_URL='https://esignet.es-dev.mosip.net/v1/esignet/oauth/v2/token'
+   $ export ESIGNET_SERVICE_URL='https://<ESIGNET_DOMAIN>/v1/esignet'
+   $ export ESIGNET_AUD_URL='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/v2/token'
    $ export CLIENT_PRIVATE_KEY='<BASE64_ENCODED_PRIVATE_KEY>'
-   $ export REDIRECT_URI='https://healthservices.es-dev.mosip.net/userprofile'
+   $ export REDIRECT_URI='https://<YOUR_DOMAIN>/userprofile'
    $ export SCOPE_USER_PROFILE='openid profile'
    $ export ACRS='mosip:idp:acr:linked-wallet mosip:idp:acr:knowledge mosip:idp:acr:generated-code mosip:idp:acr:password'
    $ npm start
@@ -160,20 +159,20 @@ $ docker run -it -d -p 8888:8888 \
 
 3. **For PAR-enabled setup**, add these additional exports:
    ```bash
-   $ export ESIGNET_PAR_ENDPOINT='https://esignet.es-dev.mosip.net/v1/esignet/oauth/par'
-   $ export ESIGNET_PAR_AUD_URL='https://esignet.es-dev.mosip.net/v1/esignet/oauth/par'
+   $ export ESIGNET_PAR_ENDPOINT='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/par'
+   $ export ESIGNET_PAR_AUD_URL='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/par'
    ```
 
 4. **Alternative using package.json script:**
    
    Update the "devstart" script in package.json:
    ```json
-   "devstart": "SET PORT=8888 && SET ESIGNET_SERVICE_URL='https://esignet.es-dev.mosip.net/v1/esignet' && SET ESIGNET_AUD_URL='https://esignet.es-dev.mosip.net/v1/esignet/oauth/v2/token' && SET CLIENT_PRIVATE_KEY='<BASE64_ENCODED_PRIVATE_KEY>' && SET REDIRECT_URI='https://healthservices.es-dev.mosip.net/userprofile' && SET SCOPE_USER_PROFILE='openid profile' && nodemon app.js"
+   "devstart": "SET PORT=8888 && SET ESIGNET_SERVICE_URL='https://<ESIGNET_DOMAIN>/v1/esignet' && SET ESIGNET_AUD_URL='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/v2/token' && SET CLIENT_PRIVATE_KEY='<BASE64_ENCODED_PRIVATE_KEY>' && SET REDIRECT_URI='https://<YOUR_DOMAIN>/userprofile' && SET SCOPE_USER_PROFILE='openid profile' && nodemon app.js"
    ```
 
    For PAR-enabled setup, additionally include:
    ```json
-   "devstart": "SET PORT=8888 && SET ESIGNET_SERVICE_URL='https://esignet.es-dev.mosip.net/v1/esignet' && SET ESIGNET_AUD_URL='https://esignet.es-dev.mosip.net/v1/esignet/oauth/v2/token' && SET ESIGNET_PAR_ENDPOINT='https://esignet.es-dev.mosip.net/v1/esignet/oauth/par' && SET ESIGNET_PAR_AUD_URL='https://esignet.es-dev.mosip.net/v1/esignet/oauth/par' && SET CLIENT_PRIVATE_KEY='<BASE64_ENCODED_PRIVATE_KEY>' && SET REDIRECT_URI='https://healthservices.es-dev.mosip.net/userprofile' && SET SCOPE_USER_PROFILE='openid profile' && nodemon app.js"
+   "devstart": "SET PORT=8888 && SET ESIGNET_SERVICE_URL='https://<ESIGNET_DOMAIN>/v1/esignet' && SET ESIGNET_AUD_URL='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/v2/token' && SET ESIGNET_PAR_ENDPOINT='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/par' && SET ESIGNET_PAR_AUD_URL='https://<ESIGNET_DOMAIN>/v1/esignet/oauth/par' && SET CLIENT_PRIVATE_KEY='<BASE64_ENCODED_PRIVATE_KEY>' && SET REDIRECT_URI='https://<YOUR_DOMAIN>/userprofile' && SET SCOPE_USER_PROFILE='openid profile' && nodemon app.js"
    ```
 
    Then run:
