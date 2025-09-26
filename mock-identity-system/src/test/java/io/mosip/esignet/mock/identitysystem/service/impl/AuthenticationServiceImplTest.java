@@ -16,6 +16,7 @@ import io.mosip.esignet.mock.identitysystem.entity.KycAuth;
 import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.AuthRepository;
+import io.mosip.esignet.mock.identitysystem.repository.PartnerDataRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.CacheUtilService;
@@ -45,6 +46,9 @@ public class AuthenticationServiceImplTest {
 
     @Mock
     AuthRepository authRepository;
+
+    @Mock
+    PartnerDataRepository partnerDataRepository;
 
     @Mock
     VerifiedClaimRepository verifiedClaimRepository;
@@ -778,8 +782,6 @@ public class AuthenticationServiceImplTest {
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
-        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
-                .thenReturn(verifiedClaimsOptional);
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
         jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
         Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
@@ -959,9 +961,6 @@ public class AuthenticationServiceImplTest {
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
-        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
-                .thenReturn(verifiedClaimsOptional);
-
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
         jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
         Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
@@ -1086,9 +1085,6 @@ public class AuthenticationServiceImplTest {
         Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityDataJsonNode);
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
-
-        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
-                .thenReturn(verifiedClaimsOptional);
 
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
         jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
@@ -1239,9 +1235,6 @@ public class AuthenticationServiceImplTest {
         Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityDataJsonNode);
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
-
-        Mockito.when(verifiedClaimRepository.findByIndividualIdAndClaimAndIsActive(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
-                .thenReturn(verifiedClaimsOptional);
 
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
         jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
