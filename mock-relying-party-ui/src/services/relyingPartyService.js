@@ -37,11 +37,12 @@ const get_dpop_jkt = async (clientId, state) => {
  * @param {string} ui_locales - Locale/language preference
  * @returns {Promise<string>} - Request URI (URN format)
  */
-const get_requestUri = async (clientId, state, ui_locales) => {
+const get_requestUri = async (clientId, state, ui_locales, dpop_jkt) => {
   try {
     const params = new URLSearchParams({
       state,
       ui_locales,
+      dpop_jkt
     });
     const endpoint = `${BASE_URL}${GET_REQUEST_URI}/${clientId}?${params.toString()}`;
     const response = await axios.get(endpoint, {
@@ -67,12 +68,14 @@ const get_requestUri = async (clientId, state, ui_locales) => {
  */
 const post_fetchUserInfo = async (
   code,
+  state,
   client_id,
   redirect_uri,
   grant_type
 ) => {
   let request = {
     code: code,
+    state: state,
     client_id: client_id,
     redirect_uri: redirect_uri,
     grant_type: grant_type,

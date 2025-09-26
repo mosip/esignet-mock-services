@@ -16,6 +16,7 @@
     "express-rate-limit": "^8.0.1",
     "joi": "^17.7.1",
     "jose": "^4.15.5",
+    "node-cache": "^5.1.2",
     "nodemon": "^3.0.0"
   }
 }
