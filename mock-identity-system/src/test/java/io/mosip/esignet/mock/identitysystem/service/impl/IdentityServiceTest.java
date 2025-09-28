@@ -24,9 +24,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -41,6 +49,9 @@ public class IdentityServiceTest {
 
     @Mock
     IdentityRepository identityRepository;
+
+    @Mock
+    private ResourceLoader resourceLoader;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -275,4 +286,57 @@ public class IdentityServiceTest {
         assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID, exception.getErrorCode());
     }
 
+    @Test
+    public void getSchema_whenIOException_thenFail() throws Exception {
+        Resource mockResource = mock(Resource.class);
+        when(mockResource.getInputStream()).thenThrow(new IOException("File not found"));
+        when(resourceLoader.getResource(anyString())).thenReturn(mockResource);
+        ReflectionTestUtils.setField(identityService, "schemaUrl", "classpath:/missing-schema.json");
+        MockIdentityException exception = assertThrows(MockIdentityException.class, () -> {
+            identityService.getSchema();
+        });
+        assertEquals("ui_spec_not_found", exception.getMessage());
+    }
+
+    @Test
+    public void getSchema_whenInvalidJson_thenFail() throws Exception {
+        String invalidJson = "{invalidJson}";
+        InputStream inputStream = new ByteArrayInputStream(invalidJson.getBytes(StandardCharsets.UTF_8));
+        Resource mockResource = mock(Resource.class);
+        when(mockResource.getInputStream()).thenReturn(inputStream);
+        when(resourceLoader.getResource(anyString())).thenReturn(mockResource);
+        ReflectionTestUtils.setField(identityService, "schemaUrl", "classpath:/invalid-schema.json");
+        MockIdentityException exception = assertThrows(MockIdentityException.class, () -> {
+            identityService.getSchema();
+        });
+        assertEquals("ui_spec_not_found", exception.getMessage());
+    }
+
+    @Test
+    public void getSchema_whenValidJson_thenPass() throws Exception {
+        String json = "{\"key\": \"value\"}";
+        InputStream inputStream = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+        Resource mockResource = mock(Resource.class);
+        when(mockResource.getInputStream()).thenReturn(inputStream);
+        when(resourceLoader.getResource(anyString())).thenReturn(mockResource);
+        ReflectionTestUtils.setField(identityService, "schemaUrl", "classpath:/mock-schema.json");
+        JsonNode result = identityService.getSchema();
+        Assert.assertNotNull(result);
+        assertEquals("value", result.get("key").asText());
+    }
+
+    @Test
+    public void addIdentity_whenUnableToProcessJson_thenFail() throws JsonProcessingException {
+        IdentityData identityData = new IdentityData();
+        identityData.setIndividualId("test-id");
+        identityData.setPassword(null);
+        when(identityRepository.findById("test-id")).thenReturn(Optional.empty());
+        ObjectMapper mockMapper = mock(ObjectMapper.class);
+        when(mockMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("JSON error") {});
+        ReflectionTestUtils.setField(identityService, "objectMapper", mockMapper);
+        MockIdentityException exception = assertThrows(MockIdentityException.class, () -> {
+            identityService.addIdentity(identityData);
+        });
+        assertEquals(ErrorConstants.JSON_PROCESSING_ERROR, exception.getErrorCode());
+    }
 }

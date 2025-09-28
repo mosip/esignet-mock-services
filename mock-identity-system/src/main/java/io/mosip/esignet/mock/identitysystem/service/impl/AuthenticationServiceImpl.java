@@ -616,13 +616,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return kyc;
     }
 
-
-    *//**
-     * Claim list to hold the verified claims names
-     *
-     * @param result  result
-     * @param claimsList temporary claim list for holding the verified claims.
-     *//*
     @SuppressWarnings("unchecked")
     private void addVerifiedClaimToClaimList(Map<String, Object> result, List<String> claimsList) {
         for (Map.Entry<String, Object> entry : result.entrySet()) {
@@ -639,28 +632,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
             }
         }
-    }
-
-    *//**
-     * Claim list to hold the verified claims names
-     * @param claimDetail claimDetail
-     * @return claimsList
-     *//*
-    private List<String> getVerifiedClaimList(Map.Entry<String, JsonNode> claimDetail) {
-        List<String> claimsList = new ArrayList<>();
-        if(claimDetail.getKey()!=null && claimDetail.getValue()!=null){
-            for (JsonNode jsonNode : claimDetail.getValue()) {
-                JsonNode requestedVerifiedClaims = jsonNode.get("claims");
-                Iterator<Map.Entry<String, JsonNode>> it = requestedVerifiedClaims.fields();
-                while (it.hasNext()) {
-                    Map.Entry<String, JsonNode> entry = it.next();
-                    if(!claimsList.contains(entry.getKey())){
-                        claimsList.add(entry.getKey());
-                    }
-                }
-            }
-        }
-        return claimsList;
     }
 
     private Map<String, Object> getKycValues(List<String> locales, String claimName, List<LanguageValue> values, JsonNode requestedClaimDetail) {
