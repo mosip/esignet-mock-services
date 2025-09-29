@@ -28,7 +28,7 @@ Below environment variables should be changed to point to different environment:
 
 ## How to start the mock Relying party UI with FAPI 2.0 enabled?
 
-1. Run [mock-relying-party-portal-dpop-par-docker-compose.yml](mock-relying-party-portal-dpop-par-docker-compose.yml) to start the relying party portal with DPoP and PAR enabled.
+1. Run [mock-relying-party-portal-fapi2-docker-compose.yml](mock-relying-party-portal-fapi2-docker-compose.yml) to start the relying party portal with DPoP and PAR enabled.
 2. Access the Relying party UI at http://localhost:3000
 
 ### Required Environment Variables
@@ -48,7 +48,7 @@ To enable FAPI 2.0 features, ensure the following environment variables are set 
 
 ### Example
 
-Refer to [mock-relying-party-portal-dpop-par-docker-compose.yml](mock-relying-party-portal-dpop-par-docker-compose.yml) for a complete example with all required variables pre-configured.
+Refer to [mock-relying-party-portal-fapi2-docker-compose.yml](mock-relying-party-portal-fapi2-docker-compose.yml) for a complete example with all required variables pre-configured.
 
 ---
 
