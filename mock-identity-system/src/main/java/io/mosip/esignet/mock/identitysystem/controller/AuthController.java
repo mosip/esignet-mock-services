@@ -8,6 +8,8 @@ package io.mosip.esignet.mock.identitysystem.controller;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.service.AuthenticationService;
 import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
+import io.mosip.kernel.keymanagerservice.dto.AllCertificatesDataResponseDto;
+import io.mosip.kernel.keymanagerservice.service.KeymanagerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import java.util.Optional;
+
+import static io.mosip.esignet.mock.identitysystem.util.Constants.APPLICATION_ID;
+
 @RestController
 @RequestMapping("/")
 @Slf4j
@@ -26,6 +32,9 @@ public class AuthController {
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private KeymanagerService keymanagerService;
 
     @Value("${mosip.mockidentitysystem.response.delay:0}")
     private int delayInMilliSecs;
@@ -94,7 +103,7 @@ public class AuthController {
         return responseWrapper;
     }
 
-    @PostMapping(path = "/send-otp/{relyingPartyId}/{clientId}",
+    @PostMapping(path = "send-otp/{relyingPartyId}/{clientId}",
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<SendOtpResult> sendOtp(@PathVariable @NotBlank String relyingPartyId,
                                                   @PathVariable @NotBlank String clientId,
@@ -103,6 +112,13 @@ public class AuthController {
         responseWrapper.setResponse(authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto));
         responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
         delayedResponse();
+        return responseWrapper;
+    }
+
+    @GetMapping(path = "keys.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWrapper<AllCertificatesDataResponseDto> getAllKeys() {
+        ResponseWrapper<AllCertificatesDataResponseDto> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setResponse(keymanagerService.getAllCertificates(APPLICATION_ID, Optional.empty()));
         return responseWrapper;
     }
 

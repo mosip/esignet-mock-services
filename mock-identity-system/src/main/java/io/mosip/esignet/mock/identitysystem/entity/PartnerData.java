@@ -1,3 +1,8 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package io.mosip.esignet.mock.identitysystem.entity;
 
 import lombok.AllArgsConstructor;
@@ -9,20 +14,20 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "rp_data")
+@Table(name = "partner_data")
 @NoArgsConstructor
 @AllArgsConstructor
-public class RelyingPartyData {
+public class PartnerData {
 
     @Id
-    @Column(name = "rp_id")
-    private String rpId;
+    @Column(name = "partner_id")
+    private String partnerId;
 
     @Column(name = "client_id")
     private String clientId;
 
-    @Column(name = "encryption_key")
-    private String encryptionKey;
+    @Column(name = "public_key")
+    private String publicKey;
 
     @Column(name = "status")
     private String status;

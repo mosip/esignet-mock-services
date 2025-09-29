@@ -8,9 +8,13 @@ package io.mosip.esignet.mock.identitysystem.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.service.impl.AuthenticationServiceImpl;
+import io.mosip.kernel.keymanagerservice.dto.AllCertificatesDataResponseDto;
+import io.mosip.kernel.keymanagerservice.service.KeymanagerService;
+import io.mosip.kernel.keymanagerservice.service.impl.KeymanagerServiceImpl;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,6 +27,7 @@ import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,6 +38,9 @@ public class AuthControllerTest {
 
     @MockBean
     private AuthenticationServiceImpl authenticationService;
+
+    @MockBean
+    private KeymanagerServiceImpl keymanagerService;
 
     @Autowired
     MockMvc mockMvc;
@@ -117,6 +125,15 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.response").exists())
                 .andExpect(jsonPath("$.response.transactionId").value("validTransactionId"))
                 .andExpect(jsonPath("$.response.maskedEmail").value("maskedEmail"));
+    }
+
+    @Test
+    public void getAllKeys_withValidDetails_thenPass() throws Exception {
+        when(keymanagerService.getAllCertificates(any(), any())).thenReturn(new AllCertificatesDataResponseDto());
+        mockMvc.perform(get("/keys.json")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response").exists());
     }
 
 }
