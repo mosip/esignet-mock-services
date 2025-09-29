@@ -152,8 +152,8 @@ const get_GetUserInfo = async (access_token, client_id, state) => {
     const response = await axios.get(endpoint, { headers });
     return decodeUserInfoResponse(response.data);
   } catch (error) {
-    const nonce = error.response?.headers?.["DPoP-Nonce"];
-    const wwwAuth = error.response?.headers?.[" WWW-Authenticate"];
+    const nonce = error.response?.headers?.["dpop-nonce"];
+    const wwwAuth = error.response?.headers?.["www-authenticate"];
     const status = error.status;
 
     if (
