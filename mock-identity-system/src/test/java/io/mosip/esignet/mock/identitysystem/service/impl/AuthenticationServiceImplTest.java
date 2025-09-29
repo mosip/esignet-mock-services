@@ -81,7 +81,7 @@ public class AuthenticationServiceImplTest {
         oidcClaimsMap.put("fullName", "name");
         oidcClaimsMap.put("name", "name");
         oidcClaimsMap.put("email", "email");
-        oidcClaimsMap.put("phone", "phone");
+        oidcClaimsMap.put("phone", "phone_number");
         oidcClaimsMap.put("gender", "gender");
         oidcClaimsMap.put("dateOfBirth","birthdate");
         oidcClaimsMap.put("encodedPhoto","picture");
@@ -175,26 +175,17 @@ public class AuthenticationServiceImplTest {
         kycAuthDto.setIndividualId("individualId");
         kycAuthDto.setTransactionId("transactionId");
 
-        IdentityData identityData = new IdentityData();
-        identityData.setDateOfBirth("1987/11/25");
-        identityData.setIndividualId("individualId");
-        identityData.setEmail("test@email.com");
-        identityData.setPhone("1234567890");
-        LanguageValue languageValue = new LanguageValue();
-        languageValue.setLanguage("eng");
-        languageValue.setValue("Siddharth K Mansour");
-        identityData.setFullName(List.of(languageValue));
         SendOtpDto sendOtpDto=new SendOtpDto();
-        sendOtpDto.setIndividualId("individualId");
+        sendOtpDto.setIndividualId("8267411571");
         sendOtpDto.setOtpChannels(Arrays.asList("email","phone"));
         sendOtpDto.setTransactionId("transactionId");
 
-        Mockito.when(identityService.getIdentity("individualId")).thenReturn(identityData);
-        authenticationService.sendOtp("relyingPartyId", "clientId", sendOtpDto);
         Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        authenticationService.sendOtp("relyingPartyId", "clientId", sendOtpDto);
+
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
         when(cacheUtilService.getTransactionHash(Mockito.anyString())).thenReturn(true);
-
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         Assert.assertTrue(kycAuthResponseDto.isAuthStatus());
     }
@@ -435,17 +426,14 @@ public class AuthenticationServiceImplTest {
         sendOtpDto.setIndividualId("individualId");
         sendOtpDto.setOtpChannels(Arrays.asList("email","phone"));
         sendOtpDto.setTransactionId("transactionId");
-        IdentityData identityData=new IdentityData();
-        identityData.setIndividualId("individualId");
-        identityData.setEmail("test@email.com");
-        identityData.setPhone("1234567890");
 
-        Mockito.when(identityService.getIdentity(individualId)).thenReturn(identityData);
+        Mockito.when(identityService.getIdentityV2(individualId)).thenReturn(this.identityData);
         SendOtpResult result = authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
 
         Assert.assertNotNull(result);
         Assert.assertEquals(sendOtpDto.getTransactionId(), result.getTransactionId());
-        Assert.assertEquals("XXXXXX7890", result.getMaskedMobile());
+        Assert.assertEquals("XXdXXaXXhXXkX@gmail.com", result.getMaskedEmail());
+        Assert.assertEquals("XXXXXXX357934", result.getMaskedMobile());
     }
 
     @Test
@@ -455,7 +443,7 @@ public class AuthenticationServiceImplTest {
         String individualId = "invalidId";
         SendOtpDto sendOtpDto=new SendOtpDto();
         sendOtpDto.setIndividualId(individualId);
-        Mockito.when(identityService.getIdentity(individualId)).thenReturn(null);
+        Mockito.when(identityService.getIdentityV2(individualId)).thenReturn(null);
         MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
             authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
         });
@@ -475,12 +463,12 @@ public class AuthenticationServiceImplTest {
 
         sendOtpDto.setOtpChannels(otpChannels);
         sendOtpDto.setTransactionId("transactionId");
-        IdentityData identityData=new IdentityData();
-        identityData.setIndividualId("individualId");
-        identityData.setEmail("test@email.com");
-        identityData.setPhone("1234567890");
+        ObjectNode identityData = objectMapper.createObjectNode();
+        identityData.put("individualId", "individualId");
+        identityData.put("email", "test@email.com");
+        identityData.put("phone", "1234567890");
 
-        Mockito.when(identityService.getIdentity(individualId)).thenReturn(identityData);
+        Mockito.when(identityService.getIdentityV2(individualId)).thenReturn(identityData);
 
         MockIdentityException exception = Assert.assertThrows(MockIdentityException.class, () -> {
             authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
@@ -503,11 +491,10 @@ public class AuthenticationServiceImplTest {
 
         sendOtpDto.setOtpChannels(otpChannels);
         sendOtpDto.setTransactionId("transactionId");
-        IdentityData identityData=new IdentityData();
-        identityData.setIndividualId("individualId");
-        identityData.setEmail(null);
-        identityData.setPhone(null);
-        Mockito.when(identityService.getIdentity(individualId)).thenReturn(identityData);
+        ObjectNode identityData = objectMapper.createObjectNode();
+        identityData.put("individualId", "individualId");
+
+        Mockito.when(identityService.getIdentityV2(individualId)).thenReturn(identityData);
         try {
             authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
         }catch(MockIdentityException e) {

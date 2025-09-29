@@ -118,13 +118,11 @@ public class IdentityServiceImpl implements IdentityService {
 		if (mockIdentity.isEmpty()) {
 			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
 		}
-		IdentityData identityData = new IdentityData();
 		try {
-			identityData = objectMapper.readValue(mockIdentity.get().getIdentityJson(), IdentityData.class);
+			return objectMapper.readValue(mockIdentity.get().getIdentityJson(), IdentityData.class);
 		} catch (JsonProcessingException e) {
 			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
 		}
-		return identityData;
 	}
 
 	@Override
@@ -186,7 +184,7 @@ public class IdentityServiceImpl implements IdentityService {
 			if(result.isEmpty()) {
 				verifiedClaim = new VerifiedClaim();
 				verifiedClaim.setId(idHash);
-				verifiedClaim.setClaim(oidcClaimName);
+				verifiedClaim.setClaim(oidcClaimName.startsWith("address.") ? "address" : oidcClaimName);
 				verifiedClaim.setIndividualId(verifiedClaimRequestDto.getIndividualId());
 				verifiedClaim.setTrustFramework(trustFramework);
 				verifiedClaim.setCrDateTime(LocalDateTime.now(ZoneOffset.UTC));
