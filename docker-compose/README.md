@@ -55,6 +55,6 @@ Refer to [mock-relying-party-portal-fapi2-docker-compose.yml](mock-relying-party
 **Note:**  
 If you need to connect to a different environment, update the relevant URLs and credentials in your environment variables.
 
-For more details on configuration, refer to [README.md](../mock-relying-party-ui/README.md).
+For more details on configuration, refer to [mock-relying-party-ui README.md](../mock-relying-party-ui/README.md) and [mock-relying-party-service README.md](../mock-relying-party-service/README.md).
 
 

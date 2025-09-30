@@ -7,7 +7,7 @@ This is a NodeJS application that acts as a backend for the Mock Relying Party p
 Mock Relying Party Server provides the following endpoints:
 
 ### 1. GET /dpopJKT
-Generates a DPoP JWK Thumbprint for secure OAuth flows.
+Generates a unique public-private key pair for the DPoP flow and caches it in-memory against the `clientId` and `state` parameters (TTL: 10 minutes, not configurable). Computes and returns the JWK thumbprint of the public key as `dpop_jkt` (per [RFC 7638](https://datatracker.ietf.org/doc/html/rfc7638)). This endpoint implements [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449) DPoP to bind access tokens to the client's cryptographic key, preventing token theft and replay attacks.
 
 **Query Parameters:**
 - `clientId` (required): The registered client identifier
@@ -25,7 +25,7 @@ Generates a DPoP JWK Thumbprint for secure OAuth flows.
 - `500` - Failed to generate DPoP JKT
 
 ### 2. GET /requestUri/:clientId
-Retrieves the Pushed Authorization Request (PAR) URI for OAuth authorization. This endpoint implements RFC 9126 PAR for enhanced security by allowing authorization request parameters to be pushed to the authorization server prior to the authorization request itself.
+Retrieves the Pushed Authorization Request (PAR) URI for OAuth authorization. This endpoint implements [RFC 9126](https://datatracker.ietf.org/doc/html/rfc9126) PAR for enhanced security by allowing authorization request parameters to be pushed to the authorization server prior to the authorization request itself.
 
 **Path Parameters:**
 - `clientId` (required): The registered client identifier
@@ -81,7 +81,7 @@ The application runs on PORT=8888 by default.
 - `ESIGNET_AUD_URL`: Audience value for token endpoint client assertions  
   Example: `https://<ESIGNET_DOMAIN>/v1/esignet/oauth/v2/token`
 - `CLIENT_ASSERTION_TYPE`: JWT client assertion type (default: `urn:ietf:params:oauth:client-assertion-type:jwt-bearer`)
-- `USERINFO_RESPONSE_TYPE`: Response type for user information (default: `jws`, options: `jws`, `jwe`, `jwt`)
+- `USERINFO_RESPONSE_TYPE`: Response type for user information (default: `jws`, options: `jws`, `jwe`)
 - `JWE_USERINFO_PRIVATE_KEY`: Base64 encoded private key for JWE decryption (required only if `USERINFO_RESPONSE_TYPE=jwe`)
 
 #### Additional Configuration for PAR (Pushed Authorization Request)
