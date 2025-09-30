@@ -1,0 +1,47 @@
+services:
+  mock-relying-party-service:
+    image: 'mosipdev/mock-relying-party-service:develop'
+    user: root
+    ports:
+      - 8888:8888
+    environment:
+      - ESIGNET_SERVICE_URL=https://${ESIGNET_DOMAIN}/v1/esignet
+      - ESIGNET_AUD_URL=https://${ESIGNET_DOMAIN}/v1/esignet/oauth/v2/token
+      - ESIGNET_PAR_ENDPOINT=https://${ESIGNET_DOMAIN}/v1/esignet/oauth/par
+      - ESIGNET_PAR_AUD_URL=https://${ESIGNET_DOMAIN}/v1/esignet/oauth/par
+      - CLIENT_PRIVATE_KEY=${CLIENT_PRIVATE_KEY}
+      - JWE_USERINFO_PRIVATE_KEY=${JWE_USERINFO_PRIVATE_KEY}
+      - USERINFO_RESPONSE_TYPE=jwt
+      - SCOPE_USER_PROFILE=openid profile
+      - REDIRECT_URI=https://${YOUR_DOMAIN}/userprofile
+      - ACRS=mosip:idp:acr:linked-wallet mosip:idp:acr:knowledge mosip:idp:acr:generated-code mosip:idp:acr:password
+      - CLAIMS_USER_PROFILE={"userinfo":{"name":{"essential":true},"phone_number":{"essential":true},"verified_claims":[{"verification":{"trust_framework":{"value":"ABC TF"}},"claims":{"phone_number":{"essential":true}}},{"verification":{"trust_framework":{"value":"XYZ TF"}},"claims":{"name":{"essential":true}}}]},"id_token":{}}
+
+  mock-relying-party-ui:
+    image: 'mosipdev/mock-relying-party-ui:develop'
+    user: root
+    ports:
+      - 3000:3000
+    depends_on:
+      - mock-relying-party-service
+    environment:
+      - container_user=mosip
+      - ESIGNET_UI_BASE_URL=https://${ESIGNET_DOMAIN}
+      - MOCK_RELYING_PARTY_SERVER_URL=https://${YOUR_DOMAIN}/mock-relying-party-service
+      - REDIRECT_URI=https://${YOUR_DOMAIN}/userprofile
+      - CLIENT_ID=${CLIENT_ID}
+      - ACRS=mosip:idp:acr:static-code%20mosip:idp:acr:generated-code%20mosip:idp:acr:biometrics%20mosip:idp:acr:linked-wallet%20mosip:idp:acr:password%20mosip:idp:acr:knowledge
+      - REDIRECT_URI_REGISTRATION=https://${YOUR_DOMAIN}/registration
+      - SIGN_IN_BUTTON_PLUGIN_URL=https://${ESIGNET_DOMAIN}/plugins/sign-in-button-plugin.js
+      - DISPLAY=page
+      - PROMPT=none
+      - GRANT_TYPE=authorization_code
+      - CLAIMS_LOCALES=en
+      - SCOPE_USER_PROFILE=openid profile
+      - CLAIMS_USER_PROFILE=%7B%22userinfo%22%3A%7B%22birthdate%22%3A%7B%22essential%22%3Atrue%7D%2C%22verified_claims%22%3A%5B%7B%22verification%22%3A%7B%22trust_framework%22%3A%7B%22value%22%3A%22ABC%20TF%22%7D%2C%22verification_process%22%3Anull%7D%2C%22claims%22%3A%7B%22phone_number%22%3A%7B%22essential%22%3Atrue%7D%7D%7D%2C%7B%22verification%22%3A%7B%22trust_framework%22%3A%7B%22value%22%3A%22XYZ%20TF%22%7D%7D%2C%22claims%22%3A%7B%22name%22%3A%7B%22essential%22%3Atrue%7D%7D%7D%5D%7D%2C%22id_token%22%3A%7B%7D%7D
+      - CLAIMS_REGISTRATION=%7B%22userinfo%22:%7B%22given_name%22:%7B%22essential%22:true%7D,%22phone_number%22:%7B%22essential%22:false%7D,%22email%22:%7B%22essential%22:true%7D,%22picture%22:%7B%22essential%22:false%7D,%22gender%22:%7B%22essential%22:false%7D,%22birthdate%22:%7B%22essential%22:false%7D,%22address%22:%7B%22essential%22:false%7D%7D,%22id_token%22:%7B%7D%7D
+      - DEFAULT_LANG=en
+      - FALLBACK_LANG=%7B%22label%22%3A%22English%22%2C%22value%22%3A%22en%22%7D
+      - PAR_CALLBACK_NAME=get_requestUri
+      - PAR_CALLBACK_TIMEOUT=5000
+      - DPOP_CALLBACK_NAME=get_dpop_jkt
