@@ -5,20 +5,15 @@
  */
 package io.mosip.esignet.mock.identitysystem.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.mosip.esignet.mock.identitysystem.dto.*;
+import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
+import io.mosip.esignet.mock.identitysystem.dto.LanguageValue;
+import io.mosip.esignet.mock.identitysystem.dto.RequestWrapper;
+import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
+import io.mosip.esignet.mock.identitysystem.service.IdentityService;
+import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,14 +21,20 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
-import io.mosip.esignet.mock.identitysystem.service.IdentityService;
-import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = IdentityController.class)
@@ -265,4 +266,29 @@ public class IdentityControllerTest {
 				.andExpect(jsonPath("$.errors[0].errorCode").value("invalid_fullname"));
 	}
 
+	@Test
+	public void getUiSpec_withValidRequest_thenPass() throws Exception {
+		// Create mock schema JsonNode
+		ObjectNode mockSchema = objectMapper.createObjectNode();
+		mockSchema.put("schemaVersion", "1.0");
+		mockSchema.put("type", "object");
+		ObjectNode properties = objectMapper.createObjectNode();
+		properties.put("individualId", "string");
+		mockSchema.set("properties", properties);
+		Mockito.when(identityService.getSchema()).thenReturn(mockSchema);
+		mockMvc.perform(get("/identity/ui-spec")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.response.schemaVersion").value("1.0"))
+				.andExpect(jsonPath("$.response.type").value("object"));
+	}
+
+	@Test
+	public void handleMethodArgumentNotValidException_withNullException_returnBadRequest() {
+		IdentityController controller = new IdentityController();
+		ResponseEntity response = controller.handleMethodArgumentNotValidException(null);
+		org.junit.Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		org.junit.Assert.assertTrue(response.getBody() instanceof List);
+		org.junit.Assert.assertTrue(((List<?>) response.getBody()).isEmpty());
+	}
 }
