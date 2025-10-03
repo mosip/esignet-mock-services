@@ -14,6 +14,7 @@ import io.mosip.esignet.mock.identitysystem.dto.RequestWrapper;
 import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -284,11 +285,11 @@ public class IdentityControllerTest {
 	}
 
 	@Test
-	public void handleMethodArgumentNotValidException_withNullException_returnBadRequest() {
+	public void handleMethodArgumentNotValidException_withNull_thenPass() {
 		IdentityController controller = new IdentityController();
 		ResponseEntity response = controller.handleMethodArgumentNotValidException(null);
-		org.junit.Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-		org.junit.Assert.assertTrue(response.getBody() instanceof List);
-		org.junit.Assert.assertTrue(((List<?>) response.getBody()).isEmpty());
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		Assert.assertTrue(response.getBody() instanceof List);
+		Assert.assertTrue(((List<?>) response.getBody()).isEmpty());
 	}
 }
