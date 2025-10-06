@@ -22,16 +22,16 @@ function SuccessScreen() {
 
           {/* Heading */}
           <h2 className="font-montserrat font-semibold text-[24px] sm:text-[32px] text-gray-800 leading-[100%] mb-4">
-            {t('success.title')}
+            {t("success.title")}
           </h2>
 
           {/* Subtext */}
           <div className="max-w-[400px] space-y-4 px-1">
             <p className="font-montserrat font-medium text-[16px] sm:text-[18px] text-gray-600 leading-[100%]">
-              {t('success.line1')}
+              {t("success.line1")}
             </p>
             <p className="font-montserrat font-medium text-[16px] sm:text-[18px] text-gray-600 leading-[100%]">
-              {t('success.line2')}
+              {t("success.line2")}
             </p>
           </div>
         </div>

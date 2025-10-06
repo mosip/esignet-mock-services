@@ -6,7 +6,7 @@
 @layer base {
   body {
     @apply m-0 px-16 font-sans bg-white text-gray-900;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: "Segoe UI", sans-serif;
     direction: ltr;
   }
 
@@ -40,7 +40,6 @@
 
 /* Custom component classes using Tailwind utilities */
 @layer components {
-
   /* Container class */
   .container {
     @apply max-w-screen-xl mx-auto px-5;
