@@ -329,7 +329,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         String encodedChallenge= kycAuthDto.getKbi();
         try{
-            byte[] decodedBytes = Base64.getUrlDecoder().decode(encodedChallenge);
+            byte[] decodedBytes = Base64.getDecoder().decode(encodedChallenge);
             String challenge = new String(decodedBytes, StandardCharsets.UTF_8);
             Map<String, String> challengeMap = objectMapper.readValue(challenge, Map.class);
 
