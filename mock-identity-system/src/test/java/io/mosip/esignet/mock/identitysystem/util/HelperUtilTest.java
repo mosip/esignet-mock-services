@@ -102,17 +102,17 @@ public class HelperUtilTest {
     }
 
     @Test
-    public void maskMobile_withNull_thenFail() {
+    public void maskMobile_withNull_thenReturnEmpty() {
         assertEquals("",HelperUtil.maskMobile(null));
     }
 
     @Test
-    public void maskEmail_withNull_thenFail() {
+    public void maskEmail_withNull_thenReturnEmpty() {
         assertEquals("",HelperUtil.maskEmail(null));
     }
 
     @Test
-    public void getIdentityDataValue_withMissingField_thenFail() {
+    public void getIdentityDataValue_withMissingField_shouldReturnNull() {
         ObjectNode jsonNode = JsonNodeFactory.instance.objectNode();
         String result = HelperUtil.getIdentityDataValue(jsonNode, "nonExistentField", "en");
         assertNull(result);
