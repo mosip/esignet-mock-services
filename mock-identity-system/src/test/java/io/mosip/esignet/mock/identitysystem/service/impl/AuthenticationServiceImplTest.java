@@ -514,8 +514,12 @@ public class AuthenticationServiceImplTest {
         kycExchangeRequestDto.setIndividualId("individualId");
         kycExchangeRequestDto.setTransactionId("transactionId");
         kycExchangeRequestDto.setClaimLocales(Arrays.asList("en","fr"));
-        kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender"));
+        kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender","address"));
 
+        Map<String, String> oidcClaimsMapping = new HashMap<>();
+        oidcClaimsMapping.put("addressStreet", "address.street_address");
+        oidcClaimsMapping.put("addressCity", "address.locality");
+        ReflectionTestUtils.setField(authenticationService, "oidcClaimsMapping", oidcClaimsMapping);
         kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
 
         KycAuth kycAuth=new KycAuth();
@@ -535,6 +539,22 @@ public class AuthenticationServiceImplTest {
         arrayNode.add(fullNameEng);
         arrayNode.add(fullNameFra);
         identityData.put("fullName", arrayNode);
+
+        // Address fields
+        ArrayNode addressStreetArray = objectMapper.createArrayNode();
+        ObjectNode streetEn = objectMapper.createObjectNode();
+        streetEn.put("value", "123 Main St");
+        streetEn.put("language", "en");
+        addressStreetArray.add(streetEn);
+        identityData.set("addressStreet", addressStreetArray);
+
+        ArrayNode addressCityArray = objectMapper.createArrayNode();
+        ObjectNode cityEn = objectMapper.createObjectNode();
+        cityEn.put("value", "Paris");
+        cityEn.put("language", "en");
+        addressCityArray.add(cityEn);
+        identityData.set("addressCity", addressCityArray);
+
         JWTSignatureResponseDto jwtSignatureResponseDto=new JWTSignatureResponseDto();
         jwtSignatureResponseDto.setJwtSignedData("signedData");
 
@@ -1533,149 +1553,6 @@ public class AuthenticationServiceImplTest {
         }
     }
 
-    @Test
-    public void kycExchange_withAddressClaim_thenPass() {
-        ReflectionTestUtils.setField(authenticationService, "transactionTimeoutInSecs", 60);
-        ReflectionTestUtils.setField(authenticationService, "objectMapper", objectMapper);
-
-        Map<String, String> oidcClaimsMap = new HashMap<>();
-        oidcClaimsMap.put("streetAddress", "address.street_address");
-        oidcClaimsMap.put("locality", "address.locality");
-        oidcClaimsMap.put("region", "address.region");
-        oidcClaimsMap.put("country", "address.country");
-        ReflectionTestUtils.setField(authenticationService, "oidcClaimsMapping", oidcClaimsMap);
-
-        KycExchangeRequestDto kycExchangeRequestDto = new KycExchangeRequestDto();
-        kycExchangeRequestDto.setKycToken("kycToken");
-        kycExchangeRequestDto.setIndividualId("individualId");
-        kycExchangeRequestDto.setTransactionId("transactionId");
-        kycExchangeRequestDto.setClaimLocales(List.of("eng"));
-        kycExchangeRequestDto.setAcceptedClaims(List.of("address"));
-        kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
-
-        KycAuth kycAuth = new KycAuth();
-        kycAuth.setResponseTime(LocalDateTime.now().minusSeconds(2));
-        kycAuth.setPartnerSpecificUserToken("token");
-        ObjectNode identityData = objectMapper.createObjectNode();
-
-        ArrayNode streetArray = objectMapper.createArrayNode();
-        ObjectNode streetEng = objectMapper.createObjectNode();
-        streetEng.put("value", "123 Main St");
-        streetEng.put("language", "eng");
-        streetArray.add(streetEng);
-        identityData.set("streetAddress", streetArray);
-
-        ArrayNode localityArray = objectMapper.createArrayNode();
-        ObjectNode localityEng = objectMapper.createObjectNode();
-        localityEng.put("value", "Springfield");
-        localityEng.put("language", "eng");
-        localityArray.add(localityEng);
-        identityData.set("locality", localityArray);
-
-        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
-                        Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(Optional.of(kycAuth));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
-
-        JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
-        jwtSignatureResponseDto.setJwtSignedData("signedData");
-        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
-
-        KycExchangeResponseDto response = authenticationService.kycExchange("relyingPartyId", "clientId",
-                new KycExchangeDto(kycExchangeRequestDto, null, "JWS"));
-
-        Assert.assertNotNull(response);
-        Assert.assertEquals("signedData", response.getKyc());
-    }
-
-    @Test
-    public void kycExchange_withAddressClaimMultipleLanguages_thenPass() {
-        ReflectionTestUtils.setField(authenticationService, "transactionTimeoutInSecs", 60);
-        ReflectionTestUtils.setField(authenticationService, "objectMapper", objectMapper);
-
-        Map<String, String> oidcClaimsMap = new HashMap<>();
-        oidcClaimsMap.put("streetAddress", "address.street_address");
-        oidcClaimsMap.put("locality", "address.locality");
-        ReflectionTestUtils.setField(authenticationService, "oidcClaimsMapping", oidcClaimsMap);
-
-        KycExchangeRequestDto kycExchangeRequestDto = new KycExchangeRequestDto();
-        kycExchangeRequestDto.setKycToken("kycToken");
-        kycExchangeRequestDto.setIndividualId("individualId");
-        kycExchangeRequestDto.setTransactionId("transactionId");
-        kycExchangeRequestDto.setClaimLocales(List.of("eng", "fra"));
-        kycExchangeRequestDto.setAcceptedClaims(List.of("address"));
-        kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
-
-        KycAuth kycAuth = new KycAuth();
-        kycAuth.setResponseTime(LocalDateTime.now().minusSeconds(2));
-        kycAuth.setPartnerSpecificUserToken("token");
-
-        ObjectNode identityData = objectMapper.createObjectNode();
-
-        ArrayNode streetArray = objectMapper.createArrayNode();
-        ObjectNode streetEng = objectMapper.createObjectNode();
-        streetEng.put("value", "123 Main St");
-        streetEng.put("language", "eng");
-        ObjectNode streetFra = objectMapper.createObjectNode();
-        streetFra.put("value", "123 Rue Principale");
-        streetFra.put("language", "fra");
-        streetArray.add(streetEng);
-        streetArray.add(streetFra);
-        identityData.set("streetAddress", streetArray);
-
-        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
-                        Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(Optional.of(kycAuth));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
-
-        JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
-        jwtSignatureResponseDto.setJwtSignedData("signedData");
-        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
-
-        KycExchangeResponseDto response = authenticationService.kycExchange("relyingPartyId", "clientId",
-                new KycExchangeDto(kycExchangeRequestDto, null, "JWS"));
-
-        Assert.assertNotNull(response);
-    }
-
-    @Test
-    public void kycExchange_withAddressClaimNoMatching_thenPass() {
-        ReflectionTestUtils.setField(authenticationService, "transactionTimeoutInSecs", 60);
-        ReflectionTestUtils.setField(authenticationService, "objectMapper", objectMapper);
-
-        Map<String, String> emptyMapping = new HashMap<>();
-        emptyMapping.put("name", "name");
-        ReflectionTestUtils.setField(authenticationService, "oidcClaimsMapping", emptyMapping);
-
-        KycExchangeRequestDto kycExchangeRequestDto = new KycExchangeRequestDto();
-        kycExchangeRequestDto.setKycToken("kycToken");
-        kycExchangeRequestDto.setIndividualId("individualId");
-        kycExchangeRequestDto.setTransactionId("transactionId");
-        kycExchangeRequestDto.setClaimLocales(List.of("eng"));
-        kycExchangeRequestDto.setAcceptedClaims(List.of("address"));
-        kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
-
-        KycAuth kycAuth = new KycAuth();
-        kycAuth.setResponseTime(LocalDateTime.now().minusSeconds(2));
-        kycAuth.setPartnerSpecificUserToken("token");
-
-        ObjectNode identityData = objectMapper.createObjectNode();
-        identityData.put("name", "Test");
-
-        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
-                        Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(Optional.of(kycAuth));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
-
-        JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
-        jwtSignatureResponseDto.setJwtSignedData("signedData");
-        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
-
-        KycExchangeResponseDto response = authenticationService.kycExchange("relyingPartyId", "clientId",
-                new KycExchangeDto(kycExchangeRequestDto, null, "JWS"));
-
-        Assert.assertNotNull(response);
-    }
 
     @Test
     public void kycExchange_withVerifiedClaimsWithoutStandardClaims_thenPass() {
@@ -1743,8 +1620,7 @@ public class AuthenticationServiceImplTest {
 
         KycExchangeResponseDto response = authenticationService.kycExchange("relyingPartyId", "clientId",
                 new KycExchangeDto(kycExchangeRequestDto, acceptedClaimDetail, "JWS"));
-
-        Assert.assertNotNull(response);
+        Assert.assertEquals("signedData",response.getKyc());
     }
 
     @Test
@@ -1806,8 +1682,7 @@ public class AuthenticationServiceImplTest {
 
         KycExchangeResponseDto response = authenticationService.kycExchange("relyingPartyId", "clientId",
                 new KycExchangeDto(kycExchangeRequestDto, acceptedClaimDetail, "JWS"));
-
-        Assert.assertNotNull(response);
+        Assert.assertEquals("signedData",response.getKyc());
     }
 
     @Test
