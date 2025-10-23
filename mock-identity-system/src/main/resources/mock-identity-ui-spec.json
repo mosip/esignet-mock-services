@@ -1,0 +1,435 @@
+{
+  "schema": [
+    {
+      "id": "phone",
+      "controlType": "phone",
+      "labelName": {
+        "en": "Username",
+        "km": "ឈ្មោះ​អ្នកប្រើប្រាស់"
+      },
+      "placeholder": {
+        "eng": "Enter your username",
+        "khm": "សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់"
+      },
+      "validators": [],
+      "required": false,
+      "disabled": true,
+      "prefix": ["+855", "+91"],
+      "alignmentGroup": "groupA"
+    },
+    {
+      "id": "fullName",
+      "controlType": "textbox",
+      "type": "simpleType",
+      "labelName": {
+        "eng": "Full Name in Khmer",
+        "khm": "គោត្តនាម-នាម"
+      },
+      "placeholder": {
+        "en": "Enter Full Name in Khmer",
+        "km": "បញ្ចូលគោត្តនាម-នាមជាភាសាខ្មែរ"
+      },
+      "validators": [
+        {
+          "regex": "^[\\u1780-\\u17FF\\u19E0-\\u19FF\\u1A00-\\u1A9F\\u0020]{1,30}$",
+          "error": {
+            "eng": "Full Name has to be in Khmer only",
+            "khm": "គោត្តនាម-នាមត្រូវតែមានតែអក្សរខ្មែរ"
+          },
+          "langCode": "km"
+        },
+        {
+          "regex": "^[a-zA-Z][a-zA-Z ]{1,30}$",
+          "error": {
+            "eng": "Full Name has to be in English only",
+            "khm": "ឈ្មោះ​ពេញ​ត្រូវតែសរសេរជាភាសាអង់គ្លេសតែប៉ុណ្ណោះ"
+          },
+          "langCode": "en"
+        }
+      ],
+      "alignmentGroup": "groupB",
+      "required": true
+    },
+    {
+      "id": "givenName",
+      "controlType": "textbox",
+      "type": "simpleType",
+      "labelName": {
+        "eng": "Given Name in Khmer",
+        "khm": "គោត្តនាម-នាម"
+      },
+      "placeholder": {
+        "en": "Enter Given Name in Khmer",
+        "km": "បញ្ចូលគោត្តនាម-នាមជាភាសាខ្មែរ"
+      },
+      "validators": [
+        {
+          "regex": "^[\\u1780-\\u17FF\\u19E0-\\u19FF\\u1A00-\\u1A9F\\u0020]{1,30}$",
+          "error": {
+            "eng": "Given Name has to be in Khmer only",
+            "khm": "គោត្តនាម-នាមត្រូវតែមានតែអក្សរខ្មែរ"
+          },
+          "langCode": "km"
+        },
+        {
+          "regex": "^[a-zA-Z][a-zA-Z ]{1,30}$",
+          "error": {
+            "eng": "Given Name has to be in English only",
+            "khm": "ឈ្មោះ​ពេញ​ត្រូវតែសរសេរជាភាសាអង់គ្លេសតែប៉ុណ្ណោះ"
+          },
+          "langCode": "en"
+        }
+      ],
+      "alignmentGroup": "groupC",
+      "required": true
+    },
+    {
+      "id": "familyName",
+      "controlType": "textbox",
+      "type": "simpleType",
+      "labelName": {
+        "eng": "Family Name in Khmer",
+        "khm": "គោត្តនាម-នាម"
+      },
+      "placeholder": {
+        "en": "Enter Family Name in Khmer",
+        "km": "បញ្ចូលគោត្តនាម-នាមជាភាសាខ្មែរ"
+      },
+      "validators": [
+        {
+          "regex": "^[\\u1780-\\u17FF\\u19E0-\\u19FF\\u1A00-\\u1A9F\\u0020]{1,30}$",
+          "error": {
+            "eng": "Family Name has to be in Khmer only",
+            "khm": "គោត្តនាម-នាមត្រូវតែមានតែអក្សរខ្មែរ"
+          },
+          "langCode": "km"
+        },
+        {
+          "regex": "^[a-zA-Z][a-zA-Z ]{1,30}$",
+          "error": {
+            "eng": "Family Name has to be in English only",
+            "khm": "ឈ្មោះ​គ្រួសារ​ត្រូវតែសរសេរជាភាសាអង់គ្លេសតែប៉ុណ្ណោះ"
+          },
+          "langCode": "en"
+        }
+      ],
+      "alignmentGroup": "groupD",
+      "required": true
+    },
+    {
+      "id": "gender",
+      "controlType": "textbox",
+      "type": "simpleType",
+      "labelName": {
+        "eng": "Gender in Khmer",
+        "khm": "ភេទ"
+      },
+      "placeholder": {
+        "en": "Enter Gender in Khmer",
+        "km": "បញ្ចូលភេទជាភាសាខ្មែរ"
+      },
+      "validators": [
+        {
+          "regex": "^[\\u1780-\\u17FF\\u19E0-\\u19FF\\u1A00-\\u1A9F\\u0020]{1,30}$",
+          "error": {
+            "eng": "Gender has to be in Khmer only",
+            "khm": "ភេទត្រូវតែមានតែអក្សរខ្មែរ"
+          },
+          "langCode": "km"
+        },
+        {
+          "regex": "^[a-zA-Z][a-zA-Z ]{1,30}$",
+          "error": {
+            "eng": "Gender has to be in English only",
+            "khm": "ភេទត្រូវតែសរសេរជាភាសាអង់គ្លេសតែប៉ុណ្ណោះ"
+          },
+          "langCode": "en"
+        }
+      ],
+      "alignmentGroup": "groupE",
+      "required": true
+    },
+    {
+      "id": "locality",
+      "controlType": "textbox",
+      "type": "simpleType",
+      "labelName": {
+        "eng": "Locality in Khmer",
+        "khm": "ទីកន្លែង"
+      },
+      "placeholder": {
+        "en": "Enter Locality in Khmer",
+        "km": "បញ្ចូលទីកន្លែងជាភាសាខ្មែរ"
+      },
+      "validators": [
+        {
+          "regex": "^[\\u1780-\\u17FF\\u19E0-\\u19FF\\u1A00-\\u1A9F\\u0020]{1,30}$",
+          "error": {
+            "eng": "Locality has to be in Khmer only",
+            "khm": "ទីកន្លែងត្រូវតែមានតែអក្សរខ្មែរ"
+          },
+          "langCode": "km"
+        },
+        {
+          "regex": "^[a-zA-Z][a-zA-Z ]{1,30}$",
+          "error": {
+            "eng": "Locality has to be in English only",
+            "khm": "ទីកន្លែងត្រូវតែសរសេរជាភាសាអង់គ្លេសតែប៉ុណ្ណោះ"
+          },
+          "langCode": "en"
+        }
+      ],
+      "alignmentGroup": "groupF",
+      "required": true
+    },
+    {
+      "id": "region",
+      "controlType": "textbox",
+      "type": "simpleType",
+      "labelName": {
+        "eng": "Region in Khmer",
+        "khm": "តំបន់"
+      },
+      "placeholder": {
+        "en": "Enter Region in Khmer",
+        "km": "បញ្ចូលតំបន់ជាភាសាខ្មែរ"
+      },
+      "validators": [
+        {
+          "regex": "^[\\u1780-\\u17FF\\u19E0-\\u19FF\\u1A00-\\u1A9F\\u0020]{1,30}$",
+          "error": {
+            "eng": "Region has to be in Khmer only",
+            "khm": "តំបន់ត្រូវតែមានតែអក្សរខ្មែរ"
+          },
+          "langCode": "km"
+        },
+        {
+          "regex": "^[a-zA-Z][a-zA-Z ]{1,30}$",
+          "error": {
+            "eng": "Region has to be in English only",
+            "khm": "តំបន់ត្រូវតែសរសេរជាភាសាអង់គ្លេសតែប៉ុណ្ណោះ"
+          },
+          "langCode": "en"
+        }
+      ],
+      "alignmentGroup": "groupG",
+      "required": true
+    },
+    {
+      "id": "country",
+      "controlType": "textbox",
+      "type": "simpleType",
+      "labelName": {
+        "eng": "Country in Khmer",
+        "khm": "ប្រទេស"
+      },
+      "placeholder": {
+        "en": "Enter Country in Khmer",
+        "km": "បញ្ចូលប្រទេសជាភាសាខ្មែរ"
+      },
+      "validators": [
+        {
+          "regex": "^[\\u1780-\\u17FF\\u19E0-\\u19FF\\u1A00-\\u1A9F\\u0020]{1,30}$",
+          "error": {
+            "eng": "Country has to be in Khmer only",
+            "khm": "ប្រទេសត្រូវតែមានតែអក្សរខ្មែរ"
+          },
+          "langCode": "km"
+        },
+        {
+          "regex": "^[a-zA-Z][a-zA-Z ]{1,30}$",
+          "error": {
+            "eng": "Country has to be in English only",
+            "khm": "ប្រទេសត្រូវតែសរសេរជាភាសាអង់គ្លេសតែប៉ុណ្ណោះ"
+          },
+          "langCode": "en"
+        }
+      ],
+      "alignmentGroup": "groupH",
+      "required": true
+    },
+    {
+      "id": "pin",
+      "controlType": "textbox",
+      "type": "simpleType",
+      "labelName": {
+        "eng": "PIN",
+        "khm": "លេខសម្ងាត់"
+      },
+      "placeholder": {
+        "en": "Enter PIN",
+        "km": "បញ្ចូលលេខសម្ងាត់"
+      },
+      "required": true,
+      "alignmentGroup": "groupI"
+    },
+    {
+      "id": "preferredLang",
+      "controlType": "textbox",
+      "labelName": {
+        "eng": "Preferred Lang",
+        "khm": "ភាសាដែលចូលចិត្ត"
+      },
+      "placeholder": {
+        "eng": "Enter Preferred Lang",
+        "khm": "សូមបញ្ចូលភាសាដែលចូលចិត្ត"
+      },
+      "info": {
+        "eng": "Preferred Lang",
+        "khm": "ភាសាដែលចូលចិត្ត"
+      },
+      "required": true,
+      "alignmentGroup": "groupJ"
+    },
+    {
+      "id": "password",
+      "capsLockCheck": true,
+      "controlType": "password",
+      "labelName": {
+        "eng": "Password",
+        "khm": "ពាក្យសម្ងាត់"
+      },
+      "placeholder": {
+        "eng": "Enter your password",
+        "khm": "សូមបញ្ចូលពាក្យសម្ងាត់"
+      },
+      "info": {
+        "eng": "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+        "khm": "ពាក្យសម្ងាត់ត្រូវតែមានយ៉ាងហោចណាស់ ៨ តួអក្សរ មានតួអក្សរធំមួយ តួអក្សរតូចមួយ លេខមួយ និងតួអក្សរពិសេសមួយ។"
+      },
+      "alignmentGroup": "groupK",
+      "required": true
+    },
+    {
+      "id": "dateOfBirth",
+      "controlType": "date",
+      "capsLockCheck": true,
+      "labelName": {
+        "eng": "Birthdate",
+        "khm": "ថ្ងៃខែឆ្នាំកំណើត"
+      },
+      "placeholder": {
+        "eng": "Select your birthdate",
+        "khm": "សូមជ្រើសរើសថ្ងៃខែឆ្នាំកំណើត"
+      },
+      "validators": [
+        {
+          "regex": "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$",
+          "error": {
+            "eng": "Invalid date format. Use YYYY-MM-DD.",
+            "khm": "ទម្រង់ថ្ងៃខែឆ្នាំមិនត្រឹមត្រូវ។ ប្រើ YYYY-MM-DD។"
+          },
+          "langCode": "eng"
+        }
+      ],
+      "info": {
+        "eng": "Please enter your birthdate in the format YYYY-MM-DD.",
+        "km": "In Khmer, Please enter your birthdate in the format YYYY-MM-DD."
+      },
+      "alignmentGroup": "groupL",
+      "required": true
+    },
+    {
+      "id": "postalCode",
+      "controlType": "textbox",
+      "type": "simpleType",
+      "labelName": {
+        "eng": "Postal Code",
+        "khm": "កូដប្រៃសណីយ៍"
+      },
+      "placeholder": {
+        "en": "Enter Postal Code",
+        "km": "បញ្ចូលកូដប្រៃសណីយ៍"
+      },
+      "required": true,
+      "alignmentGroup": "groupM"
+    },
+    {
+      "id": "encodedPhoto",
+      "controlType": "photo",
+      "labelName": {
+        "eng": "Capture Photo",
+        "khm": "ថតរូប"
+      },
+      "placeholder": {
+        "eng": "Click to capture photo",
+        "khm": "ចុចដើម្បីថតរូប"
+      },
+      "info": {
+        "eng": "Please click here to capture your photo using your device's camera.",
+        "khm": "សូមចុចទីនេះដើម្បីថតរូបរបស់អ្នកដោយប្រើកាមេរ៉ារបស់ឧបករណ៍របស់អ្នក។"
+      },
+      "acceptedFileTypes": "image/jpeg , image/jpg , image/png , image/webp",
+      "required": true,
+      "alignmentGroup": "groupF"
+    },
+    {
+      "id": "email",
+      "controlType": "textbox",
+      "labelName": {
+        "eng": "Email Address",
+        "khm": "អាសយដ្ឋានអ៊ីមែល"
+      },
+      "placeholder": {
+        "eng": "Enter your email address",
+        "khm": "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែលរបស់អ្នក"
+      },
+      "required": true,
+      "alignmentGroup": "groupN"
+    },
+    {
+      "id": "consent",
+      "controlType": "checkbox",
+      "labelName": {
+        "eng": "I agree to Cambodia’s <b><a href='#'>Terms & Conditions</a></b> and <b><a href='#'>Privacy Policy</a></b>, to store & process my information as required.",
+        "khm": "ខ្ញុំយល់ព្រមតាម<b><a href='#'>លក្ខខណ្ឌ</a></b> និង<b><a href='#'>គោលការណ៍ឯកជនភាព</a></b>របស់ប្រទេសកម្ពុជា ដើម្បីរក្សាទុក និងដំណើរការព័ត៌មានរបស់ខ្ញុំតាមតម្រូវការ។"
+      },
+      "required": true,
+      "alignmentGroup": "groupO"
+    }
+  ],
+  "allowedValues": {
+  },
+  "i18nValues": {
+    "errors": {
+      "required": {
+        "en": "This field is required",
+        "ara": "هذه الخانة مطلوبه",
+        "km": "វាលនេះត្រូវការទទួលបាន"
+      },
+      "passwordMismatch": {
+        "en": "Passwords is not matching please check your password",
+        "km": "In Khmer, Passwords is not matching please check your password"
+      }
+    },
+    "labels": {
+      "password_confirm": {
+        "en": "Confirm Password from i18nValues",
+        "km": "Confirm Password from i18nValues- khm"
+      },
+      "capturePhoto": {
+        "en": "Capture Photo",
+        "km": "ថតរូប"
+      },
+      "clickToUpload": {
+        "en": "Click to upload",
+        "km": "ចុចដើម្បីបញ្ចូលឬថតរូប"
+      }
+    },
+    "placeholders": {
+      "password_confirm": {
+        "eng": "Enter your confirm password from i18nValues",
+        "khm": "Enter your confirm password from i18nValues- khmer"
+      }
+    }
+  },
+  "language": {
+    "mandatory": ["eng"],
+    "optional": ["khm"],
+    "langCodeMap": {
+      "khm": "km",
+      "eng": "en"
+    }
+  },
+  "maxUploadFileSize": 5242880
+}
