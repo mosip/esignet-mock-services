@@ -514,8 +514,12 @@ public class AuthenticationServiceImplTest {
         kycExchangeRequestDto.setIndividualId("individualId");
         kycExchangeRequestDto.setTransactionId("transactionId");
         kycExchangeRequestDto.setClaimLocales(Arrays.asList("en","fr"));
-        kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender"));
+        kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("name","gender","address"));
 
+        Map<String, String> oidcClaimsMapping = new HashMap<>();
+        oidcClaimsMapping.put("addressStreet", "address.street_address");
+        oidcClaimsMapping.put("addressCity", "address.locality");
+        ReflectionTestUtils.setField(authenticationService, "oidcClaimsMapping", oidcClaimsMapping);
         kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
 
         KycAuth kycAuth=new KycAuth();
@@ -535,6 +539,22 @@ public class AuthenticationServiceImplTest {
         arrayNode.add(fullNameEng);
         arrayNode.add(fullNameFra);
         identityData.put("fullName", arrayNode);
+
+        // Address fields
+        ArrayNode addressStreetArray = objectMapper.createArrayNode();
+        ObjectNode streetEn = objectMapper.createObjectNode();
+        streetEn.put("value", "123 Main St");
+        streetEn.put("language", "en");
+        addressStreetArray.add(streetEn);
+        identityData.set("addressStreet", addressStreetArray);
+
+        ArrayNode addressCityArray = objectMapper.createArrayNode();
+        ObjectNode cityEn = objectMapper.createObjectNode();
+        cityEn.put("value", "Paris");
+        cityEn.put("language", "en");
+        addressCityArray.add(cityEn);
+        identityData.set("addressCity", addressCityArray);
+
         JWTSignatureResponseDto jwtSignatureResponseDto=new JWTSignatureResponseDto();
         jwtSignatureResponseDto.setJwtSignedData("signedData");
 
@@ -1512,4 +1532,164 @@ public class AuthenticationServiceImplTest {
         }
         return languageValues;
     }
+
+    @Test
+    public void sendOtp_withEmailChannelAndNoEmailFound_thenFail() {
+        ReflectionTestUtils.setField(authenticationService, "otpChannels", Arrays.asList("email", "phone"));
+
+        SendOtpDto sendOtpDto = new SendOtpDto();
+        sendOtpDto.setIndividualId("individualId");
+        sendOtpDto.setOtpChannels(List.of("email"));
+        sendOtpDto.setTransactionId("transactionId");
+
+        ObjectNode identityData = objectMapper.createObjectNode();
+        identityData.put("individualId", "individualId");
+        Mockito.when(identityService.getIdentityV2("individualId")).thenReturn(identityData);
+        try {
+            authenticationService.sendOtp("relyingPartyId", "clientId", sendOtpDto);
+            Assert.fail("Expected MockIdentityException");
+        } catch (MockIdentityException e) {
+            Assert.assertEquals("no_email_mobile_found", e.getMessage());
+        }
+    }
+
+
+    @Test
+    public void kycExchange_withVerifiedClaimsWithoutStandardClaims_thenPass() {
+        ReflectionTestUtils.setField(authenticationService, "transactionTimeoutInSecs", 60);
+        ReflectionTestUtils.setField(authenticationService, "objectMapper", objectMapper);
+
+        Map<String, String> oidcClaimsMap = new HashMap<>();
+        oidcClaimsMap.put("email", "email");
+        oidcClaimsMap.put("name", "name");
+        ReflectionTestUtils.setField(authenticationService, "oidcClaimsMapping", oidcClaimsMap);
+
+        KycExchangeRequestDto kycExchangeRequestDto = new KycExchangeRequestDto();
+        kycExchangeRequestDto.setKycToken("kycToken");
+        kycExchangeRequestDto.setIndividualId("individualId");
+        kycExchangeRequestDto.setTransactionId("transactionId");
+        kycExchangeRequestDto.setClaimLocales(List.of("eng"));
+        kycExchangeRequestDto.setAcceptedClaims(Arrays.asList("email", "name"));
+
+        // Also request email as verified claim - should be removed from standard claims
+        Map<String, JsonNode> acceptedClaimDetail = new HashMap<>();
+        ObjectNode verifiedClaim = objectMapper.createObjectNode();
+        ObjectNode verification = objectMapper.createObjectNode();
+        ObjectNode trustFramework = objectMapper.createObjectNode();
+        trustFramework.put("value", "pwd");
+        verification.set("trust_framework", trustFramework);
+        verifiedClaim.set("verification", verification);
+
+        ObjectNode claims = objectMapper.createObjectNode();
+        claims.set("email", NullNode.getInstance());
+        verifiedClaim.set("claims", claims);
+        acceptedClaimDetail.put("verified_claims", verifiedClaim);
+        acceptedClaimDetail.put("email", NullNode.getInstance());
+        acceptedClaimDetail.put("name", NullNode.getInstance());
+
+        kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
+
+        KycAuth kycAuth = new KycAuth();
+        kycAuth.setResponseTime(LocalDateTime.now().minusSeconds(2));
+        kycAuth.setPartnerSpecificUserToken("token");
+
+        ObjectNode identityData = objectMapper.createObjectNode();
+        identityData.put("email", "test@test.com");
+
+        ArrayNode nameArray = objectMapper.createArrayNode();
+        ObjectNode nameEng = objectMapper.createObjectNode();
+        nameEng.put("value", "Test Name");
+        nameEng.put("language", "eng");
+        nameArray.add(nameEng);
+        identityData.set("name", nameArray);
+
+        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
+                        Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(Optional.of(kycAuth));
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
+
+        VerifiedClaim verifiedClaim1 = new VerifiedClaim();
+        verifiedClaim1.setTrustFramework("pwd");
+        verifiedClaim1.setClaim("email");
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndIsActive("individualId", true))
+                .thenReturn(Optional.of(List.of(verifiedClaim1)));
+
+        JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
+        jwtSignatureResponseDto.setJwtSignedData("signedData");
+        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
+
+        KycExchangeResponseDto response = authenticationService.kycExchange("relyingPartyId", "clientId",
+                new KycExchangeDto(kycExchangeRequestDto, acceptedClaimDetail, "JWS"));
+        Assert.assertEquals("signedData",response.getKyc());
+    }
+
+    @Test
+    public void kycExchange_withEmptyVerifiedClaims_thenPass() {
+        ReflectionTestUtils.setField(authenticationService, "transactionTimeoutInSecs", 60);
+        ReflectionTestUtils.setField(authenticationService, "objectMapper", objectMapper);
+
+        Map<String, String> oidcClaimsMap = new HashMap<>();
+        oidcClaimsMap.put("email", "email");
+        ReflectionTestUtils.setField(authenticationService, "oidcClaimsMapping", oidcClaimsMap);
+
+        KycExchangeRequestDto kycExchangeRequestDto = new KycExchangeRequestDto();
+        kycExchangeRequestDto.setKycToken("kycToken");
+        kycExchangeRequestDto.setIndividualId("individualId");
+        kycExchangeRequestDto.setTransactionId("transactionId");
+        kycExchangeRequestDto.setClaimLocales(Arrays.asList("eng"));
+
+        // Create verified claims array where all claims won't match
+        Map<String, JsonNode> acceptedClaimDetail = new HashMap<>();
+        ArrayNode verifiedClaimsArray = objectMapper.createArrayNode();
+
+        ObjectNode verifiedClaim1 = objectMapper.createObjectNode();
+        ObjectNode verification1 = objectMapper.createObjectNode();
+        ObjectNode trustFramework1 = objectMapper.createObjectNode();
+        trustFramework1.put("value", "non_matching_framework");
+        verification1.set("trust_framework", trustFramework1);
+        verifiedClaim1.set("verification", verification1);
+        ObjectNode claims1 = objectMapper.createObjectNode();
+        claims1.set("email", NullNode.getInstance());
+        verifiedClaim1.set("claims", claims1);
+        verifiedClaimsArray.add(verifiedClaim1);
+
+        acceptedClaimDetail.put("verified_claims", verifiedClaimsArray);
+
+        kycExchangeRequestDto.setRequestDateTime(LocalDateTime.now());
+
+        KycAuth kycAuth = new KycAuth();
+        kycAuth.setResponseTime(LocalDateTime.now().minusSeconds(2));
+        kycAuth.setPartnerSpecificUserToken("token");
+
+        ObjectNode identityData = objectMapper.createObjectNode();
+        identityData.put("email", "test@test.com");
+
+        Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
+                        Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(Optional.of(kycAuth));
+        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
+
+        // Return verified claims but with different trust framework
+        VerifiedClaim verifiedClaim = new VerifiedClaim();
+        verifiedClaim.setTrustFramework("pwd"); // Different from requested
+        verifiedClaim.setClaim("email");
+        Mockito.when(verifiedClaimRepository.findByIndividualIdAndIsActive("individualId", true))
+                .thenReturn(Optional.of(Arrays.asList(verifiedClaim)));
+
+        JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
+        jwtSignatureResponseDto.setJwtSignedData("signedData");
+        Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
+
+        KycExchangeResponseDto response = authenticationService.kycExchange("relyingPartyId", "clientId",
+                new KycExchangeDto(kycExchangeRequestDto, acceptedClaimDetail, "JWS"));
+        Assert.assertEquals("signedData",response.getKyc());
+    }
+
+    @Test
+    public void isSupportedOtpChannel_withValidDetails_thenPass() {
+        ReflectionTestUtils.setField(authenticationService, "otpChannels", Arrays.asList("email", "phone"));
+        boolean result = authenticationService.isSupportedOtpChannel("email");
+        Assert.assertTrue(result);
+    }
+
 }
