@@ -100,4 +100,65 @@ public class HelperUtilTest {
         });
         assertEquals("invalid_algorithm", exception.getMessage());
     }
+
+    @Test
+    public void maskMobile_withNull_thenReturnEmpty() {
+        assertEquals("",HelperUtil.maskMobile(null));
+    }
+
+    @Test
+    public void maskEmail_withNull_thenReturnEmpty() {
+        assertEquals("",HelperUtil.maskEmail(null));
+    }
+
+    @Test
+    public void getIdentityDataValue_withMissingField_shouldReturnNull() {
+        ObjectNode jsonNode = JsonNodeFactory.instance.objectNode();
+        String result = HelperUtil.getIdentityDataValue(jsonNode, "nonExistentField", "en");
+        assertNull(result);
+    }
+
+    @Test
+    public void getIdentityDataValue_withNoMatchingLanguage_thenFail() {
+        ObjectNode jsonNode = JsonNodeFactory.instance.objectNode();
+        ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
+        ObjectNode langNode = JsonNodeFactory.instance.objectNode();
+        langNode.put("language", "fr");
+        langNode.put("value", "Valeur en Français");
+        arrayNode.add(langNode);
+        jsonNode.set("testField", arrayNode);
+
+        String result = HelperUtil.getIdentityDataValue(jsonNode, "testField", "en");
+        assertNull(result);
+    }
+
+    @Test
+    public void getLanguageValuesList_withNullNode_thenFail() {
+        List<LanguageValue> result = HelperUtil.getLanguageValuesList(null);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void getLanguageValuesList_withEmptyNode_thenFail() {
+        ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
+        List<LanguageValue> result = HelperUtil.getLanguageValuesList(arrayNode);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void getCurrentUTCDateTime_withValidFormat_thenPass() {
+        String result = HelperUtil.getCurrentUTCDateTime();
+        assertNotNull(result);
+        assertTrue(result.contains("T"));
+    }
+
+    @Test
+    public void getIdentityDataValue_withNonArrayField_thenPass() {
+        ObjectNode jsonNode = JsonNodeFactory.instance.objectNode();
+        jsonNode.put("simpleField", "simpleValue");
+        String result = HelperUtil.getIdentityDataValue(jsonNode, "simpleField", "en");
+        assertEquals("simpleValue", result);
+    }
 }
