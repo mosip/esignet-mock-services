@@ -82,7 +82,7 @@
 		<git-commit-id-plugin.version>3.0.1</git-commit-id-plugin.version>
 
 		<!-- Core -->
-		<spring-cloud-config.version>4.2.3</spring-cloud-config.version>
+		<spring-cloud-config.version>2.2.7.RELEASE</spring-cloud-config.version>
 		<spring-jms.version>5.0.16.RELEASE</spring-jms.version>
 
 
@@ -114,7 +114,6 @@
 		<dependency>
         	<groupId>org.springframework.boot</groupId>
         	<artifactId>spring-boot-starter-web</artifactId>
-            <version>3.4.9</version>
    	 	</dependency>
    	 	
 		<dependency>
@@ -125,7 +124,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>3.4.9</version>
 		</dependency>
 		<dependency>
 		 	<groupId>org.springframework.cloud</groupId>
@@ -165,7 +163,6 @@
 	 <dependency>
 		 <groupId>org.springframework.boot</groupId>
 		 <artifactId>spring-boot-starter-data-redis</artifactId>
-         <version>3.5.0</version>
 	 </dependency>
 		 <dependency>
 			 <groupId>io.mosip.kernel</groupId>
