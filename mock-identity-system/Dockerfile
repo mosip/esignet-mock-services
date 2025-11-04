@@ -60,8 +60,8 @@ ADD target/mock-identity-system-*.jar  mock-identity-system.jar
 ## install packages, create user and change permissions of file inside working dir
 RUN apk -q update \
 && apk add -q unzip file sudo \
-&& groupadd -g ${container_user_gid} ${container_user_group} \
-&& useradd -u ${container_user_uid} -g ${container_user_group} -s /bin/sh -m ${container_user} \
+&& addgroup -g ${container_user_gid} ${container_user_group} \
+&& adduser -u ${container_user_uid} -g ${container_user_group} -s /bin/sh -m ${container_user} \
 && adduser ${container_user} sudo \
 && echo "%sudo ALL=(ALL) NOPASSWD:/home/${container_user}/${hsm_local_dir}/install.sh" >> /etc/sudoers \
 && mkdir -p ${loader_path} \
