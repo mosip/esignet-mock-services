@@ -1,4 +1,4 @@
-FROM node:12.18.4-alpine as build
+FROM node:16.13.2-alpine as build
 
 # Set a build-time environment variable
 ARG mockRpUIPublicUrl
@@ -21,6 +21,7 @@ ARG default_lang
 ARG fallback_lang
 ARG par_callback_name
 ARG par_callback_timeout
+ARG dpop_callback_name
 
 ENV ESIGNET_UI_BASE_URL=$esignet_ui_base_url
 ENV MOCK_RELYING_PARTY_SERVER_URL=$mock_relying_party_server_url
