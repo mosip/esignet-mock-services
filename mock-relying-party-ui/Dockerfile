@@ -1,4 +1,4 @@
-FROM node:12.18.4-alpine as build
+FROM node:16.13.2-alpine as build
 
 # Set a build-time environment variable
 ARG mockRpUIPublicUrl
