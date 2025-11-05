@@ -1,3 +1,1 @@
-\c mosip_mockidentitysystem
-
-DROP TABLE IF EXISTS mockidentitysystem.partner_data;
+\echo 'Rollback Queries not required for transition from $CURRENT_VERSION to $UPGRADE_VERSION'
