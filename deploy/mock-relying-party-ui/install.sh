@@ -49,7 +49,7 @@ function installing_mock-relying-party-ui() {
 
   echo Installing Mock Relying Party UI
   helm -n $NS install $MOCK_REPLYING_PARTY_UI_SERVICE_NAME mosip/mock-relying-party-ui \
-      --set mock_relying_party_ui.MOCK_RELYING_PARTY_SERVICE_INTERNAL_URL="http://$MOCK_REPLYING_PARTY_SERVICE_NAME.$NS"
+      --set mock_relying_party_ui.MOCK_RELYING_PARTY_SERVICE_INTERNAL_URL="http://$MOCK_REPLYING_PARTY_SERVICE_NAME.$NS" \
       --set mock_relying_party_ui.mock_relying_party_ui_service_host="$MOCK_UI_HOST" \
       --set mock_relying_party_ui.ESIGNET_UI_BASE_URL="https://$ESIGNET_HOST" \
       --set mock_relying_party_ui.MOCK_RELYING_PARTY_SERVER_URL="https://$MOCK_UI_HOST/mock-relying-party-service" \
