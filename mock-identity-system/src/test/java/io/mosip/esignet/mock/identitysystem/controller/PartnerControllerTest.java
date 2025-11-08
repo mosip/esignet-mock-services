@@ -53,13 +53,15 @@ public class PartnerControllerTest {
         PartnerDto partnerDto = new PartnerDto();
         partnerDto.setPartnerId("validPartnerId");
         partnerDto.setClientId("validClientId");
-        partnerDto.setKey("{\n" +
-                "    \"kty\": \"RSA\",\n" +
-                "    \"e\": \"AQAB\",\n" +
-                "    \"use\": \"enc\",\n" +
-                "    \"alg\": \"RSA-OAEP\",\n" +
-                "    \"n\": \"hrXBfpt0T5vMrxfvUB_tYc4zscGAvtmb2O1YZghxScXDOmq3FUQ07oozx26mQnRh06el9h76RjKNPIEyh3QdUTEtWqnPaD5nxmQkAP2Bt21Mnc25AaTCaVJSUsOCIiFzlp4SNS9PpXuw4BI-PaxiR5jpx9HV5F8Pa1aTJkM5uGcpDvNQa4C2r9q9uc2rWmJq6QQ8tH662xXBv3pJF0qCEtz0T6o0M3iSh-uaAdkQcruRPTCYhwj9sk8vQ_2AHLMSIOOvN6rW6g3bdFYw82xxrOdzPnvKGATv4xXfaUkTR0SgKekfHYLHG5kEjmU6FTJioNWDAaPE_Jc7FIo0FbqDew\"\n" +
-                "}");
+        partnerDto.setKey("""
+                {
+                    "kty": "RSA",
+                    "e": "AQAB",
+                    "use": "enc",
+                    "alg": "RSA-OAEP",
+                    "n": "hrXBfpt0T5vMrxfvUB_tYc4zscGAvtmb2O1YZghxScXDOmq3FUQ07oozx26mQnRh06el9h76RjKNPIEyh3QdUTEtWqnPaD5nxmQkAP2Bt21Mnc25AaTCaVJSUsOCIiFzlp4SNS9PpXuw4BI-PaxiR5jpx9HV5F8Pa1aTJkM5uGcpDvNQa4C2r9q9uc2rWmJq6QQ8tH662xXBv3pJF0qCEtz0T6o0M3iSh-uaAdkQcruRPTCYhwj9sk8vQ_2AHLMSIOOvN6rW6g3bdFYw82xxrOdzPnvKGATv4xXfaUkTR0SgKekfHYLHG5kEjmU6FTJioNWDAaPE_Jc7FIo0FbqDew"
+                }\
+                """);
         partnerDto.setStatus("ACTIVE");
 
         RequestWrapper requestWrapper = new RequestWrapper<PartnerDto>();

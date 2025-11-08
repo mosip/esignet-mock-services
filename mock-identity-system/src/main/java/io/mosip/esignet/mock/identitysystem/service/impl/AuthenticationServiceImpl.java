@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
@@ -178,7 +179,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 (kycExchangeDto.getKycToken(), Valid.ACTIVE, kycExchangeDto.getTransactionId(),
                         kycExchangeDto.getIndividualId());
 
-        if (!result.isPresent())
+        if (result.isEmpty())
             throw new MockIdentityException("mock-ida-006");
 
         LocalDateTime savedTime = result.get().getResponseTime();
@@ -249,14 +250,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
         }
 
-        if(org.springframework.util.StringUtils.isEmpty(maskedEmailId) &&
-                org.springframework.util.StringUtils.isEmpty(maskedMobile)) {
+        if(ObjectUtils.isEmpty(maskedEmailId) &&
+                ObjectUtils.isEmpty(maskedMobile)) {
             log.error("neither email id nor mobile number found for the given individualId");
             throw new MockIdentityException("no_email_mobile_found");
         }
 
         var trn_token_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
-                String.format(sendOtpDto.getTransactionId(), sendOtpDto.getIndividualId(), OTP_VALUE));
+                sendOtpDto.getTransactionId().formatted(sendOtpDto.getIndividualId(), OTP_VALUE));
 
         cacheUtilService.setTransactionHash(trn_token_hash);
         return new SendOtpResult(sendOtpDto.getTransactionId(), maskedEmailId, maskedMobile);
@@ -282,7 +283,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
 
             var trn_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
-                    String.format(kycAuthDto.getTransactionId(), kycAuthDto.getIndividualId(), OTP_VALUE));
+                    kycAuthDto.getTransactionId().formatted(kycAuthDto.getIndividualId(), OTP_VALUE));
 
             var isValid = cacheUtilService.getTransactionHash(trn_hash);
             if (isValid) {
@@ -315,7 +316,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if (!CollectionUtils.isEmpty(kycAuthDto.getTokens())) {
-            authStatus = !StringUtils.isEmpty(kycAuthDto.getTokens().get(0));
+            authStatus = !StringUtils.isEmpty(kycAuthDto.getTokens().getFirst());
             if (!authStatus)
                 throw new MockIdentityException("auth_failed");
         }
@@ -414,7 +415,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String psut;
         try {
             psut = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
-                    String.format(PSUT_FORMAT, individualId, relyingPartyId));
+                    PSUT_FORMAT.formatted(individualId, relyingPartyId));
         } catch (Exception e) {
             log.error("Failed to generate PSUT", e);
             throw new MockIdentityException("mock-ida-004");
@@ -581,8 +582,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         ObjectNode verifiedClaimDetail = objectMapper.createObjectNode();
         if(!verifiedValues.isEmpty()) {
             ObjectNode verification = objectMapper.createObjectNode();
-            verification.put("trust_framework", matchedEntries.get(0).getTrustFramework());
-            verification.put("time", String.valueOf(matchedEntries.get(0).getUpdDateTime())); // TODO: format time
+            verification.put("trust_framework", matchedEntries.getFirst().getTrustFramework());
+            verification.put("time", String.valueOf(matchedEntries.getFirst().getUpdDateTime())); // TODO: format time
 
             verifiedClaimDetail.set("verification", verification);
             verifiedClaimDetail.set("claims", verifiedValues);

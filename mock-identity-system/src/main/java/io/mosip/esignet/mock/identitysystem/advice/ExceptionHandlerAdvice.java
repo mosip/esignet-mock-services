@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -49,13 +50,13 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers,
-                                                                  HttpStatus status, WebRequest request) {
+                                                                  HttpStatusCode status, WebRequest request) {
         return handleExceptions(ex, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(
-            HttpMediaTypeNotAcceptableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+            HttpMediaTypeNotAcceptableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         return handleExceptions(ex, request);
     }
 
@@ -63,7 +64,7 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMissingServletRequestParameter(
             MissingServletRequestParameterException ex,
             HttpHeaders headers,
-            HttpStatus status,
+            HttpStatusCode status,
             WebRequest request) {
         return handleExceptions(ex, request);
     }
@@ -72,14 +73,14 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
             HttpHeaders headers,
-            HttpStatus status,
+            HttpStatusCode status,
             WebRequest request) {
         return handleExceptions(ex, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers,
-                                                        HttpStatus status, WebRequest request) {
+                                                        HttpStatusCode status, WebRequest request) {
         return handleExceptions(ex, request);
     }
 
@@ -87,16 +88,16 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(value = { Exception.class, RuntimeException.class })
     public ResponseEntity handleExceptions(Exception ex, WebRequest request) {
         log.error("Unhandled exception encountered in handler advice", ex);
-        if(ex instanceof MethodArgumentNotValidException) {
+        if(ex instanceof MethodArgumentNotValidException exception) {
             List<Error> errors = new ArrayList<>();
-            for (FieldError error : ((MethodArgumentNotValidException) ex).getBindingResult().getFieldErrors()) {
+            for (FieldError error : exception.getBindingResult().getFieldErrors()) {
                 errors.add(new Error(error.getDefaultMessage(), error.getField() + ": " + error.getDefaultMessage()));
             }
             return new ResponseEntity<ResponseWrapper>(getResponseWrapper(errors), HttpStatus.OK);
         }
-        if(ex instanceof ConstraintViolationException) {
+        if(ex instanceof ConstraintViolationException exception) {
             List<Error> errors = new ArrayList<>();
-            Set<ConstraintViolation<?>> violations = ((ConstraintViolationException) ex).getConstraintViolations();
+            Set<ConstraintViolation<?>> violations = exception.getConstraintViolations();
             for(ConstraintViolation<?> cv : violations) {
                 errors.add(new Error(INVALID_REQUEST,cv.getPropertyPath().toString() + ": " + cv.getMessage()));
             }
@@ -110,8 +111,8 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
             return new ResponseEntity<ResponseWrapper>(getResponseWrapper(INVALID_REQUEST, ex.getMessage()),
                     HttpStatus.OK);
         }
-		if (ex instanceof MockIdentityException) {
-			String errorCode = ((MockIdentityException) ex).getErrorCode();
+		if (ex instanceof MockIdentityException exception) {
+			String errorCode = exception.getErrorCode();
 			return new ResponseEntity<ResponseWrapper>(getResponseWrapper(errorCode, getMessage(errorCode)),
 					HttpStatus.OK);
 		}

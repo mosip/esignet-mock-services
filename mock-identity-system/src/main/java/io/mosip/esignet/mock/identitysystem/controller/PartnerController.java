@@ -17,9 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -44,8 +44,8 @@ public class PartnerController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleException(ConstraintViolationException ex) {
         List<io.mosip.esignet.mock.identitysystem.dto.Error> errors = new ArrayList<>();
-        if(ex != null && ex instanceof ConstraintViolationException) {
-            Set<ConstraintViolation<?>> violations = ((ConstraintViolationException) ex).getConstraintViolations();
+        if(ex != null && ex instanceof ConstraintViolationException exception) {
+            Set<ConstraintViolation<?>> violations = exception.getConstraintViolations();
             for(ConstraintViolation<?> cv : violations) {
                 errors.add(new Error(cv.getMessage(), cv.getPropertyPath().toString() + ": " + cv.getMessage()));
             }

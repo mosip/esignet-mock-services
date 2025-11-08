@@ -11,18 +11,18 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.mosip.esignet.mock.identitysystem.dto.LanguageValue;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class HelperUtilTest {
 
     private static final String TEST_EMAIL = "test@example.com";
@@ -79,8 +79,8 @@ public class HelperUtilTest {
         List<LanguageValue> languageValues = HelperUtil.getLanguageValuesList(arrayNode);
         assertNotNull(languageValues);
         assertEquals(1, languageValues.size());
-        assertEquals("en", languageValues.get(0).getLanguage());
-        assertEquals("Value in English", languageValues.get(0).getValue());
+        assertEquals("en", languageValues.getFirst().getLanguage());
+        assertEquals("Value in English", languageValues.getFirst().getValue());
     }
 
     @Test

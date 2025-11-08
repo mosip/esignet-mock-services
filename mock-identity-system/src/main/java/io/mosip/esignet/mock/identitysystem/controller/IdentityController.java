@@ -5,9 +5,9 @@
  */
 package io.mosip.esignet.mock.identitysystem.controller;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.mosip.esignet.mock.identitysystem.dto.*;
