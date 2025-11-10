@@ -60,6 +60,7 @@ import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256
 @Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
 
+    private static final String TRANSACTION_HASH_FORMAT = "%s%s%s";
     private static final String PSUT_FORMAT = "%s%s";
     private static final String OTP_VALUE = "111111";
 
@@ -257,7 +258,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         var trn_token_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
-                sendOtpDto.getTransactionId().formatted(sendOtpDto.getIndividualId(), OTP_VALUE));
+                TRANSACTION_HASH_FORMAT.formatted(sendOtpDto.getTransactionId(), sendOtpDto.getIndividualId(), OTP_VALUE));
 
         cacheUtilService.setTransactionHash(trn_token_hash);
         return new SendOtpResult(sendOtpDto.getTransactionId(), maskedEmailId, maskedMobile);
@@ -283,7 +284,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
 
             var trn_hash = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
-                    kycAuthDto.getTransactionId().formatted(kycAuthDto.getIndividualId(), OTP_VALUE));
+                    TRANSACTION_HASH_FORMAT.formatted(kycAuthDto.getTransactionId(), kycAuthDto.getIndividualId(), OTP_VALUE));
 
             var isValid = cacheUtilService.getTransactionHash(trn_hash);
             if (isValid) {

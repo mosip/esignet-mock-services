@@ -7,6 +7,7 @@ package io.mosip.esignet.mock.identitysystem.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.mockito.Mockito.*;
 
 import io.mosip.esignet.mock.identitysystem.dto.RequestWrapper;
@@ -15,7 +16,7 @@ import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import io.mosip.esignet.mock.identitysystem.dto.PartnerDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +27,7 @@ public class PartnerControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private PartnerService partnerService;
 
     @Autowired
@@ -42,7 +43,9 @@ public class PartnerControllerTest {
         mockMvc.perform(post("/partner")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(requestWrapper)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errors").isArray())
+                .andExpect(jsonPath("$.errors").isNotEmpty());
 
         verify(partnerService, times(0)).upsertPartner(any(PartnerDto.class));
     }
