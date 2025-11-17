@@ -8,7 +8,7 @@ package io.mosip.esignet.mock.identitysystem.dto;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 public class PartnerDto {

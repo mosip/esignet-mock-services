@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +37,6 @@ import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.IdentityRepository;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
-import org.springframework.util.StringUtils;
 
 import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256;
 
@@ -172,7 +172,7 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 
 			String trustFramework = entry.getValue().get("trust_framework").asText();
-			if(StringUtils.isEmpty(trustFramework))
+			if(ObjectUtils.isEmpty(trustFramework))
 				throw new MockIdentityException(ErrorConstants.INVALID_REQUEST);
 
 			String idHash= HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, verifiedClaimRequestDto.getIndividualId()+

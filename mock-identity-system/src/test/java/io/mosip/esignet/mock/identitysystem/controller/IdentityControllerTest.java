@@ -14,18 +14,16 @@ import io.mosip.esignet.mock.identitysystem.dto.RequestWrapper;
 import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.ErrorConstants;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.ZoneOffset;
@@ -37,14 +35,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(value = IdentityController.class)
 public class IdentityControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
 
-	@MockBean
+	@MockitoBean
 	IdentityService identityService;
 
 	public static final String UTC_DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -53,7 +50,7 @@ public class IdentityControllerTest {
 
 	IdentityData identityRequest;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		identityRequest = new IdentityData();
 		identityRequest.setIndividualId("826741183");
@@ -288,8 +285,8 @@ public class IdentityControllerTest {
 	public void handleMethodArgumentNotValidException_withNull_thenPass() {
 		IdentityController controller = new IdentityController();
 		ResponseEntity response = controller.handleMethodArgumentNotValidException(null);
-		Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-		Assert.assertTrue(response.getBody() instanceof List);
-		Assert.assertTrue(((List<?>) response.getBody()).isEmpty());
+		Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		Assertions.assertTrue(response.getBody() instanceof List);
+		Assertions.assertTrue(((List<?>) response.getBody()).isEmpty());
 	}
 }

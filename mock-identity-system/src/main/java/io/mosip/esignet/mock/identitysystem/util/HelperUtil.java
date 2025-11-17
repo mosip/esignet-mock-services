@@ -97,8 +97,8 @@ public class HelperUtil {
     public static String getIdentityDataValue(JsonNode jsonNode, String field, String fieldLang) {
        if(jsonNode.has(field)){
            Object fieldValue = jsonNode.get(field);
-           if(fieldValue instanceof ArrayNode){
-               for (JsonNode node : (ArrayNode)fieldValue) {
+           if(fieldValue instanceof ArrayNode arrayNode){
+               for (JsonNode node : arrayNode) {
                    String language = node.get("language").asText();
                    String value = node.get("value").asText();
                    if(language.equals(fieldLang)){

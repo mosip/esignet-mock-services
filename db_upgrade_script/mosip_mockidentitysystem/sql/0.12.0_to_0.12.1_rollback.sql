@@ -1,1 +1,3 @@
-\echo 'Rollback Queries not required for transition from $CURRENT_VERSION to $UPGRADE_VERSION'
+\c mosip_mockidentitysystem
+
+DROP TABLE IF EXISTS mockidentitysystem.ca_cert_store;

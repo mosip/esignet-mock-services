@@ -7,8 +7,8 @@ package io.mosip.esignet.mock.identitysystem.dto;
 
 import static io.mosip.esignet.mock.identitysystem.util.ErrorConstants.INVALID_REQUEST;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import io.mosip.esignet.mock.identitysystem.validator.RequestTime;
 import lombok.Data;

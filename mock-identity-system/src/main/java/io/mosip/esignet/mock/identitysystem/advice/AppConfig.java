@@ -54,11 +54,13 @@ public class AppConfig implements ApplicationRunner {
         log.info("===================== MOCK_AUTHENTICATION_SERVICE ROOT KEY CHECK ========================");
         String objectType = "CSR";
         KeyPairGenerateRequestDto rootKeyRequest = new KeyPairGenerateRequestDto();
+        rootKeyRequest.setReferenceId("");
         rootKeyRequest.setApplicationId("ROOT");
         keymanagerService.generateMasterKey(objectType, rootKeyRequest);
 
         log.info("===================== MOCK_AUTHENTICATION_SERVICE MASTER KEY CHECK ========================");
         KeyPairGenerateRequestDto masterKeyRequest = new KeyPairGenerateRequestDto();
+        masterKeyRequest.setReferenceId("");
         masterKeyRequest.setApplicationId(APPLICATION_ID);
         keymanagerService.generateMasterKey(objectType, masterKeyRequest);
 
