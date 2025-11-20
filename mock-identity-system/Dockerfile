@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21-jre
 
 # can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG spring_config_label
