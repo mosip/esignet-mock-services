@@ -25,7 +25,7 @@ function installing_mock-relying-party-ui() {
   NS=esignet
   MOCK_REPLYING_PARTY_UI_SERVICE_NAME=mock-relying-party-ui
   MOCK_REPLYING_PARTY_SERVICE_NAME=mock-relying-party-service
-  CHART_VERSION=0.12.0-develop
+  CHART_VERSION=0.12.0
 
   read -p "Please provide mock relying party ui domain (eg: healthservices.sandbox.xyz.net ) : " MOCK_UI_HOST
   if [ -z "$MOCK_UI_HOST" ]; then

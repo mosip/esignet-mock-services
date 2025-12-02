@@ -1,6 +1,6 @@
 services:
   mock-relying-party-service:
-    image: 'mosipdev/mock-relying-party-service:release-0.12.x'
+    image: 'mosipid/mock-relying-party-service:0.12.0'
     user: root
     ports:
       - 8888:8888
@@ -18,7 +18,7 @@ services:
       - CLAIMS_USER_PROFILE={"userinfo":{"name":{"essential":true},"phone_number":{"essential":true},"verified_claims":[{"verification":{"trust_framework":{"value":"ABC TF"}},"claims":{"phone_number":{"essential":true}}},{"verification":{"trust_framework":{"value":"XYZ TF"}},"claims":{"name":{"essential":true}}}]},"id_token":{}}
 
   mock-relying-party-ui:
-    image: 'mosipdev/mock-relying-party-ui:release-0.12.x'
+    image: 'mosipid/mock-relying-party-ui:0.12.0'
     user: root
     ports:
       - 3000:3000
