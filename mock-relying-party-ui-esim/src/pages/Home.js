@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import clientDetails from "../constants/clientDetails";
 import { useExternalScript } from "../hooks/useExternalScript";
+import relyingPartyService from "../services/relyingPartyService";
 
 function Home() {
   const { t, i18n } = useTranslation();
@@ -24,6 +25,9 @@ function Home() {
       max_age: clientDetails.max_age,
       ui_locales: i18n.language,
       claims: JSON.parse(decodeURIComponent(clientDetails.userProfileClaims)),
+      par_callback: relyingPartyService[clientDetails.par_callback_name],
+      par_callback_timeout: clientDetails.par_callback_timeout,
+      dpop_callback: relyingPartyService[clientDetails.dpop_callback_name]
     };
 
     window.SignInWithEsignetButton?.init({

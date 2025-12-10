@@ -4,17 +4,17 @@ const checkEmptyNullValue = (initialValue, defaultValue) =>
   initialValue && initialValue !== "" ? initialValue : defaultValue;
 
 const generateRandomString = (strLength = 16) => {
-  let result = '';
-  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = "";
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
 
   for (let i = 0; i < strLength; i++) {
     const randomInd = Math.floor(Math.random() * characters.length);
     result += characters.charAt(randomInd);
   }
   return result;
-}
+};
 
-const state = "eree2311";
+const state = generateRandomString();
 const nonce = generateRandomString();
 const responseType = "code";
 const scopeUserProfile = checkEmptyNullValue(
@@ -53,7 +53,12 @@ const registrationClaims = checkEmptyNullValue(
   window._env_.CLAIMS_REGISTRATION,
   "{}"
 );
-
+const par_callback_name = window._env_.PAR_CALLBACK_NAME;
+const par_callback_timeout = checkEmptyNullValue(
+  window._env_.PAR_CALLBACK_TIMEOUT,
+  5000
+);
+const dpop_callback_name = window._env_.DPOP_CALLBACK_NAME;
 const claims = {
   userinfo: {
     given_name: {
@@ -100,6 +105,9 @@ const clientDetails = {
   authorizeEndpoint: authorizeEndpoint,
   userProfileClaims: userProfileClaims ?? encodeURI(JSON.stringify(claims)),
   registrationClaims: registrationClaims ?? encodeURI(JSON.stringify(claims)),
+  par_callback_name: par_callback_name,
+  par_callback_timeout: par_callback_timeout,
+  dpop_callback_name: dpop_callback_name,
 };
 
 export default clientDetails;

@@ -2,7 +2,15 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import langConfigService from "../services/langConfigService";
-import ROUTES from "../constants/routes";
+import {
+  ROUTE_LOGIN,
+  ROUTE_USER_PROFILE,
+  ROUTE_HELP,
+  ROUTE_PREPAID,
+  ROUTE_POSTPAID,
+  ROUTE_NEW_PLANS,
+  ROUTE_NEW_SIM,
+} from "../constants/routes";
 
 function NavHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -51,7 +59,7 @@ function NavHeader() {
   const handleConfirmLogout = () => {
     console.log("Logging out...");
     setIsLogoutPopupOpen(false);
-    navigate(ROUTES.HOME);
+    navigate(ROUTE_LOGIN);
   };
 
   return (
@@ -71,7 +79,7 @@ function NavHeader() {
             />
           </button>
 
-          <Link id="logo-link" to={ROUTES.HOME}>
+          <Link id="logo-link" to={ROUTE_LOGIN}>
             <img
               src="/images/logo.svg"
               alt="Logo"
@@ -94,31 +102,31 @@ function NavHeader() {
           `}
           >
             <Link
-              to={ROUTES.PREPAID}
+              to={ROUTE_PREPAID}
               className="no-underline text-black font-medium transition-all duration-200 hover:text-blue-600 hover:font-semibold md:text-base"
             >
               {t("nav.prepaid")}
             </Link>
             <Link
-              to={ROUTES.POSTPAID}
+              to={ROUTE_POSTPAID}
               className="no-underline text-black font-medium transition-all duration-200 hover:text-blue-600 hover:font-semibold md:text-base"
             >
               {t("nav.postpaid")}
             </Link>
             <Link
-              to={ROUTES.NEW_PLANS}
+              to={ROUTE_NEW_PLANS}
               className="no-underline text-black font-medium transition-all duration-200 hover:text-blue-600 hover:font-semibold md:text-base"
             >
               {t("nav.newPlans")}
             </Link>
             <Link
-              to={ROUTES.NEW_SIM}
+              to={ROUTE_NEW_SIM}
               className="no-underline text-black font-medium transition-all duration-200 hover:text-blue-600 hover:font-semibold md:text-base"
             >
               {t("nav.newSim")}
             </Link>
             <Link
-              to={ROUTES.HELP}
+              to={ROUTE_HELP}
               className="no-underline text-black font-medium transition-all duration-200 hover:text-blue-600 hover:font-semibold md:text-base"
             >
               {t("nav.help")}
@@ -188,7 +196,7 @@ function NavHeader() {
           </div>
 
           {/* Logout Button - Only on /userprofile (ROUTES.ESIM) */}
-          {location.pathname === ROUTES.ESIM && (
+          {location.pathname === ROUTE_USER_PROFILE && (
             <button
               onClick={() => setIsLogoutPopupOpen(true)}
               className="ml-2 text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-3 focus:outline-none"
