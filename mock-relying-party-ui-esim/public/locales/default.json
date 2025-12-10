@@ -1,0 +1,13 @@
+{
+  "languages": {
+    "en": "English",
+    "hi": "हिंदी",
+    "ar": "عربى",
+    "kn": "ಕನ್ನಡ",
+    "ta": "தமிழ்",
+    "km": "ខ្មែរ",
+    "pt": "Português",
+    "te": "తెలుగు"
+  },
+  "rtlLanguages": ["ar"]
+}
