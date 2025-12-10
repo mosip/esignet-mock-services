@@ -21,10 +21,21 @@ export const useExternalScript = (url) => {
       script.src = url;
       script.async = true;
       document.head.appendChild(script);
+      script.addEventListener("load", handleScript);
+      script.addEventListener("error", handleScript);
+    } else {
+      // Script exists; check if already loaded
+      if (
+        script.complete ||
+        script.readyState === "complete" ||
+        script.readyState === "loaded"
+      ) {
+        setState("ready");
+        return;
+      }
+      script.addEventListener("load", handleScript);
+      script.addEventListener("error", handleScript);
     }
-
-    script.addEventListener("load", handleScript);
-    script.addEventListener("error", handleScript);
 
     return () => {
       script.removeEventListener("load", handleScript);
