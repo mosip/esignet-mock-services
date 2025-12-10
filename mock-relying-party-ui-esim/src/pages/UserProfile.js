@@ -64,17 +64,20 @@ function UserProfile() {
       let redirect_uri = clientDetails.redirect_uri_userprofile;
       let grant_type = clientDetails.grant_type;
 
-      var userInfo = await post_fetchUserInfo(
+      const fetchedUserInfo = await post_fetchUserInfo(
         authCode,
         client_id,
         redirect_uri,
         grant_type
       );
 
-      let address = getAddress(userInfo?.address);
+      let address = getAddress(fetchedUserInfo?.address);
       setAddress(address);
-      setUserInfo(userInfo);
-    } catch (errormsg) {}
+      setUserInfo(fetchedUserInfo);
+    } catch (error) {
+      console.error("Failed to fetch user details:", error);
+      navigateToLogin("fetch_error", "Failed to retrieve user information");
+    }
   };
 
   const getAddress = (userAddress) => {

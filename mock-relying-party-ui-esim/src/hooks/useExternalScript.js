@@ -21,8 +21,6 @@ export const useExternalScript = (url) => {
       script.src = url;
       script.async = true;
       document.head.appendChild(script);
-      script.addEventListener("load", handleScript);
-      script.addEventListener("error", handleScript);
     }
 
     script.addEventListener("load", handleScript);

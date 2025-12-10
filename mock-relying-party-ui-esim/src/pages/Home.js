@@ -11,6 +11,15 @@ function Home() {
   const state = useExternalScript(signInButtonScript);
 
   const renderSignInButton = () => {
+    const parseClaims = (claimsString) => {
+      try {
+        return JSON.parse(decodeURIComponent(claimsString));
+      } catch (e) {
+        console.error("Failed to parse userProfileClaims:", e);
+        return {};
+      }
+    };
+
     const oidcConfig = {
       authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
       redirect_uri: clientDetails.redirect_uri_userprofile,
@@ -24,10 +33,10 @@ function Home() {
       prompt: clientDetails.prompt,
       max_age: clientDetails.max_age,
       ui_locales: i18n.language,
-      claims: JSON.parse(decodeURIComponent(clientDetails.userProfileClaims)),
+      claims: parseClaims(clientDetails.userProfileClaims),
       par_callback: relyingPartyService[clientDetails.par_callback_name],
       par_callback_timeout: clientDetails.par_callback_timeout,
-      dpop_callback: relyingPartyService[clientDetails.dpop_callback_name]
+      dpop_callback: relyingPartyService[clientDetails.dpop_callback_name],
     };
 
     window.SignInWithEsignetButton?.init({

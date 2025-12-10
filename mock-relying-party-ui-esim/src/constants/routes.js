@@ -1,4 +1,3 @@
-
 // =======================
 // API Endpoint Constants
 // =======================
@@ -23,15 +22,12 @@ export const GET_DPOP_JKT = "/dpopJKT";
 // Route Path Constants
 // =======================
 // These constants define all the client-side route paths used in the application.
-// Landing/Login route
-export const ROUTE_LOGIN = process.env.PUBLIC_URL + "/";
-
-// User profile route
-export const ROUTE_USER_PROFILE = process.env.PUBLIC_URL + "/userprofile";
-
-// Prepaid SIM registration route
-export const ROUTE_PREPAID = process.env.PUBLIC_URL + "/prepaid";
-export const ROUTE_POSTPAID = process.env.PUBLIC_URL + "/postpaid";
-export const ROUTE_NEW_PLANS = process.env.PUBLIC_URL + "/newplans";
-export const ROUTE_NEW_SIM = process.env.PUBLIC_URL + "/newsim";
-export const ROUTE_HELP = process.env.PUBLIC_URL + "/help";
+export const ROUTES = {
+  LOGIN: process.env.PUBLIC_URL + "/",
+  USER_PROFILE: process.env.PUBLIC_URL + "/userprofile",
+  PREPAID: process.env.PUBLIC_URL + "/prepaid",
+  POSTPAID: process.env.PUBLIC_URL + "/postpaid",
+  NEW_PLANS: process.env.PUBLIC_URL + "/newplans",
+  NEW_SIM: process.env.PUBLIC_URL + "/newsim",
+  HELP: process.env.PUBLIC_URL + "/help",
+};

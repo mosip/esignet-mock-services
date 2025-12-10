@@ -27,9 +27,9 @@ The application run on PORT=5000 by default.
   (Example:max_age:21)
   - DISPLAY: This property specifies how the authorization server should display the authentication and consent page to the end-user.
   Possible values are page, popup, wap, touch 
-  (Exapmle: display:page)
+  (Example: display:page)
   - PROMPT: This property specifies the type of prompt to be used during the authentication flow.
-  (Exapmle: prompt:consent)
+  (Example: prompt:consent)
   - GRANT_TYPE: This property specifies the OAuth 2.0 grant type that the client will use to request access tokens. (Example: grant_type: authorization_code)
   - SIGN_IN_BUTTON_PLUGIN_URL: Sign in button url.
   - SCOPE_USER_PROFILE: List of scopes that are requested when initiating an authentication request.
@@ -43,7 +43,7 @@ The application run on PORT=5000 by default.
   ```
 
   To host mock relying party ui on a context path:
-  1. Remove the location path with `/` in the nignx file and add the location with context path as below.
+  1. Remove the location path with `/` in the nginx file and add the location with context path as below.
     ```
     location /esim {
        alias /usr/share/nginx/esim;

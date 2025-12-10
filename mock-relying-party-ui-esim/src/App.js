@@ -7,7 +7,7 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import UserProfile from "./pages/UserProfile";
 import "./App.css";
-import { ROUTE_LOGIN, ROUTE_USER_PROFILE } from "./constants/routes";
+import { ROUTES } from "./constants/routes";
 
 function DirectionWrapper({ children }) {
   const { i18n } = useTranslation();
@@ -29,8 +29,8 @@ function App() {
 
             <main className="flex-grow pt-[5.2rem]">
               <Routes>
-                <Route path={ROUTE_LOGIN} element={<Home />} />
-                <Route path={ROUTE_USER_PROFILE} element={<UserProfile />} />
+                <Route path={ROUTES.LOGIN} element={<Home />} />
+                <Route path={ROUTES.USER_PROFILE} element={<UserProfile />} />
               </Routes>
             </main>
 
