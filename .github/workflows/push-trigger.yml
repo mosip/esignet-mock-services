@@ -20,6 +20,7 @@ on:
       - develop
       - MOSIP*
       - release*
+      - ES-2192
 
 jobs:
   build-maven-esignet-mock-services:
@@ -96,6 +97,9 @@ jobs:
             SQUASH_LAYERS: '14'
           - SERVICE_LOCATION: 'mock-relying-party-ui'
             SERVICE_NAME: 'mock-relying-party-ui'
+            SQUASH_LAYERS: '10'
+          - SERVICE_LOCATION: 'mock-relying-party-ui-esim'
+            SERVICE_NAME: 'mock-relying-party-ui-esim'
             SQUASH_LAYERS: '10'
       fail-fast: false
     name: ${{ matrix.SERVICE_NAME }}
