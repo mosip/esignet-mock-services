@@ -3,7 +3,7 @@ info:
   title: OpenAPI definition
   version: v0
 servers:
-  - url: http://localhost:8091/v1/admin
+  - url: http://localhost:8091/v1/compass
     description: Generated server url
 
 paths:
