@@ -40,6 +40,7 @@ function UserProfile() {
       let authCode = searchParams.get("code");
       let errorCode = searchParams.get("error");
       let error_desc = searchParams.get("error_description");
+      let state =  searchParams.get("state");
 
       if (errorCode) {
         navigateToLogin(errorCode, error_desc);
@@ -47,7 +48,7 @@ function UserProfile() {
       }
 
       if (authCode) {
-        getUserDetails(authCode);
+        getUserDetails(authCode, state);
       } else {
         return;
       }
@@ -56,7 +57,7 @@ function UserProfile() {
   }, []);
 
   //Handle Login API Integration here
-  const getUserDetails = async (authCode) => {
+  const getUserDetails = async (authCode, state) => {
     setUserInfo(null);
 
     try {
@@ -66,6 +67,7 @@ function UserProfile() {
 
       const fetchedUserInfo = await post_fetchUserInfo(
         authCode,
+        state,
         client_id,
         redirect_uri,
         grant_type
