@@ -73,7 +73,7 @@ function NavHeader() {
 
           <Link id="logo-link" to={ROUTES.LOGIN}>
             <img
-              src="/images/logo.svg"
+              src="/images/brand-logo.svg"
               alt="Logo"
               className="h-9 max-w-none md:m-0 rtl:ml-4"
             />
