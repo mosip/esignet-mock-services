@@ -67,13 +67,13 @@ function Home() {
 
   return (
     <section
-      className="flex items-center justify-between px-16 py-15 pb-12 flex-wrap bg-no-repeat bg-cover bg-top bg-left md:flex-col-reverse md:text-center md:px-5 md:py-10"
-      style={{ backgroundImage: "url('/images/dotgrid.svg')" }}
+      className="flex items-center justify-between px-16 py-15 pb-12 flex-wrap bg-no-repeat bg-cover bg-top bg-left md:flex-col-reverse md:text-center md:px-5 md:py-10 lg:h-[80vh]"
+      style={{ backgroundImage: "url('/images/dot-grid.svg')" }}
     >
       {/* Left content (text + button) */}
       <div className="flex-1 max-w-1/2 pr-5 mr-8 -translate-x-4 rtl:translate-x-4 rtl:ml-8 rtl:mr-0 md:max-w-full md:p-5 md:m-0 md:transform-none">
         {/* Heading with display font */}
-        <h1 className="font-display font-semibold text-[64px] leading-[76px] tracking-[-0.02em] mb-5 md:text-3xl md:leading-snug md:tracking-normal">
+        <h1 className="font-display font-semibold text-[64px] leading-[76px] tracking-[-0.02em] mb-5 2xl:text-[64px] xl:text-5xl lg:text-4xl md:text-3xl md:leading-snug md:tracking-normal">
           {t("hero.title")}
         </h1>
 
@@ -95,7 +95,7 @@ function Home() {
         <img
           src="/images/sim_image.svg"
           alt="SIM"
-          className="max-w-[85%] h-auto"
+          className="xl:max-w-[85%] 2xl:w-[650px] h-auto"
         />
       </div>
     </section>
