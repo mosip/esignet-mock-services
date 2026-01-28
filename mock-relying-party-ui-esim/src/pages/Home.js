@@ -68,7 +68,7 @@ function Home() {
   return (
     <section
       className="flex items-center justify-between px-16 py-15 pb-12 flex-wrap bg-no-repeat bg-cover bg-top bg-left md:flex-col-reverse md:text-center md:px-5 md:py-10"
-      style={{ backgroundImage: "url('/images/dotgrid.svg')" }}
+      style={{ backgroundImage: "url('/images/dot-grid.svg')" }}
     >
       {/* Left content (text + button) */}
       <div className="flex-1 max-w-1/2 pr-5 mr-8 -translate-x-4 rtl:translate-x-4 rtl:ml-8 rtl:mr-0 md:max-w-full md:p-5 md:m-0 md:transform-none">
