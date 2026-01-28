@@ -1,1 +1,1 @@
-# Compass Admin UI
+# GlobalID Pass Admin UI
