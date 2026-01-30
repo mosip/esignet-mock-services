@@ -21,6 +21,7 @@ on:
       - MOSIP*
       - release*
       - INJICERT*
+      - INJIMOB*
 
 jobs:
   build-maven-usecase-compass:
