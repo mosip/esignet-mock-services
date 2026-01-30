@@ -57,7 +57,7 @@ export const HomeFeatures = ({ i18nKeyPrefix = "login" }) => {
               <span className="my-8">Anytime, Anywhere</span>
             </h1>
             <p className="mt-[2em] text-lg text-gray-500">
-              The official digital portal to access your coMPASS credentials -
+              The official digital portal to access your GlobalID Pass credentials -
               securely
               <br className="hidden sm:block" />
               download, manage, and access your digital credentials anytime,
@@ -101,7 +101,7 @@ export const HomeFeatures = ({ i18nKeyPrefix = "login" }) => {
                       .children[0].click()
                   }
                 >
-                  Login with comPASS ID
+                  Login with GlobalID Pass
                 </button>
               )}
               {state === "ready" && (

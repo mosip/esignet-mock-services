@@ -40,7 +40,7 @@ export const Footer = () => {
             data-testid="Footer-Text"
             className="ps-2 text-iw-subText transform rotate-180"
           >
-            &nbsp;&nbsp;comPASS services are now available in all regions.
+            &nbsp;&nbsp;GlobalID Pass services are now available in all regions.
           </p>
           <img
             className={"h-5 transform mx-auto rotate-180"}
