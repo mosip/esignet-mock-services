@@ -259,14 +259,14 @@ export const HomeFeatures = ({ i18nKeyPrefix = "login" }) => {
                 Download the app
               </h4>
               <a
-                href="https://testflight.apple.com/join/tenTh4vR"
+                href="https://testflight.apple.com/join/7FTAdjLe"
                 className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 mb-2 flex items-center"
                 target="_blank"
               >
                 Download for iOS
               </a>
               <a
-                href="https://drive.google.com/drive/folders/11wFVTosPqW63NbCub70mT2qZbJaPGj1f"
+                href="https://mosip.atlassian.net/wiki/external/NmRmMzE3NDJlYjI4NGMxZThmNWUwZGU4MzI4ZjNiNTE"
                 className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 flex items-center my-4"
                 target="_blank"
               >
