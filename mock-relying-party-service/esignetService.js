@@ -24,13 +24,15 @@ const post_GetToken = async ({
   redirect_uri,
   grant_type
 }) => {
+  const jwt = await generateSignedJwt(client_id)
+  console.log("Generated JWT for client assertion: ", jwt);
   let request = new URLSearchParams({
     code: code,
     client_id: client_id,
     redirect_uri: redirect_uri,
     grant_type: grant_type,
     client_assertion_type: CLIENT_ASSERTION_TYPE,
-    client_assertion: await generateSignedJwt(client_id),
+    client_assertion: jwt
   });
   const endpoint = baseUrl + getTokenEndPoint;
   console.log(baseUrl)
