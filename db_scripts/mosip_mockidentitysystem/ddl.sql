@@ -6,4 +6,6 @@
 \ir ddl/mockidentitysystem-key_policy_def.sql
 \ir ddl/mockidentitysystem-key_store.sql
 \ir ddl/mockidentitysystem-verified_claim.sql
+\ir ddl/mockidentitysystem-ca_cert_store.sql
+\ir ddl/mockidentitysystem-partner_data.sql
 
