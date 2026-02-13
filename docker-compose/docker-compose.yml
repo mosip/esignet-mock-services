@@ -1,6 +1,6 @@
 services:
   database:
-    image: 'postgres:bookworm'
+    image: "postgres:bookworm"
     ports:
       - 5455:5432
     environment:
@@ -9,9 +9,8 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
-
   mock-identity-system:
-    image: 'mosipdev/mock-identity-system:develop'
+    image: "mosipdev/mock-identity-system:release-0.13.x"
     user: root
     ports:
       - 8082:8082
