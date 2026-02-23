@@ -46,14 +46,17 @@ The application runs on PORT=5000 by default.
     (Example: par_callback_timeout: 5000)
   - DPOP_CALLBACK_NAME: **Feature flag** to enable DPoP (Demonstration of Proof-of-Possession) flow  
     Required value: `get_dpop_jkt` (hardcoded function name - not configurable)
+  - CODE_CHALLENGE: **Feature flag** to enable PKCE (Proof Key for Code Exchange) flow  
+    Required value: `get_code_challenge` (hardcoded function name - not configurable)  
+    When enabled, the PKCE method is automatically fetched from the authorization server's `.well-known/openid-configuration` endpoint
 
-  > **Important:** PAR_CALLBACK_NAME and DPOP_CALLBACK_NAME act as feature toggles. The values correspond to hardcoded function names in the codebase and are not configurable. Include these variables to enable the respective flows, or omit them to disable the functionality.
+  > **Important:** PAR_CALLBACK_NAME, DPOP_CALLBACK_NAME, and CODE_CHALLENGE act as feature toggles. The values correspond to hardcoded function names in the codebase and are not configurable. Include these variables to enable the respective flows, or omit them to disable the functionality.
 
 - Build and run Docker for a service:
 
   ```
   $ docker build -t <dockerImageName>:<tag> .
-  $ docker run -it -d -p 5000:5000 -e ESIGNET_UI_BASE_URL='http://localhost:3000' -e MOCK_RELYING_PARTY_BASE_URL=http://localhost:8888 -e REDIRECT_URI=http://localhost:5000/userprofile -e CLIENT_ID=healthservices -e ACRS="mosip:esignet:acr:static-code" -e MAX_AGE=21 -e DISPLAY=page -e PROMPT=consent -e GRANT_TYPE=authorization_code -e SIGN_IN_BUTTON_PLUGIN_URL='http://127.0.0.1:5500/dist/iife/index.js' -e SCOPE_USER_PROFILE='openid%20profile%20resident-service' -e PAR_CALLBACK_NAME='get_requestUri' -e DPOP_CALLBACK_NAME='get_dpop_jkt' -e <dockerImageName>:<tag>
+  $ docker run -it -d -p 5000:5000 -e ESIGNET_UI_BASE_URL='http://localhost:3000' -e MOCK_RELYING_PARTY_BASE_URL=http://localhost:8888 -e REDIRECT_URI=http://localhost:5000/userprofile -e CLIENT_ID=healthservices -e ACRS="mosip:esignet:acr:static-code" -e MAX_AGE=21 -e DISPLAY=page -e PROMPT=consent -e GRANT_TYPE=authorization_code -e SIGN_IN_BUTTON_PLUGIN_URL='http://127.0.0.1:5500/dist/iife/index.js' -e SCOPE_USER_PROFILE='openid%20profile%20resident-service' -e PAR_CALLBACK_NAME='get_requestUri' -e DPOP_CALLBACK_NAME='get_dpop_jkt' -e CODE_CHALLENGE='get_code_challenge' -e <dockerImageName>:<tag>
   ```
 
   To host the mock relying party UI on a context path:
