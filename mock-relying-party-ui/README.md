@@ -56,7 +56,7 @@ The application runs on PORT=5000 by default.
 
   ```
   $ docker build -t <dockerImageName>:<tag> .
-  $ docker run -it -d -p 5000:5000 -e ESIGNET_UI_BASE_URL='http://localhost:3000' -e MOCK_RELYING_PARTY_BASE_URL=http://localhost:8888 -e REDIRECT_URI=http://localhost:5000/userprofile -e CLIENT_ID=healthservices -e ACRS="mosip:esignet:acr:static-code" -e MAX_AGE=21 -e DISPLAY=page -e PROMPT=consent -e GRANT_TYPE=authorization_code -e SIGN_IN_BUTTON_PLUGIN_URL='http://127.0.0.1:5500/dist/iife/index.js' -e SCOPE_USER_PROFILE='openid%20profile%20resident-service' -e PAR_CALLBACK_NAME='get_requestUri' -e DPOP_CALLBACK_NAME='get_dpop_jkt' -e CODE_CHALLENGE='get_code_challenge' -e <dockerImageName>:<tag>
+  $ docker run -it -d -p 5000:5000 -e ESIGNET_UI_BASE_URL='http://localhost:3000' -e MOCK_RELYING_PARTY_BASE_URL=http://localhost:8888 -e REDIRECT_URI=http://localhost:5000/userprofile -e CLIENT_ID=healthservices -e ACRS="mosip:esignet:acr:static-code" -e MAX_AGE=21 -e DISPLAY=page -e PROMPT=consent -e GRANT_TYPE=authorization_code -e SIGN_IN_BUTTON_PLUGIN_URL='http://127.0.0.1:5500/dist/iife/index.js' -e SCOPE_USER_PROFILE='openid%20profile%20resident-service' -e PAR_CALLBACK_NAME='get_requestUri' -e DPOP_CALLBACK_NAME='get_dpop_jkt' -e CODE_CHALLENGE='get_code_challenge' <dockerImageName>:<tag>
   ```
 
   To host the mock relying party UI on a context path:

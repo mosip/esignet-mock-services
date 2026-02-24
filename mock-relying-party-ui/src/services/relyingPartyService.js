@@ -112,13 +112,12 @@ const get_dpop_jkt = async (clientId, state) => {
  */
 const get_requestUri = async (clientId, state, ui_locales, dpop_jkt, code_challenge, code_challenge_method) => {
   try {
-    const params = new URLSearchParams({
-      state,
-      ui_locales,
-      dpop_jkt,
-      code_challenge,
-      code_challenge_method
-    });
+    const params = new URLSearchParams({ state, ui_locales });
+    if (dpop_jkt) params.append("dpop_jkt", dpop_jkt);
+    if (code_challenge && code_challenge_method) {
+      params.append("code_challenge", code_challenge);
+      params.append("code_challenge_method", code_challenge_method);
+    }
     const endpoint = `${BASE_URL}${GET_REQUEST_URI}/${clientId}?${params.toString()}`;
     const response = await axios.get(endpoint, {
       headers: {

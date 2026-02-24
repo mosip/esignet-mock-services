@@ -115,7 +115,7 @@ const post_GetRequestUri = async (clientId, uiLocales, state, dpop_jkt, code_cha
   if (dpop_jkt) {
     params.append("dpop_jkt", dpop_jkt);
   }
-  if (code_challenge) {
+  if (code_challenge && code_challenge_method) {
     params.append("code_challenge", code_challenge);
     params.append("code_challenge_method", code_challenge_method);
   }
