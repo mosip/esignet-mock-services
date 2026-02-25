@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.mosip.esignet.mock.identitysystem.dto.VerifiedClaimRequestDto;
 import io.mosip.esignet.mock.identitysystem.entity.VerifiedClaim;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
@@ -66,14 +67,15 @@ public class IdentityServiceImpl implements IdentityService {
 	private String schemaUrl;
 
 	@Override
-	public void addIdentity(IdentityData identityData) throws MockIdentityException {
-		if (identityRepository.findById(identityData.getIndividualId()).isPresent()) {
+	public void addIdentity(JsonNode identityData) throws MockIdentityException {
+		String individualId = identityData.get("individualId").asText();
+		if (identityRepository.findById(individualId).isPresent()) {
 			throw new MockIdentityException(ErrorConstants.DUPLICATE_INDIVIDUAL_ID);
 		}
 		MockIdentity mockIdentity = new MockIdentity();
 		try {
-			if(identityData.getPassword() != null) {
-				identityData.setPassword(HMACUtils2.digestAsPlainText(identityData.getPassword().getBytes()));
+			if(identityData.hasNonNull("password")) {
+				((ObjectNode)identityData).put("password", HMACUtils2.digestAsPlainText(identityData.get("password").asText().getBytes()));
 			}
 			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(identityData));
 		} catch (JsonProcessingException e) {
@@ -81,20 +83,21 @@ public class IdentityServiceImpl implements IdentityService {
 		} catch (NoSuchAlgorithmException e) {
 			throw new MockIdentityException(ErrorConstants.UNKNOWN_ERROR);
         }
-        mockIdentity.setIndividualId(identityData.getIndividualId());
+        mockIdentity.setIndividualId(individualId);
 		identityRepository.save(mockIdentity);
 	}
 
 	@Override
-	public void updateIdentity(IdentityData identityData) throws MockIdentityException {
-		Optional<MockIdentity> result = identityRepository.findById(identityData.getIndividualId());
+	public void updateIdentity(JsonNode identityData) throws MockIdentityException {
+		String individualId = identityData.get("individualId").asText();
+		Optional<MockIdentity> result = identityRepository.findById(individualId);
 		if (result.isEmpty()) {
 			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
 		}
 		MockIdentity mockIdentity = result.get();
 		try {
-			if(identityData.getPassword() != null) {
-				identityData.setPassword(HMACUtils2.digestAsPlainText(identityData.getPassword().getBytes()));
+			if(identityData.hasNonNull("password")) {
+				((ObjectNode)identityData).put("password", HMACUtils2.digestAsPlainText(identityData.get("password").asText().getBytes()));
 			}
 			String requestedUpdateJsonString = objectMapper.writeValueAsString(identityData);
 			Map<String, Object> requestedUpdate = objectMapper.readValue(requestedUpdateJsonString, Map.class);
@@ -108,7 +111,7 @@ public class IdentityServiceImpl implements IdentityService {
 		} catch (NoSuchAlgorithmException e) {
 			throw new MockIdentityException(ErrorConstants.UNKNOWN_ERROR);
 		}
-		mockIdentity.setIndividualId(identityData.getIndividualId());
+		mockIdentity.setIndividualId(individualId);
 		identityRepository.save(mockIdentity);
 	}
 

@@ -139,11 +139,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         KycAuthResponseDto kycAuthResponseDto = new KycAuthResponseDto();
         kycAuthResponseDto.setAuthStatus(authStatus);
         kycAuthResponseDto.setKycToken(kycAuth.getKycToken());
-        if (psutField.equals("psut")) {
-            kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
-        } else {
-            kycAuthResponseDto.setPartnerSpecificUserToken(HelperUtil.getIdentityDataValue(identityData, psutField, defaultLanguage));
-        }
+        kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
+
         if(kycAuthDto.isClaimMetadataRequired()) {
             kycAuthResponseDto.setClaimMetadata(getVerifiedClaimMetadata(kycAuthDto.getIndividualId(), identityData));
         }
@@ -415,8 +412,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String kycToken = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, UUID.randomUUID().toString());
         String psut;
         try {
-            psut = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
-                    PSUT_FORMAT.formatted(individualId, relyingPartyId));
+            psut = psutField.equals("psut") ? HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
+                    PSUT_FORMAT.formatted(individualId, relyingPartyId)) : individualId;
         } catch (Exception e) {
             log.error("Failed to generate PSUT", e);
             throw new MockIdentityException("mock-ida-004");
@@ -473,7 +470,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 ObjectNode objectNode = buildVerifiedClaimsObject(verifiedClaimsNode, locales,
                         identityData, claimsByVerificationMetadataResult.get(), kyc);
                 if(!objectNode.isEmpty()) {
-                    kyc.set("verified_claims", objectNode);
+                    List<ObjectNode> verifiedList = new ArrayList<>();
+                    verifiedList.add(objectNode);
+                    kyc.set("verified_claims", objectMapper.valueToTree(verifiedList));
                 }
             }
         }

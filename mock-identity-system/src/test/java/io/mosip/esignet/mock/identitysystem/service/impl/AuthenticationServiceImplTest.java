@@ -20,6 +20,7 @@ import io.mosip.esignet.mock.identitysystem.repository.PartnerDataRepository;
 import io.mosip.esignet.mock.identitysystem.repository.VerifiedClaimRepository;
 import io.mosip.esignet.mock.identitysystem.service.IdentityService;
 import io.mosip.esignet.mock.identitysystem.util.CacheUtilService;
+import io.mosip.esignet.mock.identitysystem.util.HelperUtil;
 import io.mosip.kernel.signature.dto.JWTSignatureResponseDto;
 import io.mosip.kernel.signature.service.SignatureService;
 import org.junit.jupiter.api.Assertions;
@@ -36,6 +37,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static io.mosip.esignet.mock.identitysystem.util.HelperUtil.ALGO_SHA3_256;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -328,10 +330,10 @@ public class AuthenticationServiceImplTest {
         identityData.setFullName(List.of(languageValue));
         Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
 
-        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+        Mockito.when(authRepository.save(Mockito.any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
-        Assertions.assertEquals("8267411571", kycAuthResponseDto.getPartnerSpecificUserToken());
+        Assertions.assertEquals(kycAuthDto.getIndividualId(), kycAuthResponseDto.getPartnerSpecificUserToken());
         Assertions.assertTrue(kycAuthResponseDto.isAuthStatus());
     }
 
@@ -356,8 +358,6 @@ public class AuthenticationServiceImplTest {
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
         Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
-
-        //Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         Assertions.assertFalse(kycAuthResponseDto.isAuthStatus());

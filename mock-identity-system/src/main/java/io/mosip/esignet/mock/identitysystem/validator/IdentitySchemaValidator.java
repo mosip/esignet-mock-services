@@ -54,12 +54,7 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     @Override
     public boolean isValid(Object object, ConstraintValidatorContext context) {
-
-        if (!(object instanceof IdentityData)) {
-            return false;
-        }
-        IdentityData identityData=(IdentityData) object;
-        JsonNode identityJsonNode = objectMapper.valueToTree(identityData);
+        JsonNode identityJsonNode = (JsonNode)object;
         Set<ValidationMessage> validationErrors = validateIdentityData(identityJsonNode);
 
         // Handle validation errors

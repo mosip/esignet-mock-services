@@ -5,8 +5,21 @@
  */
 package io.mosip.esignet.mock.identitysystem.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.mosip.esignet.mock.identitysystem.validator.IdentitySchema;
+import io.mosip.esignet.mock.identitysystem.validator.RequestTime;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
-@IdentitySchema(action = "CREATE")
-public class CreateIdentity extends IdentityData {
+import static io.mosip.esignet.mock.identitysystem.util.ErrorConstants.INVALID_REQUEST;
+
+@Data
+public class CreateIdentity {
+
+    @RequestTime
+    private String requestTime;
+
+    @NotNull(message = INVALID_REQUEST)
+    @IdentitySchema(action = "CREATE")
+    private JsonNode request;
 }

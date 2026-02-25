@@ -40,7 +40,7 @@ public class IdentityController {
 	@PostMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> createIdentity
-	(@RequestBody @Valid RequestWrapper<CreateIdentity> requestWrapper) throws MockIdentityException {
+	(@RequestBody @Valid CreateIdentity requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();
@@ -54,7 +54,7 @@ public class IdentityController {
 	@PutMapping(value = "identity", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseWrapper<IdentityStatus> updateIdentity
-			(@RequestBody @Valid RequestWrapper<UpdateIdentity> requestWrapper) throws MockIdentityException {
+			(@RequestBody @Valid UpdateIdentity requestWrapper) throws MockIdentityException {
 
 		ResponseWrapper response = new ResponseWrapper<IdentityStatus>();
 		IdentityStatus identityStatus = new IdentityStatus();
@@ -66,10 +66,10 @@ public class IdentityController {
 	}
 	
 	@GetMapping(value = "identity/{individualId}")
-	public ResponseWrapper<IdentityData> getIdentity(@PathVariable(value = "individualId") String individualId)
+	public ResponseWrapper<JsonNode> getIdentity(@PathVariable(value = "individualId") String individualId)
 			throws MockIdentityException {
-		ResponseWrapper<IdentityData> response = new ResponseWrapper<>();
-		response.setResponse(identityService.getIdentity(individualId));
+		ResponseWrapper<JsonNode> response = new ResponseWrapper<>();
+		response.setResponse(identityService.getIdentityV2(individualId));
 		response.setResponseTime(HelperUtil.getCurrentUTCDateTime());
 		return response;	
 	}
