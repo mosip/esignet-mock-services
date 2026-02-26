@@ -204,30 +204,23 @@ public class IdentityServiceTest {
 
     @Test
     public void getIdentity_withValidDetails_thenPass() throws MockIdentityException, JsonProcessingException {
-        IdentityData identityData = new IdentityData();
-        identityData.setEmail("email@gmail.com");
-        identityData.setEncodedPhoto("encodedPhoto");
         MockIdentity mockIdentity = new MockIdentity();
-        mockIdentity.setIndividualId("123456");
+        mockIdentity.setIndividualId("8267411571");
         mockIdentity.setIdentityJson("{\"individualId\":\"8267411571\",\"pin\":\"111111\",\"fullName\":[{\"language\":\"fra\",\"value\":\"Siddharth K Mansour\"},{\"language\":\"ara\",\"value\":\"تتگلدكنسَزقهِقِفل دسييسيكدكنوڤو\"},{\"language\":\"eng\",\"value\":\"Siddharth K Mansour\"}],\"email\":\"siddhartha.km@gmail.com\",\"phone\":\"+919427357934\"}");
-        mockIdentity.setIdentityJson("{}");
-        when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(mockIdentity));
-        IdentityData result = identityService.getIdentity(identityData.getIndividualId());
+        when(identityRepository.findById("8267411571")).thenReturn(Optional.of(mockIdentity));
+        JsonNode result = identityService.getIdentity("8267411571");
 
-        Assertions.assertEquals(identityData.getIndividualId(), result.getIndividualId());
+        Assertions.assertEquals("8267411571", result.get("individualId").asText());
     }
 
     @Test
     public void getIdentity_withInValidIdentityJson_thenFail() throws MockIdentityException, JsonProcessingException {
-        IdentityData identityData = new IdentityData();
-        identityData.setEmail("email@gmail.com");
-        identityData.setEncodedPhoto("encodedPhoto");
         MockIdentity mockIdentity = new MockIdentity();
         mockIdentity.setIndividualId("123456");
         mockIdentity.setIdentityJson("{ \\\"name\\\": \\\"John Doe, \\\"age\\\": 30 }");
-        when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(mockIdentity));
+        when(identityRepository.findById("123456")).thenReturn(Optional.of(mockIdentity));
         try {
-            identityService.getIdentity(identityData.getIndividualId());
+            identityService.getIdentity("123456");
             Assertions.fail();
         }catch (MockIdentityException e){
             Assertions.assertEquals(ErrorConstants.JSON_PROCESSING_ERROR, e.getErrorCode());

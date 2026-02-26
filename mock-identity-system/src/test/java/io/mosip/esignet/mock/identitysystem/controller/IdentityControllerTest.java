@@ -182,7 +182,7 @@ public class IdentityControllerTest {
 	@Test
 	public void getIdentity_withValidId_returnSuccessResponse() throws Exception {
 		identityRequest.put("individualId", "123456789");
-		Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityRequest);
+		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
 
 		mockMvc.perform(get("/identity/{individualId}", "123456789")
 						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
@@ -209,7 +209,7 @@ public class IdentityControllerTest {
 		requestWrapper.setRequest(verifiedClaimRequestDto);
 
 		Mockito.doNothing().when(identityService).addVerifiedClaim(verifiedClaimRequestDto);
-		Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityRequest);
+		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
 
 		mockMvc.perform(post("/identity/add-verified-claim").content(objectMapper.writeValueAsString(requestWrapper))
 						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())

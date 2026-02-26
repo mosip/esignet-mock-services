@@ -122,7 +122,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public KycAuthResponseDto kycAuth(String relyingPartyId, String clientId, KycAuthDto kycAuthDto) throws MockIdentityException {
         //TODO validate relying party Id and client Id
 
-        JsonNode identityData = identityService.getIdentityV2(kycAuthDto.getIndividualId());
+        JsonNode identityData = identityService.getIdentity(kycAuthDto.getIndividualId());
         if (identityData == null) {
             throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
         }
@@ -198,7 +198,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
             }
 
-            JsonNode identityData = identityService.getIdentityV2(kycExchangeDto.getIndividualId());
+            JsonNode identityData = identityService.getIdentity(kycExchangeDto.getIndividualId());
             if (identityData == null) {
                 throw new MockIdentityException("mock-ida-001");
             }
@@ -227,7 +227,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public SendOtpResult sendOtp(String relyingPartyId, String clientId, SendOtpDto sendOtpDto) throws MockIdentityException {
         //TODO validate relying party Id and client Id
 
-        JsonNode identityData = identityService.getIdentityV2(sendOtpDto.getIndividualId());
+        JsonNode identityData = identityService.getIdentity(sendOtpDto.getIndividualId());
         if (identityData == null) {
             throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
         }
@@ -356,7 +356,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private boolean validatePasswordAuth(KycAuthDto kycAuthDto, JsonNode identityData){
         String passwordHash = identityData.hasNonNull("password") ? identityData.get("password").asText() : null;
         try {
-            return passwordHash != null && passwordHash.equals(HMACUtils2.digestAsPlainText(kycAuthDto.getPassword().getBytes()));
+            return passwordHash != null && passwordHash.equals(HMACUtils2.digestAsPlainText(kycAuthDto.getPassword().getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
             log.error("Failed to decode PWD challenge or compare it with IdentityData", e);
             throw new MockIdentityException("auth-failed");
@@ -470,6 +470,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 ObjectNode objectNode = buildVerifiedClaimsObject(verifiedClaimsNode, locales,
                         identityData, claimsByVerificationMetadataResult.get(), kyc);
                 if(!objectNode.isEmpty()) {
+                    // The OID4IDA specification allows verified_claims to be returned as either a single object or an array of objects.
+                    // This code normalizes all responses to arrays regardless of request format for simplicity as its mock implementation.
                     List<ObjectNode> verifiedList = new ArrayList<>();
                     verifiedList.add(objectNode);
                     kyc.set("verified_claims", objectMapper.valueToTree(verifiedList));

@@ -7,6 +7,7 @@ package io.mosip.esignet.mock.identitysystem.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -32,7 +33,6 @@ import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import io.mosip.esignet.mock.identitysystem.entity.MockIdentity;
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
 import io.mosip.esignet.mock.identitysystem.repository.IdentityRepository;
@@ -68,6 +68,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Override
 	public void addIdentity(JsonNode identityData) throws MockIdentityException {
+		if(!identityData.hasNonNull("individualId"))
+			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
+
 		String individualId = identityData.get("individualId").asText();
 		if (identityRepository.findById(individualId).isPresent()) {
 			throw new MockIdentityException(ErrorConstants.DUPLICATE_INDIVIDUAL_ID);
@@ -75,7 +78,8 @@ public class IdentityServiceImpl implements IdentityService {
 		MockIdentity mockIdentity = new MockIdentity();
 		try {
 			if(identityData.hasNonNull("password")) {
-				((ObjectNode)identityData).put("password", HMACUtils2.digestAsPlainText(identityData.get("password").asText().getBytes()));
+				((ObjectNode)identityData).put("password",
+						HMACUtils2.digestAsPlainText(identityData.get("password").asText().getBytes(StandardCharsets.UTF_8)));
 			}
 			mockIdentity.setIdentityJson(objectMapper.writeValueAsString(identityData));
 		} catch (JsonProcessingException e) {
@@ -89,6 +93,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Override
 	public void updateIdentity(JsonNode identityData) throws MockIdentityException {
+		if(!identityData.hasNonNull("individualId"))
+			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
+
 		String individualId = identityData.get("individualId").asText();
 		Optional<MockIdentity> result = identityRepository.findById(individualId);
 		if (result.isEmpty()) {
@@ -97,7 +104,8 @@ public class IdentityServiceImpl implements IdentityService {
 		MockIdentity mockIdentity = result.get();
 		try {
 			if(identityData.hasNonNull("password")) {
-				((ObjectNode)identityData).put("password", HMACUtils2.digestAsPlainText(identityData.get("password").asText().getBytes()));
+				((ObjectNode)identityData).put("password",
+						HMACUtils2.digestAsPlainText(identityData.get("password").asText().getBytes(StandardCharsets.UTF_8)));
 			}
 			String requestedUpdateJsonString = objectMapper.writeValueAsString(identityData);
 			Map<String, Object> requestedUpdate = objectMapper.readValue(requestedUpdateJsonString, Map.class);
@@ -116,20 +124,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	@Override
-	public IdentityData getIdentity(String individualId) throws MockIdentityException {
-		Optional<MockIdentity> mockIdentity = identityRepository.findById(individualId);
-		if (mockIdentity.isEmpty()) {
-			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
-		}
-		try {
-			return objectMapper.readValue(mockIdentity.get().getIdentityJson(), IdentityData.class);
-		} catch (JsonProcessingException e) {
-			throw new MockIdentityException(ErrorConstants.JSON_PROCESSING_ERROR);
-		}
-	}
-
-	@Override
-	public JsonNode getIdentityV2(String individualId) throws MockIdentityException {
+	public JsonNode getIdentity(String individualId) throws MockIdentityException {
 		Optional<MockIdentity> mockIdentity = identityRepository.findById(individualId);
 		if (mockIdentity.isEmpty()) {
 			throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
@@ -166,7 +161,7 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Override
 	public void addVerifiedClaim(VerifiedClaimRequestDto verifiedClaimRequestDto) throws MockIdentityException {
-		JsonNode identity = getIdentityV2(verifiedClaimRequestDto.getIndividualId());
+		JsonNode identity = getIdentity(verifiedClaimRequestDto.getIndividualId());
 
         for(Entry<String, JsonNode> entry : verifiedClaimRequestDto.getVerificationDetail().entrySet()){
 			if(!identity.hasNonNull(entry.getKey()) || (identity.get(entry.getKey()).isArray() &&  identity.get(entry.getKey()).isEmpty())){

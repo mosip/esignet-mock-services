@@ -3,7 +3,6 @@ package io.mosip.esignet.mock.identitysystem.validator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.*;
-import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

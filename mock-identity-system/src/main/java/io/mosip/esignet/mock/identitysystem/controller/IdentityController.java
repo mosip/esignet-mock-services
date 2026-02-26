@@ -12,13 +12,10 @@ import jakarta.validation.Valid;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.mosip.esignet.mock.identitysystem.dto.*;
 import io.mosip.esignet.mock.identitysystem.dto.Error;
-import io.mosip.esignet.mock.identitysystem.validator.IdentitySchema;
-import io.mosip.kernel.core.exception.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import io.mosip.esignet.mock.identitysystem.exception.MockIdentityException;
@@ -69,7 +66,7 @@ public class IdentityController {
 	public ResponseWrapper<JsonNode> getIdentity(@PathVariable(value = "individualId") String individualId)
 			throws MockIdentityException {
 		ResponseWrapper<JsonNode> response = new ResponseWrapper<>();
-		response.setResponse(identityService.getIdentityV2(individualId));
+		response.setResponse(identityService.getIdentity(individualId));
 		response.setResponseTime(HelperUtil.getCurrentUTCDateTime());
 		return response;	
 	}
