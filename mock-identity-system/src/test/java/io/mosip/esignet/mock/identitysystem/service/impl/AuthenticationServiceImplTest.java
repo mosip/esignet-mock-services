@@ -110,7 +110,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
 
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
@@ -124,7 +124,7 @@ public class AuthenticationServiceImplTest {
         kycAuthDto.setKbi("eyJmdWxsTmFtZSI6IlNpZGRoYXJ0aCBLIE1hbnNvdXIiLCJkYXRlT2ZCaXJ0aCI6IjE5ODctMTEtMjUifQ==");
         kycAuthDto.setIndividualId("individualId");
         kycAuthDto.setTransactionId("transactionId");
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(null);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(null);
 
         try{
             authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
@@ -153,7 +153,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
         try{
             authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         }catch (MockIdentityException e){
@@ -181,12 +181,12 @@ public class AuthenticationServiceImplTest {
         sendOtpDto.setOtpChannels(Arrays.asList("email","phone"));
         sendOtpDto.setTransactionId("transactionId");
 
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
         authenticationService.sendOtp("relyingPartyId", "clientId", sendOtpDto);
 
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
         when(cacheUtilService.getTransactionHash(Mockito.anyString())).thenReturn(true);
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         Assertions.assertTrue(kycAuthResponseDto.isAuthStatus());
     }
@@ -211,7 +211,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
         try{
             authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         }catch (MockIdentityException e){
@@ -240,7 +240,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
@@ -269,7 +269,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
@@ -298,7 +298,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
 
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         Assertions.assertNotNull(kycAuthResponseDto);
@@ -326,12 +326,12 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
 
-        Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+        Mockito.when(authRepository.save(Mockito.any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
-        Assertions.assertEquals("8267411571", kycAuthResponseDto.getPartnerSpecificUserToken());
+        Assertions.assertEquals(kycAuthDto.getIndividualId(), kycAuthResponseDto.getPartnerSpecificUserToken());
         Assertions.assertTrue(kycAuthResponseDto.isAuthStatus());
     }
 
@@ -355,9 +355,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
-
-        //Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
 
         KycAuthResponseDto kycAuthResponseDto = authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         Assertions.assertFalse(kycAuthResponseDto.isAuthStatus());
@@ -384,7 +382,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
         try{
             authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         }catch (MockIdentityException e){
@@ -409,7 +407,7 @@ public class AuthenticationServiceImplTest {
         languageValue.setLanguage("eng");
         languageValue.setValue("Siddharth K Mansour");
         identityData.setFullName(List.of(languageValue));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
         try{
             authenticationService.kycAuth("relyingPartyId", "clientId", kycAuthDto);
         }catch (MockIdentityException e){
@@ -428,7 +426,7 @@ public class AuthenticationServiceImplTest {
         sendOtpDto.setOtpChannels(Arrays.asList("email","phone"));
         sendOtpDto.setTransactionId("transactionId");
 
-        Mockito.when(identityService.getIdentityV2(individualId)).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(individualId)).thenReturn(this.identityData);
         SendOtpResult result = authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
 
         Assertions.assertNotNull(result);
@@ -444,7 +442,7 @@ public class AuthenticationServiceImplTest {
         String individualId = "invalidId";
         SendOtpDto sendOtpDto=new SendOtpDto();
         sendOtpDto.setIndividualId(individualId);
-        Mockito.when(identityService.getIdentityV2(individualId)).thenReturn(null);
+        Mockito.when(identityService.getIdentity(individualId)).thenReturn(null);
         MockIdentityException exception = Assertions.assertThrows(MockIdentityException.class, () ->
                 authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto));
         Assertions.assertEquals("invalid_individual_id", exception.getMessage());
@@ -468,7 +466,7 @@ public class AuthenticationServiceImplTest {
         identityData.put("email", "test@email.com");
         identityData.put("phone", "1234567890");
 
-        Mockito.when(identityService.getIdentityV2(individualId)).thenReturn(identityData);
+        Mockito.when(identityService.getIdentity(individualId)).thenReturn(identityData);
 
         MockIdentityException exception = Assertions.assertThrows(MockIdentityException.class, () -> {
             authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
@@ -494,7 +492,7 @@ public class AuthenticationServiceImplTest {
         ObjectNode identityData = objectMapper.createObjectNode();
         identityData.put("individualId", "individualId");
 
-        Mockito.when(identityService.getIdentityV2(individualId)).thenReturn(identityData);
+        Mockito.when(identityService.getIdentity(individualId)).thenReturn(identityData);
         try {
             authenticationService.sendOtp(relyingPartyId, clientId, sendOtpDto);
         }catch(MockIdentityException e) {
@@ -561,7 +559,7 @@ public class AuthenticationServiceImplTest {
         Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
                 Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(Optional.of(kycAuth));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityData);
         Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
 
         KycExchangeResponseDto response = authenticationService.kycExchange(relyingPartyId, clientId, new KycExchangeDto(kycExchangeRequestDto, null, "JWS"));
@@ -608,7 +606,7 @@ public class AuthenticationServiceImplTest {
         Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
                 Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(Optional.of(kycAuth));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityData);
         Mockito.when(signatureService.jwtSign(Mockito.any())).thenReturn(jwtSignatureResponseDto);
 
 
@@ -781,7 +779,7 @@ public class AuthenticationServiceImplTest {
                 Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(kycAuthOptional);
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
@@ -841,7 +839,7 @@ public class AuthenticationServiceImplTest {
         Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(kycAuthOptional);
 
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(null);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(null);
 
         try {
             authenticationService.kycExchange("relyingPartyId", "clientId", kycExchangeRequestDtoV2);
@@ -960,7 +958,7 @@ public class AuthenticationServiceImplTest {
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
         // Mock the identityService to return JsonNode
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityDataJsonNode);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDataJsonNode);
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
@@ -1084,7 +1082,7 @@ public class AuthenticationServiceImplTest {
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
         // Mock the identityService to return JsonNode
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityDataJsonNode);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDataJsonNode);
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
@@ -1234,7 +1232,7 @@ public class AuthenticationServiceImplTest {
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
         // Mock the identityService to return JsonNode
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityDataJsonNode);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDataJsonNode);
 
         Optional<List<VerifiedClaim>> verifiedClaimsOptional = getVerifiedClaims();
 
@@ -1359,7 +1357,7 @@ public class AuthenticationServiceImplTest {
                 Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(kycAuthOptional);
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
 
         JWTSignatureResponseDto jwtSignatureResponseDto = new JWTSignatureResponseDto();
         jwtSignatureResponseDto.setJwtSignedData("jwtSignedData");
@@ -1406,7 +1404,7 @@ public class AuthenticationServiceImplTest {
         identityData.setDateOfBirth("1987/11/25");
         identityData.setEmail("email@gmail.com");
 
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
 
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
@@ -1471,7 +1469,7 @@ public class AuthenticationServiceImplTest {
         identityData.setDateOfBirth("1987/11/25");
         identityData.setEmail("email@gmail.com");
 
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(this.identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(this.identityData);
 
         Mockito.when(authRepository.save(Mockito.any())).thenReturn(new KycAuth());
 
@@ -1539,7 +1537,7 @@ public class AuthenticationServiceImplTest {
 
         ObjectNode identityData = objectMapper.createObjectNode();
         identityData.put("individualId", "individualId");
-        Mockito.when(identityService.getIdentityV2("individualId")).thenReturn(identityData);
+        Mockito.when(identityService.getIdentity("individualId")).thenReturn(identityData);
         try {
             authenticationService.sendOtp("relyingPartyId", "clientId", sendOtpDto);
             Assertions.fail("Expected MockIdentityException");
@@ -1601,7 +1599,7 @@ public class AuthenticationServiceImplTest {
         Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
                 Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(Optional.of(kycAuth));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityData);
 
         VerifiedClaim verifiedClaim1 = new VerifiedClaim();
         verifiedClaim1.setTrustFramework("pwd");
@@ -1662,7 +1660,7 @@ public class AuthenticationServiceImplTest {
         Mockito.when(authRepository.findByKycTokenAndValidityAndTransactionIdAndIndividualId(
                         Mockito.anyString(), eq(Valid.ACTIVE), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(Optional.of(kycAuth));
-        Mockito.when(identityService.getIdentityV2(Mockito.anyString())).thenReturn(identityData);
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityData);
 
         // Return verified claims but with different trust framework
         VerifiedClaim verifiedClaim = new VerifiedClaim();

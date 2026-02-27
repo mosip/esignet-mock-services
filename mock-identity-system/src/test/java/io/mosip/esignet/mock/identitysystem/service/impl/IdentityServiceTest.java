@@ -179,22 +179,24 @@ public class IdentityServiceTest {
     @Test
     public void addIdentity_withValidDetails_thenPass() throws MockIdentityException, JsonProcessingException {
         IdentityData identityData = new IdentityData();
+        identityData.setIndividualId("123456");
         identityData.setEmail("email@gmail.com");
         identityData.setEncodedPhoto("encodedPhoto");
         identityData.setPassword("password");
         when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.empty());
-        identityService.addIdentity(identityData);
+        identityService.addIdentity(objectMapper.valueToTree(identityData));
         verify(identityRepository).save(any(MockIdentity.class));
     }
 
     @Test
     public void addIdentity_withDuplicateDetails_thenFail() throws MockIdentityException {
         IdentityData identityData = new IdentityData();
+        identityData.setIndividualId("123456");
         identityData.setEmail("email@gmail.com");
         identityData.setEncodedPhoto("encodedPhoto");
         when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(new MockIdentity()));
         try{
-            identityService.addIdentity(identityData);
+            identityService.addIdentity(objectMapper.valueToTree(identityData));
         }catch (MockIdentityException e){
             Assertions.assertEquals(ErrorConstants.DUPLICATE_INDIVIDUAL_ID, e.getErrorCode());
         }
@@ -202,30 +204,23 @@ public class IdentityServiceTest {
 
     @Test
     public void getIdentity_withValidDetails_thenPass() throws MockIdentityException, JsonProcessingException {
-        IdentityData identityData = new IdentityData();
-        identityData.setEmail("email@gmail.com");
-        identityData.setEncodedPhoto("encodedPhoto");
         MockIdentity mockIdentity = new MockIdentity();
-        mockIdentity.setIndividualId("123456");
+        mockIdentity.setIndividualId("8267411571");
         mockIdentity.setIdentityJson("{\"individualId\":\"8267411571\",\"pin\":\"111111\",\"fullName\":[{\"language\":\"fra\",\"value\":\"Siddharth K Mansour\"},{\"language\":\"ara\",\"value\":\"تتگلدكنسَزقهِقِفل دسييسيكدكنوڤو\"},{\"language\":\"eng\",\"value\":\"Siddharth K Mansour\"}],\"email\":\"siddhartha.km@gmail.com\",\"phone\":\"+919427357934\"}");
-        mockIdentity.setIdentityJson("{}");
-        when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(mockIdentity));
-        IdentityData result = identityService.getIdentity(identityData.getIndividualId());
+        when(identityRepository.findById("8267411571")).thenReturn(Optional.of(mockIdentity));
+        JsonNode result = identityService.getIdentity("8267411571");
 
-        Assertions.assertEquals(identityData.getIndividualId(), result.getIndividualId());
+        Assertions.assertEquals("8267411571", result.get("individualId").asText());
     }
 
     @Test
     public void getIdentity_withInValidIdentityJson_thenFail() throws MockIdentityException, JsonProcessingException {
-        IdentityData identityData = new IdentityData();
-        identityData.setEmail("email@gmail.com");
-        identityData.setEncodedPhoto("encodedPhoto");
         MockIdentity mockIdentity = new MockIdentity();
         mockIdentity.setIndividualId("123456");
         mockIdentity.setIdentityJson("{ \\\"name\\\": \\\"John Doe, \\\"age\\\": 30 }");
-        when(identityRepository.findById(identityData.getIndividualId())).thenReturn(Optional.of(mockIdentity));
+        when(identityRepository.findById("123456")).thenReturn(Optional.of(mockIdentity));
         try {
-            identityService.getIdentity(identityData.getIndividualId());
+            identityService.getIdentity("123456");
             Assertions.fail();
         }catch (MockIdentityException e){
             Assertions.assertEquals(ErrorConstants.JSON_PROCESSING_ERROR, e.getErrorCode());
@@ -252,7 +247,7 @@ public class IdentityServiceTest {
         mockIdentity.setIndividualId("existing-id");
         mockIdentity.setIdentityJson("{\"existingField\": \"value\"}");
         when(identityRepository.findById("existing-id")).thenReturn(Optional.of(mockIdentity));
-        identityService.updateIdentity(identityData);
+        identityService.updateIdentity(objectMapper.valueToTree(identityData));
         verify(identityRepository, times(1)).save(mockIdentity);
         Assertions.assertNotNull(mockIdentity.getIdentityJson());
     }
@@ -267,7 +262,7 @@ public class IdentityServiceTest {
         mockIdentity.setIdentityJson("{ \\\"name\\\": \\\"John Doe, \\\"age\\\": 30 }");
         when(identityRepository.findById("existing-id")).thenReturn(Optional.of(mockIdentity));
         try {
-            identityService.updateIdentity(identityData);
+            identityService.updateIdentity(objectMapper.valueToTree(identityData));
             Assertions.fail();
         }catch (MockIdentityException e){
             Assertions.assertEquals(ErrorConstants.JSON_PROCESSING_ERROR, e.getErrorCode());
@@ -280,7 +275,7 @@ public class IdentityServiceTest {
         identityData.setIndividualId("non-existing-id");
         when(identityRepository.findById("non-existing-id")).thenReturn(Optional.empty());
         MockIdentityException exception = Assertions.assertThrows(MockIdentityException.class, () -> {
-            identityService.updateIdentity(identityData);
+            identityService.updateIdentity(objectMapper.valueToTree(identityData));
         });
         Assertions.assertEquals(ErrorConstants.INVALID_INDIVIDUAL_ID, exception.getErrorCode());
     }
@@ -334,7 +329,7 @@ public class IdentityServiceTest {
         when(mockMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("JSON error") {});
         ReflectionTestUtils.setField(identityService, "objectMapper", mockMapper);
         MockIdentityException exception = Assertions.assertThrows(MockIdentityException.class, () -> {
-            identityService.addIdentity(identityData);
+            identityService.addIdentity(objectMapper.valueToTree(identityData));
         });
         Assertions.assertEquals(ErrorConstants.JSON_PROCESSING_ERROR, exception.getErrorCode());
     }

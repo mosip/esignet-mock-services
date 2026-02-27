@@ -122,7 +122,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public KycAuthResponseDto kycAuth(String relyingPartyId, String clientId, KycAuthDto kycAuthDto) throws MockIdentityException {
         //TODO validate relying party Id and client Id
 
-        JsonNode identityData = identityService.getIdentityV2(kycAuthDto.getIndividualId());
+        JsonNode identityData = identityService.getIdentity(kycAuthDto.getIndividualId());
         if (identityData == null) {
             throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
         }
@@ -139,11 +139,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         KycAuthResponseDto kycAuthResponseDto = new KycAuthResponseDto();
         kycAuthResponseDto.setAuthStatus(authStatus);
         kycAuthResponseDto.setKycToken(kycAuth.getKycToken());
-        if (psutField.equals("psut")) {
-            kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
-        } else {
-            kycAuthResponseDto.setPartnerSpecificUserToken(HelperUtil.getIdentityDataValue(identityData, psutField, defaultLanguage));
-        }
+        kycAuthResponseDto.setPartnerSpecificUserToken(kycAuth.getPartnerSpecificUserToken());
+
         if(kycAuthDto.isClaimMetadataRequired()) {
             kycAuthResponseDto.setClaimMetadata(getVerifiedClaimMetadata(kycAuthDto.getIndividualId(), identityData));
         }
@@ -201,7 +198,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
             }
 
-            JsonNode identityData = identityService.getIdentityV2(kycExchangeDto.getIndividualId());
+            JsonNode identityData = identityService.getIdentity(kycExchangeDto.getIndividualId());
             if (identityData == null) {
                 throw new MockIdentityException("mock-ida-001");
             }
@@ -230,7 +227,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public SendOtpResult sendOtp(String relyingPartyId, String clientId, SendOtpDto sendOtpDto) throws MockIdentityException {
         //TODO validate relying party Id and client Id
 
-        JsonNode identityData = identityService.getIdentityV2(sendOtpDto.getIndividualId());
+        JsonNode identityData = identityService.getIdentity(sendOtpDto.getIndividualId());
         if (identityData == null) {
             throw new MockIdentityException(ErrorConstants.INVALID_INDIVIDUAL_ID);
         }
@@ -359,7 +356,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private boolean validatePasswordAuth(KycAuthDto kycAuthDto, JsonNode identityData){
         String passwordHash = identityData.hasNonNull("password") ? identityData.get("password").asText() : null;
         try {
-            return passwordHash != null && passwordHash.equals(HMACUtils2.digestAsPlainText(kycAuthDto.getPassword().getBytes()));
+            return passwordHash != null && passwordHash.equals(HMACUtils2.digestAsPlainText(kycAuthDto.getPassword().getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
             log.error("Failed to decode PWD challenge or compare it with IdentityData", e);
             throw new MockIdentityException("auth-failed");
@@ -415,8 +412,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String kycToken = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256, UUID.randomUUID().toString());
         String psut;
         try {
-            psut = HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
-                    PSUT_FORMAT.formatted(individualId, relyingPartyId));
+            psut = psutField.equals("psut") ? HelperUtil.generateB64EncodedHash(ALGO_SHA3_256,
+                    PSUT_FORMAT.formatted(individualId, relyingPartyId)) : individualId;
         } catch (Exception e) {
             log.error("Failed to generate PSUT", e);
             throw new MockIdentityException("mock-ida-004");
@@ -473,7 +470,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 ObjectNode objectNode = buildVerifiedClaimsObject(verifiedClaimsNode, locales,
                         identityData, claimsByVerificationMetadataResult.get(), kyc);
                 if(!objectNode.isEmpty()) {
-                    kyc.set("verified_claims", objectNode);
+                    // The OID4IDA specification allows verified_claims to be returned as either a single object or an array of objects.
+                    // This code normalizes all responses to arrays regardless of request format for simplicity as its mock implementation.
+                    List<ObjectNode> verifiedList = new ArrayList<>();
+                    verifiedList.add(objectNode);
+                    kyc.set("verified_claims", objectMapper.valueToTree(verifiedList));
                 }
             }
         }
