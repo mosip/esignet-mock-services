@@ -3,7 +3,6 @@ package io.mosip.esignet.mock.identitysystem.validator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.*;
-import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,12 +50,7 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     @Override
     public boolean isValid(Object object, ConstraintValidatorContext context) {
-
-        if (!(object instanceof IdentityData)) {
-            return false;
-        }
-        IdentityData identityData=(IdentityData) object;
-        JsonNode identityJsonNode = objectMapper.valueToTree(identityData);
+        JsonNode identityJsonNode = (JsonNode)object;
         Set<ValidationMessage> validationErrors = validateIdentityData(identityJsonNode);
 
         // Handle validation errors
