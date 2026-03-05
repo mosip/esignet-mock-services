@@ -35,8 +35,13 @@ const get_code_challenge_method = async () => {
   try {
     const baseUrl = window._env_.ESIGNET_UI_BASE_URL;
     const response = await axios.get(`${baseUrl}/.well-known/openid-configuration`);
-    const methods = response.data?.code_challenge_methods_supported;
-    return methods && methods.length > 0 ? methods[0] : 'S256';
+    const supportedMethods = response.data?.code_challenge_methods_supported || [];
+    
+    // Default to S256
+    if (!supportedMethods || supportedMethods.length === 0) return 'S256';
+    
+    // If method contains S256, use S256; otherwise fallback to first supported method.
+    return supportedMethods.includes('S256') ? 'S256' : supportedMethods[0];
   } catch (error) {
     console.warn('Failed to fetch PKCE methods, defaulting to S256:', error);
     return 'S256';
