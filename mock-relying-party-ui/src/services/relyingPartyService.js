@@ -165,7 +165,6 @@ const post_fetchUserInfo = async (
   const codeVerifier = sessionStorage.getItem(`pkce_${client_id}_${state}`);
   if (codeVerifier) {
     request.code_verifier = codeVerifier;
-    sessionStorage.removeItem(`pkce_${client_id}_${state}`);
   }
 
   const endpoint = BASE_URL + GET_USER_INFO;
@@ -174,6 +173,11 @@ const post_fetchUserInfo = async (
       "Content-Type": "application/json",
     },
   });
+  
+  if (codeVerifier) {
+    sessionStorage.removeItem(`pkce_${client_id}_${state}`);
+  }
+  
   return response.data;
 };
 
