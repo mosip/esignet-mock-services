@@ -36,10 +36,10 @@ const get_code_challenge_method = async () => {
     const baseUrl = window._env_.ESIGNET_UI_BASE_URL;
     const response = await axios.get(`${baseUrl}/.well-known/openid-configuration`);
     const supportedMethods = response.data?.code_challenge_methods_supported || [];
-    
+
     // Default to S256
     if (!supportedMethods || supportedMethods.length === 0) return 'S256';
-    
+
     // If method contains S256, use S256; otherwise fallback to first supported method.
     return supportedMethods.includes('S256') ? 'S256' : supportedMethods[0];
   } catch (error) {
@@ -56,25 +56,25 @@ const get_code_challenge_method = async () => {
  */
 const get_code_challenge = async (clientId, state) => {
   const method = await get_code_challenge_method();
-  
+
   if (!method) {
     console.warn('PKCE disabled: no supported method found');
     return null;
   }
-  
+
   const codeVerifier = generateCodeVerifier();
   let codeChallenge;
-  
-  if (method === 'plain') {
-    codeChallenge = codeVerifier;
-  } else {
+
+  if (method === 'S256') {
     const encoder = new TextEncoder();
     const data = encoder.encode(codeVerifier);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     codeChallenge = base64UrlEncode(new Uint8Array(hashBuffer));
+  } else {
+    codeChallenge = codeVerifier;
   }
-  
-  sessionStorage.setItem(`pkce_${clientId}_${state}`, codeVerifier);  
+
+  sessionStorage.setItem(`pkce_${clientId}_${state}`, codeVerifier);
   return {
     code_challenge: codeChallenge,
     code_challenge_method: method
@@ -160,7 +160,7 @@ const post_fetchUserInfo = async (
     redirect_uri,
     grant_type,
   };
-  
+
   // Retrieve and include code_verifier if it exists in sessionStorage (PKCE enabled)
   const codeVerifier = sessionStorage.getItem(`pkce_${client_id}_${state}`);
   if (codeVerifier) {
@@ -173,11 +173,11 @@ const post_fetchUserInfo = async (
       "Content-Type": "application/json",
     },
   });
-  
+
   if (codeVerifier) {
     sessionStorage.removeItem(`pkce_${client_id}_${state}`);
   }
-  
+
   return response.data;
 };
 
