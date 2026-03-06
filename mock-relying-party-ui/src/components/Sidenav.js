@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import clientDetails from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
@@ -29,6 +29,7 @@ export default function Sidenav({
   const [emailAddress, setEmailAddress] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
+  const hasFetchedRef = useRef(false);
 
   function getAllKeys(input) {
     if (Array.isArray(input)) {
@@ -80,6 +81,10 @@ export default function Sidenav({
 
   useEffect(() => {
     const getSearchParams = async () => {
+      // Prevent duplicate API calls during React.StrictMode double mounting
+      if (hasFetchedRef.current) return;
+      hasFetchedRef.current = true;
+
       let authCode = searchParams.get("code");
       let errorCode = searchParams.get("error");
       let error_desc = searchParams.get("error_description");

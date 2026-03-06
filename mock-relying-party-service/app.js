@@ -39,8 +39,16 @@ app.get("/dpopJKT", rateLimiter, async (req, res) => {
 
 app.get("/requestUri/:clientId", async (req, res) => {
   try {
+    const { ui_locales, state, dpop_jkt, code_challenge, code_challenge_method } = req.query;
     res.send(
-      await post_GetRequestUri(req.params.clientId, req.query.ui_locales, req.query.state, req.query.dpop_jkt),
+      await post_GetRequestUri(
+        req.params.clientId, 
+        ui_locales, 
+        state, 
+        dpop_jkt,
+        code_challenge,
+        code_challenge_method
+      )
     );
   } catch (error) {
     console.log(error);

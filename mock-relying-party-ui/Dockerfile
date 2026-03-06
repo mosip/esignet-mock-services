@@ -22,6 +22,7 @@ ARG fallback_lang
 ARG par_callback_name
 ARG par_callback_timeout
 ARG dpop_callback_name
+ARG code_challenge
 
 ENV ESIGNET_UI_BASE_URL=$esignet_ui_base_url
 ENV MOCK_RELYING_PARTY_SERVER_URL=$mock_relying_party_server_url
@@ -44,6 +45,7 @@ ENV FALLBACK_LANG=$fallback_lang
 ENV PAR_CALLBACK_NAME=$par_callback_name
 ENV PAR_CALLBACK_TIMEOUT=$par_callback_timeout
 ENV DPOP_CALLBACK_NAME=$dpop_callback_name
+ENV CODE_CHALLENGE=$code_challenge
 
 # Set the environment variable as a placeholder for PUBLIC_URL
 ENV PUBLIC_URL=_PUBLIC_URL_
@@ -126,6 +128,7 @@ RUN echo "ESIGNET_UI_BASE_URL=$ESIGNET_UI_BASE_URL" >> ${work_dir}/env.env \
     && echo "PAR_CALLBACK_NAME=$PAR_CALLBACK_NAME" >> ${work_dir}/env.env \
     && echo "PAR_CALLBACK_TIMEOUT=$PAR_CALLBACK_TIMEOUT" >> ${work_dir}/env.env \
     && echo "DPOP_CALLBACK_NAME=$DPOP_CALLBACK_NAME" >> ${work_dir}/env.env \
+    && echo "CODE_CHALLENGE=$CODE_CHALLENGE" >> ${work_dir}/env.env \
     && chmod +x configure_start.sh \
     && chown ${container_user}:${container_user} configure_start.sh \
     && chown -R ${container_user}:${container_user} /home/${container_user} ${work_dir}
