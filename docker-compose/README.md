@@ -2,10 +2,6 @@
 
 This is the docker-compose setup to run mock identity system and mock relying party portal. This is not for production use.
 
-## Overview
-
-This is the docker compose setup to run esignet UI and esignet-service with mock identity system. This is not for production use.
-
 ## I am a developer, how to setup dependent services to run mock-identity-system?
 
 1. Run `docker compose --file dependent-docker-compose.yml up` to start all the dependent services.
@@ -15,7 +11,7 @@ This is the docker compose setup to run esignet UI and esignet-service with mock
 
 ## How to start the mock Relying party UI?
 
-1. Run [mock-relying-party-portal-docker-compose.yml](mock-relying-party-portal-docker-compose.yml) to start relying party portal.
+1. Run `docker compose --file mock-relying-party-portal-docker-compose.yml up` to start relying party portal.
 2. Access Relying party UI at http://localhost:3000
 
 By default, mock Relying party portal is connecting to eSignet (Identity Provider) hosted in collab.mosip.net environment.
@@ -28,7 +24,7 @@ Below environment variables should be changed to point to different environment:
 
 ## How to start the mock Relying party UI with FAPI 2.0 enabled?
 
-1. Run [mock-relying-party-portal-fapi2-docker-compose.yml](mock-relying-party-portal-fapi2-docker-compose.yml) to start the relying party portal with DPoP and PAR enabled.
+1. Run `docker compose --file mock-relying-party-portal-fapi2-docker-compose.yml up` to start the relying party portal with DPoP and PAR enabled.
 2. Access the Relying party UI at http://localhost:3000
 
 ### Required Environment Variables
