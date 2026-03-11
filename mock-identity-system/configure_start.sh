@@ -38,6 +38,12 @@ else
   echo "*** HSM Client installation is ignored in local profile ***"
 fi
 
+## set active profile if not set
+if [[ -z "$active_profile_env" ]]; then
+  echo "Alert: active_profile_env is not set. setting to default"
+  active_profile_env="default"
+  export active_profile_env
+fi
 
 cd $work_dir
 
