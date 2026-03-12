@@ -100,7 +100,7 @@ public class IdentityController {
 	@GetMapping("identity/ui-spec")
 	public ResponseWrapper<JsonNode> getUiSpec() {
 		ResponseWrapper<JsonNode> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(identityService.getSchema());
+		responseWrapper.setResponse(identityService.getUISpecification());
 		return responseWrapper;
 	}
 
