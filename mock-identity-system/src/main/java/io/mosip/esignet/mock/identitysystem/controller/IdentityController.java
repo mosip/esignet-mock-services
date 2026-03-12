@@ -111,6 +111,13 @@ public class IdentityController {
 		return responseWrapper;
 	}
 
+	@GetMapping("identity/identity-schema")
+	public ResponseWrapper<JsonNode> getIdentitySchema() {
+		ResponseWrapper<JsonNode> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(identityService.getSchema());
+		return responseWrapper;
+	}
+
 	private ResponseWrapper getResponseWrapper(List<Error> errors) {
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponseTime(HelperUtil.getCurrentUTCDateTime());
