@@ -303,7 +303,7 @@ public class IdentityServiceTest {
         MockIdentityException exception = Assertions.assertThrows(MockIdentityException.class, () -> {
             identityService.getSchema();
         });
-        Assertions.assertEquals("ui_spec_not_found", exception.getMessage());
+        Assertions.assertEquals("schema_not_found", exception.getMessage());
     }
 
     @Test

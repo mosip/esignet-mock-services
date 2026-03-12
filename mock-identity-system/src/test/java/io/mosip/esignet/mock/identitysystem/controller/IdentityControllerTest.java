@@ -276,7 +276,7 @@ public class IdentityControllerTest {
 		ObjectNode properties = objectMapper.createObjectNode();
 		properties.put("individualId", "string");
 		mockSchema.set("properties", properties);
-		Mockito.when(identityService.getSchema()).thenReturn(mockSchema);
+		Mockito.when(identityService.getUISpecification()).thenReturn(mockSchema);
 		mockMvc.perform(get("/identity/ui-spec")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
