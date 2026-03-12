@@ -63,6 +63,9 @@ public class IdentityServiceImpl implements IdentityService {
 	private ResourceLoader resourceLoader;
 
 	@Value("${mosip.mock.ui-spec.schema.url}")
+	private String uiSpecSchemaUrl;
+
+	@Value("${mosip.mock.ida.identity.schema.url}")
 	private String schemaUrl;
 
 	@Override
@@ -141,6 +144,18 @@ public class IdentityServiceImpl implements IdentityService {
 	@Override
 	public JsonNode getSchema() {
 		InputStream schemaResponse = getResource(schemaUrl);
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			return objectMapper.readTree(schemaResponse);
+		} catch (IOException e) {
+			log.error("Error parsing the identity schema: {}", e.getMessage(), e);
+			throw new MockIdentityException("schema_not_found");
+		}
+	}
+
+	@Override
+	public JsonNode getUISpecification() {
+		InputStream schemaResponse = getResource(uiSpecSchemaUrl);
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			return objectMapper.readTree(schemaResponse);

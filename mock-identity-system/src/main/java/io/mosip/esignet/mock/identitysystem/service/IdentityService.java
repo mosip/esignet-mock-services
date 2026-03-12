@@ -25,4 +25,6 @@ public interface IdentityService {
 	public JsonNode getIdentityV2(String individualId) throws MockIdentityException;
 
     public JsonNode getSchema();
+
+	public JsonNode getUISpecification();
 }
