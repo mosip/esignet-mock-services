@@ -72,8 +72,7 @@ This validation ensures that the provided Identity data adhere to the defined sc
 
 ````
  mosip.mock.ida.identity.schema.url=classpath:/mock-identity-schema.json
- mosip.mock.ida.update-identity.non-mandatory.fields={"givenName","familyName","middleName","nickName","preferredUsername","gender","streetAddress","locality","region","country","pin","preferredLang","dateOfBirth","postalCode","encodedPhoto","email","phone","zoneInfo","locale","password"}
-````
+ ````
 
 How It Works
 * For create operations:
