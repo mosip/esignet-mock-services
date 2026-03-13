@@ -25,9 +25,6 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
     @Value("${mosip.mock.ida.identity.schema.url}")
     private String identitySchemaUrl;
 
-    @Value("#{${mosip.mock.ida.update-identity.non-mandatory.fields}}")
-    private Set<String> nonMandatoryFieldsOnUpdate;
-
     private String action;
 
     private JsonSchema schema;
@@ -68,11 +65,9 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
         Set<ValidationMessage> errors = schema.validate(identityJsonNode);
         // If not a create operation, filter out specific errors
         if (action.equals("UPDATE")) {
-            // Ignore validation errors with code 1029 (null value) and for exempted fields when validating updateIdentity
+            // Ignore validation errors with code 1028 (null value) and for exempted fields when validating updateIdentity
             errors = errors.stream()
-                    .filter(error -> !error.getCode().equals("1029") ||
-                            !nonMandatoryFieldsOnUpdate.contains(error.
-                                    getInstanceLocation().getName(0)))
+                    .filter(error -> !error.getCode().equals("1028"))
                     .collect(Collectors.toSet());
         }
         return errors;
@@ -80,9 +75,15 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     private void addValidationErrorCode(Set<ValidationMessage> errors, ConstraintValidatorContext context) {
         context.disableDefaultConstraintViolation();
-        errors.forEach(error->context.
-                buildConstraintViolationWithTemplate("invalid_"+error.getInstanceLocation().getName(0).toLowerCase())
+        errors.forEach(error->
+                context.buildConstraintViolationWithTemplate(getErrorCodeFromValidationMessage(error))
                 .addConstraintViolation());
+    }
+
+    private String getErrorCodeFromValidationMessage(ValidationMessage error) {
+        String fieldName = error.getInstanceLocation().getNameCount() > 0 ? error.getInstanceLocation().getName(0) :
+                error.getProperty();
+        return fieldName != null ? "invalid_"+fieldName.toLowerCase() : "unknown_field";
     }
 
     private InputStream getResource(String url) {
