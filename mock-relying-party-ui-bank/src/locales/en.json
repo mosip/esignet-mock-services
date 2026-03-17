@@ -1,0 +1,178 @@
+﻿{
+  "Header": {
+    "heading": "Account Opening Portal",
+    "headingHighlight": "with ease!",
+    "description": "Effortlessly open your bank account with Omera Bank Portal! Just scan the QR code or upload it for instant verification, following the steps below."
+  },
+  "navheader": {
+    "about_us": "About Us",
+    "our_features": "Our Features",
+    "help": "Help",
+    "home": "Home"
+  },
+  "landing_page": {
+    "sign_in_with_esignet": "Sign In with National ID",
+    "sign_in_as_foreigner": "Sign In as Foreigner",
+    "sign_in_to_banking_portal": "Log In",
+    "username": "Username",
+    "password": "Password",
+    "username_placeholder": "Enter username",
+    "password_placeholder": "Enter password",
+    "keep_me_sign_in": "Keep me logged in",
+    "forgot_password": "Forgot password?",
+    "submit": "Submit",
+    "or": "Or",
+    "no_account": "Don't have an account?",
+    "sign_up": "Sign up now"
+  },
+  "account_page": {
+    "success_message": "You have successfully logged into Omera Bank using eSignet",
+    "get_started": "Welcome,",
+    "open_account": "Open your account today",
+    "open_account_button": "Open Account",
+    "subtext": "Open your bank account in just a few simple steps",
+    "step_open_account": "Click on \"Open Account\" to get started",
+    "step_verify": "Verify Your Identity",
+    "step_fill_details": "Fill Account Details",
+    "step_complete": "Complete Account Setup"
+  },
+  "loading": {
+    "processing_application": "Processing Your Application",
+    "please_wait": "Please wait...",
+    "identity_verification": "Identity Verification",
+    "address_verification": "Address Verification",
+    "kyc_check": "KYC Check",
+    "account_setup": "Account Setup"
+  },
+  "account_result": {
+    "congrats": "Congratulations!",
+    "account_created_message": "Your account has been successfully created!",
+    "account_type": "Account Type",
+    "account_type_value": "Savings Account",
+    "account_number": "Account Number",
+    "account_number_value": "XXXX-XXXX-1234",
+    "transaction_limit": "Monthly Limit",
+    "transaction_limit_value": "$2,000",
+    "go_home": "Go to Home"
+  },
+  "application": {
+    "details": "Enter Account Details",
+    "details_description": "Fill in your information to open your account.",
+    "eligible_check": "Verify Details",
+    "eligible_check_description": "We are verifying your information.",
+    "result": "View Result",
+    "result_description": "Get your account opening status instantly!",
+    "header": "Account Opening"
+  },
+  "form": {
+    "savings_account": "Savings Account",
+    "checking_account": "Checking Account",
+    "salary_account": "Salary Account",
+    "student_account": "Student / Basic / Limited KYC Account",
+    "fill_details": "Fill Details",
+    "details_description": "Fill in your account information, review the pre-filled details, and submit to proceed.",
+    "primary_information": "(1) Primary Information",
+    "type_of_account": "Type of Account",
+    "monthly_transaction_limit": "Monthly Transaction Limit",
+    "transaction_limit_placeholder": "Enter amount (max {{limit}})",
+    "transaction_limit_error": "Transaction limit cannot exceed {{limit}}.",
+    "channel_access": "(2) Channel Access",
+    "internet_banking": "Internet Banking",
+    "mobile_banking": "Mobile Banking Access",
+    "atm_debit_card": "ATM / Debit Card Access",
+    "payment_capabilities": "(3) Payment Capabilities",
+    "domestic_transaction": "Domestic Transaction",
+    "international_transaction": "International Transaction",
+    "transfer_capabilities": "(4) Transfer Capabilities",
+    "transfer_capabilities_description": "Transfer capabilities will be enabled based on your account type and verification level.",
+    "personal_information": "(5) Personal Information",
+    "full_name": "Full Name",
+    "name_placeholder": "Enter your full name",
+    "dob": "Date Of Birth",
+    "dob_placeholder": "YYYY-MM-DD",
+    "gender": "Gender",
+    "gender_placeholder": "Select gender",
+    "gender_male": "Male",
+    "gender_female": "Female",
+    "gender_other": "Other",
+    "phone_number": "Phone Number",
+    "phone_placeholder": "Enter phone number",
+    "photo": "Photo",
+    "profile_picture": "Profile Picture",
+    "email": "Email",
+    "email_placeholder": "Enter email address",
+    "verified": "Verified",
+    "residential_information": "(6) Residential Information",
+    "address": "Address",
+    "address_placeholder": "Enter your address",
+    "pin": "PIN Code",
+    "pin_placeholder": "Enter PIN code",
+    "city": "City",
+    "city_placeholder": "Enter city name",
+    "declarations": "(7) Declaration",
+    "terms_and_conditions": "I hereby declare that all the information provided is true and accurate. I consent to background verification based on my tax profile.",
+    "submit": "Submit",
+    "select_option": "Select an Option"
+  },
+  "camera_access": {
+    "camera_access_denied": "Camera Access Denied",
+    "camera_access_denied_description": "We need your camera to scan the code. Go to your browser settings and allow camera access for this website.",
+    "okay": "Okay"
+  },
+  "scan_qr_code": {
+    "scan": "Scan"
+  },
+  "verification": {
+    "back": "Back"
+  },
+  "tab": {
+    "upload_qr_code": "Upload QR Code",
+    "scan_qr_code": "Scan QR Code"
+  },
+  "stepper": {
+    "upload_qr_code": "Upload Your TAN VC",
+    "upload_qr_code_description": "Upload a file that contains a QR code.",
+    "verify_document": "Verify Document",
+    "verify_document_description": "Verification for the document or card is in progress.",
+    "view_result": "View Result",
+    "view_result_description": "View the verification result.",
+    "scan_qr_code": "Scan Your TAN VC",
+    "scan_qr_code_description": "Click 'Scan' to start scanning the document or card with a QR code.",
+    "activate_camera": "Activate Camera and Position QR Code",
+    "activate_camera_description": "Activate your device camera and hold the QR code within the frame to initiate verification.",
+    "verify_process": "Verification in Progress",
+    "verify_process_description": "The QR code verification is in progress."
+  },
+  "modal": {
+    "close": "Close",
+    "congrats": "Congratulations!",
+    "note": "Note",
+    "proceed": "Proceed",
+    "verification_success": "Your identity has been successfully verified and you are eligible to open an account!",
+    "verified_message": "Congratulations! Based on your verified identity, you qualify for a monthly transaction limit of {{limit}}. This enhanced limit enables you to access premium banking features and enjoy greater financial flexibility.",
+    "unverified_message": "You can proceed with a basic account with a monthly transaction limit of {{limit}}. To unlock higher limits and premium features, we recommend verifying your identity."
+  },
+  "vc_card": {
+    "proceed": "Proceed",
+    "fullName": "Full Name",
+    "dateOfBirth": "Date Of Birth",
+    "email": "Email",
+    "gender": "Gender",
+    "phoneNumber": "Mobile",
+    "tan": "ID Number",
+    "type": "Id Type",
+    "issued": "Issued On",
+    "expiresOn": "Expires On"
+  },
+  "vc_result": {
+    "success": "Congratulations, the TAN is valid!",
+    "invalid": "Unfortunately, the TAN is invalid!",
+    "expired": "Unfortunately, the TAN is expired!"
+  },
+  "qr_scan": {
+    "verify": "Verifying..."
+  },
+  "upload_qr_code": {
+    "upload": "Upload"
+  }
+}

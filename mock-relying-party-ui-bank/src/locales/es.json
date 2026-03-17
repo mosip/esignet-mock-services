@@ -1,0 +1,178 @@
+{
+  "Header": {
+    "heading": "Portal de Apertura de Cuenta",
+    "headingHighlight": "¡con facilidad!",
+    "description": "¡Abra su cuenta bancaria sin esfuerzo con el Portal de Omera Bank! Simplemente escanee el código QR o cárguelo para una verificación instantánea."
+  },
+  "navheader": {
+    "about_us": "Sobre Nosotros",
+    "our_features": "Nuestras Características",
+    "help": "Ayuda",
+    "home": "Inicio"
+  },
+  "landing_page": {
+    "sign_in_with_esignet": "Iniciar sesión con ID Nacional",
+    "sign_in_as_foreigner": "Iniciar Sesión como Extranjero",
+    "sign_in_to_banking_portal": "Iniciar Sesión",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "username_placeholder": "Ingrese nombre de usuario",
+    "password_placeholder": "Ingrese contraseña",
+    "keep_me_sign_in": "Mantenerme conectado",
+    "forgot_password": "¿Olvidó su contraseña?",
+    "submit": "Enviar",
+    "or": "O",
+    "no_account": "¿No tienes una cuenta?",
+    "sign_up": "Regístrate ahora"
+  },
+  "account_page": {
+    "success_message": "Has iniciado sesión exitosamente en Omera Bank usando eSignet",
+    "get_started": "Bienvenido",
+    "open_account": "Abre tu cuenta hoy",
+    "open_account_button": "Abrir Cuenta",
+    "subtext": "Abre tu cuenta bancaria en unos simples pasos",
+    "step_open_account": "Haz clic en \"Abrir Cuenta\" para comenzar",
+    "step_verify": "Verifica tu identidad",
+    "step_fill_details": "Completa los detalles de la cuenta",
+    "step_complete": "Completa la configuración de la cuenta"
+  },
+  "loading": {
+    "processing_application": "Procesando tu solicitud",
+    "please_wait": "Por favor, espere...",
+    "identity_verification": "Verificación de Identidad",
+    "address_verification": "Verificación de Dirección",
+    "kyc_check": "Verificación KYC",
+    "account_setup": "Configuración de Cuenta"
+  },
+  "account_result": {
+    "congrats": "¡Felicidades!",
+    "account_created_message": "¡Tu cuenta ha sido creada exitosamente!",
+    "account_type": "Tipo de Cuenta",
+    "account_type_value": "Cuenta de Ahorro",
+    "account_number": "Número de Cuenta",
+    "account_number_value": "XXXX-XXXX-1234",
+    "transaction_limit": "Límite Mensual",
+    "transaction_limit_value": "$2,000",
+    "go_home": "Ir a Inicio"
+  },
+  "application": {
+    "details": "Ingrese los detalles de la cuenta",
+    "details_description": "Complete su información para abrir su cuenta.",
+    "eligible_check": "Verificar detalles",
+    "eligible_check_description": "Estamos verificando su información.",
+    "result": "Ver resultado",
+    "result_description": "¡Obtenga el estado de apertura de su cuenta al instante!",
+    "header": "Apertura de Cuenta"
+  },
+  "form": {
+    "savings_account": "Cuenta de Ahorro",
+    "checking_account": "Cuenta Corriente",
+    "salary_account": "Cuenta de Nómina",
+    "student_account": "Cuenta Estudiantil / Básica / KYC Limitado",
+    "fill_details": "Completar detalles",
+    "details_description": "Complete la información de su cuenta, revise los detalles prellenados y envíe para continuar.",
+    "primary_information": "(1) Información Principal",
+    "type_of_account": "Tipo de Cuenta",
+    "monthly_transaction_limit": "Límite de Transacción Mensual",
+    "transaction_limit_placeholder": "Ingrese monto (máximo {{limit}})",
+    "transaction_limit_error": "El límite de la transacción no puede superar {{limit}}.",
+    "channel_access": "(2) Acceso a Canales",
+    "internet_banking": "Banca por Internet",
+    "mobile_banking": "Acceso a Banca Móvil",
+    "atm_debit_card": "Acceso ATM / Tarjeta de Débito",
+    "payment_capabilities": "(3) Capacidades de Pago",
+    "domestic_transaction": "Transacciones Nacionales",
+    "international_transaction": "Transacciones Internacionales",
+    "transfer_capabilities": "(4) Capacidades de Transferencia",
+    "transfer_capabilities_description": "Las capacidades de transferencia se habilitarán según su tipo de cuenta y nivel de verificación.",
+    "personal_information": "(5) Información Personal",
+    "full_name": "Nombre Completo",
+    "name_placeholder": "Ingrese su nombre completo",
+    "dob": "Fecha de Nacimiento",
+    "dob_placeholder": "AAAA-MM-DD",
+    "gender": "Género",
+    "gender_placeholder": "Seleccione género",
+    "gender_male": "Masculino",
+    "gender_female": "Femenino",
+    "gender_other": "Otro",
+    "phone_number": "Número de Teléfono",
+    "phone_placeholder": "Ingrese número de teléfono",
+    "photo": "Foto",
+    "profile_picture": "Foto de perfil",
+    "email": "Correo Electrónico",
+    "email_placeholder": "Ingrese correo electrónico",
+    "verified": "Verificado",
+    "residential_information": "(6) Información Residencial",
+    "address": "Dirección",
+    "address_placeholder": "Ingrese su dirección",
+    "pin": "Código Postal",
+    "pin_placeholder": "Ingrese código postal",
+    "city": "Ciudad",
+    "city_placeholder": "Ingrese nombre de ciudad",
+    "declarations": "(7) Declaración",
+    "terms_and_conditions": "Por la presente declaro que toda la información proporcionada es verdadera y precisa. Consiento la verificación de antecedentes basada en mi perfil fiscal.",
+    "submit": "Enviar",
+    "select_option": "Seleccione una opción"
+  },
+  "camera_access": {
+    "camera_access_denied": "Acceso a la Cámara Denegado",
+    "camera_access_denied_description": "Necesitamos tu cámara para escanear el código. Ve a la configuración de tu navegador y permite el acceso a la cámara para este sitio web.",
+    "okay": "Aceptar"
+  },
+  "scan_qr_code": {
+    "scan": "Escanear"
+  },
+  "verification": {
+    "back": "Atrás"
+  },
+  "tab": {
+    "upload_qr_code": "Subir Código QR",
+    "scan_qr_code": "Escanear código QR"
+  },
+  "stepper": {
+    "upload_qr_code": "Sube tu TAN VC",
+    "upload_qr_code_description": "Sube un archivo que contenga un código QR",
+    "verify_document": "Verificar documento",
+    "verify_document_description": "La verificación del documento o tarjeta está en progreso.",
+    "view_result": "Ver resultado",
+    "view_result_description": "Ver el resultado de la verificación.",
+    "scan_qr_code": "Escanea tu TAN VC",
+    "scan_qr_code_description": "Haz clic en 'Escanear' para comenzar a escanear el documento o tarjeta con un código QR",
+    "activate_camera": "Activar Cámara y Posicionar Código QR",
+    "activate_camera_description": "Activa la cámara de tu dispositivo y sostén el código QR dentro del marco para iniciar la verificación.",
+    "verify_process": "Verificación en Progreso",
+    "verify_process_description": "La verificación del código QR está en progreso."
+  },
+  "modal": {
+    "close": "Cerrar",
+    "congrats": "¡Felicidades!",
+    "note": "Nota",
+    "proceed": "Continuar",
+    "verification_success": "¡Su identidad ha sido verificada exitosamente y es elegible para abrir una cuenta!",
+    "verified_message": "¡Felicidades! Según tu identidad verificada, calificas para un límite de transacción mensual de {{limit}}. Este límite mejorado te permite acceder a funciones bancarias premium y disfrutar de una mayor flexibilidad financiera.",
+    "unverified_message": "Puedes continuar con una cuenta básica con un límite de transacción mensual de {{limit}}. Para desbloquear límites más altos y funciones premium, te recomendamos verificar tu identidad."
+  },
+  "vc_card": {
+    "proceed": "Continuar",
+    "fullName": "Nombre Completo",
+    "dateOfBirth": "Fecha de Nacimiento",
+    "email": "Correo Electrónico",
+    "gender": "Género",
+    "phoneNumber": "Móvil",
+    "tan": "Número de Identificación",
+    "type": "Tipo de Identificación",
+    "issued": "Emitido el",
+    "expiresOn": "Expira el"
+  },
+  "vc_result": {
+    "success": "¡Felicidades, el TAN es válido!",
+    "invalid": "Desafortunadamente, el TAN no es válido!",
+    "expired": "Desafortunadamente, el TAN ha expirado!"
+  },
+  "qr_scan": {
+    "verify": "Verificando..."
+  },
+  "upload_qr_code": {
+    "upload": "Subir"
+  }
+}

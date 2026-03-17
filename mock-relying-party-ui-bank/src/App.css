@@ -1,0 +1,244 @@
+body.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+body {
+  font-family: Inter;
+}
+
+.SignInWithEsignet-module_textbox__k2CkO {
+  font-family: Inter;
+}
+
+input {
+  overflow: hidden;
+  text-overflow: ellipsis !important;
+}
+
+input:disabled {
+  background: #e8ebec;
+}
+
+button:disabled {
+  color: #94a3b8 !important;
+  background-color: white !important;
+  border: 1px solid #94a3b8;
+
+  &:hover {
+    cursor: no-drop;
+  }
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #53389e;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+[data-radix-popper-content-wrapper] {
+  top: 2px !important;
+}
+
+#stepper-node {
+  opacity: 1;
+}
+
+.stepper .label {
+  font-weight: 500;
+  font-size: 1em;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  max-width: 100%;
+  line-height: 1.3;
+}
+
+.description {
+  color: #e9d7fe !important;
+}
+
+.verticalContentWrapper .description {
+  position: relative;
+  bottom: 1em;
+  left: 0.5em;
+  font-size: 1em;
+  font-family: inherit;
+  max-width: 100%;
+  text-align: left;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  white-space: normal;
+  color: #e9d7fe;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.verticalStepper .middleStepConnector {
+  width: 1.5px !important;
+}
+
+.verticalStepper .activeConnector {
+  background-color: #e9d7fe !important;
+}
+
+.verticalStepper {
+  margin: auto !important;
+  max-width: 100%;
+  width: 100%;
+}
+
+.verticalContentWrapper {
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.verticalContentWrapper .label,
+.verticalContentWrapper .description {
+  max-width: 100%;
+}
+
+.scrollable-div {
+  scroll-behavior: smooth;
+  overflow-y: auto;
+  height: 600px;
+  -ms-overflow-style: none;
+}
+
+.scrollable-div::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-div::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.scrollable-div::-webkit-scrollbar-thumb {
+  background-color: #d5d5d5;
+  border-radius: 8px;
+}
+
+.scrollable-div::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
+}
+
+.SignInWithEsignet-module_textbox__k2CkO {
+  font-size: medium;
+}
+
+.result {
+  background: linear-gradient(to bottom, #1f9f60 0.75em, white 0px);
+}
+
+nav {
+  box-shadow: 0px 2px 5px #0000001a;
+}
+
+a:hover, a:focus {
+  color: #7F56D9;
+}
+
+.horizontalStepper {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+.align-loading-center {
+  width: 100%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .stepper .label {
+    padding: 0px;
+  }
+  
+  .horizontalStepper .label,
+  .horizontalStepper .description {
+    max-width: 100%;
+  }
+}
+
+/* Additional responsive styles for better text wrapping */
+@media screen and (min-width: 1024px) {
+  .verticalStepper {
+    padding: 0 1rem;
+  }
+  
+  .verticalContentWrapper {
+    padding-right: 0.5rem;
+  }
+  
+  .stepper .label {
+    font-size: 0.95rem;
+  }
+  
+  .verticalContentWrapper .description {
+    font-size: 0.875rem;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .stepper .label {
+    font-size: 1rem;
+  }
+  
+  .verticalContentWrapper .description {
+    font-size: 0.95rem;
+  }
+}
