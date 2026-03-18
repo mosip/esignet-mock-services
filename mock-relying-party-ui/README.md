@@ -37,7 +37,7 @@ The application runs on PORT=5000 by default.
     (Example: prompt:consent)
   - GRANT_TYPE: OAuth 2.0 grant type used to request access tokens
     (Example: grant_type: authorization_code)
-  - SIGN_IN_BUTTON_PLUGIN_URL: URL for the sign-in button plugin
+  - SIGN_IN_BUTTON_PLUGIN_URL: URL for the sign-in button plugin.
   - SCOPE_USER_PROFILE: List of scopes requested during the authentication request
     (Example: scope_user_profile: openid%20profile%20resident-service)
   - PAR_CALLBACK_NAME: **Feature flag** to enable PAR (Pushed Authorization Request) flow  
