@@ -51,7 +51,8 @@ export default function Login({ i18nKeyPrefix = "login" }) {
       claims: JSON.parse(decodeURIComponent(clientDetails.userProfileClaims)),
       par_callback: relyingPartyService[clientDetails.par_callback_name],
       par_callback_timeout: clientDetails.par_callback_timeout,
-      dpop_callback: relyingPartyService[clientDetails.dpop_callback_name]
+      dpop_callback: relyingPartyService[clientDetails.dpop_callback_name],
+      code_challenge: relyingPartyService[clientDetails.code_challenge],
     };
 
     window.SignInWithEsignetButton?.init({

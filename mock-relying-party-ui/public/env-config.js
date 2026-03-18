@@ -21,4 +21,5 @@ window._env_ = {
   PAR_CALLBACK_NAME: "get_requestUri",
   PAR_CALLBACK_TIMEOUT: 5000,
   DPOP_CALLBACK_NAME: "get_dpop_jkt",
-};
+  CODE_CHALLENGE: "get_code_challenge"
+  };

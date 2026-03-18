@@ -34,8 +34,9 @@ const post_GetToken = async ({
   client_id,
   redirect_uri,
   grant_type,
+  code_verifier,
 }) => {
-  let request = new URLSearchParams({
+  const request = new URLSearchParams({
     code: code,
     client_id: client_id,
     redirect_uri: redirect_uri,
@@ -43,6 +44,12 @@ const post_GetToken = async ({
     client_assertion_type: CLIENT_ASSERTION_TYPE,
     client_assertion: await generateSignedJwt(client_id, ESIGNET_AUD_URL),
   });
+  
+  // Add code_verifier if provided
+  if (code_verifier) {
+    request.append("code_verifier", code_verifier);
+  }
+
   const endpoint = baseUrl + getTokenEndPoint;
   const dpopHeaders = await buildDpopHeaders({
     clientId: client_id,
@@ -85,7 +92,7 @@ const post_GetToken = async ({
  * @param {string} clientId clientId
  * @returns requestUri
  */
-const post_GetRequestUri = async (clientId, uiLocales, state, dpop_jkt) => {
+const post_GetRequestUri = async (clientId, uiLocales, state, dpop_jkt, code_challenge, code_challenge_method) => {
   const clientAssertion = await generateSignedJwt(
     clientId,
     ESIGNET_PAR_AUD_URL
@@ -107,6 +114,10 @@ const post_GetRequestUri = async (clientId, uiLocales, state, dpop_jkt) => {
   params.append("client_assertion", clientAssertion);
   if (dpop_jkt) {
     params.append("dpop_jkt", dpop_jkt);
+  }
+  if (code_challenge && code_challenge_method) {
+    params.append("code_challenge", code_challenge);
+    params.append("code_challenge_method", code_challenge_method);
   }
   const endpoint = clientDetails.parEndpoint;
   const dpopHeaders = await buildDpopHeaders({

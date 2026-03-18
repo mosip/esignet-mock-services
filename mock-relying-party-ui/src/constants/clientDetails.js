@@ -59,6 +59,7 @@ const par_callback_timeout = checkEmptyNullValue(
   5000
 );
 const dpop_callback_name = window._env_.DPOP_CALLBACK_NAME;
+const code_challenge = window._env_.CODE_CHALLENGE;
 const claims = {
   userinfo: {
     given_name: {
@@ -108,6 +109,7 @@ const clientDetails = {
   par_callback_name: par_callback_name,
   par_callback_timeout: par_callback_timeout,
   dpop_callback_name: dpop_callback_name,
+  code_challenge: code_challenge,
 };
 
 export default clientDetails;
