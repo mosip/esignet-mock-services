@@ -7,6 +7,7 @@ package io.mosip.esignet.mock.identitysystem.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import io.mosip.esignet.mock.identitysystem.dto.LanguageValue;
@@ -48,13 +49,13 @@ public class IdentityControllerTest {
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
-	IdentityData identityRequest;
+	ObjectNode identityRequest;
 
 	@BeforeEach
 	public void init() {
-		identityRequest = new IdentityData();
-		identityRequest.setIndividualId("826741183");
-		identityRequest.setEmail("test@gmail.com");
+		IdentityData identityData = new IdentityData();
+		identityData.setIndividualId("826741183");
+		identityData.setEmail("test@gmail.com");
 
 		List<LanguageValue> preferredNameList =new ArrayList<>();
 		LanguageValue engLangValue= new LanguageValue();
@@ -65,49 +66,51 @@ public class IdentityControllerTest {
 		arabicLangValue.setValue("سيدارت ك منصور");
 		preferredNameList.add(engLangValue);
 		preferredNameList.add(arabicLangValue);
-		identityRequest.setFullName(preferredNameList);
-		identityRequest.setPreferredUsername(preferredNameList);
-		identityRequest.setFamilyName(preferredNameList);
-		identityRequest.setGivenName(preferredNameList);
-		identityRequest.setPreferredUsername(preferredNameList);
-		identityRequest.setNickName(preferredNameList);
-		identityRequest.setPreferredUsername(preferredNameList);
-		identityRequest.setMiddleName(preferredNameList);
+		identityData.setFullName(preferredNameList);
+		identityData.setPreferredUsername(preferredNameList);
+		identityData.setFamilyName(preferredNameList);
+		identityData.setGivenName(preferredNameList);
+		identityData.setPreferredUsername(preferredNameList);
+		identityData.setNickName(preferredNameList);
+		identityData.setPreferredUsername(preferredNameList);
+		identityData.setMiddleName(preferredNameList);
 
 		LanguageValue mockLang = new LanguageValue();
 		mockLang.setLanguage("eng");
 		mockLang.setValue("mock");
-		identityRequest.setGender(Arrays.asList(mockLang));
-		identityRequest.setStreetAddress(Arrays.asList(mockLang));
-		identityRequest.setLocality(Arrays.asList(mockLang));
-		identityRequest.setRegion(Arrays.asList(mockLang));
+		identityData.setGender(Arrays.asList(mockLang));
+		identityData.setStreetAddress(Arrays.asList(mockLang));
+		identityData.setLocality(Arrays.asList(mockLang));
+		identityData.setRegion(Arrays.asList(mockLang));
 
 		LanguageValue langValue = new LanguageValue();
 		langValue.setLanguage("eng");
 		langValue.setValue("ind");
-		identityRequest.setCountry(Arrays.asList(langValue));
+		identityData.setCountry(Arrays.asList(langValue));
 
-		identityRequest.setDateOfBirth("20021990");
-		identityRequest.setEncodedPhoto("testencodedphoto");
-		identityRequest.setGender(Arrays.asList(langValue));
-		identityRequest.setLocality(Arrays.asList(langValue));
-		identityRequest.setPostalCode("12011");
-		identityRequest.setPin("1289001");
-		identityRequest.setRegion(Arrays.asList(langValue));
-		identityRequest.setFullName(Arrays.asList(langValue));
-		identityRequest.setGivenName(Arrays.asList(langValue));
-		identityRequest.setFamilyName(Arrays.asList(langValue));
-		identityRequest.setStreetAddress(Arrays.asList(langValue));
-		identityRequest.setPhone("9090909090");
-		identityRequest.setPreferredLang("eng");
-		identityRequest.setZoneInfo("local");
-		identityRequest.setLocale("eng");
-		identityRequest.setPassword("mock-password");
+		identityData.setDateOfBirth("20021990");
+		identityData.setEncodedPhoto("testencodedphoto");
+		identityData.setGender(Arrays.asList(langValue));
+		identityData.setLocality(Arrays.asList(langValue));
+		identityData.setPostalCode("12011");
+		identityData.setPin("1289001");
+		identityData.setRegion(Arrays.asList(langValue));
+		identityData.setFullName(Arrays.asList(langValue));
+		identityData.setGivenName(Arrays.asList(langValue));
+		identityData.setFamilyName(Arrays.asList(langValue));
+		identityData.setStreetAddress(Arrays.asList(langValue));
+		identityData.setPhone("9090909090");
+		identityData.setPreferredLang("eng");
+		identityData.setZoneInfo("local");
+		identityData.setLocale("eng");
+		identityData.setPassword("mock-password");
+
+		identityRequest = objectMapper.valueToTree(identityData);
 	}
 
 	@Test
 	public void createIdentity_withValidIdentity_returnSuccessResponse() throws Exception {
-		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		RequestWrapper<JsonNode> requestWrapper = new RequestWrapper<JsonNode>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
 		requestWrapper.setRequest(identityRequest);
@@ -121,10 +124,10 @@ public class IdentityControllerTest {
 
 	@Test
 	public void createIdentity_withInvalidIdentity_returnErrorResponse() throws Exception {
-		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		RequestWrapper<ObjectNode> requestWrapper = new RequestWrapper<ObjectNode>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
-		identityRequest.setIndividualId(null);
+		identityRequest.put("individualId", NullNode.getInstance());
 		requestWrapper.setRequest(identityRequest);
 
 		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
@@ -137,11 +140,11 @@ public class IdentityControllerTest {
 
 	@Test
 	public void createIdentity_withInvalidNameAndLocale_returnErrorResponse() throws Exception {
-		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		RequestWrapper<ObjectNode> requestWrapper = new RequestWrapper<>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
-		identityRequest.setFullName(null);
-		identityRequest.setLocale(null);
+		identityRequest.put("fullName", NullNode.getInstance());
+		identityRequest.put("locale", NullNode.getInstance());
 		requestWrapper.setRequest(identityRequest);
 
 		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
@@ -153,7 +156,7 @@ public class IdentityControllerTest {
 
 	@Test
 	public void createIdentity_withInvalidFullName_returnErrorResponse() throws Exception {
-		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		RequestWrapper<ObjectNode> requestWrapper = new RequestWrapper<>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
 
@@ -166,7 +169,7 @@ public class IdentityControllerTest {
 		arabicLangValue.setValue("سيدارت ك منصور");
 		nameList.add(engLangValue);
 		nameList.add(arabicLangValue);
-		identityRequest.setFullName(nameList);
+		identityRequest.put("fullName", objectMapper.valueToTree(nameList));
 		requestWrapper.setRequest(identityRequest);
 
 		Mockito.doNothing().when(identityService).addIdentity(identityRequest);
@@ -178,7 +181,7 @@ public class IdentityControllerTest {
 
 	@Test
 	public void getIdentity_withValidId_returnSuccessResponse() throws Exception {
-		identityRequest.setIndividualId("123456789");
+		identityRequest.put("individualId", "123456789");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityRequest);
 
 		mockMvc.perform(get("/identity/{individualId}", "123456789")
@@ -237,7 +240,7 @@ public class IdentityControllerTest {
 
 	@Test
 	public void updateIdentity_withValidIdentity_thenPass() throws Exception {
-		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		RequestWrapper<JsonNode> requestWrapper = new RequestWrapper<>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
 		requestWrapper.setRequest(identityRequest);
@@ -251,10 +254,10 @@ public class IdentityControllerTest {
 
 	@Test
 	public void updateIdentity_withInValidIdentity_thenFail() throws Exception {
-		RequestWrapper<IdentityData> requestWrapper = new RequestWrapper<IdentityData>();
+		RequestWrapper<ObjectNode> requestWrapper = new RequestWrapper<>();
 		ZonedDateTime requestTime = ZonedDateTime.now(ZoneOffset.UTC);
 		requestWrapper.setRequestTime(requestTime.format(DateTimeFormatter.ofPattern(UTC_DATETIME_PATTERN)));
-		identityRequest.setFullName(null);
+		identityRequest.put("fullName", NullNode.getInstance());
 		requestWrapper.setRequest(identityRequest);
 
 		Mockito.doNothing().when(identityService).updateIdentity(identityRequest);
@@ -273,7 +276,7 @@ public class IdentityControllerTest {
 		ObjectNode properties = objectMapper.createObjectNode();
 		properties.put("individualId", "string");
 		mockSchema.set("properties", properties);
-		Mockito.when(identityService.getSchema()).thenReturn(mockSchema);
+		Mockito.when(identityService.getUISpecification()).thenReturn(mockSchema);
 		mockMvc.perform(get("/identity/ui-spec")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())

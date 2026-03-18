@@ -3,7 +3,6 @@ package io.mosip.esignet.mock.identitysystem.validator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.*;
-import io.mosip.esignet.mock.identitysystem.dto.IdentityData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +24,6 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     @Value("${mosip.mock.ida.identity.schema.url}")
     private String identitySchemaUrl;
-
-    @Value("#{${mosip.mock.ida.update-identity.non-mandatory.fields}}")
-    private Set<String> nonMandatoryFieldsOnUpdate;
 
     private String action;
 
@@ -54,12 +50,7 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     @Override
     public boolean isValid(Object object, ConstraintValidatorContext context) {
-
-        if (!(object instanceof IdentityData)) {
-            return false;
-        }
-        IdentityData identityData=(IdentityData) object;
-        JsonNode identityJsonNode = objectMapper.valueToTree(identityData);
+        JsonNode identityJsonNode = (JsonNode)object;
         Set<ValidationMessage> validationErrors = validateIdentityData(identityJsonNode);
 
         // Handle validation errors
@@ -74,11 +65,9 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
         Set<ValidationMessage> errors = schema.validate(identityJsonNode);
         // If not a create operation, filter out specific errors
         if (action.equals("UPDATE")) {
-            // Ignore validation errors with code 1029 (null value) and for exempted fields when validating updateIdentity
+            // Ignore validation errors with code 1028 (null value) and for exempted fields when validating updateIdentity
             errors = errors.stream()
-                    .filter(error -> !error.getCode().equals("1029") ||
-                            !nonMandatoryFieldsOnUpdate.contains(error.
-                                    getInstanceLocation().getName(0)))
+                    .filter(error -> !error.getCode().equals("1028"))
                     .collect(Collectors.toSet());
         }
         return errors;
@@ -86,9 +75,15 @@ public class IdentitySchemaValidator implements ConstraintValidator<IdentitySche
 
     private void addValidationErrorCode(Set<ValidationMessage> errors, ConstraintValidatorContext context) {
         context.disableDefaultConstraintViolation();
-        errors.forEach(error->context.
-                buildConstraintViolationWithTemplate("invalid_"+error.getInstanceLocation().getName(0).toLowerCase())
+        errors.forEach(error->
+                context.buildConstraintViolationWithTemplate(getErrorCodeFromValidationMessage(error))
                 .addConstraintViolation());
+    }
+
+    private String getErrorCodeFromValidationMessage(ValidationMessage error) {
+        String fieldName = error.getInstanceLocation().getNameCount() > 0 ? error.getInstanceLocation().getName(0) :
+                error.getProperty();
+        return fieldName != null ? "invalid_"+fieldName.toLowerCase() : "unknown_field";
     }
 
     private InputStream getResource(String url) {
