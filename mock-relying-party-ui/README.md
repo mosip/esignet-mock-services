@@ -48,7 +48,7 @@ The application runs on PORT=5000 by default.
     Required value: `get_dpop_jkt` (hardcoded function name - not configurable)
   - CODE_CHALLENGE: **Feature flag** to enable PKCE (Proof Key for Code Exchange) flow  
     Required value: `get_code_challenge` (hardcoded function name - not configurable)  
-    When enabled, the PKCE method is automatically fetched from the authorization server's `.well-known/openid-configuration` endpoint
+    When enabled, the PKCE method is automatically fetched from the authorization server's `.well-known/openid-configuration` endpoint.
 
   > **Important:** PAR_CALLBACK_NAME, DPOP_CALLBACK_NAME, and CODE_CHALLENGE act as feature toggles. The values correspond to hardcoded function names in the codebase and are not configurable. Include these variables to enable the respective flows, or omit them to disable the functionality.
 
