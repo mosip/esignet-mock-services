@@ -101,6 +101,9 @@ jobs:
           - SERVICE_LOCATION: 'mock-relying-party-ui-esim'
             SERVICE_NAME: 'mock-relying-party-ui-esim'
             SQUASH_LAYERS: '10'
+          - SERVICE_LOCATION: 'mock-relying-party-ui-bank'
+            SERVICE_NAME: 'mock-relying-party-ui-bank'
+            SQUASH_LAYERS: '10'
       fail-fast: false
     name: ${{ matrix.SERVICE_NAME }}
     uses: mosip/kattu/.github/workflows/docker-build.yml@master-java21
