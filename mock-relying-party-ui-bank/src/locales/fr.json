@@ -1,0 +1,178 @@
+{
+  "Header": {
+    "heading": "Portail d'Ouverture de Compte",
+    "headingHighlight": "en toute simplicité !",
+    "description": "Ouvrez facilement votre compte bancaire avec le Portail d'Omera Bank ! Scannez simplement le code QR ou téléchargez-le pour une vérification instantanée."
+  },
+  "navheader": {
+    "about_us": "À propos de nous",
+    "our_features": "Nos fonctionnalités",
+    "help": "Aide",
+    "home": "Accueil"
+  },
+  "landing_page": {
+    "sign_in_with_esignet": "Se connecter avec l'ID national",
+    "sign_in_as_foreigner": "Se Connecter en tant qu'Étranger",
+    "sign_in_to_banking_portal": "Se connecter",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "username_placeholder": "Entrez le nom d'utilisateur",
+    "password_placeholder": "Entrez le mot de passe",
+    "keep_me_sign_in": "Rester connecté",
+    "forgot_password": "Mot de passe oublié ?",
+    "submit": "Soumettre",
+    "or": "Ou",
+    "no_account": "Vous n'avez pas de compte ?",
+    "sign_up": "Inscrivez-vous maintenant"
+  },
+  "account_page": {
+    "success_message": "Vous vous êtes connecté avec succès à Omera Bank en utilisant eSignet",
+    "get_started": "Bienvenue",
+    "open_account": "Ouvrez votre compte aujourd'hui",
+    "open_account_button": "Ouvrir un Compte",
+    "subtext": "Ouvrez votre compte bancaire en quelques étapes simples",
+    "step_open_account": "Cliquez sur \"Ouvrir un Compte\" pour commencer",
+    "step_verify": "Vérifiez votre identité",
+    "step_fill_details": "Remplissez les détails du compte",
+    "step_complete": "Finalisez la configuration du compte"
+  },
+  "loading": {
+    "processing_application": "Traitement de votre demande",
+    "please_wait": "Veuillez patienter...",
+    "identity_verification": "Vérification d'Identité",
+    "address_verification": "Vérification d'Adresse",
+    "kyc_check": "Vérification KYC",
+    "account_setup": "Configuration du Compte"
+  },
+  "account_result": {
+    "congrats": "Félicitations !",
+    "account_created_message": "Votre compte a été créé avec succès !",
+    "account_type": "Type de Compte",
+    "account_type_value": "Compte d'Épargne",
+    "account_number": "Numéro de Compte",
+    "account_number_value": "XXXX-XXXX-1234",
+    "transaction_limit": "Limite Mensuelle",
+    "transaction_limit_value": "2 000 $",
+    "go_home": "Aller à l'accueil"
+  },
+  "application": {
+    "details": "Saisir les détails du compte",
+    "details_description": "Remplissez vos informations pour ouvrir votre compte.",
+    "eligible_check": "Vérifier les détails",
+    "eligible_check_description": "Nous vérifions vos informations.",
+    "result": "Voir le résultat",
+    "result_description": "Obtenez instantanément le statut d'ouverture de votre compte !",
+    "header": "Ouverture de Compte"
+  },
+  "form": {
+    "savings_account": "Compte d'Épargne",
+    "checking_account": "Compte Courant",
+    "salary_account": "Compte Salaire",
+    "student_account": "Compte Étudiant / Basique / KYC Limité",
+    "fill_details": "Remplir les détails",
+    "details_description": "Remplissez les informations de votre compte, vérifiez les détails pré-remplis et soumettez pour continuer.",
+    "primary_information": "(1) Informations Principales",
+    "type_of_account": "Type de Compte",
+    "monthly_transaction_limit": "Limite de Transaction Mensuelle",
+    "transaction_limit_placeholder": "Entrez le montant (max {{limit}})",
+    "transaction_limit_error": "Le montant de la transaction ne peut pas dépasser {{limit}}.",
+    "channel_access": "(2) Accès aux Canaux",
+    "internet_banking": "Banque en Ligne",
+    "mobile_banking": "Accès Banque Mobile",
+    "atm_debit_card": "Accès ATM / Carte de Débit",
+    "payment_capabilities": "(3) Capacités de Paiement",
+    "domestic_transaction": "Transactions Nationales",
+    "international_transaction": "Transactions Internationales",
+    "transfer_capabilities": "(4) Capacités de Transfert",
+    "transfer_capabilities_description": "Les capacités de transfert seront activées en fonction de votre type de compte et niveau de vérification.",
+    "personal_information": "(5) Informations Personnelles",
+    "full_name": "Nom Complet",
+    "name_placeholder": "Entrez votre nom complet",
+    "dob": "Date de Naissance",
+    "dob_placeholder": "AAAA-MM-JJ",
+    "gender": "Genre",
+    "gender_placeholder": "Sélectionnez le genre",
+    "gender_male": "Homme",
+    "gender_female": "Femme",
+    "gender_other": "Autre",
+    "phone_number": "Numéro de Téléphone",
+    "phone_placeholder": "Entrez le numéro de téléphone",
+    "photo": "Photo",
+    "profile_picture": "Photo de profil",
+    "email": "E-mail",
+    "email_placeholder": "Entrez l'adresse e-mail",
+    "verified": "Vérifié",
+    "residential_information": "(6) Informations Résidentielles",
+    "address": "Adresse",
+    "address_placeholder": "Entrez votre adresse",
+    "pin": "Code Postal",
+    "pin_placeholder": "Entrez le code postal",
+    "city": "Ville",
+    "city_placeholder": "Entrez le nom de la ville",
+    "declarations": "(7) Déclaration",
+    "terms_and_conditions": "Je déclare par la présente que toutes les informations fournies sont vraies et exactes. Je consens à une vérification des antécédents basée sur mon profil fiscal.",
+    "submit": "Soumettre",
+    "select_option": "Sélectionner une option"
+  },
+  "camera_access": {
+    "camera_access_denied": "Accès à la caméra refusé",
+    "camera_access_denied_description": "Nous avons besoin de votre caméra pour scanner le code. Allez dans les paramètres de votre navigateur et autorisez l'accès à la caméra pour ce site web.",
+    "okay": "D'accord"
+  },
+  "scan_qr_code": {
+    "scan": "Scanner"
+  },
+  "verification": {
+    "back": "Retour"
+  },
+  "tab": {
+    "upload_qr_code": "Téléverser le code QR",
+    "scan_qr_code": "Scanner le code QR"
+  },
+  "stepper": {
+    "upload_qr_code": "Téléversez votre TAN VC",
+    "upload_qr_code_description": "Téléversez un fichier contenant un code QR",
+    "verify_document": "Vérifier le document",
+    "verify_document_description": "La vérification du document ou de la carte est en cours.",
+    "view_result": "Voir le résultat",
+    "view_result_description": "Voir le résultat de la vérification.",
+    "scan_qr_code": "Scannez votre TAN VC",
+    "scan_qr_code_description": "Cliquez sur 'Scanner' pour commencer à scanner le document ou la carte avec un code QR",
+    "activate_camera": "Activer la caméra et positionner le code QR",
+    "activate_camera_description": "Activez la caméra de votre appareil et tenez le code QR dans le cadre pour lancer la vérification.",
+    "verify_process": "Vérification en cours",
+    "verify_process_description": "La vérification du code QR est en cours."
+  },
+  "modal": {
+    "close": "Fermer",
+    "congrats": "Félicitations !",
+    "note": "Remarque",
+    "proceed": "Continuer",
+    "verification_success": "Votre identité a été vérifiée avec succès et vous êtes éligible pour ouvrir un compte !",
+    "verified_message": "Félicitations ! En fonction de votre identité vérifiée, vous bénéficiez d'une limite de transaction mensuelle de {{limit}}. Cette limite améliorée vous permet d'accéder aux fonctionnalités bancaires premium et de profiter d'une plus grande flexibilité financière.",
+    "unverified_message": "Vous pouvez continuer avec un compte basique avec une limite de transaction mensuelle de {{limit}}. Pour débloquer des limites plus élevées et des fonctionnalités premium, nous vous recommandons de vérifier votre identité."
+  },
+  "vc_card": {
+    "proceed": "Procéder",
+    "fullName": "Nom complet",
+    "dateOfBirth": "Date de naissance",
+    "email": "E-mail",
+    "gender": "Genre",
+    "phoneNumber": "Mobile",
+    "tan": "Numéro d'identité",
+    "type": "Type d'identité",
+    "issued": "Délivré le",
+    "expiresOn": "Expire le"
+  },
+  "vc_result": {
+    "success": "Félicitations, le TAN est valide !",
+    "invalid": "Malheureusement, le TAN n'est pas valide !",
+    "expired": "Malheureusement, le TAN est expiré !"
+  },
+  "qr_scan": {
+    "verify": "Vérification en cours..."
+  },
+  "upload_qr_code": {
+    "upload": "Téléverser"
+  }
+}
