@@ -69,7 +69,7 @@ Repository contains mock implementations for eSignet. Only for non-production us
   ```
 
 ## Partner onboarder
-* Perform Partner onboarding for esignet mock relying party using [steps](partner-onboarder/README.md) only if mosip-identity plugin is used.
+* Perform Partner onboarding for esignet mock relying party using [steps](partner-onboarder/README.md) only if mosip-identity plugin is deployed.
 
 ## License
 This project is licensed under the terms of [Mozilla Public License 2.0](LICENSE).
