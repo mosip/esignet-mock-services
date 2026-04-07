@@ -136,12 +136,16 @@
       "id": "preferredLang",
       "controlType": "dropdown",
       "labelName": {
-        "eng": "Preferred Lang",
-        "khm": "ភាសាដែលចូលចិត្ត"
+        "eng": "Notification Language",
+        "khm": "ភាសាជូនដំណឹង"
+      },
+      "placeholder": {
+        "eng": "Select Notification Language",
+        "khm": "ជ្រើសរើសភាសាជូនដំណឹង"
       },
       "info": {
-        "eng": "Preferred Lang",
-        "khm": "ភាសាដែលចូលចិត្ត"
+        "eng": "Notification Language",
+        "khm": "ភាសាជូនដំណឹង"
       },
       "required": true,
       "alignmentGroup": "groupG"
@@ -173,8 +177,8 @@
         "km": "វាលនេះត្រូវការទទួលបាន"
       },
       "passwordMismatch": {
-        "en": "Passwords is not matching please check your password",
-        "km": "ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ សូមពិនិត្យពាក្យសម្ងាត់របស់អ្នក"
+        "en": "Passwords do not match. Please re-enter.",
+        "km": "ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ។ សូមបញ្ចូលម្តងទៀត។"
       }
     },
     "labels": {
@@ -193,8 +197,8 @@
     },
     "placeholders": {
       "password_confirm": {
-        "en": "Enter your confirm password",
-        "km": "បញ្ចូលពាក្យសម្ងាត់ដែលបានបញ្ជាក់"
+        "en": "Please confirm your password",
+        "km": "សូមបញ្ជាក់ពាក្យសម្ងាត់របស់អ្នក"
       }
     }
   },
