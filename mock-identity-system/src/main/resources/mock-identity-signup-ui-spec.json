@@ -107,8 +107,7 @@
         "eng": "Date of Birth",
         "khm": "ថ្ងៃខែឆ្នាំកំណើត"
       },
-      "minAge": -1,
-      "maxAge": -2,
+      "maxAge": 0,
       "alignmentGroup": "groupE",
       "required": false,
       "format": "dd-MM-yyyy"
