@@ -249,6 +249,8 @@
     "web_socket_fail": "eKYC verification was not completed. Please try again.",
     "dpop_failed": "DPoP verification failed. Please try again.",
     "invalid_dpop_proof": "Authentication could not be completed. Please try again",
-    "code_challenge_failed": "Failed to generate code challenge. Please try again."
+    "code_challenge_failed": "Failed to generate code challenge. Please try again.",
+    "login_required": "Unable to complete sign-in. Please try again.",
+    "request_not_supported": "We couldn’t process your request. Please try again or contact admin if the issue continues."
   }
 }
