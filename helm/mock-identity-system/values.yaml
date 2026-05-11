@@ -275,11 +275,6 @@ extraEnvVars:
     value: hsm-client
   - name: MOSIP_ESIGNET_MOCK_SUPPORTED_FIELDS
     value: individualId,password
-  - name: MOSIP_ESIGNET_HOST
-    valueFrom:
-      configMapKeyRef:
-        name: esignet-global
-        key: mosip-esignet-host
   - name: REDIS_HOST
     valueFrom:
       configMapKeyRef:
@@ -504,3 +499,5 @@ istio:
   prefix: /v1/mock-identity-system/
 
 enable_insecure: false
+
+domainConfig: {}
