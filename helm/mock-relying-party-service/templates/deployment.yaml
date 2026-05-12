@@ -107,31 +107,35 @@ spec:
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
+            {{- range $key, $val := .Values.domainConfig }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
           envFrom:
             {{- if .Values.envVarsCM }}
-              {{- range .Values.envVarsCM }}
-              - configMapRef:
-                  name: {{ . }}
-              {{- end }}
-              {{- end }}
-              {{- if .Values.envVarsSecret }}
-              {{- range .Values.envVarsSecret }}
-              - secretRef:
-                  name: {{ . }}
-              {{- end }}
-              {{- end }}
-              {{- if .Values.extraEnvVarsCM }}
-              {{- range .Values.extraEnvVarsCM }}
-              - configMapRef:
-                  name: {{ . }}
-              {{- end }}
-              {{- end }}
-              {{- if .Values.extraEnvVarsSecret }}
-              {{- range .Values.extraEnvVarsSecret }}
-              - secretRef:
-                  name: {{ . }}
-              {{- end }}
-              {{- end }}
+            {{- range .Values.envVarsCM }}
+            - configMapRef:
+                name: {{ . }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.envVarsSecret }}
+            {{- range .Values.envVarsSecret }}
+            - secretRef:
+                name: {{ . }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.extraEnvVarsCM }}
+            {{- range .Values.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ . }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.extraEnvVarsSecret }}
+            {{- range .Values.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ . }}
+            {{- end }}
+            {{- end }}
           ports:
             - name: container-port
               containerPort: {{ .Values.containerPort }}
@@ -167,13 +171,13 @@ spec:
       - name: cacerts
         emptyDir: {}
       {{- end }}
-        - name: mock-relying-party-service
-          configMap:
-            name: {{ include "mock-relying-party-service.fullname" . }}
-        - name: conf-file
-          {{- if .Values.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (include "mock-relying-party-service.fullname" .) }}
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
+      - name: mock-relying-party-service
+        configMap:
+          name: {{ include "mock-relying-party-service.fullname" . }}
+      - name: conf-file
+        {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | default (include "mock-relying-party-service.fullname" .) }}
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
