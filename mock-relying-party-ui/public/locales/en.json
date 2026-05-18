@@ -251,6 +251,7 @@
     "invalid_dpop_proof": "Authentication could not be completed. Please try again",
     "code_challenge_failed": "Failed to generate code challenge. Please try again.",
     "login_required": "Unable to complete sign-in. Please try again.",
-    "request_not_supported": "We couldn’t process your request. Please try again or contact admin if the issue continues."
+    "request_not_supported": "We couldn’t process your request. Please try again or contact admin if the issue continues.",
+    "grant_exchange_failed": "Unable to Authorize. Please try again."
   }
 }
