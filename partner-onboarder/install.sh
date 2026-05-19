@@ -22,8 +22,7 @@ fi
 
 NS=esignet
 MOCK_REPLYING_PARTY_SERVICE_NAME=mock-relying-party-service
-CHART_VERSION=0.0.1-develop
-
+CHART_VERSION=1.3.1
 echo Create $NS namespace
 kubectl create ns $NS || true
 
