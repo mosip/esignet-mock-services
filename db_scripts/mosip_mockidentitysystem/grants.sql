@@ -1,17 +1,16 @@
-\c mosip_mockidentitysystem
+\c :mosipdbname
 
 GRANT CONNECT
-   ON DATABASE mosip_mockidentitysystem
-   TO mockidsystemuser;
+   ON DATABASE :mosipdbname
+   TO :dbuname;
 
 GRANT USAGE
    ON SCHEMA mockidentitysystem
-   TO mockidsystemuser;
+   TO :dbuname;
 
 GRANT SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES
-   ON ALL TABLES IN SCHEMA mockidentitysystem
-   TO mockidsystemuser;
+      ON ALL TABLES IN SCHEMA mockidentitysystem
+          TO :dbuname;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA mockidentitysystem
-	GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO mockidsystemuser;
-
+	GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO :dbuname;
