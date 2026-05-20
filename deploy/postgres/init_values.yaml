@@ -4,7 +4,11 @@
 databases:
   mosip_mockidentitysystem:
     enabled: true
-    host: "postgres-postgresql.postgres"
+    scriptsDir: mosip_mockidentitysystem  # fixed - must match db_scripts/ folder in repo
+    dbName: mosip_mockidentitysystem      # customize e.g. mosip_mockidentitysystem02
+    dbUser: mockidentityuser              # customize e.g. mockidentityuser02
+    defaultDb: postgres
+    host: "postgres-postgresql"
     port: 5432
     su:
       user: postgres
@@ -12,6 +16,7 @@ databases:
         name: postgres-postgresql
         key: postgres-password
     dml: 1
+    repoUrl: https://github.com/mosip/esignet-mock-services.git
     branch: develop
 
   mosip_master:

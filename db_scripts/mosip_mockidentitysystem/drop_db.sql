@@ -1,2 +1,2 @@
-DROP DATABASE IF EXISTS mosip_mockidentitysystem;
+DROP DATABASE IF EXISTS :mosipdbname;
 
