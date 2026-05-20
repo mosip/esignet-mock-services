@@ -8,10 +8,9 @@ CREATE DATABASE :mosipdbname
 
 COMMENT ON DATABASE :mosipdbname IS 'Mock identity related data is stored in this database';
 
-\c mosip_mockidentitysystem postgres
+\c :mosipdbname postgres
 
 DROP SCHEMA IF EXISTS mockidentitysystem CASCADE;
 CREATE SCHEMA mockidentitysystem;
 ALTER SCHEMA mockidentitysystem OWNER TO postgres;
 ALTER DATABASE :mosipdbname SET search_path TO mockidentitysystem,pg_catalog,public;
-
