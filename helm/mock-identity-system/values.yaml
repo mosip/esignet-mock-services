@@ -275,11 +275,6 @@ extraEnvVars:
     value: hsm-client
   - name: MOSIP_ESIGNET_MOCK_SUPPORTED_FIELDS
     value: individualId,password
-  - name: MOSIP_ESIGNET_HOST
-    valueFrom:
-      configMapKeyRef:
-        name: esignet-global
-        key: mosip-esignet-host
   - name: REDIS_HOST
     valueFrom:
       configMapKeyRef:
@@ -341,9 +336,8 @@ initContainers:
     env:
       - name: ENABLE_INSECURE
         value: "true"
-    envFrom:
-      - configMapRef:
-          name: global
+      - name: mosip-api-internal-host
+        value: '{{ index .Values.domainConfig "MOSIP_API_INTERNAL_HOST" | default "" }}'
     image: docker.io/openjdk:11-jre
     imagePullPolicy: Always
     name: cacerts
@@ -504,3 +498,5 @@ istio:
   prefix: /v1/mock-identity-system/
 
 enable_insecure: false
+
+domainConfig: {}
