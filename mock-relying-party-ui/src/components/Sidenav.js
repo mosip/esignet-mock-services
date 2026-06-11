@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import clientDetails from "../constants/clientDetails";
+import { clientDetails } from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
 import Select from "react-select";
 import LoadingIndicator from "../common/LoadingIndicator";
@@ -65,7 +65,7 @@ export default function Sidenav({
   };
 
   useEffect(() => {
-    let lang = langOptions?.find((option) => {
+    const lang = langOptions?.find((option) => {
       return option.value === i18n.language;
     });
     setSelectedLang(lang);
@@ -73,7 +73,7 @@ export default function Sidenav({
 
   //Gets fired when changeLanguage got called.
   i18n.on("languageChanged", function (lng) {
-    let lang = langOptions.find((option) => {
+    const lang = langOptions.find((option) => {
       return option.value === lng;
     });
     setSelectedLang(lang);
@@ -85,10 +85,10 @@ export default function Sidenav({
       if (hasFetchedRef.current) return;
       hasFetchedRef.current = true;
 
-      let authCode = searchParams.get("code");
-      let errorCode = searchParams.get("error");
-      let error_desc = searchParams.get("error_description");
-      let state = searchParams.get("state");
+      const authCode = searchParams.get("code");
+      const errorCode = searchParams.get("error");
+      const error_desc = searchParams.get("error_description");
+      const state = searchParams.get("state");
       if (errorCode) {
         navigateToLogin(errorCode, error_desc);
         return;
@@ -113,15 +113,15 @@ export default function Sidenav({
     setUserInfo(null);
     setStatus(states.LOADING);
     try {
-      let client_id = clientDetails.clientId;
-      let redirect_uri = clientDetails.redirect_uri_userprofile;
-      let grant_type = clientDetails.grant_type;
+      const client_id = clientDetails.clientId;
+      const redirect_uri = clientDetails.redirect_uri_userprofile;
+      const grant_type = clientDetails.grant_type;
       var userInfo = await post_fetchUserInfo(
         authCode,
         state,
         client_id,
         redirect_uri,
-        grant_type
+        grant_type,
       );
       setUserDetail(userInfo);
     } catch (errormsg) {
@@ -137,28 +137,28 @@ export default function Sidenav({
 
   // Checking and getting Verified claims.
   const setUserDetail = (userInfoResponse) => {
-    let addressDetails = getClaimDetails(userInfoResponse, "address");
-    let address = getAddress(addressDetails.value);
+    const addressDetails = getClaimDetails(userInfoResponse, "address");
+    const address = getAddress(addressDetails.value);
     setAddress(address);
     const emailDetails = getClaimDetails(userInfoResponse, "email");
     setEmailAddress(emailDetails);
 
-    let tempUserInfo = {
+    const tempUserInfo = {
       name: getClaimDetails(userInfoResponse, "name"),
       email: emailAddress,
       phone_number: getClaimDetails(userInfoResponse, "phone_number"),
       gender: getClaimDetails(userInfoResponse, "gender"),
       address: {
         value: address,
-        verified: addressDetails.verified
+        verified: addressDetails.verified,
       },
       birthdate: getClaimDetails(userInfoResponse, "birthdate"),
-      picture: getClaimDetails(userInfoResponse, "picture")
-    }
+      picture: getClaimDetails(userInfoResponse, "picture"),
+    };
     setUserInfo(tempUserInfo);
     setStatus(states.LOADED);
     localStorage.setItem(userInfo_keyname, JSON.stringify(userInfoResponse));
-  }
+  };
 
   const getClaimDetails = (userInfo, fieldName) => {
     let result = { value: null, verified: false };
@@ -245,7 +245,6 @@ export default function Sidenav({
     return address.substring(0, address.length - 2);
   };
 
-
   const verifiedIcon = (
     <img
       className="w-5 h-5 rounded-full shadow-lg ml-1 relative top-[1px] hover:cursor-pointer"
@@ -263,7 +262,7 @@ export default function Sidenav({
         </p>
         {messagesInfo?.messages?.map((message, index) => {
           const pastDate = new Date(
-            currentDate.getTime() - message["days"] * 24 * 60 * 60 * 1000
+            currentDate.getTime() - message["days"] * 24 * 60 * 60 * 1000,
           );
           const formattedDate = new Intl.DateTimeFormat(i18n.language, {
             dateStyle: "full",
@@ -362,7 +361,7 @@ export default function Sidenav({
             <tbody>
               {claimInfo?.claimproviders?.map((item, idx) => {
                 const pastDate = new Date(
-                  currentDate.getTime() - item["days"] * 24 * 60 * 60 * 1000
+                  currentDate.getTime() - item["days"] * 24 * 60 * 60 * 1000,
                 );
                 return (
                   <tr className="bg-white border-b" key={idx}>
@@ -694,7 +693,9 @@ export default function Sidenav({
                 alt={"profile_picture"}
                 className="h-10 w-10 ml-3 mr-3"
                 src={
-                  userInfo?.picture?.value ? userInfo.picture?.value : "User-Profile-Icon.png"
+                  userInfo?.picture?.value
+                    ? userInfo.picture?.value
+                    : "User-Profile-Icon.png"
                 }
               />
               <div className="flex flex-col my-3 max-w-xs">
@@ -783,9 +784,7 @@ export default function Sidenav({
                     <img
                       alt={"profile_picture"}
                       className="h-12 w-12 ml-3 mr-3"
-                      src={
-                        userInfo?.picture?.value ?? "User-Profile-Icon.png"
-                      }
+                      src={userInfo?.picture?.value ?? "User-Profile-Icon.png"}
                     />
                     <div className="flex my-3 max-w-xs">
                       <p

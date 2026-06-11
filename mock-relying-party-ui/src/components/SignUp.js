@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Error } from "../common/Errors";
 import { useTranslation } from "react-i18next";
-import clientDetails from "../constants/clientDetails";
+import { getOidcConfig } from "../constants/clientDetails";
 import { init } from "@mosip/sign-in-with-esignet";
+import relyingPartyService from "../services/relyingPartyService";
 
 export default function SignUp({ i18nKeyPrefix = "signup" }) {
   const { i18n, t } = useTranslation("translation", {
@@ -20,21 +21,11 @@ export default function SignUp({ i18nKeyPrefix = "signup" }) {
   }, []);
 
   const renderSignInButton = () => {
-    const oidcConfig = {
-      authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
-      redirect_uri: clientDetails.redirect_uri_userprofile,
-      client_id: clientDetails.clientId,
-      scope: clientDetails.scopeUserProfile,
-      nonce: clientDetails.nonce,
-      state: clientDetails.state,
-      acr_values: clientDetails.acr_values,
-      claims_locales: clientDetails.claims_locales,
-      display: clientDetails.display,
-      prompt: clientDetails.prompt,
-      max_age: clientDetails.max_age,
+    const oidcConfig = getOidcConfig({
+      isRegistration: false,
       ui_locales: i18n.language,
-      claims: JSON.parse(decodeURIComponent(clientDetails.userProfileClaims)),
-    };
+      relyingPartyService,
+    });
 
     init({
       oidcConfig: oidcConfig,

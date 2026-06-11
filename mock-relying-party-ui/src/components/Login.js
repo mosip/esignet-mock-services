@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Error } from "../common/Errors";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
-import clientDetails from "../constants/clientDetails";
+import { getOidcConfig } from "../constants/clientDetails";
 import relyingPartyService from "../services/relyingPartyService";
 import { init } from "@mosip/sign-in-with-esignet";
 
@@ -16,8 +16,8 @@ export default function Login({ i18nKeyPrefix = "login" }) {
 
   useEffect(() => {
     const getSearchParams = async () => {
-      let errorCode = searchParams.get("error");
-      let error_desc = searchParams.get("error_description");
+      const errorCode = searchParams.get("error");
+      const error_desc = searchParams.get("error_description");
 
       if (errorCode) {
         setError({
@@ -37,25 +37,11 @@ export default function Login({ i18nKeyPrefix = "login" }) {
   }, []);
 
   const renderSignInButton = () => {
-    const oidcConfig = {
-      authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
-      redirect_uri: clientDetails.redirect_uri_userprofile,
-      client_id: clientDetails.clientId,
-      scope: clientDetails.scopeUserProfile,
-      nonce: clientDetails.nonce,
-      state: clientDetails.state,
-      acr_values: clientDetails.acr_values,
-      claims_locales: clientDetails.claims_locales,
-      display: clientDetails.display,
-      prompt: clientDetails.prompt,
-      max_age: clientDetails.max_age,
+    const oidcConfig = getOidcConfig({
+      isRegistration: false,
       ui_locales: i18n.language,
-      claims: JSON.parse(decodeURIComponent(clientDetails.userProfileClaims)),
-      par_callback: relyingPartyService[clientDetails.par_callback_name],
-      par_callback_timeout: clientDetails.par_callback_timeout,
-      dpop_callback: relyingPartyService[clientDetails.dpop_callback_name],
-      code_challenge: relyingPartyService[clientDetails.code_challenge],
-    };
+      relyingPartyService,
+    });
 
     init({
       oidcConfig: oidcConfig,
