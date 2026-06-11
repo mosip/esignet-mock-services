@@ -3,26 +3,28 @@ import { Error } from "../common/Errors";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import clientDetails from "../constants/clientDetails";
-import { useExternalScript } from "../hooks/useExternalScript";
 import relyingPartyService from "../services/relyingPartyService";
+import { init } from "@mosip/sign-in-with-esignet";
 
 export default function Login({ i18nKeyPrefix = "login" }) {
   const { i18n, t } = useTranslation("translation", {
     keyPrefix: i18nKeyPrefix,
   });
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [error, setError] = useState(null);
-  const signInButtonScript = window._env_.SIGN_IN_BUTTON_PLUGIN_URL;
-  const state = useExternalScript(signInButtonScript);
-  
+
   useEffect(() => {
     const getSearchParams = async () => {
       let errorCode = searchParams.get("error");
       let error_desc = searchParams.get("error_description");
 
       if (errorCode) {
-        setError({ errorCode: errorCode, errorMsg: error_desc, showToast: true });
+        setError({
+          errorCode: errorCode,
+          errorMsg: error_desc,
+          showToast: true,
+        });
       }
     };
     getSearchParams();
@@ -32,7 +34,7 @@ export default function Login({ i18nKeyPrefix = "login" }) {
     i18n.on("languageChanged", function (lng) {
       renderSignInButton();
     });
-  }, [state]);
+  }, []);
 
   const renderSignInButton = () => {
     const oidcConfig = {
@@ -55,16 +57,16 @@ export default function Login({ i18nKeyPrefix = "login" }) {
       code_challenge: relyingPartyService[clientDetails.code_challenge],
     };
 
-    window.SignInWithEsignetButton?.init({
+    init({
       oidcConfig: oidcConfig,
       buttonConfig: {
         shape: "soft_edges",
         labelText: t("sign_in_with"),
-        width: "100%"
+        width: "100%",
       },
       signInElement: document.getElementById("sign-in-with-esignet"),
     });
-  }
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -81,8 +83,10 @@ export default function Login({ i18nKeyPrefix = "login" }) {
         </h1>
 
         <div className="w-full flex mb-6 text-slate-500">
-          <span className="w-11 inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-gray-300 
-          ltr:rounded-l-md ltr:border-r-0 rtl:rounded-r-md rtl:border-l-0">
+          <span
+            className="w-11 inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-gray-300 
+          ltr:rounded-l-md ltr:border-r-0 rtl:rounded-r-md rtl:border-l-0"
+          >
             <img src="images/username_icon.png" />
           </span>
           <input
@@ -95,8 +99,10 @@ export default function Login({ i18nKeyPrefix = "login" }) {
         </div>
 
         <div className="w-full flex mb-6 text-slate-500">
-          <span className="w-11 inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 
-          ltr:rounded-l-md ltr:border-r-0 rtl:rounded-r-md rtl:border-l-0">
+          <span
+            className="w-11 inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 
+          ltr:rounded-l-md ltr:border-r-0 rtl:rounded-r-md rtl:border-l-0"
+          >
             <img src="images/password_icon.png" />
           </span>
           <input
@@ -116,7 +122,11 @@ export default function Login({ i18nKeyPrefix = "login" }) {
         </button>
 
         {error && (
-          <Error errorCode={error.errorCode} errorMsg={error.errorMsg} showToast={error.showToast} />
+          <Error
+            errorCode={error.errorCode}
+            errorMsg={error.errorMsg}
+            showToast={error.showToast}
+          />
         )}
 
         <div className="flex w-full mb-6 mt-6 items-center px-10">
@@ -127,7 +137,7 @@ export default function Login({ i18nKeyPrefix = "login" }) {
           <div className="flex-1 h-px bg-black" />
         </div>
 
-        {state === "ready" && <div id="sign-in-with-esignet" className="w-full"></div>}
+        <div id="sign-in-with-esignet" className="w-full"></div>
 
         <div className="flex flex-justify mt-5 w-full items-center text-center">
           <p className="w-full text-center">

@@ -19,44 +19,47 @@ const nonce = generateRandomString();
 const responseType = "code";
 const scopeUserProfile = checkEmptyNullValue(
   window._env_.SCOPE_USER_PROFILE,
-  "openid profile"
+  "openid profile",
 );
 const scopeRegistration = checkEmptyNullValue(
   window._env_.SCOPE_REGISTRATION,
-  "openid profile"
+  "openid profile",
 );
 const display = checkEmptyNullValue(window._env_.DISPLAY, "page");
 const prompt = checkEmptyNullValue(window._env_.PROMPT, "consent");
 const grantType = checkEmptyNullValue(
   window._env_.GRANT_TYPE,
-  "authorization_code"
+  "authorization_code",
 );
 const maxAge = window._env_.MAX_AGE;
 const claimsLocales = checkEmptyNullValue(window._env_.CLAIMS_LOCALES, "en");
-const authorizeEndpoint = "/authorize";
+const authorizeEndpoint = checkEmptyNullValue(
+  window._env_.AUTHORIZE_ENDPOINT,
+  "/authorize",
+);
 const clientId = window._env_.CLIENT_ID;
 const uibaseUrl = window._env_.ESIGNET_UI_BASE_URL;
 const redirect_uri_userprofile = checkEmptyNullValue(
   window._env_.REDIRECT_URI_USER_PROFILE,
-  window._env_.REDIRECT_URI
+  window._env_.REDIRECT_URI,
 );
 const redirect_uri_registration = checkEmptyNullValue(
   window._env_.REDIRECT_URI_REGISTRATION,
-  window._env_.REDIRECT_URI
+  window._env_.REDIRECT_URI,
 );
 const acr_values = window._env_.ACRS;
 const userProfileClaims = checkEmptyNullValue(
   window._env_.CLAIMS_USER_PROFILE,
-  "{}"
+  "{}",
 );
 const registrationClaims = checkEmptyNullValue(
   window._env_.CLAIMS_REGISTRATION,
-  "{}"
+  "{}",
 );
 const par_callback_name = window._env_.PAR_CALLBACK_NAME;
 const par_callback_timeout = checkEmptyNullValue(
   window._env_.PAR_CALLBACK_TIMEOUT,
-  5000
+  5000,
 );
 const dpop_callback_name = window._env_.DPOP_CALLBACK_NAME;
 const code_challenge = window._env_.CODE_CHALLENGE;

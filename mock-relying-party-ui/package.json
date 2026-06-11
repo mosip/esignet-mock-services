@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.4",
+    "@mosip/sign-in-with-esignet": "^0.1.1-beta.0",
     "axios": "^1.13.5",
     "cors": "^2.8.5",
     "cra-template": "1.1.3",

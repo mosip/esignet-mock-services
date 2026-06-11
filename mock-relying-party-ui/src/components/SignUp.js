@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Error } from "../common/Errors";
 import { useTranslation } from "react-i18next";
 import clientDetails from "../constants/clientDetails";
+import { init } from "@mosip/sign-in-with-esignet";
 
 export default function SignUp({ i18nKeyPrefix = "signup" }) {
   const { i18n, t } = useTranslation("translation", {
@@ -9,7 +10,7 @@ export default function SignUp({ i18nKeyPrefix = "signup" }) {
   });
 
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     renderSignInButton();
 
@@ -19,7 +20,6 @@ export default function SignUp({ i18nKeyPrefix = "signup" }) {
   }, []);
 
   const renderSignInButton = () => {
-
     const oidcConfig = {
       authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
       redirect_uri: clientDetails.redirect_uri_userprofile,
@@ -36,16 +36,16 @@ export default function SignUp({ i18nKeyPrefix = "signup" }) {
       claims: JSON.parse(decodeURIComponent(clientDetails.userProfileClaims)),
     };
 
-    window.SignInWithEsignetButton?.init({
+    init({
       oidcConfig: oidcConfig,
       buttonConfig: {
         shape: "soft_edges",
         labelText: t("sign_up_with"),
-        width: "100%"
+        width: "100%",
       },
       signInElement: document.getElementById("sign-in-with-esignet"),
     });
-  }
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();

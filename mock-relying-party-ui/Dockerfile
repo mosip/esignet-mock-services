@@ -3,6 +3,7 @@ FROM node:16.13.2-alpine as build
 # Set a build-time environment variable
 ARG mockRpUIPublicUrl
 ARG esignet_ui_base_url
+ARG authorize_endpoint
 ARG mock_relying_party_server_url
 ARG redirect_uri
 ARG redirect_uri_registration
@@ -25,6 +26,7 @@ ARG dpop_callback_name
 ARG code_challenge
 
 ENV ESIGNET_UI_BASE_URL=$esignet_ui_base_url
+ENV AUTHORIZE_ENDPOINT=$authorize_endpoint
 ENV MOCK_RELYING_PARTY_SERVER_URL=$mock_relying_party_server_url
 ENV REDIRECT_URI=$redirect_uri
 ENV REDIRECT_URI_REGISTRATION=$redirect_uri_registration
@@ -109,6 +111,7 @@ COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /app/build ${work_dir}
 
 RUN echo "ESIGNET_UI_BASE_URL=$ESIGNET_UI_BASE_URL" >> ${work_dir}/env.env \
+    && echo "AUTHORIZE_ENDPOINT=$AUTHORIZE_ENDPOINT" >> ${work_dir}/env.env \
     && echo "MOCK_RELYING_PARTY_SERVER_URL=$MOCK_RELYING_PARTY_SERVER_URL" >> ${work_dir}/env.env \
     && echo "REDIRECT_URI=$REDIRECT_URI" >> ${work_dir}/env.env \
     && echo "REDIRECT_URI_REGISTRATION=$REDIRECT_URI_REGISTRATION" >> ${work_dir}/env.env \
