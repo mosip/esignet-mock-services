@@ -5,6 +5,7 @@ import { clientDetails, getOidcConfig } from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { useTranslation } from "react-i18next";
+import { init } from "@mosip/sign-in-with-esignet";
 
 export default function Registration({
   relyingPartyService,
@@ -70,7 +71,7 @@ export default function Registration({
       relyingPartyService,
     });
 
-    window.SignInWithEsignetButton?.init({
+    init({
       oidcConfig: oidcConfig,
       buttonConfig: {
         shape: "soft_edges",

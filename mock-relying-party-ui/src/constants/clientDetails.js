@@ -125,6 +125,23 @@ const getOidcConfig = ({
   ui_locales,
   relyingPartyService,
 }) => {
+  const safeParseClaims = (rawClaims) => {
+    try {
+      return JSON.parse(decodeURIComponent(rawClaims));
+    } catch {
+      return null; // Return null if parsing fails
+    }
+  };
+
+  const parsedUserProfile =
+    !isRegistration && userProfileClaims
+      ? safeParseClaims(userProfileClaims)
+      : null;
+  const parsedRegProfile =
+    isRegistration && registrationClaims
+      ? safeParseClaims(registrationClaims)
+      : null;
+
   const oidcConfig = {
     // mandatory parameters
     authorizeUri: uibaseUrl + authorizeEndpoint,
@@ -133,8 +150,9 @@ const getOidcConfig = ({
       : redirect_uri_userprofile,
     client_id: clientId,
     scope: isRegistration ? scopeRegistration : scopeUserProfile,
-    nonce: nonce,
-    state: state,
+    // generate new nonce and state for each config generation to ensure uniqueness for each auth request
+    nonce: generateRandomString(),
+    state: generateRandomString(),
     // optional parameters - only added to config if they have non-empty values in env-config
     ...(acr_values && { acr_values }),
     ...(claimsLocales && { claims_locales: claimsLocales }),
@@ -142,27 +160,24 @@ const getOidcConfig = ({
     ...(prompt && { prompt }),
     ...(maxAge && { max_age: maxAge }),
     ...(ui_locales && { ui_locales }),
-    ...(!isRegistration &&
-      userProfileClaims && {
-        claims: JSON.parse(decodeURIComponent(userProfileClaims)),
-      }),
-    ...(isRegistration &&
-      registrationClaims && {
-        claims: JSON.parse(decodeURIComponent(registrationClaims)),
-      }),
+    // userprofile claims
+    ...(parsedUserProfile && { claims: parsedUserProfile }),
+    // registration claims
+    ...(parsedRegProfile && { claims: parsedRegProfile }),
     // callback methods for PAR, DPoP and code challenge, if applicable
     ...(par_callback_name &&
-      relyingPartyService[par_callback_name] && {
+      relyingPartyService?.[par_callback_name] && {
         par_callback: relyingPartyService[par_callback_name],
         par_callback_timeout: par_callback_timeout,
       }),
     ...(dpop_callback_name &&
-      relyingPartyService[dpop_callback_name] && {
+      relyingPartyService?.[dpop_callback_name] && {
         dpop_callback: relyingPartyService[dpop_callback_name],
       }),
-    ...(code_challenge && {
-      code_challenge: relyingPartyService[code_challenge],
-    }),
+    ...(code_challenge &&
+      relyingPartyService?.[code_challenge] && {
+        code_challenge: relyingPartyService[code_challenge],
+      }),
   };
 
   return oidcConfig;
