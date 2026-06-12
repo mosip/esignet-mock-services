@@ -113,6 +113,19 @@ const clientDetails = {
 };
 
 /**
+ * Safely parses the raw claims string into a JSON object.
+ * @param {string} rawClaims - It is the raw claims string from env-config which needs to be parsed to JSON object and set in the config. This is expected to be a URI encoded JSON string.
+ * @returns json object if the rawClaims is a valid JSON string, else returns null. This is to avoid app crash in case of invalid JSON string in env-config for claims.
+ */
+const safeParseClaims = (rawClaims) => {
+  try {
+    return JSON.parse(decodeURIComponent(rawClaims));
+  } catch {
+    return null; // Return null if parsing fails
+  }
+};
+
+/**
  * Generates the OIDC configuration based on the provided parameters.
  * @param {*} It will be an object having below properties:
  * isRegistration: boolean value to indicate whether the config is for registration or login. Based on this appropriate scope, claims and redirect_uri will be set in the config.
@@ -125,14 +138,6 @@ const getOidcConfig = ({
   ui_locales,
   relyingPartyService,
 }) => {
-  const safeParseClaims = (rawClaims) => {
-    try {
-      return JSON.parse(decodeURIComponent(rawClaims));
-    } catch {
-      return null; // Return null if parsing fails
-    }
-  };
-
   const parsedUserProfile =
     !isRegistration && userProfileClaims
       ? safeParseClaims(userProfileClaims)
