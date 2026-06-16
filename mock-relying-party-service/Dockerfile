@@ -6,8 +6,8 @@ ARG esignet_aud_url
 ARG client_private_key
 ARG userinfo_response_type
 ARG jwe_userinfo_private_key
-ARG token_endpoint
-ARG userinfo_endpoint
+ARG token_endpoint=/oauth/v2/token
+ARG userinfo_endpoint=/oidc/userinfo
 
 # can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user=mosip
