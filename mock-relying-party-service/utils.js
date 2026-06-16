@@ -46,7 +46,11 @@ const generateSignedJwt = async (clientId, audience) => {
   const jwkObject = JSON.parse(decodeKey);
   const privateKey = await importJWK(jwkObject, alg);
 
-  const header = { alg, typ: "JWT", kid: jwkObject.kid };
+  const header = {
+    alg,
+    typ: "JWT",
+    ...(jwkObject.kid && { kid: jwkObject.kid }),
+  };
 
   const payload = {
     iss: clientId,
