@@ -77,6 +77,17 @@ const generateRandomString = (strLength = 16) => {
   return result;
 };
 
+// This function checks if a given string is a valid JSON string.
+const isJson = (str) => {
+  console.log("Checking userinfo response is a json or not");
+  try {
+    JSON.parse(str);
+  } catch (error) {
+    return false;
+  }
+  return true;
+};
+
 /**
  * decrypts and decodes the user information fetched from esignet services
  * @param {string} userInfoResponse JWE encrypted or JWT encoded user information
@@ -84,6 +95,16 @@ const generateRandomString = (strLength = 16) => {
  */
 const decodeUserInfoResponse = async (userInfoResponse) => {
   try {
+    // if userinfoResponse is a valid JSON string, return it as a JSON object
+    // if it is not JWS or JWE, it is expected to be a valid JSON string.
+    // In that case, return it as a JSON object.
+    if (isJson(JSON.stringify(userInfoResponse))) {
+      console.log(
+        "Getting a json in userinfoResponse, returning it as a JSON object",
+      );
+      return userInfoResponse;
+    }
+
     const parts = userInfoResponse.split(".");
     const isJWE =
       USERINFO_RESPONSE_TYPE.toLowerCase() === "jwe" && parts.length === 5;
