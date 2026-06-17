@@ -460,3 +460,5 @@ istio:
   reWritemock_relying_party_servicePrefix: ""
 
 enable_insecure: false
+
+domainConfig: {}

@@ -504,3 +504,5 @@ istio:
   prefix: /v1/mock-identity-system/
 
 enable_insecure: false
+
+domainConfig: {}
