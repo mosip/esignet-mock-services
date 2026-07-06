@@ -24,7 +24,7 @@ on:
 
 jobs:
   build-maven-esignet-mock-services:
-    uses: mosip/kattu/.github/workflows/maven-build.yml@master-java21
+    uses: mosip/kattu/.github/workflows/maven-build.yml@develop
     with:
       SERVICE_LOCATION: ./
       BUILD_ARTIFACT: esignet-mock-services
@@ -38,7 +38,7 @@ jobs:
   publish_to_nexus:
     if: "${{ !contains(github.ref, 'master') && github.event_name != 'pull_request' }}"
     needs: build-maven-esignet-mock-services
-    uses: mosip/kattu/.github/workflows/maven-publish-to-nexus.yml@master-java21
+    uses: mosip/kattu/.github/workflows/maven-publish-to-nexus.yml@develop
     with:
       SERVICE_LOCATION: ./
     secrets:
@@ -53,7 +53,7 @@ jobs:
   sonar_analysis:
     needs: build-maven-esignet-mock-services
     if: "${{  github.event_name != 'pull_request' }}"
-    uses: mosip/kattu/.github/workflows/maven-sonar-analysis.yml@master-java21
+    uses: mosip/kattu/.github/workflows/maven-sonar-analysis.yml@develop
     with:
       SERVICE_LOCATION: ./
     secrets:
