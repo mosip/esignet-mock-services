@@ -460,3 +460,6 @@ istio:
   reWritemock_relying_party_servicePrefix: ""
 
 enable_insecure: false
+
+# domainConfig entries are injected as container env vars; values must be scalar/string (maps/lists will not render correctly)
+domainConfig: {}
