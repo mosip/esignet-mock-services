@@ -266,13 +266,6 @@ extraEnvVars:
       secretKeyRef:
         name: db-common-secrets
         key: db-dbuser-password
-  - name: SOFTHSM_MOCK_IDENTITY_SYSTEM_SECURITY_PIN
-    valueFrom:
-      secretKeyRef:
-        name: softhsm-mock-identity-system
-        key: security-pin
-  - name: hsm_local_dir_name
-    value: hsm-client
   - name: MOSIP_ESIGNET_MOCK_SUPPORTED_FIELDS
     value: individualId,password
   - name: MOSIP_ESIGNET_HOST
@@ -296,10 +289,18 @@ extraEnvVars:
         name: redis
         key: redis-password
 
+## Additional environment variables to append on top of extraEnvVars, without
+## having to restate the entries already declared there
+## Example:
+## extraEnvVarsAdditional:
+##   - name: FOO
+##     value: "bar"
+##
+extraEnvVarsAdditional: []
+
 ## ConfigMap with extra environment variables that used
 ##
-extraEnvVarsCM:
-  - softhsm-mock-identity-system-share
+extraEnvVarsCM: []
 
 ## Secret with extra environment variables
 ##
@@ -389,6 +390,8 @@ persistence:
   existingClaim:
   # Dir where config and keys are written inside container
   mountDir:
+  volume_name: config
+  pvc_claim_name:
 
 ## Init containers parameters:
 ## volumePermissions: Change the owner and group of the persistent volume mountpoint to runAsUser:fsGroup values from the securityContext section.

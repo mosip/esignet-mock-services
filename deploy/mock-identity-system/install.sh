@@ -59,14 +59,88 @@ function installing_mock-identity-system() {
     ENABLE_INSECURE='--set enable_insecure=true';
   fi
 
-  ../copy_cm_func.sh secret softhsm-mock-identity-system softhsm $NS
-  ../copy_cm_func.sh configmap softhsm-mock-identity-system-share softhsm $NS
+      while true; do
+    read -p "For PKCS12 mounted keys, opt 'y' to enable volume (y/n) [ default: n ]: " enable_volume
+    enable_volume=${enable_volume:-n}
+
+    if [[ "$enable_volume" == "y" || "$enable_volume" == "Y" ]]; then
+      enable_volume=true
+      break
+    elif [[ "$enable_volume" == "n" || "$enable_volume" == "N" ]]; then
+      enable_volume=false
+      break
+    else
+      echo "Invalid input. Please enter 'y' or 'n'."
+    fi
+  done
+
+  HSM_HELM_ARGS=''
+  if [[ $enable_volume == 'true' ]]; then
+    default_volume_size=100M
+    read -p "Provide the size for volume [ default : 100M ]" volume_size
+    volume_size=${volume_size:-$default_volume_size}
+
+    default_volume_mount_path='/home/mosip/config/'
+    read -p "Provide the mount path for volume [ default : '/home/mosip/config/' ] : " volume_mount_path
+    volume_mount_path=${volume_mount_path:-$default_volume_mount_path}
+
+    default_keystore_pass='1234'
+    read -p "Provide the PKCS12 keystore password [ default : 1234 ] : " keystore_pass
+    keystore_pass=${keystore_pass:-$default_keystore_pass}
+
+    kubectl -n $NS create secret generic mockid-pkcs12-secret \
+      --from-literal=keystore-pass="$keystore_pass" \
+      --dry-run=client -o yaml | kubectl apply -f -
+
+    pkcs12_env_file=$(mktemp)
+    cat <<EOF > "$pkcs12_env_file"
+extraEnvVarsAdditional:
+  - name: MOSIP_KERNEL_KEYMANAGER_HSM_KEYSTORE_TYPE
+    value: "PKCS12"
+  - name: MOSIP_KERNEL_KEYMANAGER_HSM_CONFIG_PATH
+    value: "${volume_mount_path}keystore.p12"
+  - name: MOSIP_KERNEL_KEYMANAGER_HSM_KEYSTORE_PASS
+    valueFrom:
+      secretKeyRef:
+        name: mockid-pkcs12-secret
+        key: keystore-pass
+EOF
+
+    PVC_CLAIM_NAME='mockid-pkcs12'
+    HSM_HELM_ARGS="--set persistence.enabled=true  \
+                       --set volumePermissions.enabled=true \
+                       --set persistence.size=$volume_size \
+                       --set persistence.mountDir=\"$volume_mount_path\" \
+                       --set persistence.pvc_claim_name=\"$PVC_CLAIM_NAME\"  \
+                       -f $pkcs12_env_file \
+                      "
+  else
+    ../copy_cm_func.sh secret softhsm-mock-identity-system softhsm $NS
+    ../copy_cm_func.sh configmap softhsm-mock-identity-system-share softhsm $NS
+
+    softhsm_env_file=$(mktemp)
+    cat <<EOF > "$softhsm_env_file"
+extraEnvVarsAdditional:
+  - name: SOFTHSM_MOCK_IDENTITY_SYSTEM_SECURITY_PIN
+    valueFrom:
+      secretKeyRef:
+        name: softhsm-mock-identity-system
+        key: security-pin
+  - name: hsm_local_dir_name
+    value: hsm-client
+extraEnvVarsCM:
+  - softhsm-mock-identity-system-share
+EOF
+
+    HSM_HELM_ARGS="-f $softhsm_env_file"
+  fi
+
   ../copy_cm_func.sh configmap esignet-global esignet $NS
   ../copy_cm_func.sh configmap redis-config redis $NS
   ../copy_cm_func.sh secret redis redis $NS
 
   echo Installing mock-identity-system
-  helm -n $NS install mock-identity-system mosip/mock-identity-system --set metrics.serviceMonitor.enabled=$servicemonitorflag --version $CHART_VERSION $ENABLE_INSECURE -f values.yaml --wait
+  helm -n $NS install mock-identity-system mosip/mock-identity-system --set metrics.serviceMonitor.enabled=$servicemonitorflag --version $CHART_VERSION $ENABLE_INSECURE $HSM_HELM_ARGS -f values.yaml --wait
 
   kubectl -n $NS get deploy mock-identity-system -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
