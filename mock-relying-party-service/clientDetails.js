@@ -26,7 +26,7 @@ const scopeRegistration = checkEmptyNullValue(
   "openid profile",
 );
 const display = checkEmptyNullValue(process.env.DISPLAY, "page");
-const prompt = checkEmptyNullValue(process.env.PROMPT, "consent");
+const prompt = process.env.PROMPT || null;
 const grantType = checkEmptyNullValue(
     process.env.GRANT_TYPE,
     "authorization_code",
