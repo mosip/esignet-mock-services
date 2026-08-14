@@ -234,69 +234,71 @@ customReadinessProbe: {}
 updateStrategy:
   type: RollingUpdate
 
-## Additional environment variables to set
+## Additional environment variables to set, keyed by env var name.
 ## Example:
 ## extraEnvVars:
-##   - name: FOO
-##     value: "bar"
+##   FOO: "bar"
+##   BAZ:
+##     valueFrom:
+##       configMapKeyRef:
+##         name: some-configmap
+##         key: some-key
 ##
 extraEnvVars:
-  - name: DATABASE_HOST
+  DATABASE_HOST:
     valueFrom:
       configMapKeyRef:
         name: mockid-postgres-config
         key: database-host
-  - name: DATABASE_PORT
+  DATABASE_PORT:
     valueFrom:
       configMapKeyRef:
         name: mockid-postgres-config
         key: database-port
-  - name: DATABASE_NAME
+  DATABASE_NAME:
     valueFrom:
       configMapKeyRef:
         name: mockid-postgres-config
         key: database-name
-  - name: DATABASE_USERNAME
+  DATABASE_USERNAME:
     valueFrom:
       configMapKeyRef:
         name: mockid-postgres-config
         key: database-username
-  - name: DB_DBUSER_PASSWORD
+  DB_DBUSER_PASSWORD:
     valueFrom:
       secretKeyRef:
         name: db-common-secrets
         key: db-dbuser-password
-  - name: MOSIP_ESIGNET_MOCK_SUPPORTED_FIELDS
-    value: individualId,password
-  - name: MOSIP_ESIGNET_HOST
+  MOSIP_ESIGNET_MOCK_SUPPORTED_FIELDS: individualId,password
+  MOSIP_ESIGNET_HOST:
     valueFrom:
       configMapKeyRef:
         name: esignet-global
         key: mosip-esignet-host
-  - name: REDIS_HOST
+  REDIS_HOST:
     valueFrom:
       configMapKeyRef:
         name: redis-config
         key: redis-host
-  - name: REDIS_PORT
+  REDIS_PORT:
     valueFrom:
       configMapKeyRef:
         name: redis-config
         key: redis-port
-  - name: REDIS_PASSWORD
+  REDIS_PASSWORD:
     valueFrom:
       secretKeyRef:
         name: redis
         key: redis-password
 
 ## Additional environment variables to append on top of extraEnvVars, without
-## having to restate the entries already declared there
+## having to restate the entries already declared there. Keyed by env var name.
 ## Example:
 ## extraEnvVarsAdditional:
-##   - name: FOO
-##     value: "bar"
+##   FOO: "bar"
 ##
-extraEnvVarsAdditional: []
+extraEnvVarsAdditional: {}
 
 ## ConfigMap with extra environment variables that used
 ##
