@@ -127,8 +127,13 @@ spec:
             - name: FALLBACK_LANG
               value: {{ .Values.mock_relying_party_ui.FALLBACK_LANG | quote }}
 
-            {{- if .Values.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- range $key, $val := .Values.extraEnvVars }}
+            - name: {{ $key }}
+              {{- if kindIs "map" $val }}
+              {{- include "common.tplvalues.render" (dict "value" $val "context" $) | nindent 14 }}
+              {{- else }}
+              value: {{ $val | quote }}
+              {{- end }}
             {{- end }}
           envFrom:
             {{- if .Values.extraEnvVarsCM }}

@@ -95,11 +95,9 @@ function installing_mock-identity-system() {
     pkcs12_env_file=$(mktemp)
     cat <<EOF > "$pkcs12_env_file"
 extraEnvVarsAdditional:
-  - name: MOSIP_KERNEL_KEYMANAGER_HSM_KEYSTORE_TYPE
-    value: "PKCS12"
-  - name: MOSIP_KERNEL_KEYMANAGER_HSM_CONFIG_PATH
-    value: "${volume_mount_path}keystore.p12"
-  - name: MOSIP_KERNEL_KEYMANAGER_HSM_KEYSTORE_PASS
+  MOSIP_KERNEL_KEYMANAGER_HSM_KEYSTORE_TYPE: "PKCS12"
+  MOSIP_KERNEL_KEYMANAGER_HSM_CONFIG_PATH: "${volume_mount_path}keystore.p12"
+  MOSIP_KERNEL_KEYMANAGER_HSM_KEYSTORE_PASS:
     valueFrom:
       secretKeyRef:
         name: mockid-pkcs12-secret
@@ -121,13 +119,12 @@ EOF
     softhsm_env_file=$(mktemp)
     cat <<EOF > "$softhsm_env_file"
 extraEnvVarsAdditional:
-  - name: SOFTHSM_MOCK_IDENTITY_SYSTEM_SECURITY_PIN
+  SOFTHSM_MOCK_IDENTITY_SYSTEM_SECURITY_PIN:
     valueFrom:
       secretKeyRef:
         name: softhsm-mock-identity-system
         key: security-pin
-  - name: hsm_local_dir_name
-    value: hsm-client
+  hsm_local_dir_name: hsm-client
 extraEnvVarsCM:
   - softhsm-mock-identity-system-share
 EOF
