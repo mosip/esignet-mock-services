@@ -60,15 +60,17 @@ spec:
           image: {{ include "mock-identity-system.volumePermissions.image" . }}
           imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
           command:
-            - %%commands%%
+            - /bin/bash
+            - -c
+            - chown -R 1001:1001 {{ .Values.persistence.mountDir }}
           securityContext:
             runAsUser: 0
           {{- if .Values.volumePermissions.resources }}
           resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: foo
-              mountPath: bar
+            - name: {{ .Values.persistence.volume_name }}
+              mountPath: {{ .Values.persistence.mountDir }}
         {{- end }}
         {{- if .Values.enable_insecure }}
           {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
@@ -94,8 +96,25 @@ spec:
               value: {{ .Values.containerSecurityContext.runAsUser }}
             - name: JDK_JAVA_OPTIONS
               value: {{ .Values.additionalResources.javaOpts }}
-            {{- if .Values.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- range $key, $val := .Values.extraEnvVars }}
+            - name: {{ $key }}
+              {{- if kindIs "map" $val }}
+              {{- include "common.tplvalues.render" (dict "value" $val "context" $) | nindent 14 }}
+              {{- else }}
+              value: {{ $val | quote }}
+              {{- end }}
+            {{- end }}
+            {{- range $key, $val := .Values.extraEnvVarsAdditional }}
+            - name: {{ $key }}
+              {{- if kindIs "map" $val }}
+              {{- include "common.tplvalues.render" (dict "value" $val "context" $) | nindent 14 }}
+              {{- else }}
+              value: {{ $val | quote }}
+              {{- end }}
+            {{- end }}
+            {{- range $key, $val := .Values.domainConfig }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
             {{- end }}
           envFrom:
             {{- if .Values.extraEnvVarsCM }}
@@ -139,6 +158,10 @@ spec:
             name: cacerts
             subPath: cacerts
           {{- end }}
+          {{- if .Values.persistence.enabled }}
+          - name: {{ .Values.persistence.volume_name }}
+            mountPath: {{ .Values.persistence.mountDir }}
+          {{- end }}
         {{- if .Values.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.sidecars "context" $) | nindent 8 }}
         {{- end }}
@@ -146,4 +169,9 @@ spec:
       {{- if .Values.enable_insecure }}
       - name: cacerts
         emptyDir: {}
+      {{- end }}
+      {{- if .Values.persistence.enabled }}
+      - name: {{ .Values.persistence.volume_name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | default .Values.persistence.pvc_claim_name }}
       {{- end }}

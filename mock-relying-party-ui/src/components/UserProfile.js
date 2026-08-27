@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Error } from "../common/Errors";
-import clientDetails from "../constants/clientDetails";
+import { clientDetails } from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { useTranslation } from "react-i18next";
@@ -42,10 +42,10 @@ export default function UserProfile({
 
   useEffect(() => {
     const getSearchParams = async () => {
-      let authCode = searchParams.get("code");
-      let errorCode = searchParams.get("error");
-      let error_desc = searchParams.get("error_description");
-      let state =  searchParams.get("state");
+      const authCode = searchParams.get("code");
+      const errorCode = searchParams.get("error");
+      const error_desc = searchParams.get("error_description");
+      const state = searchParams.get("state");
 
       if (errorCode) {
         navigateToLogin(errorCode, error_desc);
@@ -71,19 +71,19 @@ export default function UserProfile({
     setUserInfo(null);
 
     try {
-      let client_id = clientDetails.clientId;
-      let redirect_uri = clientDetails.redirect_uri_userprofile;
-      let grant_type = clientDetails.grant_type;
+      const client_id = clientDetails.clientId;
+      const redirect_uri = clientDetails.redirect_uri_userprofile;
+      const grant_type = clientDetails.grant_type;
 
       var userInfo = await post_fetchUserInfo(
         authCode,
         state,
         client_id,
         redirect_uri,
-        grant_type
+        grant_type,
       );
 
-      let address = getAddress(userInfo?.address);
+      const address = getAddress(userInfo?.address);
       setAddress(address);
       setUserInfo(userInfo);
       setEmailAddress(userInfo?.email_verified ?? userInfo?.email);

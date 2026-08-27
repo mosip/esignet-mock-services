@@ -4,6 +4,10 @@
 databases:
   mosip_mockidentitysystem:
     enabled: true
+    scriptsDir: mosip_mockidentitysystem  # fixed - must match db_scripts/ folder in repo
+    dbName: mosip_mockidentitysystem      # customize e.g. mosip_mockidentitysystem02
+    dbUser: mockidentityuser              # customize e.g. mockidentityuser02
+    defaultDb: postgres
     host: "postgres-postgresql.postgres"
     port: 5432
     su:
@@ -12,43 +16,5 @@ databases:
         name: postgres-postgresql
         key: postgres-password
     dml: 1
-    branch: v0.13.0
-
-  mosip_master:
-    enabled: false
-
-  mosip_audit:
-    enabled: false
-
-  mosip_keymgr:
-    enabled: false
-
-  mosip_kernel:
-    enabled: false
-
-  mosip_idmap:
-    enabled: false
-
-  mosip_prereg:
-    enabled: false
-
-  mosip_idrepo:
-    enabled: false
-
-  mosip_ida:
-    enabled: false
-
-  mosip_credential:
-    enabled: false
-
-  mosip_regprc:
-    enabled: false
-
-  mosip_pms:
-    enabled: false
-
-  mosip_resident:
-    enabled: false
-
-  mosip_hotlist:
-    enabled: false
+    repoUrl: https://github.com/mosip/esignet-mock-services.git
+    branch: 0.13.0

@@ -38,33 +38,32 @@ const getBaseUrl = (serviceUrl) => {
 /**
  * Generates client assertion signedJWT
  * @param {string} clientId registered client id
- * @returns client assertion signedJWT
+ * @param {string} audience token endpoint URL as audience
+ * @returns {Promise<string>} client assertion signedJWT
  */
 const generateSignedJwt = async (clientId, audience) => {
-  // Set headers for JWT
-  var header = {
-    alg: alg,
+  const decodeKey = Buffer.from(CLIENT_PRIVATE_KEY, "base64").toString();
+  const jwkObject = JSON.parse(decodeKey);
+  const privateKey = await importJWK(jwkObject, alg);
+
+  const header = {
+    alg,
     typ: "JWT",
+    ...(jwkObject.kid && { kid: jwkObject.kid }),
   };
 
-  var payload = {
+  const payload = {
     iss: clientId,
     sub: clientId,
     aud: audience,
   };
 
-  var decodeKey = Buffer.from(CLIENT_PRIVATE_KEY, "base64")?.toString();
-  const jwkObject = JSON.parse(decodeKey);
-  const privateKey = await importJWK(jwkObject, alg);
-
-  const jwt = new SignJWT(payload)
+  return new SignJWT(payload)
     .setProtectedHeader(header)
     .setIssuedAt()
-    .setJti(Math.random().toString(36).substring(2, 7))
+    .setJti(crypto.randomUUID())
     .setExpirationTime(expirationTime)
     .sign(privateKey);
-
-  return jwt;
 };
 
 const generateRandomString = (strLength = 16) => {
@@ -85,13 +84,22 @@ const generateRandomString = (strLength = 16) => {
  */
 const decodeUserInfoResponse = async (userInfoResponse) => {
   try {
+    // If userInfoResponse is already a parsed object (not a JWS/JWE string),
+    // return it directly without decoding.
+    if (typeof userInfoResponse === "object" && userInfoResponse !== null) {
+      console.log(
+        "userInfoResponse is already an object, returning it directly",
+      );
+      return userInfoResponse;
+    }
+
     const parts = userInfoResponse.split(".");
     const isJWE =
       USERINFO_RESPONSE_TYPE.toLowerCase() === "jwe" && parts.length === 5;
 
     if (isJWE) {
       const jwkJson = Buffer.from(JWE_USERINFO_PRIVATE_KEY, "base64").toString(
-        "utf-8"
+        "utf-8",
       );
       const jwkParsed = JSON.parse(jwkJson);
 
@@ -140,7 +148,7 @@ const generateDpopJKT = async (clientId, state) => {
 
   cache.set(
     `${clientId}###${state}`,
-    JSON.stringify({ publicKey, privateKey })
+    JSON.stringify({ publicKey, privateKey }),
   );
 
   const dpopJKT = await calculateJwkThumbprint(publicKey);
@@ -175,7 +183,6 @@ const calculateAth = (accessToken) => {
   return hash.toString("base64url");
 };
 
-
 const buildDpopHeaders = async (params) => {
   if (!params.clientId || !params.state) return {};
 
@@ -196,7 +203,7 @@ const rateLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { message: "Too many requests, please try again later."}
+  message: { message: "Too many requests, please try again later." },
 });
 
 module.exports = {

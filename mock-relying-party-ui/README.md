@@ -18,52 +18,37 @@ This portal contains 2 pages:
 
 The application runs on PORT=5000 by default.
 
-- Environment Variables:
+### Configuration Environment Variables
 
-  - ESIGNET_UI_BASE_URL: MOSIP ESIGNET UI URL
-    (Example:https://esignet.dev.mosip.net/)
-  - MOCK_RELYING_PARTY_SERVER_URL: Internally resolved to the mock relying party server via internal NGINX
-    (Example:http://esignet.dev.mosip.net/mock-relying-party-server)
-  - REDIRECT_URI: Redirect URI passed as a parameter in the authorization request
-    (Example:https://health-services.com/userprofile)
-  - CLIENT_ID: Relying party client ID registered with MOSIP (Example:health-services)
-  - ACRS: Passed in the `acr_values` parameter in the authorization request (Example:mosip:esignet:acr:generated-code)
-  - MAX_AGE: Maximum duration (in seconds) for which a cached resource is considered valid before revalidation
-    (Example:max_age:21)
-  - DISPLAY: Specifies how the authorization server displays the authentication and consent screen.
-    Possible values: page, popup, wap, touch
-    (Example: display:page)
-  - PROMPT: Specifies the type of prompt to show during the authentication flow
-    (Example: prompt:consent)
-  - GRANT_TYPE: OAuth 2.0 grant type used to request access tokens
-    (Example: grant_type: authorization_code)
-  - SIGN_IN_BUTTON_PLUGIN_URL: URL for the sign-in button plugin.
-  - SCOPE_USER_PROFILE: List of scopes requested during the authentication request
-    (Example: scope_user_profile: openid%20profile%20resident-service)
-  - PAR_CALLBACK_NAME: **Feature flag** to enable PAR (Pushed Authorization Request) flow  
-    Required value: `get_requestUri` (hardcoded function name - not configurable)
-  - PAR_CALLBACK_TIMEOUT: Timeout for PAR callback in milliseconds(`optional`. Default value is 5 seconds) 
-    (Example: par_callback_timeout: 5000)
-  - DPOP_CALLBACK_NAME: **Feature flag** to enable DPoP (Demonstration of Proof-of-Possession) flow  
-    Required value: `get_dpop_jkt` (hardcoded function name - not configurable)
-  - CODE_CHALLENGE: **Feature flag** to enable PKCE (Proof Key for Code Exchange) flow  
-    Required value: `get_code_challenge` (hardcoded function name - not configurable)  
-    When enabled, the PKCE method is automatically fetched from the authorization server's `.well-known/openid-configuration` endpoint.
-
-  > **Important:** PAR_CALLBACK_NAME, DPOP_CALLBACK_NAME, and CODE_CHALLENGE act as feature toggles. The values correspond to hardcoded function names in the codebase and are not configurable. Include these variables to enable the respective flows, or omit them to disable the functionality.
+| Variable Name                     | Description                                                                                       | Example / Allowed Values                                 | Type / Notes                                                                                                                                                             |
+| :-------------------------------- | :------------------------------------------------------------------------------------------------ | :------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ESIGNET_UI_BASE_URL**           | MOSIP ESIGNET UI URL                                                                              | `https://esignet.dev.mosip.net/`                         | Required                                                                                                                                                                 |
+| **MOCK_RELYING_PARTY_SERVER_URL** | Internally resolved to the mock relying party server via internal NGINX                           | `http://esignet.dev.mosip.net/mock-relying-party-server` | Required                                                                                                                                                                 |
+| **AUTHORIZE_ENDPOINT**            | Authorize enpoint route                                                                           | `/authorize`                                             | Required                                                                                                                                                                 |
+| **REDIRECT_URI**                  | Redirect URI passed as a parameter in the authorization request                                   | `https://health-services.com/userprofile`                | Required                                                                                                                                                                 |
+| **CLIENT_ID**                     | Relying party client ID registered with MOSIP                                                     | `health-services`                                        | Required                                                                                                                                                                 |
+| **ACRS**                          | Passed in the `acr_values` parameter in the authorization request                                 | `mosip:esignet:acr:generated-code`                       | Required                                                                                                                                                                 |
+| **SCOPE_USER_PROFILE**            | List of URL-encoded scopes requested during the authentication request                            | `openid%20profile%20resident-service`                    | Required                                                                                                                                                                 |
+| **GRANT_TYPE**                    | OAuth 2.0 grant type used to request access tokens                                                | `authorization_code`                                     | Required                                                                                                                                                                 |
+| **MAX_AGE**                       | Maximum duration (in seconds) for which a cached resource is considered valid before revalidation | `21`                                                     | Optional                                                                                                                                                                 |
+| **DISPLAY**                       | Specifies how the authorization server displays the authentication and consent screen             | `page`, `popup`, `wap`, `touch` (e.g., `page`)           | Optional                                                                                                                                                                 |
+| **PROMPT**                        | Specifies the type of prompt to show during the authentication flow                               | `consent`                                                | Optional                                                                                                                                                                 |
+| **PAR_CALLBACK_NAME**             | **Feature flag** to enable PAR (Pushed Authorization Request) flow                                | `get_requestUri`                                         | Hardcoded function name - not configurable                                                                                                                               |
+| **PAR_CALLBACK_TIMEOUT**          | Timeout for PAR callback in milliseconds                                                          | `5000`                                                   | Optional (Default: `5000` / 5s)                                                                                                                                          |
+| **DPOP_CALLBACK_NAME**            | **Feature flag** to enable DPoP (Demonstration of Proof-of-Possession) flow                       | `get_dpop_jkt`                                           | Hardcoded function name - not configurable                                                                                                                               |
+| **CODE_CHALLENGE**                | **Feature flag** to enable PKCE (Proof Key for Code Exchange) flow                                | `get_code_challenge`                                     | Hardcoded function name - not configurable.<br><br>When enabled, the PKCE method is automatically fetched from the server's `.well-known/openid-configuration` endpoint. |
 
 - Build and run Docker for a service:
 
-  ```
+  ```bash
   $ docker build -t <dockerImageName>:<tag> .
-  $ docker run -it -d -p 5000:5000 -e ESIGNET_UI_BASE_URL='http://localhost:3000' -e MOCK_RELYING_PARTY_BASE_URL=http://localhost:8888 -e REDIRECT_URI=http://localhost:5000/userprofile -e CLIENT_ID=healthservices -e ACRS="mosip:esignet:acr:static-code" -e MAX_AGE=21 -e DISPLAY=page -e PROMPT=consent -e GRANT_TYPE=authorization_code -e SIGN_IN_BUTTON_PLUGIN_URL='http://127.0.0.1:5500/dist/iife/index.js' -e SCOPE_USER_PROFILE='openid%20profile%20resident-service' -e PAR_CALLBACK_NAME='get_requestUri' -e DPOP_CALLBACK_NAME='get_dpop_jkt' -e CODE_CHALLENGE='get_code_challenge' <dockerImageName>:<tag>
+  $ docker run -it -d -p 5000:5000 -e ESIGNET_UI_BASE_URL='http://localhost:3000' -e MOCK_RELYING_PARTY_SERVER_URL=http://localhost:8888 -e REDIRECT_URI=http://localhost:5000/userprofile -e CLIENT_ID=healthservices -e ACRS="mosip:esignet:acr:static-code" -e MAX_AGE=21 -e DISPLAY=page -e PROMPT=consent -e GRANT_TYPE=authorization_code -e AUTHORIZE_ENDPOINT=/authorize -e SCOPE_USER_PROFILE='openid%20profile%20resident-service' -e PAR_CALLBACK_NAME='get_requestUri' -e DPOP_CALLBACK_NAME='get_dpop_jkt' -e CODE_CHALLENGE='get_code_challenge' <dockerImageName>:<tag>
   ```
 
   To host the mock relying party UI on a context path:
-
   1. In the NGINX configuration file, remove the `/` location block and add a new one with the desired context path:
 
-  ```
+  ```nginx
   location /healthservices {
      alias /usr/share/nginx/healthservices;
      try_files $uri $uri/ /healthservices/index.html;
@@ -72,7 +57,7 @@ The application runs on PORT=5000 by default.
 
   2. Pass the context path in the environment variable `MOCK_RP_UI_PUBLIC_URL` during `docker run`.
 
-  ```
+  ```bash
   $ docker build -t <dockerImageName>:<tag> .
   $ docker run -it -d -p 3000:3000 -e MOCK_RP_UI_PUBLIC_URL='healthservices' <dockerImageName>:<tag>
 
@@ -81,7 +66,7 @@ The application runs on PORT=5000 by default.
 
 - Build and run on local system:
   Update the "/mock-relying-party-ui/public/env-config.js" file with the required values, then run:
-  ```
+  ```bash
   $ npm start
   ```
 

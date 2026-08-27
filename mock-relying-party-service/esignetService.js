@@ -4,6 +4,8 @@ const {
   ESIGNET_AUD_URL,
   ESIGNET_PAR_AUD_URL,
   CLIENT_ASSERTION_TYPE,
+  TOKEN_ENDPOINT,
+  USERINFO_ENDPOINT,
 } = require("./config");
 
 const clientDetails = require("./clientDetails");
@@ -17,8 +19,8 @@ const {
 } = require("./utils");
 
 const baseUrl = ESIGNET_SERVICE_URL.trim();
-const getTokenEndPoint = "/oauth/v2/token";
-const getUserInfoEndPoint = "/oidc/userinfo";
+const getTokenEndPoint = TOKEN_ENDPOINT.trim();
+const getUserInfoEndPoint = USERINFO_ENDPOINT.trim();
 
 /**
  * Triggers /oauth/v2/token API on esignet service to fetch access token
@@ -108,7 +110,9 @@ const post_GetRequestUri = async (clientId, uiLocales, state, dpop_jkt, code_cha
   params.append("claims", clientDetails.userProfileClaims);
   params.append("claims_locales", clientDetails.claimsLocales);
   params.append("display", clientDetails.display);
-  params.append("prompt", clientDetails.prompt);
+  if (clientDetails.prompt) {
+    params.append("prompt", clientDetails.prompt);
+  }
   params.append("ui_locales", uiLocales || process.env.DEFAULT_UI_LOCALES);
   params.append("client_assertion_type", CLIENT_ASSERTION_TYPE);
   params.append("client_assertion", clientAssertion);

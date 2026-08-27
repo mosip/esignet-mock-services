@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Error } from "../common/Errors";
-import clientDetails from "../constants/clientDetails";
+import { clientDetails, getOidcConfig } from "../constants/clientDetails";
 import { LoadingStates as states } from "../constants/states";
 import LoadingIndicator from "../common/LoadingIndicator";
 import { useTranslation } from "react-i18next";
+import { init } from "@mosip/sign-in-with-esignet";
 
 export default function Registration({
   relyingPartyService,
@@ -64,33 +65,22 @@ export default function Registration({
   }, []);
 
   const renderSignInButton = () => {
-
-    const oidcConfig = {
-      authorizeUri: clientDetails.uibaseUrl + clientDetails.authorizeEndpoint,
-      redirect_uri: clientDetails.redirect_uri_registration,
-      client_id: clientDetails.clientId,
-      scope: clientDetails.scopeRegistration,
-      nonce: clientDetails.nonce,
-      state: clientDetails.state,
-      acr_values: clientDetails.acr_values,
-      claims_locales: clientDetails.claims_locales,
-      display: clientDetails.display,
-      prompt: clientDetails.prompt,
-      max_age: clientDetails.max_age,
+    const oidcConfig = getOidcConfig({
+      isRegistration: true,
       ui_locales: i18n.language,
-      claims: JSON.parse(decodeURIComponent(clientDetails.registrationClaims)),
-    };
+      relyingPartyService,
+    });
 
-    window.SignInWithEsignetButton?.init({
+    init({
       oidcConfig: oidcConfig,
       buttonConfig: {
         shape: "soft_edges",
         labelText: t("fetch_details"),
-        width: "100%"
+        width: "100%",
       },
       signInElement: document.getElementById("sign-in-with-esignet"),
     });
-  }
+  };
 
   //Handle Login API Integration here
   const getUserDetails = async (authCode) => {
@@ -98,17 +88,17 @@ export default function Registration({
     setUserInfo(null);
 
     try {
-      let client_id = clientDetails.clientId;
-      let redirect_uri = clientDetails.redirect_uri_registration;
-      let grant_type = clientDetails.grant_type;
+      const client_id = clientDetails.clientId;
+      const redirect_uri = clientDetails.redirect_uri_registration;
+      const grant_type = clientDetails.grant_type;
 
       var userInfo = await post_fetchUserInfo(
         authCode,
         client_id,
         redirect_uri,
-        grant_type
+        grant_type,
       );
-      let address = getAddress(userInfo?.address);
+      const address = getAddress(userInfo?.address);
       setAddress(address);
       setUserInfo(userInfo);
       setEmailAddress(userInfo?.email_verified ?? userInfo?.email);
@@ -252,7 +242,6 @@ export default function Registration({
           </button>
 
           <div id="sign-in-with-esignet" className="w-full"></div>
-
         </div>
 
         <div className="px-4">

@@ -8,5 +8,5 @@ metadata:
 data:
   database-host: "postgres-postgresql.postgres"
   database-port: "5432"
-  database-username: "mockidsystemuser"
+  database-username: "mockidentityuser"
   database-name: "mosip_mockidentitysystem"

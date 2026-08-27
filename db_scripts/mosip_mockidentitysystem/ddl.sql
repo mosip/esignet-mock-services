@@ -1,4 +1,4 @@
-\c mosip_mockidentitysystem
+\c :mosipdbname
 
 \ir ddl/mockidentitysystem-mock_identity.sql
 \ir ddl/mockidentitysystem-kyc_auth.sql

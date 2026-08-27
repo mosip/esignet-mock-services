@@ -1,1 +1,1 @@
-drop role if exists mockidsystemuser;
+drop role if exists :dbuname;
