@@ -1,6 +1,6 @@
 services:
   mock-relying-party-service:
-    image: "mosipid/mock-relying-party-service:0.13.0"
+    image: "mosipqa/mock-relying-party-service:0.14.x"
     user: root
     ports:
       - 8888:8888
@@ -13,7 +13,7 @@ services:
       - USERINFO_RESPONSE_TYPE=jwt
 
   mock-relying-party-ui:
-    image: "mosipid/mock-relying-party-ui:0.13.0"
+    image: "mosipqa/mock-relying-party-ui:0.14.x"
     user: root
     ports:
       - 3000:3000
