@@ -7,6 +7,32 @@ onboarding:
   modules:
     - name: mock-rp-oidc
       enabled: true
+  # Edit this propertiesOverride block and run the onboarder Job to change any of these values if mosip plugin is used.
+  propertiesOverride:
+    mock-rp-oidc:
+      POLICY_NAME: mpolicy-default-mock-rp-oidc
+      POLICY_GROUP_NAME: mpolicygroup-default-mock-rp-oidc
+      PARTNER_KC_USERNAME: mpartner-default-mock-rp-oidc
+      PARTNER_MANAGER_USERNAME: mock-rp-oidc-kc-mockusername
+      PARTNER_MANAGER_PASSWORD: mock-rp-oidc-kc-mockuserpassword
+      OIDC_CLIENTID: default-non-mosipid-oidc-client
+      OIDC_CLIENT_NAME: "Health service OIDC Client"
+      # Set MOSIP_ID to true when the MOSIP plugin is used.
+      MOSIP_ID: "false"
+      # Set the LOGO_URI and REDIRECT_URIS before installation.
+      LOGO_URI: https://healthservices.sandbox.mosip.net/logo.png
+      # REDIRECT_URIS: if you need more than 1 value, use comma separated values with NO spaces within "" (e.g. "https://a.com/cb,https://b.com/cb")
+      REDIRECT_URIS: https://healthservices.sandbox.mosip.net/userprofile
+      URL: https://api-internal.sandbox.mosip.net
+      AUTHMANAGER_URL: https://api-internal.sandbox.mosip.net
+      PMS_URL: https://api-internal.sandbox.mosip.net
+      KEYCLOAK_URL: https://iam.sandbox.mosip.net
+      EXTERNAL_URL: https://esignet.sandbox.mosip.net
+      KEYCLOAK_ADMIN_USERNAME: admin
+      KEYCLOAK_ADMIN_PASSWORD: keycloak password
+      KEYCLOAK_CLIENT_SECRET: keycloak deployment client secret
+      mosip_pms_client_secret: pms client secret
+
 #  configmaps:
 #    s3:
 #      s3-host: 'http://minio.minio:9000'
@@ -19,10 +45,12 @@ onboarding:
 #  secrets:
 #     s3:
 #      s3-user-secret: 'password'
+
+# If the reports need to be pushed to NFS, please unblock the block below up to line 62. .
 #  volumes:
 #    reports:
 #      name: onboarder-reports
-#      storageClass: nfs-client
+#      storageClass: nfs-csi
 #      accessModes:
 #        - ReadWriteMany
 #      size: 10Mi
