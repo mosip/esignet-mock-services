@@ -136,6 +136,7 @@ function installing_onboarder() {
 
     echo "Onboarding Mock Relying Party OIDC client"
     helm -n $NS install esignet-mock-rp-onboarder  mosip/partner-onboarder \
+      --version "$CHART_VERSION" \
       $NFS_OPTION \
       $S3_OPTION \
       $MOSIPID_OPTION \
