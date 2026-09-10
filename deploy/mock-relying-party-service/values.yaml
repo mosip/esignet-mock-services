@@ -11,9 +11,11 @@
 #  mock_relying_party_serviceMountDIr: /home/mosip/oidc/
 #  puburl:
 #  privurl:
-#  ESIGNET_SERVICE_URL: http://esignet.namespace/v1/esignet
-#  ESIGNET_AUD_URL: https://esignet.sandbox.xyz.net/v1/esignet/oauth/v2/token
+#  ESIGNET_SERVICE_URL: http://esignet.namespace
+#  ESIGNET_AUD_URL: https://esignet.sandbox.xyz.net
 #  USERINFO_RESPONSE_TYPE: jwt
+#  TOKEN_ENDPOINT: /oauth2/token
+#  USERINFO_ENDPOINT: /oauth2/userinfo
 
 #extraEnvVars: []
 
