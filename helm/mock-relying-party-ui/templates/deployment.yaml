@@ -126,6 +126,8 @@ spec:
               value: {{ .Values.mock_relying_party_ui.DEFAULT_LANG }}
             - name: FALLBACK_LANG
               value: {{ .Values.mock_relying_party_ui.FALLBACK_LANG | quote }}
+            - name: AUTHORIZE_ENDPOINT
+              value: {{ .Values.mock_relying_party_ui.AUTHORIZE_ENDPOINT }}
 
             {{- range $key, $val := .Values.extraEnvVars }}
             - name: {{ $key }}
