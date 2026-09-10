@@ -47,14 +47,16 @@ function installing_mock-relying-party-service() {
   fi
 
   ESIGNET_HOST=$(kubectl -n $NS get cm esignet-global -o jsonpath={.data.mosip-esignet-host})
-  DEFAULT_ESIGNET_SERVICE_URL='http://esignet.esignet/v1/esignet'
-  read -p "Please provide Esignet service url : ( default: http://esignet.esignet/v1/esignet )" USER_PROVIDED_ESIGNET_SERVICE_URL
+  DEFAULT_ESIGNET_SERVICE_URL='http://esignet.esignet'
+  read -p "Please provide Esignet service url : ( default: http://esignet.esignet )" USER_PROVIDED_ESIGNET_SERVICE_URL
   ESIGNET_SERVICE_URL=${USER_PROVIDED_ESIGNET_SERVICE_URL:-$DEFAULT_ESIGNET_SERVICE_URL}
 
   echo Installing Mock Relying Party Service
   helm -n $NS install $MOCK_REPLYING_PARTY_SERVICE_NAME mosip/mock-relying-party-service \
     --set mock_relying_party_service.ESIGNET_SERVICE_URL="$ESIGNET_SERVICE_URL" \
-    --set mock_relying_party_service.ESIGNET_AUD_URL="https://$ESIGNET_HOST/v1/esignet/oauth/v2/token" \
+    --set mock_relying_party_service.ESIGNET_AUD_URL="https://$ESIGNET_HOST" \
+    --set mock_relying_party_service.TOKEN_ENDPOINT="/oauth2/token" \
+    --set mock_relying_party_service.USERINFO_ENDPOINT="/oauth2/userinfo" \
     --version $CHART_VERSION $ENABLE_INSECURE \
     -f values.yaml --wait
 

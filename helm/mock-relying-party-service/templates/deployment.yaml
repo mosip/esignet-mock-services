@@ -92,6 +92,10 @@ spec:
               value: {{ .Values.mock_relying_party_service.ESIGNET_SERVICE_URL }}
             - name: ESIGNET_AUD_URL
               value: {{ .Values.mock_relying_party_service.ESIGNET_AUD_URL }}
+            - name: TOKEN_ENDPOINT
+              value: {{ .Values.mock_relying_party_service.TOKEN_ENDPOINT }}
+            - name: USERINFO_ENDPOINT
+              value: {{ .Values.mock_relying_party_service.USERINFO_ENDPOINT }}
             - name: CLIENT_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
