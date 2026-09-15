@@ -28,7 +28,8 @@
 #  DEFAULT_LANG: en
 #  FALLBACK_LANG: '%7B%22label%22%3A%22English%22%2C%22value%22%3A%22en%22%7D'
 #  MOCK_RP_UI_PUBLIC_URL
-#extraEnvVars: []
+#extraEnvVars:
+#  AUTHORIZE_ENDPOINT: /v1/esignet/oauth2/authorize
 
 ## ConfigMap with extra environment variables
 ##
