@@ -47,16 +47,27 @@ function installing_mock-relying-party-service() {
   fi
 
   ESIGNET_HOST=$(kubectl -n $NS get cm esignet-global -o jsonpath={.data.mosip-esignet-host})
-  DEFAULT_ESIGNET_SERVICE_URL='http://esignet.esignet/v1/esignet'
-  read -p "Please provide Esignet service url : ( default: http://esignet.esignet/v1/esignet )" USER_PROVIDED_ESIGNET_SERVICE_URL
+  DEFAULT_ESIGNET_SERVICE_URL='http://esignet.esignet'
+  read -p "Please provide Esignet service url : ( default: http://esignet.esignet )" USER_PROVIDED_ESIGNET_SERVICE_URL
   ESIGNET_SERVICE_URL=${USER_PROVIDED_ESIGNET_SERVICE_URL:-$DEFAULT_ESIGNET_SERVICE_URL}
+
+  extra_env_vars=""
+  extra_env_vars+="  \"TOKEN_ENDPOINT\": \"/oauth2/token\""$'\n'
+  extra_env_vars+="  \"USERINFO_ENDPOINT\": \"/oauth2/userinfo\""$'\n'
+
+  extra_env_vars_file=$(mktemp)
+  {
+    echo "extraEnvVars:"
+    printf '%s' "$extra_env_vars"
+  } > "$extra_env_vars_file"
 
   echo Installing Mock Relying Party Service
   helm -n $NS install $MOCK_REPLYING_PARTY_SERVICE_NAME mosip/mock-relying-party-service \
     --set mock_relying_party_service.ESIGNET_SERVICE_URL="$ESIGNET_SERVICE_URL" \
-    --set mock_relying_party_service.ESIGNET_AUD_URL="https://$ESIGNET_HOST/v1/esignet/oauth/v2/token" \
+    --set mock_relying_party_service.ESIGNET_AUD_URL="https://$ESIGNET_HOST" \
     --version $CHART_VERSION $ENABLE_INSECURE \
-    -f values.yaml --wait
+    -f values.yaml \
+    -f "$extra_env_vars_file" --wait
 
   kubectl -n $NS get deploy $MOCK_REPLYING_PARTY_SERVICE_NAME -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
