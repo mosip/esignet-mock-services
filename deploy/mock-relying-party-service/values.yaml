@@ -1,8 +1,8 @@
 ## Uncomment required parms added with single '#' when needed.
 #image:
 #  registry: docker.io
-#  repository: mosipdev/mock-relying-party-service
-#  tag: develop
+#  repository: mosipid/mock-relying-party-service
+#  tag: 0.14.0
 
 #mock_relying_party_service:
 #  host: ''

@@ -1,8 +1,8 @@
 ## Uncomment required parms added with single '#' when needed.
 #image:
 #  registry: docker.io
-#  repository: mosipdev/mock-relying-party-ui
-#  tag: develop
+#  repository: mosipid/mock-relying-party-ui
+#  tag: 0.14.0
 
 ## The url below is to access oidc API services.
 ## CAUTION: Domain name to acess oidc UI must be secure/internal/over vpn.

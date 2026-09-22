@@ -1,8 +1,8 @@
 ## Uncomment required parms added with single '#' when needed.
 #image:
 #  registry: docker.io
-#  repository: mosipdev/mock-identity-system
-#  tag: develop
+#  repository: mosipid/mock-identity-system
+#  tag: 0.14.0
 
 #extraEnvVars:
 #  - name: DATABASE_HOST
