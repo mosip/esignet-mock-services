@@ -50,11 +50,11 @@ This guide brings up two containers alongside the eSignet stack you already have
 
 The relying party needs a registered OIDC client. This registration produces a `CLIENT_ID` and requires a `CLIENT_PRIVATE_KEY`. **Do this before starting the containers.**
 
-### 1a. Generate an RSA key pair
+### 1a. Generate a key pair
 
-The client authenticates to eSignet using `private_key_jwt`. You need an RSA 2048-bit key pair. The private key is passed to the relying party service; the public key is registered with eSignet.
+The client authenticates to eSignet using `private_key_jwt`. You need a key pair — either **RSA 2048-bit** or **EC P-256**. The private key is passed to the relying party service; the public key is registered with eSignet.
 
-**Using OpenSSL:**
+**Option 1 — RSA (using OpenSSL):**
 
 ```bash
 # Generate private key
@@ -62,6 +62,16 @@ openssl genrsa -out rp-private.pem 2048
 
 # Derive public key
 openssl rsa -in rp-private.pem -pubout -out rp-public.pem
+```
+
+**Option 2 — EC P-256 (using OpenSSL):**
+
+```bash
+# Generate EC private key
+openssl ecparam -name prime256v1 -genkey -noout -out rp-private.pem
+
+# Derive public key
+openssl ec -in rp-private.pem -pubout -out rp-public.pem
 ```
 
 The client registration expects the **public key in JWK format**, and `CLIENT_PRIVATE_KEY` must be the **private key in JWK format** (base64-encoded). Convert both:
@@ -77,9 +87,9 @@ pem-jwk rp-public.pem > rp-public.jwk
 pem-jwk rp-private.pem > rp-private.jwk
 ```
 
-Add `"use": "sig", "alg": "RS256"` and a `"kid"` value to both JWK objects before using them.
+Add `"use": "sig"`, the appropriate `"alg"`, and a `"kid"` value to both JWK objects before using them.
 
-Example public JWK to register:
+Example public JWK for RSA:
 
 ```json
 {
@@ -92,12 +102,26 @@ Example public JWK to register:
 }
 ```
 
-The private key, in the same JWK format but including `"d"`, `"p"`, `"q"`, `"dp"`, `"dq"`, `"qi"` fields, is what you pass as `CLIENT_PRIVATE_KEY` (base64-encoded).
+Example public JWK for EC P-256:
+
+```json
+{
+  "kty": "EC",
+  "crv": "P-256",
+  "x":   "<base64url-encoded x coordinate>",
+  "y":   "<base64url-encoded y coordinate>",
+  "use": "sig",
+  "alg": "ES256",
+  "kid": "rp-local-key-1"
+}
+```
+
+The private key follows the same format with additional private-key fields (`"d"` for EC; `"d"`, `"p"`, `"q"`, `"dp"`, `"dq"`, `"qi"` for RSA). This is what you pass as `CLIENT_PRIVATE_KEY` (base64-encoded).
 
 ### 1b. Register the client with eSignet
 
 ```bash
-curl -s -X POST http://localhost:8088/client-mgmt/oidc-client \
+curl -s -X POST http://localhost:8088/client-mgmt/client \
   -H "Content-Type: application/json" \
   -d '{
     "clientId":          "mock-relying-party-local",
@@ -176,8 +200,8 @@ services:
       - REDIRECT_URI_REGISTRATION=http://localhost:3001/registration
       # The CLIENT_ID returned by the registration call in Step 1b
       - CLIENT_ID=<your-client-id>
-      # The Sign In plugin is served by your local eSignet UI
-      - SIGN_IN_BUTTON_PLUGIN_URL=http://localhost:3000/plugins/sign-in-button-plugin.js
+      # The Sign In plugin is available on npm (@mosip/sign-in-with-esignet); reference it via a CDN
+      - SIGN_IN_BUTTON_PLUGIN_URL=https://unpkg.com/@mosip/sign-in-with-esignet@0.1.1-beta.0/dist/iife/index.js
 ```
 
 > **`host.docker.internal`:** Docker containers cannot reach `localhost` on the host. The `extra_hosts` entry above makes `host.docker.internal` resolve to the host gateway on Linux (Docker Engine without Docker Desktop). On Docker Desktop for Mac and Windows this hostname is already defined automatically, so the entry is harmless. The eSignet service at `http://localhost:8088` on your terminal is `http://host.docker.internal:8088` from inside a container.
@@ -272,7 +296,7 @@ Use the pre-seeded mock identity that was loaded into the database when the eSig
 | `REDIRECT_URI` | `http://localhost:3000/userprofile` | `http://localhost:3001/userprofile` | OAuth redirect URI — must match a URI registered in Step 1b |
 | `REDIRECT_URI_REGISTRATION` | `http://localhost:3000/registration` | `http://localhost:3001/registration` | Registration redirect URI |
 | `CLIENT_ID` | `_UgkpFCOsqoxsbLfywjXFuVRYZaHeYK6l0GmxMg3Rg8` (collab) | Your registered client ID from Step 1b | OIDC client identifier |
-| `SIGN_IN_BUTTON_PLUGIN_URL` | `https://esignet.collab.mosip.net/plugins/sign-in-button-plugin.js` | `http://localhost:3000/plugins/sign-in-button-plugin.js` | URL of the Sign In with eSignet button plugin |
+| `SIGN_IN_BUTTON_PLUGIN_URL` | `https://esignet.collab.mosip.net/plugins/sign-in-button-plugin.js` | CDN URL from npm — see note below | URL of the Sign In with eSignet button plugin. The plugin is published on npm as [`@mosip/sign-in-with-esignet`](https://www.npmjs.com/package/@mosip/sign-in-with-esignet) (currently `0.1.1-beta.0`); use a CDN URL such as `https://unpkg.com/@mosip/sign-in-with-esignet@0.1.1-beta.0/dist/iife/index.js` for local setups. |
 | `ACRS` | `mosip:idp:acr:password%20mosip:idp:acr:generated-code%20...` | Same | Space-separated ACRs — leave as-is for local testing |
 | `CLAIMS_LOCALES` | `en` | `en` | Leave as-is |
 | `SCOPE_USER_PROFILE` | `openid profile` | `openid profile` | Leave as-is |
@@ -338,7 +362,7 @@ ip route show default | awk '/default/ { print $3 }'
 
 **Sign In button does not appear**
 
-The button is loaded from `SIGN_IN_BUTTON_PLUGIN_URL`. If the eSignet UI is not running or the URL is wrong, the button fails silently. Open `http://localhost:3000/plugins/sign-in-button-plugin.js` in a browser and confirm it returns JavaScript. If it 404s, the eSignet UI is not healthy — check the main eSignet stack first.
+The button is loaded from `SIGN_IN_BUTTON_PLUGIN_URL`. If the URL is wrong or unreachable, the button fails silently. Open the configured URL in a browser and confirm it returns JavaScript. The plugin is published on npm as [`@mosip/sign-in-with-esignet`](https://www.npmjs.com/package/@mosip/sign-in-with-esignet) — set `SIGN_IN_BUTTON_PLUGIN_URL` to a CDN URL such as `https://unpkg.com/@mosip/sign-in-with-esignet@0.1.1-beta.0/dist/iife/index.js`.
 
 **`CLIENT_ID` not found / redirect URI mismatch**
 
