@@ -47,6 +47,15 @@ function installing_mock-relying-party-ui() {
 
   ESIGNET_HOST=$(kubectl -n $NS get cm esignet-global -o jsonpath={.data.mosip-esignet-host})
 
+  extra_env_vars=""
+  extra_env_vars+="  \"AUTHORIZE_ENDPOINT\": \"/v1/esignet/oauth2/authorize\""$'\n'
+
+  extra_env_vars_file=$(mktemp)
+  {
+    echo "extraEnvVars:"
+    printf '%s' "$extra_env_vars"
+  } > "$extra_env_vars_file"
+
   echo Installing Mock Relying Party UI
   helm -n $NS install $MOCK_REPLYING_PARTY_UI_SERVICE_NAME mosip/mock-relying-party-ui \
       --set mock_relying_party_ui.MOCK_RELYING_PARTY_SERVICE_INTERNAL_URL="http://$MOCK_REPLYING_PARTY_SERVICE_NAME.$NS" \
@@ -58,6 +67,7 @@ function installing_mock-relying-party-ui() {
       --set mock_relying_party_ui.SIGN_IN_BUTTON_PLUGIN_URL="https://$ESIGNET_HOST/plugins/sign-in-button-plugin.js" \
       --set istio.hosts\[0\]="$MOCK_UI_HOST" \
       -f values.yaml \
+      -f "$extra_env_vars_file" \
       --version $CHART_VERSION --wait
 
   kubectl -n $NS get deploy $MOCK_REPLYING_PARTY_UI_SERVICE_NAME -o name |  xargs -n1 -t  kubectl -n $NS rollout status
