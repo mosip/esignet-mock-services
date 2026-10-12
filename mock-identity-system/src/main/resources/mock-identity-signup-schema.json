@@ -14,10 +14,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "language",
-          "value"
-        ],
+        "required": ["language", "value"],
         "additionalProperties": false
       }
     }
@@ -29,16 +26,18 @@
     },
     "fullName": {
       "allOf": [
-        { "$ref": "#/$defs/langField" },
+        {
+          "$ref": "#/$defs/langField"
+        },
         {
           "items": {
             "properties": {
               "value": {
-                "pattern": "^(?=.*[^\\s])^(?:[a-zA-ZÀ-ÿ\\s]{1,40}|[ء-ي\\s٩ٱ-ڿﹰ-\uFEFF\u0600-ۿ]{1,40}|[ក-\u17FF᧠-᧿ᨀ-\u1A9F ]{1,40})$"
+                "pattern": "^(?=.*[^\\s])^(?:[a-zA-ZÀ-ÿ\\s]{1,40}|[ء-ي\\s٩ٱ-ڿﹰ-﻿؀-ۿ]{1,40}|[ក-៿᧠-᧿ᨀ-᪟ ]{1,40})$"
               },
               "language": {
                 "type": "string",
-                "enum": ["khm","eng","fra","ara"]
+                "enum": ["khm", "eng", "fra", "ara"]
               }
             }
           }
@@ -46,24 +45,19 @@
       ]
     },
     "preferredLang": {
-        "type": "string",
-        "enum": ["khm","eng","fra","ara"],
-        "nullable": true
+      "type": "string",
+      "enum": ["khm", "eng", "fra", "ara"],
+      "nullable": true
     },
     "phone": {
       "type": "string",
-      "pattern": "^\\+[1-9]\\d{8,13}$"
+      "pattern": "^\\+91[1-9]\\d{7,13}$"
     },
     "password": {
       "type": "string",
       "pattern": "\\S"
     }
   },
-  "required": [
-    "individualId",
-    "fullName",
-    "phone",
-    "password"
-  ],
+  "required": ["fullName", "phone", "password"],
   "additionalProperties": true
 }
